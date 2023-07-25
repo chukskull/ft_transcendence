@@ -4,6 +4,8 @@ import style from "../styles/Home.module.scss";
 import MatchHistory from "../Components/MatchHistory";
 import ProfileStats from "../Components/ProfileStats";
 import Leaderboard from "../Components/LeaderBoard";
+import ChatMenu from "../Components/ChatMenu";
+
 
 const avatarUrl = "https://i.pravatar.cc/300";
 
@@ -39,25 +41,10 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <NavBar userName="John Doe" avatarUrl="https://i.pravatar.cc/300" />
-      <div className={style.homepage}>
-        <div className={style.welcome}>
-          <div className={style.left}>
-            <img src={avatarUrl} alt="User Profile" />
-            <h1>Welcome, John Doe!</h1>
-          </div>
-          <button className={style.btn}>Play</button>
-        </div>
-        <div className={style.main}>
-          <div className={style.left}>
-            <MatchHistory />
-          </div>
-          <div className={style.center}>
-            <ProfileStats />
-          </div>
-          <div className={style.right}>
-            <Leaderboard players={players} />
-          </div>
+      <NavBar userName="John Doe" avatarUrl={avatarUrl} />
+      <div className={style.main}>
+        <div className={style.chatMenu}>
+          <ChatMenu />
         </div>
       </div>
     </>
