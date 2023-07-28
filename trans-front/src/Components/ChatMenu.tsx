@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styles from "../styles/ChatMenu.module.scss";
+import { FiSend } from "react-icons/fi";
+import { NULL } from "sass";
 
 interface Friend {
   id: number;
@@ -21,18 +23,21 @@ const ChatMenu: React.FC = () => {
   );
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [userMenu, setUserMenu] = useState(false);
+  const [inputText, setInputText] = useState("");
+  const [chatMessages, setChatMessages] = useState<string[]>([]);
 
   const friends: Friend[] = [
     {
       id: 1,
       name: "John Doe",
-      profilePicture: "path/to/john.jpg",
+      profilePicture: "https://i.pravatar.cc/300",
       blocked: false,
     },
     {
       id: 2,
       name: "Jane Smith",
-      profilePicture: "path/to/jane.jpg",
+      profilePicture: "https://i.pravatar.cc/300",
       blocked: true,
     },
     // Add more friends here
@@ -53,119 +58,121 @@ const ChatMenu: React.FC = () => {
     },
     // Add more channels here
   ];
-
   const handleFriendClick = (friend: Friend) => {
     setSelectedFriend(friend);
     setSelectedChannel(null);
   };
 
+  const handleSendMessage = () => {
+    // Add the new message to the chatMessages state
+    setChatMessages((prevMessages) => [...prevMessages, inputText]);
+
+    // Clear the input text after sending the message
+    setInputText("");
+  };
   const handleChannelClick = (channel: Channel) => {
     setSelectedChannel(channel);
     setSelectedFriend(null);
   };
 
-  const handleAddFriend = () => {
-    // Implement the logic to add a friend
-  };
+  const handleAddFriend = () => {};
 
-  const handleBlockFriend = (friend: Friend | null) => {
-    // Implement the logic to block a friend
-  };
+  const handleBlockFriend = (friend: Friend | null) => {};
 
-  const handleAddFriendToChannel = (friend: Friend | null) => {
-    // Implement the logic to add a friend to a channel
-  };
+  const handleAddFriendToChannel = (friend: Friend | null) => {};
 
-  const handleKickMemberFromChannel = (friend: Friend | null) => {
-    // Implement the logic to kick a member from a channel
-  };
+  const handleKickMemberFromChannel = (friend: Friend | null) => {};
 
   return (
-    <div className={styles["chat-menu"]}>
-      <div className={styles["section-toggle"]}>
-        <button
-          className={activeSection === "friends" ? styles.active : ""}
-          onClick={() => setActiveSection("friends")}
-        >
-          Friends
-        </button>
-        <button
-          className={activeSection === "channels" ? styles.active : ""}
-          onClick={() => setActiveSection("channels")}
-        >
-          Channels
-        </button>
-      </div>
-      <div className={styles.section}>
-        {activeSection === "friends" && (
-          <>
-            <h2>Friends</h2>
-            <button onClick={handleAddFriend}>Add Friend</button>
-            <ul>
-              {friends.map((friend) => (
-                <li
-                  key={friend.id}
-                  onClick={() => handleFriendClick(friend)}
-                  className={friend.blocked ? styles.blocked : ""}
-                >
-                  <img src={friend.profilePicture} alt={friend.name} />
-                  <span>{friend.name}</span>
-                  {friend.blocked && <span>(Blocked)</span>}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-        {activeSection === "channels" && (
-          <>
-            <h2>Channels</h2>
-            <ul>
-              {channels.map((channel) => (
-                <li
-                  key={channel.id}
-                  onClick={() => handleChannelClick(channel)}
-                >
-                  <img src={channel.icon} alt={channel.name} />
-                  <span>{channel.name}</span>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
-      {(selectedFriend || selectedChannel) && (
-        <div className={styles["chat-popup"]}>
-          {selectedFriend && (
+    <>
+      <div className={styles["chat-menu"]}>
+        <div className={styles.menuTitle}>
+          <h2>Chat</h2>
+        </div>
+        <div className={styles.line}></div>
+
+        <div className={styles["section-toggle"]}>
+          <button
+            className={activeSection === "friends" ? styles.active : ""}
+            onClick={() => setActiveSection("friends")}
+          >
+            Friends
+          </button>
+          <button
+            className={activeSection === "channels" ? styles.active : ""}
+            onClick={() => setActiveSection("channels")}
+          >
+            Channels
+          </button>
+        </div>
+
+        <div className={styles.section}>
+          {activeSection === "friends" && (
             <>
-              <img
-                src={selectedFriend.profilePicture}
-                alt={selectedFriend.name}
-              />
-              <h3>{selectedFriend.name}</h3>
-              <button onClick={() => handleBlockFriend(selectedFriend)}>
-                Block
-              </button>
-              {/* Implement chat messages here */}
+              <ul>
+                {friends.map((friend) => (
+                  <li
+                    key={friend.id}
+                    onClick={() => handleFriendClick(friend)}
+                    className={friend.blocked ? styles.blocked : ""}
+                  >
+                    <img src={friend.profilePicture} alt={friend.name} />
+                    <span>{friend.name}</span>
+                    {friend.blocked && <span>(Blocked)</span>}
+                  </li>
+                ))}
+              </ul>
             </>
           )}
-          {selectedChannel && (
+          {activeSection === "channels" && (
             <>
-              <img src={selectedChannel.icon} alt={selectedChannel.name} />
-              <h3>{selectedChannel.name}</h3>
-              <button onClick={() => handleAddFriendToChannel(selectedFriend)}>
-                Add Friend
-              </button>
-              <button
-                onClick={() => handleKickMemberFromChannel(selectedFriend)}
-              >
-                Kick
-              </button>
-              {/* Implement chat messages for the channel here */}
+              <h2>Channels</h2>
+              <ul>
+                {channels.map((channel) => (
+                  <li
+                    key={channel.id}
+                    onClick={() => handleChannelClick(channel)}
+                  >
+                    <img src={channel.icon} alt={channel.name} />
+                    <span>{channel.name}</span>
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </div>
+      </div>
+      {(selectedFriend || selectedChannel) && (
+        <div className={styles.chatPopup}>
+          <div className={styles.topBox}>
+            <img src="https://i.pravatar.cc/300" />
+            <h2>Mountassir</h2>
+            <button>...</button>
+            <button
+              onClick={() => {
+                setSelectedChannel(null);
+                setSelectedFriend(null);
+              }}
+            >
+              X
+            </button>
+          </div>
+          <div className={styles.line}></div>
+          <div className={styles.chatBox} />
+          <div className={styles.messageInput}>
+            <input
+              type="text"
+              placeholder="Type your message..."
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+            />
+            <button onClick={handleSendMessage}>
+              <FiSend />
+            </button>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
