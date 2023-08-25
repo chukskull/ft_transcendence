@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res, Redirect } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -12,9 +12,18 @@ export class AuthController {
     return this.authService.create(createAuthDto);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Get('42')
+  @UseGuards(AuthGuard('42'))
+  fortyTwoLogin() {
+
+  }
+
+  @Get('42/callback')
+  @CallbackDoc()
+  fortyTwoCallBack(@Req() req: Request, @Res() res: Response) {
+    try {
+
+    }
   }
 
   @Get(':id')
