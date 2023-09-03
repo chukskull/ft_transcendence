@@ -1,16 +1,16 @@
 version: '3'
 
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "1337:1337"
-    env_file:
-      - .env
-    depends_on:
-      - db
-    networks:
-      - pong-network
+  # backend:
+  #   build: ./backend
+  #   ports:
+  #     - "1337:1337"
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - pong-network
 
   frontend:
     build: ./frontend
@@ -18,8 +18,8 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    depends_on:
-      - backend
+    # depends_on:
+    #   - backend
     networks:
       - pong-network
 
