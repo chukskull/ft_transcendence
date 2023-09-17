@@ -20,17 +20,20 @@ services:
       - .env
     # depends_on:
     #   - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     networks:
       - pong-network
 
-  db:
-    image: postgres
-    env_file:
-      - .env
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    networks:
-      - pong-network
+  # db:
+  #   image: postgres
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data
+  #   networks:
+  #     - pong-network
 
 volumes:
   db-data:
