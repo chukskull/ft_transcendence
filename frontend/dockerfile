@@ -1,0 +1,16 @@
+FROM node:alpine3.17
+
+WORKDIR /app
+
+COPY package*.json ./
+# RUN apt-get update && apt-get install -y \
+
+RUN npm install -g npm@latest
+
+RUN npm install
+
+COPY  . .
+
+RUN chmod +x ./script.sh
+
+CMD ["/bin/sh", "-c", "./script.sh"]
