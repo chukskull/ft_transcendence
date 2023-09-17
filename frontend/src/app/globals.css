@@ -9,6 +9,13 @@
 * {
   font-family: "ClashGrotesk-Extralight";
 }
+
+.Navigation {
+  @apply flex items-center justify-center;
+}
+.Navigation li {
+  @apply mr-4;
+}
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
