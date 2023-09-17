@@ -6,22 +6,91 @@
 
 @import url("./fonts.css");
 
+:root {
+ --wrapper-width: 1280px;
+ --color-background: linear-gradient(149deg, #15011E 3.4%, #3D0655 315.88%);
+ --color-button:red;
+ --transition: cubic-bezier(0.59, 0, 0.06, 1);
+ --light:white;
+ --dark:black;
+
+}
+
+
 * {
-  font-family: "ClashGrotesk-Extralight";
+  background: var(--color-background);
+  z-index: 1;
+  margin: 0;
+  padding: 0;
 }
 
 .Navigation {
   @apply flex items-center justify-center;
 }
 .Navigation li {
-  @apply mr-4;
+
+  @apply  mr-[72px] text-[1.4rem] font-normal text-white ;
+  
 }
-/* :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.Navigation li:hover {
+  font-size: 1.4rem;
+  font-weight: normal;
+  color: #D4ADFC;
+  cursor: pointer;
+
+}
+.Navigation li:last-child {
+  @apply mr-0;
+}
+ .wrapper {
+  width: var(--wrapper-width);
+  z-index: 10;
+  background: none;
+  /* background: var(--color-background); */
+  max-width: 100%;
+  margin: auto;
+  padding-top: 3rem;
+  @apply px-5;
 }
 
+.button span {
+  background: var(--color-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 600ms var(--transition);
+  color: var(--light);
+  font-size: 1.375rem;
+}
+
+.button:hover {
+  span{
+    transform: translateX(5px);
+  }
+  
+  
+}
+
+.button:hover {
+  span {
+    transform: translateX(-5px);
+    background-color: transparent;
+    background-position: 90% 0;
+    opacity: 80%;
+  }
+ 
+}
+
+.backrnd-img img{
+  background: none;
+  width: var(--wrapper-width);
+  height: 796.884px;
+  transform: rotate(-10.174deg);
+  flex-shrink: 0;
+  margin: auto;
+  object-fit: contain;
+}
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

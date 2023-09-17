@@ -1,30 +1,31 @@
 import Link from "next/link";
 import Image from "next/image";
+import ButtonNav from "./Button-nav";
 
 // import CustomButton from "./CustomButton";
 
 const NavBar = () => (
-  <div className="flex items-center justify-between  padding-x h-full bg-red-500">
+  <div className="wrapper flex items-center justify-between">
     <a href="#" className="Header-Logo">
       <div>
         <Image
-          src="/assets/next.svg"
+          src="/assets/Vector.svg"
           alt="temp-logo"
-          width={100}
-          height={100}
+          width={57}
+          height={45}
         />
       </div>
     </a>
     <ul className="Navigation">
-      {nav.map(({ name, href }) => (
-        <li key={name}> 
-          <a href={href}>
-             <a>{name}</a>
+      {nav.map((nv) => (
+        <li key={nv.name}> 
+          <a href={nv.href}>
+             <a>{nv.name}</a>
           </a>
         </li>
       ))}
     </ul>
-    <div>ok sure test zayd l7bibe</div>
+    <ButtonNav />
   </div>
 );
 const nav = [
@@ -37,7 +38,7 @@ const nav = [
     href: "/about",
   },
   {
-    name: "team",
+    name: "Team",
     href: "/team",
   },
 ];
