@@ -19,9 +19,7 @@ const NavBar = () => (
     <ul className="Navigation">
       {nav.map((nv) => (
         <li key={nv.name}> 
-          <a href={nv.href}>
-             <a>{nv.name}</a>
-          </a>
+             <a href="{nv.href">{nv.name}</a>
         </li>
       ))}
     </ul>
