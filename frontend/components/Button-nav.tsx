@@ -1,23 +1,35 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { BiRightArrowAlt } from "react-icons/bi";
 
-export const ButtonNav = () => {
-  return (
-    <div className="MajorButton bg-gray-100 focus:outline-none hover:bg-gray-100 
-    hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 
-    dark:text-gray-400 dark:border-purple-800 dark:hover:text-white dark:hover:bg-gray-700" 
-    >
 
-      <button type="button" className=" flex items-center justify-between ">
-        Play Now
-        <span className="ml-2 hover:text-red-500">
-          <BiRightArrowAlt />
-        </span>
-      </button>
-    </div>
+export const ButtonNav = () => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleHover = () => {
+    setIsHovered(!isHovered);
+  };
+
+  return (
+    <>
+    <button
+      type="button"
+      className={`flex items-center z-10 justify-between border-2 border-purple-600 
+      rounded-2xl bg-none font-[ClashGrotesk-Medium] text-[15px]
+      py-[14px] px-[16px] text-sm font-medium text-gray-500 group
+      ${isHovered ? "text-white" : ""}
+      `}
+      onMouseEnter={handleHover}
+      onMouseLeave={handleHover}
+    >
+      Play Now
+      <span className={`ml-3 ${isHovered ? "group-hover:translate-x-1.5" : ""}`}>
+        <BiRightArrowAlt size={20}  style={{ color: "none" }} />
+      </span>
+    </button>
+    </>
+    
   );
 };
 
 export default ButtonNav;
-
-

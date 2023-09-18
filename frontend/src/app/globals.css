@@ -52,8 +52,26 @@
   padding-top: 3rem;
   @apply px-5;
 }
+.backrnd-img img{
+  background: none;
+  width: var(--wrapper-width);
+  
+  transform: rotate(-10.174deg);
+  flex-shrink: 0;
+  margin: auto;
+  object-fit: contain;
+} 
 
-.button span {
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@500&display=swap');
+
+
+
+
+
+/* .button span {
   background: var(--color-button);
   display: flex;
   align-items: center;
@@ -81,15 +99,6 @@
  
 }
 
-.backrnd-img img{
-  background: none;
-  width: var(--wrapper-width);
-  height: 796.884px;
-  transform: rotate(-10.174deg);
-  flex-shrink: 0;
-  margin: auto;
-  object-fit: contain;
-}
 /*
 @media (prefers-color-scheme: dark) {
   :root {
