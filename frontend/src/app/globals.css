@@ -15,7 +15,7 @@
 :root {
  --wrapper-width: 1280px;
  --color-background: linear-gradient(149deg, #15011E 3.4%, #3D0655 315.88%);
- --color-button:red;
+ --color-button:linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
  --transition: cubic-bezier(0.59, 0, 0.06, 1);
  --light:white;
  --dark:black;
@@ -30,6 +30,14 @@
   padding: 0;
 }
 
+.gradient-button {
+  background-image: linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
+  color: #FFF;
+  font-family: Clash Grotesk;
+  font-size: 20px;
+  font-style: normal;
+  line-height: normal;
+}
 .Navigation {
   @apply flex items-center justify-center;
 }
@@ -60,13 +68,12 @@
 }
 .backrnd-img img{
   background: none;
-  /* width: var(--wrapper-width); */
-  /* height: 796.884px; */
-  
-  transform: rotate(-10.174deg);
+  height: 796.884px;
+  transform: rotate(-1.174deg);
   flex-shrink: 0;
   margin: auto;
   object-fit: contain;
+  padding: none;
 } 
 
 

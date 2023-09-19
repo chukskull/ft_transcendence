@@ -1,5 +1,4 @@
 import Link from "next/link";
-"use client";
 import Image from "next/image";
 import ButtonNav from "./Button-nav";
 
@@ -17,10 +16,10 @@ const NavBar = () => (
         />
       </div>
     </a>
-    <ul className="Navigation">
+    <ul className="Navigation z-10 bg-none">
       {nav.map((nv) => (
-        <li key={nv.name}> 
-             <a href={nv.href}>{nv.name}</a>
+        <li className="bg-none" key={nv.name}>
+          <a href={nv.href}>{nv.name}</a>
         </li>
       ))}
     </ul>
