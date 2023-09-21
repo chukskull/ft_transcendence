@@ -5,9 +5,7 @@ import CardComponent from "./CardComponent";
 export const Footer = () => {
   return (
     <div className="my-[5rem] footer-header">
-      <div>
-        <h1>Meet Our Team:</h1>
-      </div>
+      <h1 className="footer-title">Meet Our Team:</h1>
       <div className="Footer-wrapper flex items-center justify-center ">
         {StudentsInfos.map((student, index) => (
           <CardComponent
