@@ -1,5 +1,4 @@
-
-  @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
 
 
@@ -13,12 +12,12 @@
 
 
 :root {
- --wrapper-width: 1280px;
- --color-background: linear-gradient(149deg, #15011E 3.4%, #3D0655 315.88%);
- --color-button:linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
- --transition: cubic-bezier(0.59, 0, 0.06, 1);
- --light:white;
- --dark:black;
+  --wrapper-width: 1280px;
+  --color-background: linear-gradient(149deg, #15011E 3.4%, #3D0655 315.88%);
+  --color-button: linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
+  --transition: cubic-bezier(0.59, 0, 0.06, 1);
+  --light: white;
+  --dark: black;
 
 }
 
@@ -34,6 +33,7 @@
 body {
   background: var(--color-background);
 }
+
 .paragraph {
   background: none;
   width: 560px;
@@ -42,8 +42,10 @@ body {
   font-size: 19px;
   font-style: normal;
   font-weight: 400;
-  line-height: 134.5%; /* 25.555px */
+  line-height: 134.5%;
+  /* 25.555px */
 }
+
 .gradient-button {
   background-image: linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
   color: #FFF;
@@ -52,14 +54,17 @@ body {
   font-style: normal;
   line-height: normal;
 }
+
 .Navigation {
   @apply flex items-center justify-center;
 }
+
 .Navigation li {
 
-  @apply  mr-[72px] text-[1.4rem] font-normal text-white ;
-  
+  @apply mr-[72px] text-[1.4rem] font-normal text-white;
+
 }
+
 .Navigation li:hover {
   font-size: 1.4rem;
   font-weight: normal;
@@ -67,10 +72,12 @@ body {
   cursor: pointer;
 
 }
+
 .Navigation li:last-child {
   @apply mr-0;
 }
- .wrapper {
+
+.wrapper {
   width: var(--wrapper-width);
   /* background: var(--color-background); */
   max-width: 100%;
@@ -79,8 +86,9 @@ body {
   /* border-bottom: 1px solid transparent; */
   @apply px-5;
 }
+
 .wrapper-header {
-  
+
   position: fixed;
   z-index: 1337;
   border-radius: 0 0 1.5rem 1.5rem;
@@ -96,18 +104,22 @@ body {
   backdrop-filter: blur(20px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
+
 @keyframes bounce {
   0% {
     transform: translateY(-10px);
   }
+
   50% {
     transform: translateY(10px);
   }
+
   100% {
     transform: translateY(-10px);
   }
 }
-.backrnd-img img{
+
+.backrnd-img img {
   background: none;
   height: 796.884px;
   transform: rotate(-1.174deg);
@@ -116,28 +128,86 @@ body {
   object-fit: contain;
   padding: none;
   animation: bounce 5s ease-in-out infinite;
-} 
+}
 
 .gamesvg {
-  
-    color: #F417C4;
-    width: 304.333px;
-    height: 65.001px;
-    /* Additional CSS properties */
-  
+
+  color: #F417C4;
+  width: 304.333px;
+  height: 65.001px;
 }
+
 .Card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.3rem 1rem;
+  gap: 1rem;
   width: 305px;
-  margin: 22rem;
-  padding-top: 4rem;
   height: 491px;
   flex-shrink: 0;
   border-radius: 22px;
-  background: radial-gradient(151.92% 127.02% at 15.32% 21.04%, rgba(165, 239, 255, 0.20) 0%, rgba(110, 191, 244, 0.04) 77.08%, rgba(116, 174, 229, 0) 100%);
+  background: radial-gradient(151.92% 127.02% at 15.32% 21.04%, rgba(165, 239, 255, 0.20) 0%, rgba(110, 191, 244, 0.04) 77.08%, rgba(70, 144, 212, 0.00) 100%);
   /* background-image: linear-gradient(149deg, rgba(38, 4, 54, 0.85) 3.4%, rgba(67, 9, 92, 0.85) 315.88%); */
   background-blend-mode: overlay, normal;
   backdrop-filter: blur(20px);
+
+
+
+}
+
+.Card h1 {
+
+  color: #FFF;
+  text-align: center;
+  font-family: Clash Grotesk;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 134.5%;
+
+}
+
+.Card p,
+.Card h2 {
+  font-family: Clash Grotesk;
+  color: #FFF;
+  font-size: 14px;
+  opacity: 80%;
 }
 
 
-@import url('https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@500&display=swap');
+.Footer-wrapper {
+  position: relative;
+  gap: 6rem;
+}
+
+.Footer-wrapper::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  right: 0;
+  width: 100%;
+  height: 202px;
+  background: #1F0E36;
+}
+
+.footer-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem 0;
+
+}
+
+.footer-header h1 {
+
+  color: #FFF;
+  font-family: Clash Grotesk;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 134.5%;
+}
