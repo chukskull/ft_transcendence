@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import NavBar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export const metadata: Metadata = {
   title: "PingPongWebsite",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="relative">
         <NavBar />
         {children}
+        <Footer />
       </body>
     </html>
   );

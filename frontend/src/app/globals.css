@@ -24,12 +24,26 @@
 
 
 * {
-  background: var(--color-background);
+  /* background: var(--color-background); */
+  /* background-color: var(--color-background); */
   z-index: 1;
   margin: 0;
   padding: 0;
 }
 
+body {
+  background: var(--color-background);
+}
+.paragraph {
+  background: none;
+  width: 560px;
+  color: rgba(255, 255, 255, 0.81);
+  font-family: Clash Grotesk;
+  font-size: 19px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 134.5%; /* 25.555px */
+}
 .gradient-button {
   background-image: linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
   color: #FFF;
@@ -58,13 +72,29 @@
 }
  .wrapper {
   width: var(--wrapper-width);
-  z-index: 10;
-  background: none;
   /* background: var(--color-background); */
   max-width: 100%;
   margin: auto;
-  padding-top: 3rem;
+  padding-top: 2rem;
+  /* border-bottom: 1px solid transparent; */
   @apply px-5;
+}
+.wrapper-header {
+  
+  position: fixed;
+  z-index: 1337;
+  border-radius: 0 0 1.5rem 1.5rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* width: 100%;
+  height: max-content; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid transparent;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
 @keyframes bounce {
   0% {
@@ -96,5 +126,18 @@
     /* Additional CSS properties */
   
 }
+.Card {
+  width: 305px;
+  margin: 22rem;
+  padding-top: 4rem;
+  height: 491px;
+  flex-shrink: 0;
+  border-radius: 22px;
+  background: radial-gradient(151.92% 127.02% at 15.32% 21.04%, rgba(165, 239, 255, 0.20) 0%, rgba(110, 191, 244, 0.04) 77.08%, rgba(116, 174, 229, 0) 100%);
+  /* background-image: linear-gradient(149deg, rgba(38, 4, 54, 0.85) 3.4%, rgba(67, 9, 92, 0.85) 315.88%); */
+  background-blend-mode: overlay, normal;
+  backdrop-filter: blur(20px);
+}
+
 
 @import url('https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@500&display=swap');
