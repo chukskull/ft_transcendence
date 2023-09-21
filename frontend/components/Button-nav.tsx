@@ -2,12 +2,16 @@
 import React, { useState } from "react";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export const ButtonNav = () => {
   const [isHovered, setIsHovered] = useState(false);
-
   const handleHover = () => {
     setIsHovered(!isHovered);
+  };
+  const router = useRouter();
+  const handleClick = () => {
+    router.push("/login");
   };
 
   return (
@@ -19,6 +23,7 @@ export const ButtonNav = () => {
       py-[14px] px-[16px] text-sm font-medium text-gray-500 transition group 
       ${isHovered ? "text-white" : ""}
       `}
+        onClick={handleClick}
         onMouseEnter={handleHover}
         onMouseLeave={handleHover}
       >

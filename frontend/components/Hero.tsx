@@ -1,9 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
-
+import { useRouter } from "next/navigation";
 
 export const Hero = () => {
+  const router = useRouter();
+  const handleClick = () => {
+    router.push("/login");
+  };
+
   return (
     <>
       <div className="backrnd-img relative p-0 m-0">
@@ -17,8 +22,8 @@ export const Hero = () => {
         <div className=" flex flex-col gap-y-12 text-bc bg-none absolute top-[0%] xl:right-[50%] 2xl:right-[50%] my-[11.25rem]  p-[1.25rem]">
           <h1 className="bg-none text-white my-2 w-[604px] font-[Josefin Sans] text-8xl font-style-normal font-medium">
             BEST <span className="gamesvg bg-none">GAME !</span>
-              <br></br>
-              ON DEMAND
+            <br></br>
+            ON DEMAND
           </h1>
           <p className="paragraph">
             {" "}
@@ -27,6 +32,7 @@ export const Hero = () => {
             comfort of your own device.
           </p>
           <Button
+            onClick={handleClick}
             className=" w-[165px] h-[45px] gradient-button 
           via-transparent via-transparent text-white shadow-lg rounded-2xl"
           >
