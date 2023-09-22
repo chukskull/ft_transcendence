@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <NextUIProvider>
       <main>
-        <NavBar />
+        <NavBar boolBut={true}/>
         <Hero />
         <Footer />
       </main>

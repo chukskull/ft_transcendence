@@ -4,9 +4,12 @@ import ButtonNav from "./Button-nav";
 
 // import CustomButton from "./CustomButton";
 
-const NavBar = () => (
+interface NavBarProps {
+  boolBut: boolean;
+}
+const NavBar = ({ boolBut }: NavBarProps) => (
   <div className="wrapper-header">
-      <div className="wrapper flex items-center justify-between">
+    <div className="wrapper flex items-center justify-between">
       <a href="#" className="Header-Logo">
         <div>
           <Image
@@ -24,10 +27,9 @@ const NavBar = () => (
           </li>
         ))}
       </ul>
-      <ButtonNav />
+      {boolBut ? <ButtonNav /> : <span></span>}
     </div>
   </div>
-  
 );
 const nav = [
   {
