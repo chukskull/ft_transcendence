@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+
+
 @import "tailwindcss/base";
 
 @import "tailwindcss/components";
@@ -5,30 +9,33 @@
 @import "tailwindcss/utilities";
 
 @import url("./fonts.css");
+@import url("./styles/header/_header.css");
+@import url("./styles/Hero/_hero.css");
+@import url("./styles/Footer/_footer.css");
+@import url("./styles/Login/Login.css");
+
+
+:root {
+  --wrapper-width: 1280px;
+  --color-background: linear-gradient(149deg, #15011E 3.4%, #3D0655 315.88%);
+  --color-button: linear-gradient(102deg, #4E0A6B 9.72%, #F417C4 184.28%);
+  --transition: cubic-bezier(0.59, 0, 0.06, 1);
+  --light: white;
+  --dark: black;
+
+}
+
 
 * {
-  font-family: "ClashGrotesk-Extralight";
-}
-/* :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  /* background: var(--color-background); */
+  /* background-color: var(--color-background); */
+  z-index: 1;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-} */
+  background: var(--color-background);
+}
+
+

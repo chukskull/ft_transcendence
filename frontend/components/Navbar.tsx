@@ -1,30 +1,34 @@
 import Link from "next/link";
 import Image from "next/image";
+import ButtonNav from "./Button-nav";
 
 // import CustomButton from "./CustomButton";
 
-const NavBar = () => (
-  <div className="flex items-center justify-between  padding-x h-full bg-red-500">
-    <a href="#" className="Header-Logo">
-      <div>
-        <Image
-          src="/assets/next.svg"
-          alt="temp-logo"
-          width={100}
-          height={100}
-        />
-      </div>
-    </a>
-    <ul className="Navigation">
-      {nav.map(({ name, href }) => (
-        <li key={name}> 
-          <a href={href}>
-             <a>{name}</a>
-          </a>
-        </li>
-      ))}
-    </ul>
-    <div>ok sure test zayd l7bibe</div>
+interface NavBarProps {
+  boolBut: boolean;
+}
+const NavBar = ({ boolBut }: NavBarProps) => (
+  <div className="wrapper-header">
+    <div className="wrapper flex items-center justify-between">
+      <a href="#" className="Header-Logo">
+        <div>
+          <Image
+            src="/assets/Vector.svg"
+            alt="temp-logo"
+            width={57}
+            height={45}
+          />
+        </div>
+      </a>
+      <ul className="Navigation z-10 bg-none">
+        {nav.map((nv) => (
+          <li className="bg-none" key={nv.name}>
+            <a href={nv.href}>{nv.name}</a>
+          </li>
+        ))}
+      </ul>
+      {boolBut ? <ButtonNav /> : <span></span>}
+    </div>
   </div>
 );
 const nav = [
@@ -37,7 +41,7 @@ const nav = [
     href: "/about",
   },
   {
-    name: "team",
+    name: "Team",
     href: "/team",
   },
 ];

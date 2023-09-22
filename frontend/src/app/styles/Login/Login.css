@@ -1,0 +1,63 @@
+.imageBall {
+    position: absolute;
+    top: 20rem;
+    left: 30rem;
+    z-index: -1;
+
+    img {
+        margin: auto;
+    }
+
+    /* transform: translate(-10%, 10%); */
+    /* margin: auto; */
+    /* transform: rotate(-161.309deg) translate(30%, -20%); */
+    /* animation: bounce 5s ease-in-out infinite; */
+}
+
+.rectangle {
+
+    z-index: 10;
+    width: 401.418px;
+    height: 490.6px;
+    /* flex-shrink: 0; */
+    border-radius: 59px;
+    background: radial-gradient(151.92% 127.02% at 15.32% 21.04%, rgba(165, 239, 255, 0.20) 0%, rgba(110, 191, 244, 0.04) 77.08%, rgba(70, 144, 212, 0.00) 100%);
+
+    backdrop-filter: blur(40px);
+}
+
+.close {
+    width: 1280px;
+    position: relative;
+    margin: auto;
+}
+
+@keyframes left {
+
+    100% {
+        /* top: 20rem;
+        left: 30rem; */
+        transform: translateX(-40%);
+    }
+}
+
+
+
+
+@media (max-width: 1280px) {
+    .close {
+        /* width: 100vw;
+      height: 100vh; */
+        width: auto;
+        position: relative;
+        margin: auto;
+    }
+
+    .imageBall {
+        position: absolute;
+        animation: left 1s ease-in-out 0.5s;
+        animation-fill-mode: forwards;
+        z-index: -1;
+
+    }
+}
