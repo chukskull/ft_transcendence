@@ -1,5 +1,7 @@
+"use client";
 import NavBar from "../../../components/Navbar";
 import Image from "next/image";
+import { Button } from "@nextui-org/react";
 
 export default function Login() {
   return (
@@ -11,42 +13,13 @@ export default function Login() {
         </div>
       </div>
       <div className="flex items-center justify-center w-full h-full">
-        <div className="rectangle"></div>
+        <div className="rectangle flex flex-col items-center">
+          <h1 className="text-red-800 text-lg"> Ur mum wlah</h1>
+          <Button radius="full" className="bg-red-800 shadow-lg">
+            Button am here
+          </Button>
+        </div>
       </div>
     </main>
   );
 }
-
-// <div className="Login-wrapper z-10">
-//   <div className="Login-wrapper-header">
-//     <h1 className="Login-title">Login</h1>
-//     <p className="Login-subtitle">Enter your email and password</p>
-//   </div>
-//   <form className="Login-form">
-//     <div className="Login-form-group">
-//       <label htmlFor="email" className="Login-label">
-//         Email
-//       </label>
-//       <input
-//         type="text"
-//         className="Login-input"
-//         id="email"
-//         placeholder="Enter your email"
-//       />
-//     </div>
-//     <div className="Login-form-group">
-//       <label htmlFor="password" className="Login-label">
-//         Password
-//       </label>
-//       <input
-//         type="password"
-//         className="Login-input"
-//         id="password"
-//         placeholder="Enter your password"
-//       />
-//     </div>
-//     <div className="Login-form-group">
-//       <button className="Login-button">Login</button>
-//     </div>
-//   </form>
-// </div>
