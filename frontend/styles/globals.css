@@ -9,10 +9,10 @@
 @import "tailwindcss/utilities";
 
 @import url("./fonts.css");
-@import url("./styles/header/_header.css");
-@import url("./styles/Hero/_hero.css");
-@import url("./styles/Footer/_footer.css");
-@import url("./styles/Login/Login.css");
+@import url("./main/header/_header.css");
+@import url("./main/Hero/_hero.css");
+@import url("./main/Footer/_footer.css");
+@import url("./Login/Login.css");
 
 
 :root {
@@ -32,10 +32,17 @@
   z-index: 1;
   margin: 0;
   padding: 0;
+  background: none;
+}
+
+html {
+  height: 100%;
+  /* background: var(--color-background); */
+  /* background-color: var(--color-background); */
 }
 
 body {
   background: var(--color-background);
+  height: 100%;
+  width: 100%;
 }
-
-

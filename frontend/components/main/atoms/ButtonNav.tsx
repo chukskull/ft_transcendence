@@ -9,10 +9,10 @@ export const ButtonNav = () => {
   const handleHover = () => {
     setIsHovered(!isHovered);
   };
-  const router = useRouter();
-  const handleClick = () => {
-    router.push("/login");
-  };
+  // const router = useRouter();
+  // const handleClick = () => {
+  //   router.push("/login");
+  // };
 
   return (
     <>
@@ -23,7 +23,7 @@ export const ButtonNav = () => {
       py-[14px] px-[16px] text-sm font-medium text-gray-500 transition group 
       ${isHovered ? "text-white" : ""}
       `}
-        onClick={handleClick}
+        // onClick={handleClick}
         onMouseEnter={handleHover}
         onMouseLeave={handleHover}
       >

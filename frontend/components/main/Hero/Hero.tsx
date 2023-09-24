@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
@@ -16,7 +17,7 @@ export const Hero = () => {
           width={1300}
           height={796.884}
           className="-z-[-10]"
-          src={"/assets/fontshapes.svg"}
+          src={"/assets/main/Hero/fontshapes.svg"}
           alt={"background shapes"}
         />
         <div className=" flex flex-col gap-y-12 text-bc bg-none absolute top-[0%] xl:right-[50%] 2xl:right-[50%] my-[11.25rem]  p-[1.25rem]">
@@ -34,7 +35,7 @@ export const Hero = () => {
           <Button
             onClick={handleClick}
             className=" w-[165px] h-[45px] gradient-button 
-          via-transparent via-transparent text-white shadow-lg rounded-2xl"
+           text-white shadow-lg rounded-2xl"
           >
             Join Now
           </Button>
