@@ -1,6 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
-import ButtonNav from "./Button-nav";
+import ButtonNav from "@/components/main/atoms/ButtonNav";
 
 // import CustomButton from "./CustomButton";
 
@@ -13,7 +12,7 @@ const NavBar = ({ boolBut }: NavBarProps) => (
       <a href="#" className="Header-Logo">
         <div>
           <Image
-            src="/assets/Vector.svg"
+            src="/assets/main/Navbar/Vector.svg"
             alt="temp-logo"
             width={57}
             height={45}

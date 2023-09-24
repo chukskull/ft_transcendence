@@ -1,12 +1,9 @@
-import "./globals.css";
-
-import type { Metadata } from "next";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "PingPongWebsite",
   description: "42 project",
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -14,7 +11,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="h-screen w-screen">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

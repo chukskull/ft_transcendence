@@ -1,6 +1,6 @@
 import React from "react";
 
-import CardComponent from "./CardComponent";
+import CardComponent from "@/components/main/Footer/CardComponent";
 
 export const Footer = () => {
   return (
@@ -26,21 +26,21 @@ const StudentsInfos = [
   {
     name: "Achref Maghous",
     title: "Full Stack Developer",
-    img: "/assets/temp.jpg",
+    img: "/assets/main/Footer/temp.jpg",
     parag:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
   },
   {
     name: "Saleh Nagat",
     title: "Full Stack Developer",
-    img: "/assets/temp.jpg",
+    img: "/assets/main/Footer/temp.jpg",
     parag:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  ",
   },
   {
     name: "Ahmed El Mountassir",
     title: "Full Stack Developer",
-    img: "/assets/temp.jpg",
+    img: "/assets/main/Footer/temp.jpg",
     parag:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. ",
   },
