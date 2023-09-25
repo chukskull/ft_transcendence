@@ -1,7 +1,7 @@
-import style from "../../styles/Chat/chat.module.scss";
+import style from "@/styles/Chat/chat.module.scss";
 import Image from "next/image";
 import TopLeftNav from "@/components/global/TopLeftNav";
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 
 const dmList = [
   {
@@ -131,8 +131,7 @@ const DmSection = () => {
 
 export default function Chat() {
   return (
-    <main>
-      <TopLeftNav />
+    <>
       <div className={style["chat-container"]}>
         <div className={style["menu-sections"]}>
           <ChannelsSection />
@@ -140,6 +139,6 @@ export default function Chat() {
         </div>
         <div className={style["chat-content"]}></div>
       </div>
-    </main>
+    </>
   );
 }
