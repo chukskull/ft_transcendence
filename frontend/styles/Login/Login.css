@@ -1,4 +1,26 @@
+@keyframes bounce {
+    0% {
+        transform: translateY(-10px);
+    }
+
+    50% {
+        transform: translateY(10px);
+    }
+
+    100% {
+        transform: translateY(-10px);
+
+    }
+}
+
+@keyframes left {
+    100% {
+        transform: translateX(-40px);
+    }
+}
+
 .imageBall {
+    animation: bounce 5s ease-in-out infinite;
     position: absolute;
     top: 20rem;
     left: 30rem;
@@ -24,11 +46,7 @@
     margin: auto;
 }
 
-@keyframes left {
-    100% {
-        transform: translateX(-40%);
-    }
-}
+
 
 @media (max-width: 1280px) {
     .close {
@@ -37,12 +55,7 @@
         margin: auto;
     }
 
-    .imageBall {
-        position: absolute;
-        animation: left 1s ease-in-out 0.5s;
-        animation-fill-mode: forwards;
-        z-index: -1;
-    }
+
 }
 
 @media (max-width: 640px) {
@@ -63,8 +76,19 @@
 
     .imageBall {
         position: absolute;
+        animation: bounce 5s ease-in-out infinite;
         top: 20rem;
         left: 0rem;
         z-index: -1;
     }
+
+    .imageBall::before {
+        content: "";
+        position: absolute;
+        animation: left 5s ease-in-out forwards;
+        top: 20rem;
+        left: 0rem;
+        z-index: -1;
+    }
+
 }

@@ -29,22 +29,16 @@
 
 
 * {
-  /* background: var(--color-background); */
-  /* background-color: var(--color-background); */
+
   z-index: 1;
   margin: 0;
   padding: 0;
   background: none;
 }
 
-html {
-  height: 100%;
-  /* background: var(--color-background); */
-  /* background-color: var(--color-background); */
-}
-
-body {
-  background: var(--color-background);
+html, body {
+  overflow: auto;
   height: 100%;
   width: 100%;
+  background: var(--color-background);
 }

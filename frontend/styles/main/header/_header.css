@@ -23,7 +23,7 @@
 .wrapper {
     width: var(--wrapper-width);
     /* background: var(--color-background); */
-    max-width: 100%;
+    /* max-width: 100%; */
     margin: auto;
     padding-top: 2rem;
     /* border-bottom: 1px solid transparent; */
@@ -33,11 +33,13 @@
 .wrapper-header {
 
     position: fixed;
+    width: 99%;
     z-index: 1337;
     border-radius: 0 0 1.5rem 1.5rem;
     top: 0;
     left: 0;
     right: 0;
+    /* width: 100%; */
     /* width: 100%;
     height: max-content; */
     display: flex;
