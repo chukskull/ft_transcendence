@@ -50,8 +50,12 @@
                     font-size: 19px;
                     font-style: normal;
                     font-weight: 500;
-                    line-height: 134.5%; 
+                    line-height: 134.5%;
                     margin-top: 10px;
+                    cursor: pointer;
+                    &:hover {
+                        transform: scale(1s1);
+                    }
                 }
             }
         }
@@ -121,5 +125,8 @@
                 }
             }
         }
+    }
+    .chat-box {
+        display: flex;
     }
 }

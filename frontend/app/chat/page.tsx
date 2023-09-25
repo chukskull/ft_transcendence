@@ -138,7 +138,9 @@ export default function Chat() {
           <ChannelsSection />
           <DmSection />
         </div>
-        <div className={style["chat-content"]}></div>
+        <div className={style["chat-box"]}>
+          <div className={style["chat-header"]}></div>
+        </div>
       </div>
     </main>
   );
