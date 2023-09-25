@@ -1,5 +1,6 @@
 "use client";
-import "@/styles/globals.css";
+
+import "@/styles/globals.scss";
 import { Button, NextUIProvider } from "@nextui-org/react";
 
 export default function Login() {
@@ -12,11 +13,7 @@ export default function Login() {
           </div>
         </div>
         <div className="h-full w-full flex items-center justify-center">
-          <div className="rectangle flex flex-col items-center justify">
-            <Button radius="full" className="bg-red-200 shadow-lg">
-              Button am here
-            </Button>
-          </div>
+          <div className="rectangle flex flex-col items-center justify"></div>
         </div>
       </main>
     </NextUIProvider>

@@ -2,9 +2,5 @@ import TopLeftNav from "@/components/global/TopLeftNav"; // Check if this import
 
 // Define your Home component
 export default function Home() {
-  return (
-    <main>
-      <TopLeftNav />
-    </main>
-  );
+  return <section></section>;
 }

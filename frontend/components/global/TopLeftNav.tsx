@@ -1,4 +1,5 @@
-import style from "../../styles/components/TopLeftNav.module.scss";
+import style from "@/styles/components/TopLeftNav.module.scss";
+import "@/styles/globals.scss";
 import Image from "next/image";
 export default function TopLeftNav() {
   return (

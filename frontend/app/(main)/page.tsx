@@ -3,7 +3,7 @@
 import NavBar from "@/components/main/Navbar/Navbar";
 import React from "react";
 import { NextUIProvider } from "@nextui-org/react";
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 import Hero from "@/components/main/Hero/Hero";
 import Footer from "@/components/main/Footer/Footer";
 import RootLayout from "../layout";
