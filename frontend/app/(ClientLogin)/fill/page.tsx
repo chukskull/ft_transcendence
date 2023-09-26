@@ -6,7 +6,7 @@ import "@/styles/globals.scss";
 
 
 const styles = {
-  label: "text-gray-400 dark:text-white/90 font-bold text-sm mb-2 pl-2",
+  label: "text-gray-400 dark:text-white/90 font-bold text-sm mb-1 pl-2",
   input: [
     "bg-transparent",
     "text-white dark:text-white/90",
