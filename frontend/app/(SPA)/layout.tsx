@@ -12,10 +12,8 @@ export default function RootLayout({
 }) {
   return (
     <main>
-      <section className="h-screen w-screen">
         <TopLeftNav />
         {children}
-      </section>
     </main>
   );
 }
