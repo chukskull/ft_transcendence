@@ -1,7 +1,27 @@
-import style from "@/styles/Chat/chat.module.scss";
+import style from "@/styles/chat.module.scss";
 import Image from "next/image";
 import TopLeftNav from "@/components/global/TopLeftNav";
 import "@/styles/globals.scss";
+import { FiLogOut } from "react-icons/fi";
+interface DMboxProps {
+  name: string;
+  online: boolean;
+  lastMsg: string;
+  lastMsgTime: string;
+  avatar: string;
+}
+
+interface avatarBubbleProps {
+  avatar: string;
+  online: boolean;
+}
+
+interface chatHeaderProps {
+  avatar: string;
+  name: string;
+  group: boolean;
+  online: boolean;
+}
 
 const dmList = [
   {
@@ -27,19 +47,25 @@ const dmList = [
   },
 ];
 
-const DmBlock = ({ dm }: { dm: any }) => {
+const AvatarBubble = (avatarBubbleProps: avatarBubbleProps) => {
+  return (
+    <div className={style["avatar-bubble"]}>
+      <Image
+        src={avatarBubbleProps.avatar}
+        alt="avatar"
+        width={0}
+        height={0}
+        className={style["avatar"]}
+      />
+      {avatarBubbleProps.online && <div className={style["online"]}></div>}
+    </div>
+  );
+};
+
+const DMbox = ({ dm }: { dm: DMboxProps }) => {
   return (
     <div className={style["dm-item"]} key={dm.name}>
-      <div className={style["dm-avatar"]}>
-        <Image
-          src={dm.avatar}
-          alt="avatar"
-          width={0}
-          height={0}
-          className={style["avatar"]}
-        />
-        {dm.online && <div className={style["online"]}></div>}
-      </div>
+      <AvatarBubble avatar={dm.avatar} online={dm.online} />
       <div className={style["dm-info"]}>
         <div className={style["dm-name"]}>{dm.name}</div>
         <div className={style["dm-last-msg"]}>{dm.lastMsg}</div>
@@ -122,9 +148,30 @@ const DmSection = () => {
       </div>
       <div className={style["dm-list"]}>
         {dmList.map((dm) => (
-          <DmBlock dm={dm} key={dm.name} />
+          <DMbox dm={dm} key={dm.name} />
         ))}
       </div>
+    </div>
+  );
+};
+
+const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
+  return (
+    <div className={style["chat-header"]}>
+      <div className={style["chat-user-group"]}>
+        {!chatHeaderProps.group && (
+          <AvatarBubble avatar="/assets/components/Profile.svg" online />
+        )}
+        <div className={style["name"]}>{chatHeaderProps.name}</div>
+        <Image
+          src="/assets/components/ArrowDown.svg"
+          alt="arrow"
+          width={12}
+          height={8}
+          className={style["arrow-down"]}
+        />
+      </div>
+      {chatHeaderProps.group && <FiLogOut className={style["leave-group"]} />}
     </div>
   );
 };
@@ -137,7 +184,9 @@ export default function Chat() {
           <ChannelsSection />
           <DmSection />
         </div>
-        <div className={style["chat-content"]}></div>
+        <div className={style["chat-box"]}>
+          <ChatHeader group={true} name="#lacastiekho" online avatar="" />
+        </div>
       </div>
     </>
   );
