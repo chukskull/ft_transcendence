@@ -65,7 +65,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-7">
+      <div className="flex flex-col justify-center items-center gap-7 mb-4">
         <h1 className="text-white font-bold text-2xl text-center">
           {" "}
           SELECT GAME:
@@ -79,9 +79,9 @@ export default function Home() {
           </Checkbox>
         </div>
         <Button
+          className="bg-live text-white font-semibold text-base max-w-[239px]"
           data-hover
           data-focus
-          className="bg-live text-white font-semibold text-base max-w-[239px]"
         >
           JOIN MATCHMAKING
         </Button>
