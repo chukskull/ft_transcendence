@@ -13,7 +13,8 @@ const config: Config = {
   theme: {
     extend: {
        colors: {
-        live: "#F417C4", // Define your custom color here
+        live: "#F417C4",
+        friend: "#2C1A34", // Define your custom color here
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

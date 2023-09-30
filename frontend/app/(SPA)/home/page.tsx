@@ -1,19 +1,21 @@
-import { LiveGameRec } from "@/components/SPA/LiveGameRec";
+"use client";
+import { LiveGameRec } from "@/components/SPA/home/LiveGameRec";
+import { MiniProf } from "@/components/SPA/home/MiniProf";
 
 // Define your Home component
 export default function Home() {
   return (
     <div className="m-10">
-      <div className="flex flex-row items-center justify-around mt-20 flex-grow gap-16 p-20">
-        <div className="flex flex-col justify-center border-1 border-white flex-grow rounded-3xl max-w-xl lg:max-w-5xl ml-40">
+      <div className="flex flex-row  justify-around mt-20 flex-grow gap-16 p-20 max-md:flex-col max-sm:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10">
+        <div className="flex flex-col justify-center border-1 border-white flex-grow rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
           <div className="relative">
-            <div className="absolute w-3 h-3 rounded-full bg-red-500 top-2/4 left-11"></div>
-            <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6">
+            <div className="absolute w-3 h-3 rounded-full bg-red-500 top-2/4 left-11 max-sm:hidden"></div>
+            <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
               Live Games
             </h1>
           </div>
 
-          <div className="flex flex-col justify-center flex-grow px-12 gap-6 m-6">
+          <div className="flex flex-col justify-center flex-grow px-12 gap-6 m-6 max-sm:px-6 max-sm:gap-3 max-sm:m-3">
             {fakeData.length > 0 ? (
               fakeData.map((game, index) => (
                 <LiveGameRec
@@ -33,17 +35,103 @@ export default function Home() {
             )}
           </div>
         </div>
-        <div className="flex flex-col items-center border-2 flex-grow rounded-3xl max-w-xl lg:max-w-5xl">
+        <div className="flex flex-col  border-2 flex-grow rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-fit">
           <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6">
             Invite Friends
           </h1>
-          <div className="flex flex-row "></div>
+          <div className="flex flex-row  flex-wrap gap-12 px-20 py-10">
+            {Friends.length > 0 ? (
+              Friends.map((friend, index) => (
+                <MiniProf key={index} image={friend.imaeg} name={friend.name} />
+              ))
+            ) : (
+              <div className="flex flex-col justify-center flex-grow ">
+                <h1 className="text-gray-400 text-4xl font-semibold ">
+                  No Friends
+                </h1>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
+const Friends = [
+  {
+    imaeg: "https://i.pravatar.cc/300?img=1",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=2",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=3",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=4",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=5",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=6",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=7",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=8",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=9",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=10",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=11",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=12",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=13",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=14",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=15",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=16",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=17",
+    name: "John Doe",
+  },
+  {
+    imaeg: "https://i.pravatar.cc/300?img=18",
+    name: "John Doe",
+  },
+];
 const fakeData = [
   {
     imageLeft: "https://i.pravatar.cc/300?img=1",
