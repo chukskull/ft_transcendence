@@ -16,7 +16,7 @@ letter-spacing: -0.3px;
 text-transform: uppercase;*/
 export default function Home() {
   return (
-    <div className="m-10">
+    <div className="flex flex-col justify-center">
       <div className="flex flex-row max-sm:items-center  mt-20 flex-grow gap-16 p-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10">
         <div className="flex flex-col justify-center border-1 border-white flex-grow rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
           <div className="relative">
@@ -47,10 +47,10 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-col  border-2 flex-grow rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-fit">
-          <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6">
+          <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
             Invite Friends
           </h1>
-          <div className="flex flex-row  flex-wrap gap-12 px-20 py-10">
+          <div className="flex flex-row  flex-wrap gap-12 px-20 py-10 max-sm:gap-6 max-sm:px-10 max-sm:py-5">
             {Friends.length > 0 ? (
               Friends.map((friend, index) => (
                 <MiniProf key={index} image={friend.imaeg} name={friend.name} />
@@ -66,7 +66,10 @@ export default function Home() {
         </div>
       </div>
       <div className="flex flex-col justify-center items-center gap-7">
-        <h1 className="text-white font-bold text-2xl"> SELECT GAME:</h1>
+        <h1 className="text-white font-bold text-2xl text-center">
+          {" "}
+          SELECT GAME:
+        </h1>
         <div className="flex flex-row justify-center items-center">
           <Checkbox defaultSelected data-hover data-focus className="ml-6">
             <span className="text-white">Normal game</span>
