@@ -1,8 +1,19 @@
 "use client";
 import { LiveGameRec } from "@/components/SPA/home/LiveGameRec";
 import { MiniProf } from "@/components/SPA/home/MiniProf";
+import { Button, Checkbox } from "@nextui-org/react";
 
 // Define your Home component
+
+/*
+color: #FFF;
+font-family: Clash Grotesk;
+font-size: 15px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+letter-spacing: -0.3px;
+text-transform: uppercase;*/
 export default function Home() {
   return (
     <div className="m-10">
@@ -53,6 +64,24 @@ export default function Home() {
             )}
           </div>
         </div>
+      </div>
+      <div className="flex flex-col justify-center items-center gap-7">
+        <h1 className="text-white font-bold text-2xl"> SELECT GAME:</h1>
+        <div className="flex flex-row justify-center items-center">
+          <Checkbox defaultSelected data-hover data-focus className="ml-6">
+            <span className="text-white">Normal game</span>
+          </Checkbox>
+          <Checkbox defaultSelected data-hover data-focus className="ml-6">
+            <span className="text-white">Ranked game</span>
+          </Checkbox>
+        </div>
+        <Button
+          data-hover
+          data-focus
+          className="bg-live text-white font-semibold text-base max-w-[239px]"
+        >
+          JOIN MATCHMAKING
+        </Button>
       </div>
     </div>
   );
