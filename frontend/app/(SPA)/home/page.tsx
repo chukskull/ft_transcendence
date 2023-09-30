@@ -6,7 +6,7 @@ import { MiniProf } from "@/components/SPA/home/MiniProf";
 export default function Home() {
   return (
     <div className="m-10">
-      <div className="flex flex-row  justify-around mt-20 flex-grow gap-16 p-20 max-md:flex-col max-sm:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10">
+      <div className="flex flex-row max-sm:items-center  mt-20 flex-grow gap-16 p-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10">
         <div className="flex flex-col justify-center border-1 border-white flex-grow rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
           <div className="relative">
             <div className="absolute w-3 h-3 rounded-full bg-red-500 top-2/4 left-11 max-sm:hidden"></div>
