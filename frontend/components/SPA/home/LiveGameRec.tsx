@@ -1,5 +1,5 @@
 "use client";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Button } from "@nextui-org/react";
 import React from "react";
 
 interface LiveGameRecProps {
@@ -23,12 +23,12 @@ export const LiveGameRec = ({
           {scoreLeft} - {scoreRight}
         </h1>
         <h1 className="text-white font-extrabold text-lg"> VS </h1>
-        <div className="flex justify-center px-1 bg-live rounded">
-          <h1 className="text-white font-semibold text-center text-base">
-            {" "}
-            Watch{" "}
-          </h1>
-        </div>
+        <Button
+          className="text-white font-semibold text-center text-base bg-live rounded w-auto h-auto transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
+          radius="md"
+        >
+          Watch
+        </Button>
       </div>
       <Avatar isBordered color="success" src={RightProf} />
     </div>

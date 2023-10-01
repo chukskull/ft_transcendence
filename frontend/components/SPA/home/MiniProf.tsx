@@ -16,7 +16,7 @@ export const MiniProf = ({ image, name }: MiniProfProps) => {
         <h1 className="max-w-[8ch] text-white text-base font-semibold">
           {name}{" "}
         </h1>
-        <Button className="bg-live max-w-6xl h-5 text-white font-medium text-sm rounded-md">
+        <Button className="bg-live max-w-6xl h-5 text-white font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80">
           {" "}
           Invite{" "}
         </Button>

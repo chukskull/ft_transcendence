@@ -68,7 +68,7 @@ export default function Home() {
           </Checkbox>
         </div>
         <Button
-          className="bg-live text-white font-semibold text-base max-w-[239px]"
+          className="bg-live text-white font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
           data-hover
           data-focus
         >
