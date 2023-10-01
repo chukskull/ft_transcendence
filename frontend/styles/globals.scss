@@ -10,6 +10,7 @@
 @import url("./main/Footer/_footer.css");
 @import url("./Login.css");
 @import "components/TopLeftNav.module";
+@import "SPA/Profile/profile.scss";
 
 :root {
   --wrapper-width: 1280px;
