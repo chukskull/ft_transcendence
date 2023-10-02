@@ -1,5 +1,6 @@
-import type { Config } from "tailwindcss";
-const { nextui } = require("@nextui-org/react");
+import { Config } from "tailwindcss";
+import { nextui } from "@nextui-org/react";
+
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,17 +13,24 @@ const config: Config = {
   ],
   theme: {
     extend: {
-       colors: {
+      colors: {
         live: "#F417C4",
         friend: "#2C1A34", // Define your custom color here
+        customPink: "#F417C4",
+        customPurple: "#270245",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      gradientColors: {
+        customGradient: "94deg, customPink -8.65%, customPurple 146.68%",
+      },
     },
   },
+  variants: {},
   plugins: [nextui()],
 };
+
 export default config;
