@@ -13,7 +13,12 @@
         margin: 0;
         grid-row: 2 / span 3;
         background: rgba(255, 255, 255, 0.10);
+        display: flex;
         
+        justify-content: center;
+        
+        gap: 12rem;
+
         border-radius: 16px;
         .hex {
             display: block;
