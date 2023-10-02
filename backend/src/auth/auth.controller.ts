@@ -1,10 +1,18 @@
-import { Controller, Get, Req, Res} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Public } from './decorators/public.decorator'
+import { FortyTwoGuard } from './guards/fortytwo.guard';
+import { Response} from 'express';
 
-
-@Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) { }
-  
+  @Controller('auth')
+  export class AuthController {
+    constructor(
+      private readonly authService: AuthService,
+    ) { }
+    
+    @UseGuards(FortyTwoGuard)
+    @Get('42login')
+    async login42(@Req() req, @Res({ passthrough: true }) res: Response) {
+      return await this.authService.login42(req, res)
+    }
+    
 }

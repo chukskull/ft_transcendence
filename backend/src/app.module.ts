@@ -5,9 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config'
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [AuthModule, ConfigModule.forRoot({
+  imports: [AuthModule, HttpModule, ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '../.env'
   }), UsersModule, TypeOrmModule.forRoot({
