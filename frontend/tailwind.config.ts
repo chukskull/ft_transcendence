@@ -1,41 +1,36 @@
-import type { Config } from "tailwindcss";
+import { Config } from "tailwindcss";
+import { nextui } from "@nextui-org/react";
 
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./*",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "/goinfre/snagat/testing/sure/frontend/app/(ClientLogin)/fill/page.tsx",
+    "./node_modules/@nextui-org/theme/dist/components/(button|snippet|code|input).js",
+    "./node_modules/@nextui-org/theme/dist/components/input.js",
   ],
   theme: {
-    screens: {
-      sm: { min: "640px", max: "767px" },
-      // => @media (min-width: 640px and max-width: 767px) { ... }
-
-      md: { min: "768px", max: "1023px" },
-      // => @media (min-width: 768px and max-width: 1023px) { ... }
-
-      lg: { min: "1024px", max: "1279px" },
-      // => @media (min-width: 1024px and max-width: 1279px) { ... }
-
-      xl: { min: "1280px", max: "1535px" },
-      // => @media (min-width: 1280px and max-width: 1535px) { ... }
-
-      "2xl": { min: "1536px" },
-      // => @media (min-width: 1536px) { ... }
-    },
     extend: {
       colors: {
-        "color-button": "var(--color-button)",
+        live: "#F417C4",
+        friend: "#2C1A34", // Define your custom color here
+        customPink: "#F417C4",
+        customPurple: "#270245",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      gradientColors: {
+        customGradient: "94deg, customPink -8.65%, customPurple 146.68%",
+      },
     },
   },
-  plugins: [],
+  variants: {},
+  plugins: [nextui()],
 };
+
 export default config;
