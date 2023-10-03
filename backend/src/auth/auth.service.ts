@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt'
 import axios from 'axios'
 import { UsersService } from 'src/users/users.service'
 import { Response } from 'express'
-import { User } from 'src/auth/entities/user.entity'
+import { User } from 'src/entities/user.entity'
 
 @Injectable()
 export class AuthService {
@@ -20,13 +20,13 @@ export class AuthService {
 		const userData = await this.usersService.findOne(client['id'])
 
 		if (!userData)
-			return res.redirect('http://localhost:3000/register')
+			return res.redirect('http://localhost:1337/register')
 		else
 			await this.usersService.setOnline(client['id'])
 		if (!userData.authenticated == true)
-			return res.redirect('http://localhost:3000/twoFactor')
+			return res.redirect('http://localhost:1337/twoFactor')
 		else
-			return res.redirect('http://localhost:3000/profile')
+			return res.redirect('http://localhost:1337/profile')
 	}
 }
 

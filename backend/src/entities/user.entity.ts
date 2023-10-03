@@ -37,7 +37,4 @@ export class User {
 
 	@Column()
 	isAdmin: string
-
-	@Column()
-	campusId: number
 }
