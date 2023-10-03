@@ -10,12 +10,13 @@ export const Bar = ({ value }: BarProps) => {
   return (
     <div className="">
       <Progress
-        size="md"
+        className="h-4"
+        size="lg"
+        radius="sm"
         value={value}
         classNames={{
           base: "",
-          indicator:
-            "bg-gradient-to-r from-fuchsia-900 via-pink-800 to-fuchsia-950",
+          indicator: "bg-gradient-to-r from-live  to-customPurple to-95%",
         }}
       />
     </div>
