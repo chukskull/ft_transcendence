@@ -1,6 +1,6 @@
 "use client";
-import { LiveGameRec } from "@/components/SPA/home/LiveGameRec";
-import { MiniProf } from "@/components/SPA/home/MiniProf";
+import { LiveGameRec } from "@/components/SPA/home/molecules/LiveGameRec";
+import { MiniProf } from "@/components/SPA/home/molecules/MiniProf";
 import { Button, Checkbox } from "@nextui-org/react";
 
 export default function Home() {

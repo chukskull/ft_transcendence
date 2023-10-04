@@ -1,11 +1,13 @@
 "use client";
 import Circle from "@/components/SPA/Profile/atoms/Circle";
-import LeftProfile from "@/components/SPA/Profile/sections/LeftProfile";
-import { ProgressBar } from "@/components/SPA/Profile/sections/ProgressBar";
-import Stats from "@/components/SPA/Profile/sections/Stats";
-import { Progress as Progress1 } from "@nextui-org/react";
-import { Progress as Progress2 } from "antd";
-import React from "react";
+import { InFosPlayer } from "@/components/SPA/Profile/atoms/InFosPlayer";
+
+import LeftProfile from "@/components/SPA/Profile/molecules/LeftProfile";
+import { ProgressBar } from "@/components/SPA/Profile/molecules/ProgressBar";
+import Stats from "@/components/SPA/Profile/molecules/Stats";
+import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
+import React, { useState } from "react";
+import { act } from "react-dom/test-utils";
 import { FaUser } from "react-icons/fa";
 const Saleh: string = "Saleh Nagat";
 interface ProfileProps {
@@ -19,6 +21,13 @@ export default function Profile({ name, image, nickName, lvl }: ProfileProps) {
   nickName = "hamza_lkr";
   image = "https://i.pravatar.cc/300?img=1";
   lvl = 69;
+  const names = ["Friends", "Match History", "Channels"];
+  const [active, setActive] = useState(0);
+
+  function handleActive(index: number) {
+    setActive(index);
+  }
+
   return (
     <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
@@ -34,7 +43,21 @@ export default function Profile({ name, image, nickName, lvl }: ProfileProps) {
       </div>
       <div className="item-2">
         <div className="C-1"></div>
-        <div className="C-2"></div>
+
+        <div className="C-2 " style={{ overflow: "auto" }}>
+          <div className="flex item-center justify-evenly">
+            {names.map((name, index) => (
+              <InFosPlayer
+                key={index}
+                whenClick={() => handleActive(index)}
+                text={name}
+                active={active === index}
+              />
+            ))}
+          </div>
+
+          <MiddleComponent index={active} />
+        </div>
         <div className="C-3"></div>
       </div>
     </div>
