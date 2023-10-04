@@ -44,6 +44,32 @@ const dmList = [
     lastMsg: "Hey, how are you?",
     lastMsgTime: "12:00 PM",
     avatar: "/assets/components/Profile.svg",
+  }, {
+    name: "John Doe",
+    online: false,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "11:00 AM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "12:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  }, {
+    name: "John Doe",
+    online: false,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "11:00 AM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "12:00 PM",
+    avatar: "/assets/components/Profile.svg",
   },
 ];
 
