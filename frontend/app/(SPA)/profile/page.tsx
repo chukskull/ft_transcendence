@@ -3,6 +3,7 @@ import Circle from "@/components/SPA/Profile/atoms/Circle";
 import { InFosPlayer } from "@/components/SPA/Profile/atoms/InFosPlayer";
 
 import LeftProfile from "@/components/SPA/Profile/molecules/LeftProfile";
+import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { ProgressBar } from "@/components/SPA/Profile/molecules/ProgressBar";
 import Stats from "@/components/SPA/Profile/molecules/Stats";
 import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
@@ -41,8 +42,31 @@ export default function Profile({ name, image, nickName, lvl }: ProfileProps) {
         <ProgressBar lvl={lvl} exp={1333} maxExp={12798} />
         <Stats perc={69} money={6969} matches={420} />
       </div>
+
       <div className="item-2">
-        <div className="C-1"></div>
+        <div className="C-1" style={{ overflow: "auto" }}>
+          <div className="flex items-center justify-center">
+            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2">
+              Leaderboard
+            </h1>
+          </div>
+          <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
+            {user.map((user, index) => (
+              <div
+                key={index}
+                className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
+              >
+                <ProfileComp
+                  // key={index}
+                  img={user.img}
+                  nickName={user.nickName}
+                  firstName={user.firstName}
+                  lastName={user.lastName}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="C-2 " style={{ overflow: "auto" }}>
           <div className="flex item-center justify-evenly">
@@ -58,8 +82,71 @@ export default function Profile({ name, image, nickName, lvl }: ProfileProps) {
 
           <MiddleComponent index={active} />
         </div>
-        <div className="C-3"></div>
+        <div className="C-3">
+          <div className="flex items-center justify-center">
+            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2">
+              Archivements
+            </h1>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
+const user = [
+  {
+    img: "https://i.pravatar.cc/300?img=1",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=2",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=3",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=4",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=5",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=6",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=7",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=8",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+  {
+    img: "https://i.pravatar.cc/300?img=9",
+    nickName: "hamza_lkr",
+    firstName: "Saleh",
+    lastName: "Nagat",
+  },
+];

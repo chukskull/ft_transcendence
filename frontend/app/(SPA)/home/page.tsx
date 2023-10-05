@@ -24,6 +24,7 @@ export default function Home() {
                   RightProf={game.imageRight}
                   scoreLeft={game.scoreLeft}
                   scoreRight={game.scoreRight}
+                  boolBut={true}
                 />
               ))
             ) : (

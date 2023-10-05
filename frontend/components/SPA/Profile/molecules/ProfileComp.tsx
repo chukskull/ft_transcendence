@@ -6,7 +6,7 @@ interface ProfileCompProps {
   img: string;
   nickName: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
 }
 
 const ProfileComp = ({

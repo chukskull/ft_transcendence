@@ -9,35 +9,45 @@ interface MiddleComponentProps {
 export const MiddleComponent = ({ index }: MiddleComponentProps) => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
-      {index === 0 ? (
-        user.map((user, index) => (
-          <div
-            key={index}
-            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
-          >
-            <ProfileComp
-              // key={index}
-              img={user.img}
-              nickName={user.nickName}
-              firstName={user.firstName}
-              lastName={user.lastName}
+      {index === 0
+        ? user.map((user, index) => (
+            <div
+              key={index}
+              className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
+            >
+              <ProfileComp
+                // key={index}
+                img={user.img}
+                nickName={user.nickName}
+                firstName={user.firstName}
+                lastName={user.lastName}
+              />
+            </div>
+          ))
+        : index === 1
+        ? fakeData.map((data, index) => (
+            <LiveGameRec
+              key={index}
+              LeftProf={data.imageLeft}
+              RightProf={data.imageRight}
+              scoreLeft={data.scoreLeft}
+              scoreRight={data.scoreRight}
+              boolBut={false}
             />
-          </div>
-        ))
-      ) : index === 1 ? (
-        fakeData.map((data, index) => (
-          <LiveGameRec
-            key={index}
-            LeftProf={data.imageLeft}
-            RightProf={data.imageRight}
-            scoreLeft={data.scoreLeft}
-            scoreRight={data.scoreRight}
-            boolBut={false}
-          />
-        ))
-      ) : (
-        <h1>Nothing</h1>
-      )}
+          ))
+        : Channels.map((channel, index) => (
+            <div
+              key={index}
+              className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
+            >
+              <ProfileComp
+                // key={index}
+                img={channel.img}
+                nickName={channel.nickName}
+                firstName={channel.name}
+              />
+            </div>
+          ))}
     </div>
   );
 };
@@ -149,4 +159,31 @@ const fakeData = [
   },
 ];
 
+const Channels = [
+  {
+    img: "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+    nickName: "private",
+    name: "Pedago",
+  },
+  {
+    img: "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+    nickName: "private",
+    name: "Pedago",
+  },
+  {
+    img: "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+    nickName: "private",
+    name: "Pedago",
+  },
+  {
+    img: "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+    nickName: "private",
+    name: "Pedago",
+  },
+  {
+    img: "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+    nickName: "private",
+    name: "Pedago",
+  },
+];
 export default MiddleComponent;
