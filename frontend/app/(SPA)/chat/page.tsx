@@ -1,6 +1,5 @@
-import style from "@/styles/chat.module.scss";
+import style from "@/styles/SPA/chat/chat.module.scss";
 import Image from "next/image";
-import TopLeftNav from "@/components/global/TopLeftNav";
 import "@/styles/globals.scss";
 import { FiLogOut } from "react-icons/fi";
 interface DMboxProps {
@@ -44,7 +43,8 @@ const dmList = [
     lastMsg: "Hey, how are you?",
     lastMsgTime: "12:00 PM",
     avatar: "/assets/components/Profile.svg",
-  }, {
+  },
+  {
     name: "John Doe",
     online: false,
     lastMsg: "Hey, how are you?",
@@ -57,7 +57,8 @@ const dmList = [
     lastMsg: "Hey, how are you?",
     lastMsgTime: "12:00 PM",
     avatar: "/assets/components/Profile.svg",
-  }, {
+  },
+  {
     name: "John Doe",
     online: false,
     lastMsg: "Hey, how are you?",
