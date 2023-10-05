@@ -1,6 +1,6 @@
 import TopLeftNav from "@/components/global/TopLeftNav";
 import { Metadata } from "next";
-
+import "@/styles/globals.scss";
 export const metadata: Metadata = {
   title: "PingPongWebsite",
   description: "42 project",
@@ -11,11 +11,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main>
-      <section className="h-screen w-screen">
-        <TopLeftNav />
-        {children}
-      </section>
+    <main
+      style={{
+        paddingTop: "60px",
+        paddingLeft: "60px",
+        background: "none",
+      }}
+    >
+      <TopLeftNav />
+      {children}
     </main>
   );
 }
