@@ -12,7 +12,11 @@ export default function RootLayout({
 }) {
   return (
     <main
-      style={{ paddingTop: "60px", paddingLeft: "60px", background: "none" }}
+      style={{
+        paddingTop: "60px",
+        paddingLeft: "60px",
+        background: "none",
+      }}
     >
       <TopLeftNav />
       {children}
