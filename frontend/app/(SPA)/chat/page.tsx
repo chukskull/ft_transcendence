@@ -1,8 +1,8 @@
-import style from "@/styles/chat.module.scss";
+import style from "@/styles/SPA/chat/chat.module.scss";
 import Image from "next/image";
-import TopLeftNav from "@/components/global/TopLeftNav";
 import "@/styles/globals.scss";
 import { FiLogOut } from "react-icons/fi";
+import { LiaTelegramPlane } from "react-icons/lia";
 interface DMboxProps {
   name: string;
   online: boolean;
@@ -43,6 +43,73 @@ const dmList = [
     online: true,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "12:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: false,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "11:00 AM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "12:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: false,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "11:00 AM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "12:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  },
+];
+
+const msgsdb = [
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are yerergkjprgopkrgopekr",
+    lastMsgTime: "02:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  },
+
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are yerergkjprgopkrgopekr",
+    lastMsgTime: "02:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: false,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "11:00 AM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: true,
+    lastMsg: "Hey, how are yerergkjprgopkrgopekr",
+    lastMsgTime: "02:00 PM",
+    avatar: "/assets/components/Profile.svg",
+  },
+  {
+    name: "John Doe",
+    online: false,
+    lastMsg: "Hey, how are you?",
+    lastMsgTime: "11:00 AM",
     avatar: "/assets/components/Profile.svg",
   },
 ];
@@ -176,6 +243,22 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   );
 };
 
+const MsgsList = (msgs: any) => {
+  return (
+    <div className={style["msgs-list"]}>
+      {msgs.msgs.map((msg: any) => (
+        <div className={style["msg-item"]} key={msg.name}>
+          <AvatarBubble avatar={msg.avatar} online={msg.online} />
+          <div className={style["msg-info"]}>
+            <div className={style["username"]}>{msg.name}</div>
+            <div className={style["msg-content"]}>{msg.lastMsg}</div>
+          </div>
+          <div className={style["msg-time"]}>{msg.lastMsgTime}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
 export default function Chat() {
   return (
     <>
@@ -184,8 +267,23 @@ export default function Chat() {
           <ChannelsSection />
           <DmSection />
         </div>
-        <div className={style["chat-box"]}>
+        <div className={style["chat-section"]}>
           <ChatHeader group={true} name="#lacastiekho" online avatar="" />
+          <div className={style["chat"]}>
+            <div className={style["msgs"]}>
+              <MsgsList msgs={msgsdb} />
+            </div>
+            <div className={style["msg-input"]}>
+              <input
+                type="text"
+                placeholder="Type your message here..."
+                className={style["input"]}
+              />
+              <button className={style["send-btn"]}>
+                <LiaTelegramPlane />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>
