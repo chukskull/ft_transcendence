@@ -7,6 +7,7 @@ import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { ProgressBar } from "@/components/SPA/Profile/molecules/ProgressBar";
 import Stats from "@/components/SPA/Profile/molecules/Stats";
 import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
+import { SpaceCompactItemContext } from "antd/es/space/Compact";
 import React, { useState } from "react";
 import { act } from "react-dom/test-utils";
 import { FaUser } from "react-icons/fa";
@@ -56,6 +57,9 @@ export default function Profile({ name, image, nickName, lvl }: ProfileProps) {
                 key={index}
                 className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
               >
+                <h1 className="text-center text-white  font-ClashGrotesk-Semibold text-lg flex items-center pr-12">
+                  #{index + 1}
+                </h1>
                 <ProfileComp
                   // key={index}
                   img={user.img}

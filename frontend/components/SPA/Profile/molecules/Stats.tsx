@@ -28,7 +28,7 @@ export const Stats = ({ perc, rank, money, matches }: StatsProps) => {
     <div className="flex   items-center gap-16">
       <div className="flex flex-col items-center  justify-between gap-2">
         <Circle perc={perc} />
-        <h1 className=" text-white font-ClashGrotesk-Medium text-xl">
+        <h1 className=" text-white font-ClashGrotesk-Medium text-xl ">
           {perc}%
         </h1>
         <h1 className=" text-white font-ClashGrotesk-Regular text-lg">

@@ -1,6 +1,6 @@
 "use client";
 
-import Back from "@/components/Login/organics/Back";
+import Back from "@/components/Login/molecules/Back";
 import { NextUIProvider } from "@nextui-org/react";
 
 export default function RootLayout({

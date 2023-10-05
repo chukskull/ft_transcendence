@@ -12,6 +12,9 @@
 @import "components/TopLeftNav.module";
 @import "SPA/Profile/profile.scss";
 
+
+
+
 :root {
   --wrapper-width: 1280px;
   --color-background: linear-gradient(149deg, #15011e 3.4%, #3d0655 315.88%);
@@ -42,14 +45,18 @@ body {
 }
 ::-webkit-scrollbar {
   width: 0.4rem;
+  height: 1.4rem;
 }
+
 ::-webkit-scrollbar-track {
-  background: #1e1e24;
+  background: black
 }
+
 ::-webkit-scrollbar-thumb {
   border-radius: 0.5rem;
-  background: #6649b8;
+  background: #8e49b8;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #6649b8;
 }
