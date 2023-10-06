@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class User {
-	@PrimaryGeneratedColumn()
+	@PrimaryColumn()
 	id: number
 
 	@Column()
@@ -10,6 +10,9 @@ export class User {
 
 	@Column()
 	name: string
+
+	@Column()
+	email: string
 
 	@Column()
 	avatarUrl: string
@@ -20,8 +23,14 @@ export class User {
 	@Column()
 	twoFactorAuthEnabled: boolean
 
+	@Column({ nullable: true })
+	twoFactorSecret: string
+
 	@Column()
 	status: string
+
+	@Column()
+	pendingInvite: boolean
 
 	@Column()
 	friends: string[]

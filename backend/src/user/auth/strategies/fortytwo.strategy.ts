@@ -2,7 +2,6 @@ import { Strategy } from 'passport-42'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, Res } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios';
-import { UsersService } from 'src/users/users.service';
 import { firstValueFrom } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
@@ -10,7 +9,6 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	constructor(
-		private readonly userService: UsersService,
 		private readonly http: HttpService,
 		private readonly jwtService: JwtService
 	) {
