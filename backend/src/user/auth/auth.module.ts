@@ -2,12 +2,23 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
-import { JwtService } from '@nestjs/jwt';
-import { HttpService } from '@nestjs/axios';
+import { UserModule } from '../user.module';
+import { FortyTwoStrategy } from './strategies/fortytwo.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './models/constants';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [PassportModule.register({session: false})],
+  imports: [
+    UserModule,
+    PassportModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1h' }
+    }),
+    HttpModule,
+    ],
   controllers: [AuthController],
-  providers: [AuthService, JwtService, HttpService],
+  providers: [AuthService, FortyTwoStrategy],
 })
 export class AuthModule {}

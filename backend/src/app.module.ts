@@ -3,15 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './user/auth/auth.module';
 import { ConfigModule } from '@nestjs/config'
-import { UsersModule } from './user/user.module';
+import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [AuthModule, HttpModule, ConfigModule.forRoot({
+  imports: [AuthModule, ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '../.env'
-  }), UsersModule, TypeOrmModule.forRoot({
+  }), UserModule, TypeOrmModule.forRoot({
     type: 'postgres',
     host: 'localhost',
     port: 5432,
