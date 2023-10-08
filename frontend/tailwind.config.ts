@@ -27,6 +27,9 @@ const config: Config = {
         friend: "#2C1A34", // Define your custom color here
         customPink: "#F417C4",
         customPurple: "#270245",
+        purpleProfile : "#15011EB3",
+        modalBackground: "#1D0229",
+        buttonbg: "#3E0756",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
