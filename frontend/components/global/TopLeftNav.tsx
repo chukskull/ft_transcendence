@@ -1,7 +1,20 @@
+"use client";
 import style from "@/styles/components/TopLeftNav.module.scss";
 import "@/styles/globals.scss";
 import Image from "next/image";
+
+import { Modal, ModalContent, Button, useDisclosure } from "@nextui-org/react";
+import GlobalModalComp from "./GlobalModalComp";
+import { useState } from "react";
+
 export default function TopLeftNav() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [string, setString] = useState<string>("");
+
+  const handleClick = (comp: string) => {
+    onOpen();
+    setString(comp);
+  };
   return (
     <>
       <div className={style["top-bar"]}>
@@ -61,12 +74,15 @@ export default function TopLeftNav() {
         </div>
         <div className={style["left_bottom_menu"]}>
           <Image
+            onClick={() => handleClick("settings")}
             src="/assets/components/Setting.svg"
             alt="logo"
             width={30}
             height={30}
           />
+
           <Image
+            onClick={() => handleClick("Logout")}
             src="/assets/components/Logout.svg"
             alt="logo"
             width={30}
@@ -74,6 +90,11 @@ export default function TopLeftNav() {
           />
         </div>
       </div>
+      <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
+        <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem]">
+          <GlobalModalComp onClose={onClose} action={string} />
+        </ModalContent>
+      </Modal>
     </>
   );
 }
