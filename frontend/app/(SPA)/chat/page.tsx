@@ -1,8 +1,12 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
+import React from "react";
 import Image from "next/image";
 import "@/styles/globals.scss";
 import { FiLogOut } from "react-icons/fi";
 import { LiaTelegramPlane } from "react-icons/lia";
+import { useState } from "react";
+import CreateChannel from "@/components/SPA/chat/CreateChannel";
+
 interface DMboxProps {
   name: string;
   online: boolean;
@@ -143,6 +147,7 @@ const DMbox = ({ dm }: { dm: DMboxProps }) => {
 };
 
 const ChannelsSection = () => {
+  const [addChModal, setAddChModal] = useState<boolean>(false);
   const channelList = [
     {
       name: "#General",
@@ -182,7 +187,9 @@ const ChannelsSection = () => {
     <div className={style["channels"]}>
       <div className={style["section-header"]}>
         <h2>CHANNELS</h2>
-        <button className={style["add-btn"]}>+</button>
+        <button className={style["add-btn"]} onClick={setAddChModal(true)}>
+          +
+        </button>
       </div>
       <div className={style["channel-categories"]}>
         {Object.keys(groupedChannels).map((category) => (
