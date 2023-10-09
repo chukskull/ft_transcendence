@@ -53,6 +53,154 @@
     }
 }
 
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.addChanModal {
+    border-radius: 40.326px;
+    background: #1d0229;
+    width: 521.715px;
+    height: 557px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 35px;
+    h1 {
+        font-size: 32.765px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 1.44px;
+    }
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+        width: 100%;
+        label {
+            color: #fff;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: 134.5%;
+            letter-spacing: 0.44px;
+        }
+        input {
+            margin-top: 10px;
+            display: flex;
+            width: 301.183px;
+            height: 50.407px;
+            border-radius: 10.081px;
+            border: 2.52px solid #fff;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15.122px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            padding-left: 20px;
+        }
+        .prv-btn {
+            width: 301.183px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            h3 {
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 134.5%;
+                letter-spacing: 1.44px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                svg {
+                    height: 30px;
+                    width: 30px;
+                }
+            }
+            input[type="checkbox"] {
+                width: 1.5rem;
+                height: 1.5rem;
+                margin-right: 0.5rem;
+                display: flex;
+            }
+        }
+    }
+    .create-btn {
+        width: 302.443px;
+        height: 57.968px;
+        border-radius: 144.921px;
+        cursor: pointer;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        letter-spacing: 1.44px;
+        background: linear-gradient(94deg, #3d0655 -10.9%, #990979 143.79%);
+        &:hover {
+            transition: 0.3s ease-in-out;
+            transform: scale(1.03);
+            background: linear-gradient(150deg, #3d0655 -10.9%, #990979 100%);
+        }
+    }
+}
+
+.findFriendModal {
+    width: 320px;
+    height: 499px;
+    border-radius: 14.537px;
+    background: #1d0229;
+    display: flex;
+    color: white;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    h1 {
+        font-size: 32.765px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 1px;
+    }
+    input {
+        margin-top: 15px;
+        width: 251.483px;
+        height: 47.971px;
+        border-radius: 8.722px;
+        border: 2.907px solid rgba(187, 179, 190, 0.7);
+        background: #1b0226;
+        padding-left: 20px;
+    }
+    .friendsList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+        overflow-y: scroll;
+        height: 300px;
+        width: 100%;
+        .friend {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+        }
+    }
+}
 .chat-container {
     display: flex;
     color: white;
@@ -119,7 +267,7 @@
             .dm-list {
                 display: flex;
                 flex-direction: column;
-                
+
                 .dm-item {
                     display: flex;
                     align-items: center;
@@ -181,19 +329,19 @@
                     display: flex;
                     align-items: center;
                     gap: 15px;
-            
+
                     .msg-info {
                         display: flex;
                         flex-direction: column;
                         gap: 5px;
-            
+
                         .username {
                             font-size: 16px;
                             font-style: normal;
                             font-weight: 600;
                             line-height: 134.5%;
                         }
-            
+
                         .msg-content {
                             color: #fff;
                             font-size: 16px;
@@ -201,14 +349,14 @@
                             font-weight: 400;
                             line-height: 134.5%;
                         }
-            
+
                         &:hover {
                             ~ .msg-time {
                                 display: block;
                             }
                         }
                     }
-            
+
                     .msg-time {
                         display: none;
                         font-size: 12px;
@@ -227,7 +375,7 @@
                 justify-content: space-between;
                 border-radius: 16px;
                 border: 3px solid rgba(255, 255, 255, 0.7);
-                
+
                 padding: 20px;
                 input {
                     width: 100%;
