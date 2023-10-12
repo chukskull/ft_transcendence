@@ -45,7 +45,7 @@ $background-color: #3d0655;
 
         .search_icon {
             filter: invert(50%);
-            font-size: 22px;
+            font-size: 21px;
         }
     }
     .top_notif {
@@ -66,17 +66,32 @@ $background-color: #3d0655;
     width: 60px;
     height: 100%;
     flex-direction: column;
-    justify-content: space-around;
     align-items: center;
 
     .left_menu {
+        margin-top: 150px;
         display: flex;
         flex-direction: column;
-        gap: 3rem;
+        gap: 4rem;
+        svg {
+            &:hover {
+                cursor: pointer;
+                transform: scale(1.2);
+                transition: all 0.3s ease-in-out;
+            }
+        }
     }
     .left_bottom_menu {
         display: flex;
         flex-direction: column;
+        margin-bottom: 30px;
         gap: 2.6rem;
+        svg {
+            &:hover {
+                cursor: pointer;
+                transform: scale(1.2);
+                transition: all 0.3s ease-in-out;
+            }
+        }
     }
 }
