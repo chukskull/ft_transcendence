@@ -6,6 +6,8 @@ import ChannelsSection from "@/components/SPA/chat/ChannelsSection";
 import ChatHeader from "@/components/SPA/chat/ChatHeader";
 import MsgsList from "@/components/SPA/chat/MessagesList";
 import DmSection from "@/components/SPA/chat/DMSection";
+import { useState } from "react";
+import EmojiPicker from "emoji-picker-react";
 
 const msgsdb = [
   {
@@ -47,6 +49,14 @@ const msgsdb = [
 ];
 
 export default function Chat() {
+  const [message, setMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const handleEmojiClick = (event: any, emojiObject: any) => {
+    console.log(emojiObject);
+    console.log(event);
+    setMessage(message + emojiObject.emoji);
+  };
   return (
     <>
       <div className={style["chat-container"]}>
@@ -61,15 +71,28 @@ export default function Chat() {
               <MsgsList msgs={msgsdb} />
             </div>
             <div className={style["msg-input"]}>
+              <button
+                className={style["emoji-btn"]}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                😎
+              </button>
               <input
                 type="text"
                 placeholder="Type your message here..."
                 className={style["input"]}
+                value={message.toString()}
+                onChange={(e) => setMessage(e.target.value)}
               />
               <button className={style["send-btn"]}>
                 <LiaTelegramPlane />
               </button>
             </div>
+            {showEmojiPicker && (
+              <div className={style["emoji-picker"]}>
+                <EmojiPicker onEmojiClick={handleEmojiClick}/>
+              </div>
+            )}
           </div>
         </div>
       </div>

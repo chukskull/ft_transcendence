@@ -93,41 +93,15 @@ const MembersSection = ({}) => {
   return (
     <div className={style["members-section"]}>
       <h2>Members</h2>
-      <div className={style["list"]}>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
+      <div className={style["members-list"]}>
+        {[...Array(222)].map((e, i) => (
+          <div key={2} className={style["member"]}>
+            <AvatarBubble avatar="/assets/components/Profile.svg" online />
+            <div className={style["friend-name"]}>Le Mountassir</div>
+          </div>
+        ))}
       </div>
-      <div className={style["total"]}>Total: 8</div>
+      <div className={style["total"]}>Total: 33</div>
     </div>
   );
 };
@@ -237,12 +211,12 @@ const ChannelMenu = ({}) => {
           <button>Members</button>
           <button>Settings</button>
         </div>
-        <div className={style["menu-body"]}>
-          {/* <InviteSection /> */}
-          {/* <AuthoritySection /> */}
-          {/* <MembersSection /> */}
-          <ChannelSettings />
-        </div>
+      </div>
+      <div className={style["menu-body"]}>
+        {/* <InviteSection /> */}
+        {/* <AuthoritySection /> */}
+        <MembersSection />
+        {/* <ChannelSettings /> */}
       </div>
     </>
   );

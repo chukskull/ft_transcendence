@@ -5,7 +5,7 @@ const MsgsList = (msgs: any) => {
   return (
     <div className={style["msgs-list"]}>
       {msgs.msgs.map((msg: any) => (
-        <div className={style["msg-item"]} key={msg.name}>
+        <div className={style["msg-item"]} key={msgs}>
           <AvatarBubble avatar={msg.avatar} online={msg.online} />
           <div className={style["msg-info"]}>
             <div className={style["username"]}>{msg.name}</div>
