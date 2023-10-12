@@ -15,6 +15,7 @@
         right: -4px;
     }
 }
+
 .chat-header {
     border-bottom: 3px solid black;
     width: 100%;
@@ -201,6 +202,7 @@
         }
     }
 }
+
 .chat-container {
     display: flex;
     color: white;
@@ -375,8 +377,15 @@
                 justify-content: space-between;
                 border-radius: 16px;
                 border: 3px solid rgba(255, 255, 255, 0.7);
-
+                gap: 15px;
                 padding: 20px;
+                .emoji-btn {
+                    cursor: pointer;
+                    transform: scale(1.7);
+                    &:hover {
+                        transform: scale(1.9);
+                    }
+                }
                 input {
                     width: 100%;
                     height: 100%;
@@ -468,8 +477,8 @@
 }
 
 .channel-menu-modal {
-    width: 738px;
-    height: 728px;
+    width: 750px;
+    height: 770px;
     border-radius: 32px;
     background: #1d0229;
     display: flex;
@@ -481,7 +490,7 @@
         flex-direction: column;
         justify-content: space-between;
         width: 100%;
-        height: 120px;
+        height: 130px;
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;
         background: rgba(217, 217, 217, 0.1);
@@ -497,22 +506,27 @@
         }
         .menu-list {
             display: flex;
+            width: 100%;
             align-items: center;
-            gap: 70px;
             margin-left: 30px;
-            margin-top: 15px;
+            margin-top: 25px;
+            gap: 50px;
             button {
                 letter-spacing: 2px;
                 cursor: pointer;
                 padding-block: 0.65rem;
-                border-bottom: 2px solid white;
+                padding-inline: 0.5rem;
+                border-top-right-radius: 10px;
+                border-top-left-radius: 10px;
                 &:hover {
-                    transform: scale(1.1);
+                    border-bottom: 2px solid white;
+                    background: rgba(255, 255, 255, 0.2);
                 }
             }
         }
     }
     .menu-body {
+        width: 100%;
         .invite-section {
             display: flex;
             flex-direction: column;
@@ -575,17 +589,6 @@
                 }
             }
         }
-        .list {
-            max-height: 400px;
-            overflow-y: scroll;
-        }
-        .user {
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
         h2 {
             color: #fff;
             font-size: 20px;
@@ -603,6 +606,25 @@
             flex-direction: column;
             margin: 30px;
             gap: 20px;
+            height: 580px;
+            .members-list {
+                max-height: 100%;
+                overflow-y: scroll;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                .member {
+                    display: flex;
+                    align-items: center;
+                    border-radius: 10px;
+                    padding: 5px 15px;
+                    background: rgba(254, 252, 252, 0.2);
+                    cursor: pointer;
+                    &:hover {
+                        background: rgba(254, 252, 252, 0.4);
+                    }
+                }
+            }
             .total {
                 display: flex;
                 align-items: center;
@@ -628,6 +650,10 @@
             .channel-type {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
+                align-items: center;
+
+                // border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+                padding-bottom: 20px;
                 .prv-options {
                     display: flex;
                     flex-direction: column;
@@ -705,7 +731,7 @@
                 grid-template-columns: 1fr 1fr;
                 align-items: center;
                 text-align: center;
-                margin-top: 30px;
+                margin-top: 20px;
                 .banned {
                     display: flex;
                     width: 90%;
@@ -721,10 +747,10 @@
                             justify-content: space-around;
                             border-radius: 10px;
                             background: #4a4949;
-                            padding: 7px;
+                            padding: 5px;
                             button {
                                 cursor: pointer;
-                                border-radius: 8.722px;
+                                border-radius: 5px;
                                 border: 2.907px solid rgba(187, 179, 190, 0.7);
                                 padding: 5px 10px;
                                 &:hover {
@@ -768,4 +794,10 @@
             }
         }
     }
+}
+
+.emoji-picker {
+    position: absolute;
+    bottom: 100px;
+    z-index: 100;
 }
