@@ -40,7 +40,7 @@ export default function Home() {
           <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
             Invite Friends
           </h1>
-          <div className="flex flex-row content-stretch flex-wrap gap-12 px-20 py-10 max-sm:gap-6 max-sm:px-10 max-sm:py-5">
+          <div className="flex flex-row  justify-center flex-grow  flex-wrap gap-12 max-sm:gap-6 max-sm:px-10 max-sm:py-5">
             {Friends.length > 0 ? (
               Friends.map((friend, index) => (
                 <MiniProf key={index} image={friend.imaeg} name={friend.name} />

@@ -3,9 +3,10 @@ import { useState } from "react";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { IoIosArrowDown } from "react-icons/io";
-import { FaUser, FaUserPlus, FaUserSlash } from "react-icons/fa";
-import { BsController, BsChatLeftText } from "react-icons/bs";
+import UserMenu from "@/components/SPA/chat/UserMenu";
+import ChannelMenu from "@/components/SPA/chat/ChannelMenu";
 import Modal from "react-modal";
+
 interface chatHeaderProps {
   avatar: string;
   name: string;
@@ -13,42 +14,9 @@ interface chatHeaderProps {
   online: boolean;
 }
 
-const UserMenu = () => {
-  return (
-    <>
-      <div className={style["user-info"]}>
-        <AvatarBubble avatar="/assets/components/Profile.svg" online />
-        <h2>John Doe</h2>
-      </div>
-      <div className={style["line"]} />
-      <div className={style["menu"]}>
-        <div className={style["menu-item"]}>
-          <FaUser />
-          View Profile
-        </div>
-        <div className={style["menu-item"]}>
-          <BsController />
-          Invite To A Game
-        </div>
-        <div className={style["menu-item"]}>
-          <BsChatLeftText />
-          Message
-        </div>
-        <div className={style["menu-item"]}>
-          <FaUserPlus />
-          Add Friend
-        </div>
-        <div className={style["menu-item"]}>
-          <FaUserSlash />
-          Block
-        </div>
-      </div>
-    </>
-  );
-};
-
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
+  const [isChannel, setIsChannel] = useState(true);
   return (
     <>
       <Modal
@@ -56,10 +24,12 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         onRequestClose={() => {
           setShow(false);
         }}
-        className={style["user-menu-modal"]}
+        className={
+          isChannel ? style["channel-menu-modal"] : style["user-menu-modal"]
+        }
         overlayClassName={style["modal-overlay"]}
       >
-        <UserMenu />
+        {isChannel ? <ChannelMenu /> : <UserMenu />}
       </Modal>
       <div className={style["chat-header"]}>
         <div className={style["chat-user-group"]}>
