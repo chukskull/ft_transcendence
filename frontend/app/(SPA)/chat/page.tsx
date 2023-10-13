@@ -75,7 +75,7 @@ export default function Chat() {
                 className={style["emoji-btn"]}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               >
-                😎
+                👾
               </button>
               <input
                 type="text"
