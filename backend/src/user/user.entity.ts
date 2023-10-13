@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { ChannelUser } from "src/chat/channel/channelUsers.entity";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
-	@PrimaryColumn()
+	@PrimaryGeneratedColumn()
 	id: number
 
 	@Column()
@@ -26,14 +27,18 @@ export class User {
 	@Column({ nullable: true })
 	twoFactorSecret: string
 
+	@OneToMany(() => ChannelUser, channelUser => channelUser.user)
+	channelLinks: Promise<ChannelUser[]>
+
+	@ManyToMany(() => User)
+	@JoinTable()
+	friends: User[]
+
 	@Column()
 	status: string
 
 	@Column()
 	pendingInvite: boolean
-
-	@Column()
-	friends: string[]
 
 	@Column()
 	stats: object
