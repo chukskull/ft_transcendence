@@ -215,8 +215,8 @@ const ChannelMenu = ({}) => {
       <div className={style["menu-body"]}>
         {/* <InviteSection /> */}
         {/* <AuthoritySection /> */}
-        <MembersSection />
-        {/* <ChannelSettings /> */}
+        {/* <MembersSection /> */}
+        <ChannelSettings />
       </div>
     </>
   );

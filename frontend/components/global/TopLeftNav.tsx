@@ -14,6 +14,7 @@ import { LuSettings } from "react-icons/lu";
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,12 +28,14 @@ export default function TopLeftNav() {
     <>
       <div className={style["top-bar"]}>
         <div className={style["top_logo"]}>
-          <Image
-            src="/assets/main/Navbar/Vector.svg"
-            alt="logo"
-            width={45}
-            height={45}
-          />
+          <Link href="/home">
+            <Image
+              src="/assets/main/Navbar/Vector.svg"
+              alt="logo"
+              width={45}
+              height={45}
+            />
+          </Link>
         </div>
         <div className={style["top_search"]}>
           <BiSearchAlt className={style["search_icon"]} />
@@ -44,10 +47,18 @@ export default function TopLeftNav() {
       </div>
       <div className={style["left-bar"]}>
         <div className={style["left_menu"]}>
-          <BsChatLeftText size={30} />
-          <BsController size={30} />
-          <BsPersonVcard size={30} />
-          <BsCart3 size={30} />
+          <Link href="/chat">
+            <BsChatLeftText size={30} />
+          </Link>
+          <Link href="/game">
+            <BsController size={30} />
+          </Link>
+          <Link href="/profile">
+            <BsPersonVcard size={30} />
+          </Link>
+          <Link href="/shop">
+            <BsCart3 size={30} />
+          </Link>
         </div>
         <div className={style["left_bottom_menu"]}>
           <LuSettings size={30} />
