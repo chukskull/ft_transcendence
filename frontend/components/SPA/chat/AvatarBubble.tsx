@@ -8,7 +8,7 @@ interface AvatarBubbleProps {
   online: boolean;
 }
 const AvatarBubble = ({ avatar, online }: AvatarBubbleProps) => {
-  avatar = "https://i.pravatar.cc/300?img=5";
+  avatar = "https://i.pravatar.cc/300?img=1";
   return (
     <>
       <Avatar

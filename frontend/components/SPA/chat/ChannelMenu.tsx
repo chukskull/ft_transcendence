@@ -1,6 +1,7 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import { AiOutlineUserAdd } from "react-icons/ai";
+import ProfileComp from "../profile/molecules/ProfileComp";
 const InviteSection = ({}) => {
   return (
     <div className={style["invite-section"]}>
@@ -15,24 +16,36 @@ const InviteSection = ({}) => {
 
       <div className={style["invite-list"]}>
         <div className={style["friend"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
+          <ProfileComp
+            img="https://i.pravatar.cc/300?img=1"
+            nickName="hamza_lkr"
+            firstName="Le mountassir"
+            lastName="fatFaggot"
+          />
           <button>
             <AiOutlineUserAdd />
             Invite
           </button>
         </div>
         <div className={style["friend"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>transgender nagat</div>
+          <ProfileComp
+            img="https://i.pravatar.cc/300?img=1"
+            nickName="hamza_lkr"
+            firstName="Transgender"
+            lastName="Nagat"
+          />
           <button>
             <AiOutlineUserAdd />
             Invite
           </button>
         </div>
         <div className={style["friend"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>femboyachraf</div>
+          <ProfileComp
+            img="https://i.pravatar.cc/300?img=1"
+            nickName="hamza_lkr"
+            firstName="Achref"
+            lastName="Femboy"
+          />
           <button>
             <AiOutlineUserAdd />
             Invite
@@ -46,44 +59,23 @@ const AuthoritySection = ({}) => {
   return (
     <div className={style["authority-section"]}>
       <h2>Owners</h2>
-      <div className={style["user"]}>
-        <AvatarBubble avatar="/assets/components/Profile.svg" online />
-        <div className={style["friend-name"]}>Le Mountassir</div>
-      </div>
+      <ProfileComp
+        img="https://i.pravatar.cc/300?img=1"
+        nickName="hamza_lkr"
+        firstName="Saleh"
+        lastName="Nagat"
+      />
       <h2>Moderators</h2>
       <div className={style["list"]}>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
-        <div className={style["user"]}>
-          <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          <div className={style["friend-name"]}>Le Mountassir</div>
-        </div>
+        {[...Array(10)].map((e, i) => (
+          <ProfileComp
+            key={i}
+            img="https://i.pravatar.cc/300?img=1"
+            nickName="hamza_lkr"
+            firstName="Saleh"
+            lastName="Nagat"
+          />
+        ))}
       </div>
     </div>
   );
@@ -95,10 +87,13 @@ const MembersSection = ({}) => {
       <h2>Members</h2>
       <div className={style["members-list"]}>
         {[...Array(222)].map((e, i) => (
-          <div key={2} className={style["member"]}>
-            <AvatarBubble avatar="/assets/components/Profile.svg" online />
-            <div className={style["friend-name"]}>Le Mountassir</div>
-          </div>
+          <ProfileComp
+            key={i}
+            img="https://i.pravatar.cc/300?img=1"
+            nickName="hamza_lkr"
+            firstName="Saleh"
+            lastName="Nagat"
+          />
         ))}
       </div>
       <div className={style["total"]}>Total: 33</div>
@@ -213,9 +208,9 @@ const ChannelMenu = ({}) => {
         </div>
       </div>
       <div className={style["menu-body"]}>
-        {/* <InviteSection /> */}
+        <InviteSection />
         {/* <AuthoritySection /> */}
-        <MembersSection />
+        {/* <MembersSection /> */}
         {/* <ChannelSettings /> */}
       </div>
     </>
