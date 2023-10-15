@@ -1,24 +1,26 @@
+"use client";
 import Image from "next/image";
 import style from "@/styles/SPA/chat/chat.module.scss";
-
-interface avatarBubbleProps {
+import { Avatar } from "@nextui-org/react";
+import { color, motion } from "framer-motion";
+interface AvatarBubbleProps {
   avatar: string;
   online: boolean;
 }
-
-const AvatarBubble = (avatarBubbleProps: avatarBubbleProps) => {
+const AvatarBubble = ({ avatar, online }: AvatarBubbleProps) => {
+  avatar = "https://i.pravatar.cc/300?img=5";
   return (
-    <div className={style["avatar-bubble"]}>
-      <Image
-        src={avatarBubbleProps.avatar}
+    <>
+      <Avatar
+        src={avatar}
         alt="avatar"
-        width={0}
-        height={0}
-        className={style["avatar"]}
-      />
-      {avatarBubbleProps.online && <div className={style["online"]}></div>}
-    </div>
+        isBordered
+        color={online ? "success" : "danger"}
+        className="h-9 w-9 ml-1 "
+        // className={style["avatar"]}
+      ></Avatar>
+      {/* {online && <div className={style["online"]}></div>} */}
+    </>
   );
 };
-
 export default AvatarBubble;
