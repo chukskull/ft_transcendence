@@ -1,7 +1,12 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
-import { AiOutlineUserAdd } from "react-icons/ai";
-import ProfileComp from "../profile/molecules/ProfileComp";
+import {
+  AiOutlineUserAdd,
+  AiOutlineIssuesClose,
+  AiOutlineSound,
+} from "react-icons/ai";
+import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
+import { useState } from "react";
 const InviteSection = ({}) => {
   return (
     <div className={style["invite-section"]}>
@@ -87,13 +92,15 @@ const MembersSection = ({}) => {
       <h2>Members</h2>
       <div className={style["members-list"]}>
         {[...Array(222)].map((e, i) => (
-          <ProfileComp
-            key={i}
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Saleh"
-            lastName="Nagat"
-          />
+          <div className={style["member"]} key={""}>
+            <ProfileComp
+              key={i}
+              img="https://i.pravatar.cc/300?img=1"
+              nickName="hamza_lkr"
+              firstName="Saleh"
+              lastName="Nagat"
+            />
+          </div>
         ))}
       </div>
       <div className={style["total"]}>Total: 33</div>
@@ -142,37 +149,51 @@ const ChannelSettings = ({}) => {
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
           </div>
         </div>
@@ -182,7 +203,9 @@ const ChannelSettings = ({}) => {
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unmute</button>
+              <button>
+                <AiOutlineSound />
+              </button>
             </div>
           </div>
         </div>
@@ -196,22 +219,32 @@ const ChannelSettings = ({}) => {
 };
 
 const ChannelMenu = ({}) => {
+  const [activeSection, setActiveSection] = useState<string>("Invite");
+
+  const handleButtonClick = (sectionName: string) => {
+    setActiveSection(sectionName);
+  };
+
   return (
     <>
       <div className={style["menu-header"]}>
         <h1>#Channel Title</h1>
         <div className={style["menu-list"]}>
-          <button>Invite</button>
-          <button>Authority Hub</button>
-          <button>Members</button>
-          <button>Settings</button>
+          <button onClick={() => handleButtonClick("Invite")}>Invite</button>
+          <button onClick={() => handleButtonClick("Authority Hub")}>
+            Authority Hub
+          </button>
+          <button onClick={() => handleButtonClick("Members")}>Members</button>
+          <button onClick={() => handleButtonClick("Settings")}>
+            Settings
+          </button>
         </div>
       </div>
       <div className={style["menu-body"]}>
-        <InviteSection />
-        {/* <AuthoritySection /> */}
-        {/* <MembersSection /> */}
-        {/* <ChannelSettings /> */}
+        {activeSection === "Invite" && <InviteSection />}
+        {activeSection === "Authority Hub" && <AuthoritySection />}
+        {activeSection === "Members" && <MembersSection />}
+        {activeSection === "Settings" && <ChannelSettings />}
       </div>
     </>
   );
