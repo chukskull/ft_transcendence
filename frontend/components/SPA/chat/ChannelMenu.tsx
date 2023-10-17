@@ -1,6 +1,10 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
-import { AiOutlineUserAdd, AiOutlineIssuesClose } from "react-icons/ai";
+import {
+  AiOutlineUserAdd,
+  AiOutlineIssuesClose,
+  AiOutlineSound,
+} from "react-icons/ai";
 import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { useState } from "react";
 const InviteSection = ({}) => {
@@ -197,7 +201,9 @@ const ChannelSettings = ({}) => {
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unmute</button>
+              <button>
+                <AiOutlineSound />
+              </button>
             </div>
           </div>
         </div>

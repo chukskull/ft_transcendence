@@ -600,6 +600,19 @@
             flex-direction: column;
             margin: 30px;
             gap: 20px;
+            height: 600px;
+            width: 100%;
+            .list {
+                overflow-y: scroll;
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+                padding: 4px;
+                display: flex;
+                flex-direction: column;
+                gap: 30px;
+                height: 100%;
+            }
         }
         .members-section {
             display: flex;
