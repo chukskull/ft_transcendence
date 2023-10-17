@@ -737,9 +737,12 @@
                     flex-direction: column;
                     gap: 5px;
                     .list {
-                        height: 300px;
+                        height: 340px;
                         overflow-y: scroll;
                         padding-inline: 5px;
+                        &::-webkit-scrollbar {
+                            display: none;
+                        }
 
                         .user {
                             display: flex;
@@ -747,7 +750,8 @@
                             justify-content: space-around;
                             border-radius: 10px;
                             background: #4a4949;
-                            padding: 5px;
+                            margin-bottom: 20px;
+                            padding: 10px;
                             button {
                                 font-size: 25px;
                                 cursor: pointer;
@@ -765,14 +769,13 @@
             .btns {
                 display: flex;
                 justify-content: space-between;
-                margin-top: 30px;
+                margin-top: 10px;
                 button {
                     cursor: pointer;
-                    border-radius: 8.722px;
-                    border: 2.907px solid rgba(187, 179, 190, 0.7);
-                    padding: 7px 15px;
+                    border-radius: 15px;
+                    padding: 10px 18px;
                     &:hover {
-                        transform: scale(1.1);
+                        transform: scale(1.05);
                     }
                 }
                 button:nth-child(1) {
