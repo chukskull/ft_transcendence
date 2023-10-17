@@ -13,7 +13,7 @@ const msgsdb = [
   {
     name: "Saleh Nagat",
     online: true,
-    lastMsg: "Hey, lets have sex for fun",
+    lastMsg: "egwegewewg",
     lastMsgTime: "02:00 PM",
     avatar: "https://i.pravatar.cc/300?img=2",
   },
@@ -21,14 +21,14 @@ const msgsdb = [
   {
     name: "Saleh Nagat",
     online: true,
-    lastMsg: "fine, thanks",
+    lastMsg: "fineewgewgewgw, thanks",
     lastMsgTime: "02:00 PM",
     avatar: "https://i.pravatar.cc/300?img=1",
   },
   {
     name: "Saleh Nagat",
     online: false,
-    lastMsg: "oh great happy to hear that",
+    lastMsg: "oh greewgegwegwegweg",
     lastMsgTime: "11:00 AM",
     avatar: "https://i.pravatar.cc/300?img=1",
   },
@@ -40,9 +40,9 @@ const msgsdb = [
     avatar: "https://i.pravatar.cc/300?img=1",
   },
   {
-    name: "Saleh Nagat",
+    name: "le_mountassir",
     online: false,
-    lastMsg: "Yes, its horrible i know the feeling",
+    lastMsg: "KYS",
     lastMsgTime: "11:00 AM",
     avatar: "https://i.pravatar.cc/300?img=1",
   },
