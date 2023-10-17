@@ -92,13 +92,15 @@ const MembersSection = ({}) => {
       <h2>Members</h2>
       <div className={style["members-list"]}>
         {[...Array(222)].map((e, i) => (
-          <ProfileComp
-            key={i}
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Saleh"
-            lastName="Nagat"
-          />
+          <div className={style["member"]} key={""}>
+            <ProfileComp
+              key={i}
+              img="https://i.pravatar.cc/300?img=1"
+              nickName="hamza_lkr"
+              firstName="Saleh"
+              lastName="Nagat"
+            />
+          </div>
         ))}
       </div>
       <div className={style["total"]}>Total: 33</div>

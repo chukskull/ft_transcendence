@@ -626,16 +626,17 @@
                 overflow-y: scroll;
                 display: flex;
                 flex-wrap: wrap;
-                gap: 20px;
+                gap: 40px;
                 .member {
                     display: flex;
                     align-items: center;
                     border-radius: 10px;
-                    padding: 5px 15px;
+                    padding: 15px 25px;
                     background: rgba(254, 252, 252, 0.2);
                     cursor: pointer;
                     &:hover {
-                        background: rgba(254, 252, 252, 0.4);
+                        background: rgba(254, 252, 252, 0.343);
+                        transform: scale(1.05);
                     }
                 }
             }
