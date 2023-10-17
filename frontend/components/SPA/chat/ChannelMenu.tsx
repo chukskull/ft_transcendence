@@ -1,6 +1,7 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
-import { AiOutlineUserAdd } from "react-icons/ai";
+import { AiOutlineUserAdd, AiOutlineIssuesClose } from "react-icons/ai";
+
 const InviteSection = ({}) => {
   return (
     <div className={style["invite-section"]}>
@@ -147,37 +148,51 @@ const ChannelSettings = ({}) => {
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
             <div className={style["user"]}>
               <AvatarBubble avatar="/assets/components/Profile.svg" online />
               <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>Unban</button>
+              <button>
+                <AiOutlineIssuesClose />
+              </button>
             </div>
           </div>
         </div>
