@@ -11,40 +11,40 @@ import EmojiPicker from "emoji-picker-react";
 
 const msgsdb = [
   {
-    name: "John Doe",
+    name: "Saleh Nagat",
     online: true,
-    lastMsg: "Hey, how are yerergkjprgopkrgopekr",
+    lastMsg: "Hey, lets have sex for fun",
     lastMsgTime: "02:00 PM",
-    avatar: "/assets/components/Profile.svg",
+    avatar: "https://i.pravatar.cc/300?img=2",
   },
 
   {
-    name: "John Doe",
+    name: "Saleh Nagat",
     online: true,
-    lastMsg: "Hey, how are yerergkjprgopkrgopekr",
+    lastMsg: "fine, thanks",
     lastMsgTime: "02:00 PM",
-    avatar: "/assets/components/Profile.svg",
+    avatar: "https://i.pravatar.cc/300?img=1",
   },
   {
-    name: "John Doe",
+    name: "Saleh Nagat",
     online: false,
-    lastMsg: "Hey, how are you?",
+    lastMsg: "oh great happy to hear that",
     lastMsgTime: "11:00 AM",
-    avatar: "/assets/components/Profile.svg",
+    avatar: "https://i.pravatar.cc/300?img=1",
   },
   {
-    name: "John Doe",
+    name: "Saleh Nagat",
     online: true,
-    lastMsg: "Hey, how are yerergkjprgopkrgopekr",
+    lastMsg: "i hate 9/11 its just a sad story",
     lastMsgTime: "02:00 PM",
-    avatar: "/assets/components/Profile.svg",
+    avatar: "https://i.pravatar.cc/300?img=1",
   },
   {
-    name: "John Doe",
+    name: "Saleh Nagat",
     online: false,
-    lastMsg: "Hey, how are you?",
+    lastMsg: "Yes, its horrible i know the feeling",
     lastMsgTime: "11:00 AM",
-    avatar: "/assets/components/Profile.svg",
+    avatar: "https://i.pravatar.cc/300?img=1",
   },
 ];
 
@@ -90,7 +90,7 @@ export default function Chat() {
             </div>
             {showEmojiPicker && (
               <div className={style["emoji-picker"]}>
-                <EmojiPicker onEmojiClick={handleEmojiClick}/>
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
               </div>
             )}
           </div>
