@@ -245,6 +245,7 @@ const ChannelMenu = ({}) => {
         {activeSection === "Authority Hub" && <AuthoritySection />}
         {activeSection === "Members" && <MembersSection />}
         {activeSection === "Settings" && <ChannelSettings />}
+
       </div>
     </>
   );
