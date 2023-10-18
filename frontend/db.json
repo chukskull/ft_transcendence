@@ -1,0 +1,166 @@
+{
+    "user": {
+        "id": 1,
+        "FullName": "John Doe",
+        "FirstName": "John",
+        "LastName": "Doe",
+        "nickName": "Johny67",
+        "Lvl": 90,
+        "userExp": 1222,
+        "userMoney": 3022,
+        "WinPerc": 90,
+        "userMatches": 14,
+        "userImage": "https://i.pravatar.cc/300?img=9"
+    },
+    "profiles": [
+        {
+            "img": "https://i.pravatar.cc/300?img=1",
+            "nickName": "blonde",
+            "firstName": "Hajar",
+            "lastName": "blondy"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=2",
+            "nickName": "lemntsr",
+            "firstName": "mountassir",
+            "lastName": "fat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=3",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=4",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=5",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=6",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=7",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=8",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        },
+        {
+            "img": "https://i.pravatar.cc/300?img=9",
+            "nickName": "hamza_lkr",
+            "firstName": "Saleh",
+            "lastName": "Nagat"
+        }
+    ],
+    "data": {
+        "user": [
+            {
+                "img": "https://i.pravatar.cc/300?img=1",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=2",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=3",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=4",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=5",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=6",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=7",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=8",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            },
+            {
+                "img": "https://i.pravatar.cc/300?img=9",
+                "nickName": "hamza_lkr",
+                "firstName": "Saleh",
+                "lastName": "Nagat"
+            }
+        ],
+        "fakeData": [
+            {
+                "imageLeft": "https://i.pravatar.cc/300?img=1",
+                "imageRight": "https://i.pravatar.cc/300?img=2",
+                "scoreLeft": 0,
+                "scoreRight": 0
+            },
+            {
+                "imageLeft": "https://i.pravatar.cc/300?img=1",
+                "imageRight": "https://i.pravatar.cc/300?img=4",
+                "scoreLeft": 1,
+                "scoreRight": 0
+            },
+            {
+                "imageLeft": "https://i.pravatar.cc/300?img=1",
+                "imageRight": "https://i.pravatar.cc/300?img=6",
+                "scoreLeft": 8,
+                "scoreRight": 2
+            }
+        ],
+        "Channels": [
+            {
+                "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+                "nickName": "private",
+                "name": "Pedago"
+            },
+            {
+                "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+                "nickName": "private",
+                "name": "Pedago"
+            },
+            {
+                "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+                "nickName": "private",
+                "name": "Pedago"
+            }
+        ]
+    }
+}

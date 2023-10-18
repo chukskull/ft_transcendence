@@ -13,15 +13,12 @@ import React, { useState } from "react";
 
 import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
-import axios from "axios";
+
+import { getUserProfile } from "@/api/getUserProfile";
+import Leadrboard from "../organisms/Leadrboard";
 interface ProfileProps {
   index: string;
 }
-//THIS is just for testing the component, waiting for the backend to be ready
-// const name = "Saleh";
-// const nickName = "hamza_lkr";
-// const image = "https://i.pravatar.cc/300?img=1";
-// const lvl = 69;
 
 export default function Profile({ index }: ProfileProps) {
   const names = ["Friends", "Match History", "Channels"];
@@ -31,14 +28,7 @@ export default function Profile({ index }: ProfileProps) {
     setActive(index);
   }
   const { isLoading, error, data } = useQuery("userList", async () => {
-    try {
-      const response = await axios.get("http://localhost:4000/user"); // Replace with your API endpoint
-      const userData = await response.data;
-      return userData;
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      return {}; // Return empty object to prevent loading state
-    }
+    return getUserProfile();
   });
   console.log(data);
   if (isLoading) return <div>Loading...</div>;
@@ -58,7 +48,7 @@ export default function Profile({ index }: ProfileProps) {
           nickName={data.nickName}
         />
         <div className="min-w-[80px] h-0"></div>
-        <ProgressBar lvl={data.Lvl} exp={1333} maxExp={12798} />
+        <ProgressBar lvl={data.Lvl} exp={data.userExp} maxExp={12798} />
         <Stats
           perc={data.WinPerc}
           money={data.userMoney}
@@ -73,25 +63,7 @@ export default function Profile({ index }: ProfileProps) {
               Leaderboard
             </h1>
           </div>
-          <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
-            {user.map((user, index) => (
-              <div
-                key={index}
-                className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
-              >
-                <h1 className="text-center text-white  font-ClashGrotesk-Semibold text-lg flex items-center pr-12">
-                  #{index + 1}
-                </h1>
-                <ProfileComp
-                  // key={index}
-                  img={user.img}
-                  nickName={user.nickName}
-                  firstName={user.firstName}
-                  lastName={user.lastName}
-                />
-              </div>
-            ))}
-          </div>
+          <Leadrboard />
         </div>
 
         <div className="C-2 " style={{ overflow: "auto" }}>
@@ -119,60 +91,3 @@ export default function Profile({ index }: ProfileProps) {
     </div>
   );
 }
-
-const user = [
-  {
-    img: "https://i.pravatar.cc/300?img=1",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=2",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=3",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=4",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=5",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=6",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=7",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=8",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    img: "https://i.pravatar.cc/300?img=9",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-];
