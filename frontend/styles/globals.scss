@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import url("./fonts.css");
+@import url("./main/header/_header.css");
+@import url("./main/Hero/_hero.css");
+@import url("./main/Footer/_footer.css");
+@import url("./Login.css");
+@import "components/TopLeftNav.module";
+@import "SPA/Profile/profile.scss";
+
+
+
+
+:root {
+  --wrapper-width: 1280px;
+  --color-background: linear-gradient(149deg, #15011e 3.4%, #3d0655 315.88%);
+  --color-button: linear-gradient(102deg, #4e0a6b 9.72%, #f417c4 184.28%);
+  --transition: cubic-bezier(0.59, 0, 0.06, 1);
+  --light: white;
+  --dark: black;
+}
+
+* {
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 8rem;
+  font-size: 100%;
+  background: var(--color-background);
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0.4rem;
+  height: 1.4rem;
+}
+
+::-webkit-scrollbar-track {
+  background: black
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0.5rem;
+  background: rgb(56, 37, 102);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6649b8;
+}
