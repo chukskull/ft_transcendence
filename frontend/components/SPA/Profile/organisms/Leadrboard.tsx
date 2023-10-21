@@ -11,7 +11,7 @@ export const Leadrboard = () => {
   if (error) return "An error has occurred: " + error.message;
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
-      {data.map((user, index) => (
+      {data?.map((user, index) => (
         <div
           key={index}
           className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"

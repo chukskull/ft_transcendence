@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfileComp from "../molecules/ProfileComp";
 import LiveGameRec from "../../home/molecules/LiveGameRec";
 import { useQuery } from "react-query";
@@ -10,17 +10,20 @@ interface MiddleComponentProps {
 }
 
 export const MiddleComponent = ({ index }: MiddleComponentProps) => {
-  const { isLoading, data, error } = useQuery("data", async () => {
-    return getDataProfile();
+  const [error, setError] = useState("");
+  const { isLoading, data } = useQuery("data", async () => {
+    return getDataProfile().catch((err) => {
+      setError(err.message);
+    });
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return "An error has occurred: " + error.message;
+  if (error) return <h2>{error}</h2>;
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
       {index === 0 &&
         data &&
-        data.user.map((user, index) => (
+        data?.userFriends?.map((user, index) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex justify-center"
@@ -36,7 +39,7 @@ export const MiddleComponent = ({ index }: MiddleComponentProps) => {
 
       {index === 1 &&
         data &&
-        data.fakeData.map((data, index) => (
+        data?.userLastScore?.map((data, index) => (
           <LiveGameRec
             key={index}
             LeftProf={data.imageLeft}
@@ -49,7 +52,7 @@ export const MiddleComponent = ({ index }: MiddleComponentProps) => {
 
       {index === 2 &&
         data &&
-        data.Channels.map((channel, index) => (
+        data?.userChannels?.map((channel, index) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex justify-center"

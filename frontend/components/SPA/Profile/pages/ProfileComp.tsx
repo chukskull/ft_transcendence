@@ -38,21 +38,21 @@ export default function Profile({ index }: ProfileProps) {
     <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
         <span style={{ display: "flex", alignItems: "center" }}>
-          <FaUser style={{ marginRight: "0.5rem" }} /> Welcome, {data.FullName}
+          <FaUser style={{ marginRight: "0.5rem" }} /> Welcome, {data?.FullName}
         </span>
       </h1>
       <div className="item-1  relative ">
         <LeftProfile
-          image={data.userImage}
-          name={data.FullName}
-          nickName={data.nickName}
+          image={data?.userImage}
+          name={data?.FullName}
+          nickName={data?.nickName}
         />
         <div className="min-w-[80px] h-0"></div>
-        <ProgressBar lvl={data.Lvl} exp={data.userExp} maxExp={12798} />
+        <ProgressBar lvl={data?.Lvl} exp={data?.userExp} maxExp={12798} />
         <Stats
-          perc={data.WinPerc}
-          money={data.userMoney}
-          matches={data.userMatches}
+          perc={data?.WinPerc}
+          money={data?.userMoney}
+          matches={data?.userMatches}
         />
       </div>
 
