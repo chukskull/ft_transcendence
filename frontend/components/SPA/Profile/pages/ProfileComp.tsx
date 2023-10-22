@@ -1,26 +1,21 @@
 "use client";
-
 import { InFosPlayer } from "@/components/SPA/Profile/atoms/InFosPlayer";
-
 import LeftProfile from "@/components/SPA/Profile/molecules/LeftProfile";
-
-import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { ProgressBar } from "@/components/SPA/Profile/molecules/ProgressBar";
 import Stats from "@/components/SPA/Profile/molecules/Stats";
 import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
-
 import React, { useState } from "react";
-
 import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
-
 import { getUserProfile } from "@/api/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
+
+
 interface ProfileProps {
-  index: string;
+  id: string;
 }
 
-export default function Profile({ index }: ProfileProps) {
+export default function Profile({ id }: ProfileProps) {
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
 
@@ -28,7 +23,7 @@ export default function Profile({ index }: ProfileProps) {
     setActive(index);
   }
   const { isLoading, error, data } = useQuery("userList", async () => {
-    return getUserProfile();
+    return getUserProfile(id);
   });
   console.log(data);
   if (isLoading) return <div>Loading...</div>;
