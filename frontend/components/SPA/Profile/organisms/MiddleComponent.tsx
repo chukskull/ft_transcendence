@@ -3,7 +3,7 @@ import ProfileComp from "../molecules/ProfileComp";
 import LiveGameRec from "../../home/molecules/LiveGameRec";
 import { useQuery } from "react-query";
 
-import { getDataProfile } from "@/api/getDataProfile";
+import { getDataProfile } from "@/utils/getDataProfile";
 
 interface MiddleComponentProps {
   index: number;

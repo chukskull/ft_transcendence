@@ -7,7 +7,7 @@ import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent"
 import React, { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
-import { getUserProfile } from "@/api/getUserProfile";
+import { getUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 
 

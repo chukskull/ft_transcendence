@@ -15,6 +15,7 @@ import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
 import Link from "next/link";
+import ProfileSettingModal from "./ProfileSettingModal";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -61,13 +62,20 @@ export default function TopLeftNav() {
           </Link>
         </div>
         <div className={style["left_bottom_menu"]}>
-          <LuSettings size={30} />
-          <BiLogOut size={30} />
+          <LuSettings size={30} onClick={() =>handleClick("setting")}/>
+          <BiLogOut size={30} onClick={() =>handleClick("Logout")}/>
         </div>
       </div>
       <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
         <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem]">
-          <GlobalModalComp onClose={onClose} action={string} />
+          {
+            string === "setting" ? ( 
+              <ProfileSettingModal onClose={onClose} />
+            ) : (
+              <GlobalModalComp onClose={onClose} action={string} />
+            )
+
+          }
         </ModalContent>
       </Modal>
     </>

@@ -2,7 +2,7 @@
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import "@/styles/globals.scss";
-import { useAddUser } from "@/api/addUser";
+import { useAddUser } from "@/utils/addUser";
 
 interface Styles {
   label: string;

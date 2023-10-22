@@ -1,7 +1,7 @@
 import React from "react";
 import ProfileComp from "../molecules/ProfileComp";
 import { useQuery } from "react-query";
-import { getLeadProfiles } from "@/api/getLeadProfiles";
+import { getLeadProfiles } from "@/utils/getLeadProfiles";
 
 export const Leadrboard = () => {
   const { isLoading, error, data } = useQuery("profiles", async () => {
