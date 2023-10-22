@@ -6,7 +6,7 @@ import React from "react";
 export const Profile = ({params}:{params:{slug:string}}) => {
   return (
     <div>
-      {user && <ProfileComp id={params.slug} />}
+      {<ProfileComp id={params.slug} />}
     </div>
   );
 };
