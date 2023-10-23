@@ -26,11 +26,15 @@
             align-items: center;
             justify-content: center;
 
-            gap: 400px;
+            gap: 100px;
 
             width: 100%;
             margin-top: 20px;
-
+            .vs {
+                font-size: 60px;
+                color: #8805d9;
+                filter: drop-shadow(0px 0px 1px #f417c4);
+            }
             .player {
                 display: flex;
                 align-items: center;
@@ -43,7 +47,6 @@
                     line-height: normal;
                     background: linear-gradient(95deg, #f417c4 -34.53%, #8805d9 219.09%);
                     background-clip: text;
-                    -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                 }
                 .hexAvatar {
@@ -78,8 +81,8 @@
         gap: 200px;
         margin-top: 30px;
         .game {
-            width: 857.25px;
-            height: 504.75px;
+            width: 860px;
+            height: 505px;
             flex-shrink: 0;
             border-radius: 15px;
             background: #35014d;
@@ -117,6 +120,13 @@
                 fill: #fff;
                 filter: drop-shadow(0px 0px 5px rgba(255, 254, 254, 0.887));
             }
+        }
+        p {
+            color: #fff;
+            font-size: 64px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
         }
     }
 }
