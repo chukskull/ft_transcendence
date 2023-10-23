@@ -16,6 +16,9 @@ import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
 import Link from "next/link";
 import ProfileSettingModal from "./ProfileSettingModal";
+import Search from "antd/es/input/Search";
+import Searchbar from "@/utils/nm";
+import SearchComp from "./SearchComp";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,10 +41,7 @@ export default function TopLeftNav() {
             />
           </Link>
         </div>
-        <div className={style["top_search"]}>
-          <BiSearchAlt className={style["search_icon"]} />
-          <input type="text" placeholder="Search for players, channels..." />
-        </div>
+        <SearchComp />
         <div className={style["top_notif"]}>
           <BsBell size={25} />
         </div>
@@ -62,20 +62,17 @@ export default function TopLeftNav() {
           </Link>
         </div>
         <div className={style["left_bottom_menu"]}>
-          <LuSettings size={30} onClick={() =>handleClick("setting")}/>
-          <BiLogOut size={30} onClick={() =>handleClick("Logout")}/>
+          <LuSettings size={30} onClick={() => handleClick("setting")} />
+          <BiLogOut size={30} onClick={() => handleClick("Logout")} />
         </div>
       </div>
       <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
         <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem]">
-          {
-            string === "setting" ? ( 
-              <ProfileSettingModal onClose={onClose} />
-            ) : (
-              <GlobalModalComp onClose={onClose} action={string} />
-            )
-
-          }
+          {string === "setting" ? (
+            <ProfileSettingModal onClose={onClose} />
+          ) : (
+            <GlobalModalComp onClose={onClose} action={string} />
+          )}
         </ModalContent>
       </Modal>
     </>
