@@ -12,16 +12,22 @@ const SearchComp = () => {
       return false;
     }
 
+    const searchValue = e.target.value.toLowerCase();
+    const searchTerms = searchValue.split(" ");
+
     const filteredUsers = users.filter((user) => {
-      const searchValue = e.target.value.toLowerCase();
       const userName = user.firstName.toLowerCase();
       const userLastName = user.lastName.toLowerCase();
-      const userNickName = user.nickName.toLowerCase();
+      const userFullName = `${userName} ${userLastName}`.toLowerCase();
 
       return (
-        userName.includes(searchValue) ||
-        userLastName.includes(searchValue) ||
-        userNickName.includes(searchValue)
+        user.nickName.includes(searchValue) ||
+        (searchTerms.length === 1 &&
+          (userName.includes(searchValue) ||
+            userLastName.includes(searchValue))) ||
+        (searchTerms.length === 2 &&
+          userFullName.includes(searchTerms[0]) &&
+          userFullName.includes(searchTerms[1]))
       );
     });
 
