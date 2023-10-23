@@ -1,0 +1,122 @@
+.gamePage {
+    width: 100%;
+    height: 93.3vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .gameHeader {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        h1 {
+            color: #fff;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            letter-spacing: 3px;
+            text-align: center;
+            word-spacing: 5px;
+        }
+        .players {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 400px;
+
+            width: 100%;
+            margin-top: 20px;
+
+            .player {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                h3 {
+                    font-size: 30px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    background: linear-gradient(95deg, #f417c4 -34.53%, #8805d9 219.09%);
+                    background-clip: text;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .hexAvatar {
+                    display: block;
+                    margin: 0 0;
+                    position: relative;
+                    width: 94px;
+                    height: 110px;
+                    background: linear-gradient(94deg, #b4058e -8.65%, #4b0486 146.68%);
+
+                    box-sizing: border-box;
+                    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                    -moz-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                    img {
+                        position: absolute;
+                        width: 95%;
+                        height: 95%;
+                        margin: 2.5%;
+                        object-fit: cover;
+                        -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                        -moz-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                    }
+                }
+            }
+        }
+    }
+    .gameBody {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        gap: 200px;
+        margin-top: 30px;
+        .game {
+            width: 857.25px;
+            height: 504.75px;
+            flex-shrink: 0;
+            border-radius: 15px;
+            background: #35014d;
+            position: relative;
+            .player {
+                position: absolute;
+                width: 5px;
+                height: 20px;
+                width: 12.75px;
+                height: 110px;
+                flex-shrink: 0;
+                transition: 0.1s ease-out;
+                border-radius: 52px;
+                background: #f417c4;
+                left: 20px;
+            }
+
+            .ai {
+                position: absolute;
+                width: 12.75px;
+                height: 110px;
+                border-radius: 52px;
+                background: #8603c1;
+                transition: 0.1s ease-out;
+                right: 20px;
+            }
+
+            .ball {
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                background-color: #fff;
+                border-radius: 50%;
+                transition: 0.1s ease-out;
+                fill: #fff;
+                filter: drop-shadow(0px 0px 5px rgba(255, 254, 254, 0.887));
+            }
+        }
+    }
+}
