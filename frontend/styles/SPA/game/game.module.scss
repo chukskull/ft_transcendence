@@ -101,12 +101,9 @@
             }
 
             .ai {
-                position: absolute;
-                width: 12.75px;
-                height: 110px;
-                border-radius: 52px;
+
+                @extend .player;
                 background: #8603c1;
-                transition: 0.1s ease-out;
                 right: 20px;
             }
 
