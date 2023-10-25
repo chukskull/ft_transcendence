@@ -44,9 +44,10 @@ const StudentsInfos = [
   {
     name: "Ahmed El Mountassir",
     title: "Full Stack Developer",
-    img: "/assets/main/Footer/temp.jpg",
+    img:
+      "https://cdn.intra.42.fr/users/4c64d229a66a2142250bb8ab0ffacbd7/mountassir.jpg",
     parag:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. ",
+      "There is no such thing as enough femboys",
   },
 ];
 
