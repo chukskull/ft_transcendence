@@ -1,116 +1,118 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import { GiSwordsEmblem } from "react-icons/gi";
 
-const Game = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasWidth = 860; // Set your canvas width
-  const [score, setScore] = React.useState({ player: 0, ai: 0 });
-  const gameData = useRef({
-    ballX: 430,
-    ballY: 250,
-    ballSpeedX: 2,
-    ballSpeedY: 2,
-    playerPaddleY: 210,
-    aiPaddleY: 210,
-  });
+type Score = {
+  player: number;
+  ai: number;
+};
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    const gameLoop = () => {
-      const {
-        ballX,
-        ballY,
-        ballSpeedX,
-        ballSpeedY,
-        playerPaddleY,
-        aiPaddleY,
-      } = gameData.current;
-
-      // Clear the canvas
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      // ball movement
-      gameData.current.ballX = ballX + ballSpeedX;
-      gameData.current.ballY = ballY + ballSpeedY;
-
-      // Check for ball going out of horizontal walls
-      if (ballX + ballSpeedX > canvasWidth || ballX + ballSpeedX < 0) {
-        // Reset ball position and direction
-        gameData.current.ballX = canvasWidth / 2;
-        gameData.current.ballY = canvas.height / 2;
-        // increase score for the player who scored
-        if (ballX + ballSpeedX > canvasWidth) {
-          setScore((prev) => ({ ...prev, player: prev.player + 1 }));
-        } else {
-          setScore((prev) => ({ ...prev, ai: prev.ai + 1 }));
-        }
-        // encrease ball speed
-        gameData.current.ballSpeedX *= 1.02;
-        gameData.current.ballSpeedY *= 1.02;
-      }
-
-      // Ball collisions with top and bottom walls
-      if (ballY + ballSpeedY > canvas.height - 10 || ballY + ballSpeedY < 10) {
-        gameData.current.ballSpeedY = -ballSpeedY;
-      }
-
-      // Ball collisions with paddles
-      if (
-        ballX + ballSpeedX > canvas.width - 20 ||
-        (ballX + ballSpeedX < 20 &&
-          ballY > playerPaddleY &&
-          ballY < playerPaddleY + 110)
-      ) {
-        gameData.current.ballSpeedX = -ballSpeedX;
-      }
-
-      // Update AI paddle position based on ball's y-coordinate
-      if (aiPaddleY + 40 < ballY && aiPaddleY + 80 < canvas.height) {
-        gameData.current.aiPaddleY = aiPaddleY + 2;
-      } else if (aiPaddleY + 40 > ballY && aiPaddleY > 5) {
-        gameData.current.aiPaddleY = aiPaddleY - 2;
-      }
-
-      context.fillStyle = "red"; // Background color
-      context.fillRect(10, playerPaddleY, 12.75, 110); // Player's paddle
-      context.fillStyle = "pink";
-      context.fillRect(canvas.width - 20, aiPaddleY, 12.75, 110); // AI's paddle
-
-      // Draw the ball
-      context.beginPath();
-      context.arc(ballX, ballY, 8, 0, Math.PI * 2);
-      context.fillStyle = "white";
-      context.fill();
-      context.closePath();
-
-      requestAnimationFrame(gameLoop);
-    };
-
-    gameLoop();
-  }, []);
+const useKeyHandler = () => {
+  const [keys, setKeys] = useState<Record<string, boolean>>({});
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "ArrowUp" && gameData.current.playerPaddleY > 0) {
-      gameData.current.playerPaddleY -= 10;
-    } else if (
-      e.key === "ArrowDown" &&
-      gameData.current.playerPaddleY + 80 < canvasRef.current!.height
-    ) {
-      gameData.current.playerPaddleY += 15;
-    }
+    setKeys((prevKeys) => ({ ...prevKeys, [e.key]: true }));
+  };
+
+  const handleKeyUp = (e: KeyboardEvent) => {
+    setKeys((prevKeys) => ({ ...prevKeys, [e.key]: false }));
   };
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
   }, []);
+
+  return keys;
+};
+
+const Game: React.FC = () => {
+  const canvasWidth: number = 860;
+  const canvasHeight: number = 500;
+
+  const [score, setScore] = useState<Score>({ player: 0, ai: 0 });
+  const [ball, setBall] = useState({
+    x: 430,
+    y: 250,
+    speedX: 2,
+    speedY: 2,
+  });
+  const [playerPaddleY, setPlayerPaddleY] = useState(210);
+  const [aiPaddleY, setAiPaddleY] = useState(210);
+
+  const keys = useKeyHandler();
+
+  useEffect(() => {
+    const gameLoop = () => {
+      // Update paddle position
+      if (keys["ArrowUp"] && playerPaddleY > 0) {
+        setPlayerPaddleY(playerPaddleY - 5);
+      }
+      if (keys["ArrowDown"] && playerPaddleY + 110 < canvasHeight) {
+        setPlayerPaddleY(playerPaddleY + 5);
+      }
+
+      // Ball movement
+      setBall((prevBall) => ({
+        ...prevBall,
+        x: prevBall.x + prevBall.speedX,
+        y: prevBall.y + prevBall.speedY,
+      }));
+
+      // Check for ball going out of horizontal walls
+      if (ball.x + ball.speedX > canvasWidth || ball.x + ball.speedX < 15) {
+        if (ball.x + ball.speedX > canvasWidth) {
+          setScore((prev) => ({ ...prev, player: prev.player + 1 }));
+        } else if (ball.x + ball.speedX < 15) {
+          setScore((prev) => ({ ...prev, ai: prev.ai + 1 }));
+        }
+        setBall({
+          x: canvasWidth / 2,
+          y: canvasHeight / 2,
+          speedX: 2,
+          speedY: 2,
+        });
+      }
+
+      // Ball collisions with top and bottom walls
+      if (
+        ball.y + ball.speedY > canvasHeight - 10 ||
+        ball.y + ball.speedY < 1
+      ) {
+        setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
+      }
+
+      // Ball collisions with paddles
+      if (
+        ball.x + ball.speedX > canvasWidth - 42 ||
+        (ball.x + ball.speedX < 25 &&
+          ball.y > playerPaddleY &&
+          ball.y < playerPaddleY + 100)
+      ) {
+        // Increase ball speed on paddle collision
+        const increasedSpeedX = -ball.speedX * 1.07; // Increase speed by a factor (e.g., 1.2)
+        setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
+      }
+
+      // Update AI paddle position based on ball's y-coordinate
+      if (aiPaddleY + 40 < ball.y && aiPaddleY + 100 < canvasHeight - 10) {
+        setAiPaddleY(aiPaddleY + 2);
+      } else if (aiPaddleY + 40 > ball.y && aiPaddleY > 5) {
+        setAiPaddleY(aiPaddleY - 2);
+      }
+    };
+
+    const gameInterval = setInterval(gameLoop, 10);
+
+    return () => {
+      clearInterval(gameInterval);
+    };
+  }, [ball, playerPaddleY, aiPaddleY, keys]);
 
   return (
     <div className={style.gamePage}>
@@ -126,7 +128,6 @@ const Game = () => {
           <GiSwordsEmblem className={style.vs} />
           <div className={style.player}>
             <h3>Player 2 Name</h3>
-
             <div className={style.hexAvatar}>
               <img src="https://i.pravatar.cc/300?img=21" alt="Player 2" />
             </div>
@@ -137,7 +138,15 @@ const Game = () => {
       <div className={style.gameBody}>
         <p>{score.player}</p>
         <div className={style.game} tabIndex={0} style={{ cursor: "none" }}>
-          <canvas ref={canvasRef} width={canvasWidth} height={504}></canvas>
+          <div className={style.player} style={{ top: playerPaddleY }}></div>
+          <div className={style.ai} style={{ top: aiPaddleY }}></div>
+          <div
+            className={style.ball}
+            style={{
+              top: ball.y,
+              left: ball.x,
+            }}
+          ></div>
         </div>
         <p>{score.ai}</p>
       </div>
