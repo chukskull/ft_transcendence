@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Avatar } from "@nextui-org/react";
-
+import { AiFillGithub, AiFillLinkedin } from "react-icons/ai";
 export interface CardComponentProps {
   id?: number;
   image: string;
@@ -22,6 +22,10 @@ export const CardComponent = ({
       <h1>{name}</h1>
       <h2>{title}</h2>
       <p>{text}</p>
+      <div className="flex items-center justify-center space-x-4">
+        <AiFillGithub size={50} className="text-white" />
+        <AiFillLinkedin size={50} className="text-white" />
+      </div>
     </div>
   );
 };
