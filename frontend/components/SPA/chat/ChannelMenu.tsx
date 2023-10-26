@@ -7,6 +7,7 @@ import {
 } from "react-icons/ai";
 import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { useState } from "react";
+import InFosPlayer from "../Profile/atoms/InFosPlayer";
 const InviteSection = ({}) => {
   return (
     <div className={style["invite-section"]}>
@@ -220,24 +221,33 @@ const ChannelSettings = ({}) => {
 
 const ChannelMenu = ({}) => {
   const [activeSection, setActiveSection] = useState<string>("Invite");
+  const [active, setActive] = useState(0);
 
   const handleButtonClick = (sectionName: string) => {
     setActiveSection(sectionName);
   };
-
+  function handleActive(index: number) {
+    setActive(index);
+  }
   return (
     <>
       <div className={style["menu-header"]}>
         <h1>#Channel Title</h1>
         <div className={style["menu-list"]}>
-          <button onClick={() => handleButtonClick("Invite")}>Invite</button>
-          <button onClick={() => handleButtonClick("Authority Hub")}>
-            Authority Hub
-          </button>
-          <button onClick={() => handleButtonClick("Members")}>Members</button>
-          <button onClick={() => handleButtonClick("Settings")}>
-            Settings
-          </button>
+          {OptionsSections.map((e, i) => (
+            <InFosPlayer
+              key={i}
+              text={e.name}
+              active={active === i}
+              whenClick={() =>
+                (function () {
+                  handleActive(i);
+                  handleButtonClick(e.name);
+                })()
+              }
+              isItprofile={false}
+            />
+          ))}
         </div>
       </div>
       <div className={style["menu-body"]}>
@@ -245,10 +255,23 @@ const ChannelMenu = ({}) => {
         {activeSection === "Authority Hub" && <AuthoritySection />}
         {activeSection === "Members" && <MembersSection />}
         {activeSection === "Settings" && <ChannelSettings />}
-
       </div>
     </>
   );
 };
 
+const OptionsSections = [
+  {
+    name: "Invite",
+  },
+  {
+    name: "Authority Hub",
+  },
+  {
+    name: "Members",
+  },
+  {
+    name: "Settings",
+  },
+];
 export default ChannelMenu;
