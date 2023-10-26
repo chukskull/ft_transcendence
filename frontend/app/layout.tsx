@@ -1,6 +1,7 @@
 import { Metadata } from "next";
-import { Providers } from "./providers";
+import { Providers, QueryProvider } from "./providers";
 import "@/styles/globals.scss";
+import { Query } from "react-query";
 
 export const metadata: Metadata = {
   title: "PingPongWebsite",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <QueryProvider>
+          <Providers>{children}</Providers>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -17,7 +17,7 @@ export const ProgressBar = ({ lvl, exp, maxExp }: ProgressBarProps) => {
           {exp}/{maxExp}
         </h1>
       </div>
-      <Bar value={lvl} />
+      <Bar value={(exp * 100) / maxExp} />
       <div className="flex items-center justify-between">
         <h1 className=" text-white font-ClashGrotesk-Light text-xs ">
           Next level
