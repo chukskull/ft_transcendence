@@ -29,10 +29,10 @@ const useKeyHandler = () => {
   return keys;
 };
 
-export default function TheGame() {
+export default function TheGame(map: string) {
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
-
+  const [classMap, setClassMap] = useState<string>("retro");
   const [score, setScore] = useState<Score>({ player: 0, ai: 0 });
   const [ball, setBall] = useState({
     x: 430,
@@ -112,10 +112,32 @@ export default function TheGame() {
     };
   }, [ball, playerPaddleY, aiPaddleY, keys]);
 
+  useEffect(() => {
+    switch (map) {
+      case "retro":
+        setClassMap("retro");
+        break;
+      case "minecraft":
+        setClassMap("minecraft");
+        break;
+      case "gym":
+        setClassMap("gym");
+        break;
+      default:
+        setClassMap("retro");
+        break;
+    }
+  }, [map]);
+
   return (
     <div className={style.gameBody}>
       <p>{score.player}</p>
-      <div className={style.game} tabIndex={0} style={{ cursor: "none" }}>
+      <div
+        className={style[`${classMap}`]}
+        tabIndex={0}
+        style={{ cursor: "none" }}
+      >
+        <div className={style.middleLine}></div>
         <div className={style.player} style={{ top: playerPaddleY }}></div>
         <div className={style.ai} style={{ top: aiPaddleY }}></div>
         <div
