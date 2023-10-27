@@ -6,6 +6,19 @@ import TheGame from "@/components/SPA/game/TheGame";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
+  const [gameStarted, setGameStarted] = useState(false);
+  const [score, setScore] = useState<Record<string, number>>({
+    player: 0,
+    enemy: 0,
+  });
+  const [ball, setBall] = useState({
+    x: 430,
+    y: 250,
+    speedX: 2,
+    speedY: 2,
+  });
+  const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
+  const [online, setOnline] = useState<boolean>(false);
   return (
     <div className={style.gamePage}>
       <GHeader />
@@ -27,7 +40,7 @@ const Game: React.FC = () => {
           <img src="https://greekreporter.com/wp-content/uploads/2023/01/kyriakos-grizzly-credit-kyriakos-kapakoulak-youtube.jpg.webp" />
         </div>
       </div>
-      <TheGame map={map} />
+      <TheGame map={map} onlinemode={online} />
     </div>
   );
 };
