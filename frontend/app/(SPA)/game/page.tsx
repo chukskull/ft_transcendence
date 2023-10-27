@@ -5,12 +5,12 @@ import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
 
 const Game: React.FC = () => {
-  const [map, setMap] = useState<string>("2077");
+  const [map, setMap] = useState<string>("game");
   return (
     <div className={style.gamePage}>
       <GHeader />
       <div className={style.mapSelector}>
-        <div className={style.map} onClick={() => setMap("2077")}>
+        <div className={style.map} onClick={() => setMap("game")}>
           <p>2077</p>
           <img src="https://img.asmedia.epimg.net/resizer/ZoSGJHZZZxMPC694PogLeAI0u8E=/644x362/cloudfront-eu-central-1.images.arcpublishing.com/diarioas/G2RDQ2OAUBAHBOFENCS5F23WFA.png" />
         </div>

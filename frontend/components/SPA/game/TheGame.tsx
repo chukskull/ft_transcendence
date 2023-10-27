@@ -28,11 +28,10 @@ const useKeyHandler = () => {
 
   return keys;
 };
-
-export default function TheGame(map: string) {
+// give map a default value
+export default function TheGame({ map }: { map?: string }) {
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
-  const [classMap, setClassMap] = useState<string>("retro");
   const [score, setScore] = useState<Score>({ player: 0, ai: 0 });
   const [ball, setBall] = useState({
     x: 430,
@@ -75,22 +74,23 @@ export default function TheGame(map: string) {
           speedX: 2,
           speedY: 2,
         });
+        return;
       }
 
       // Ball collisions with top and bottom walls
       if (
-        ball.y + ball.speedY > canvasHeight - 10 ||
-        ball.y + ball.speedY < 1
+        ball.y + ball.speedY > canvasHeight - 15 ||
+        ball.y + ball.speedY < -3
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
 
       // Ball collisions with paddles
       if (
-        ball.x + ball.speedX > canvasWidth - 42 ||
+        ball.x + ball.speedX > canvasWidth - 53 ||
         (ball.x + ball.speedX < 25 &&
-          ball.y > playerPaddleY &&
-          ball.y < playerPaddleY + 110)
+          ball.y >= playerPaddleY &&
+          ball.y <= playerPaddleY + 110)
       ) {
         // Increase ball speed on paddle collision
         const increasedSpeedX = -ball.speedX * 1.07; // Increase speed by a factor (e.g., 1.2)
@@ -98,7 +98,7 @@ export default function TheGame(map: string) {
       }
 
       // Update AI paddle position based on ball's y-coordinate
-      if (aiPaddleY + 40 < ball.y && aiPaddleY + 110 < canvasHeight - 10) {
+      if (aiPaddleY + 40 < ball.y && aiPaddleY + 110 < canvasHeight) {
         setAiPaddleY(aiPaddleY + 2);
       } else if (aiPaddleY + 40 > ball.y && aiPaddleY > 5) {
         setAiPaddleY(aiPaddleY - 2);
@@ -112,31 +112,10 @@ export default function TheGame(map: string) {
     };
   }, [ball, playerPaddleY, aiPaddleY, keys]);
 
-  useEffect(() => {
-    switch (map) {
-      case "retro":
-        setClassMap("retro");
-        break;
-      case "minecraft":
-        setClassMap("minecraft");
-        break;
-      case "gym":
-        setClassMap("gym");
-        break;
-      default:
-        setClassMap("retro");
-        break;
-    }
-  }, [map]);
-
   return (
     <div className={style.gameBody}>
       <p>{score.player}</p>
-      <div
-        className={style[`${classMap}`]}
-        tabIndex={0}
-        style={{ cursor: "none" }}
-      >
+      <div className={style[`${map}`]} tabIndex={0}>
         <div className={style.middleLine}></div>
         <div className={style.player} style={{ top: playerPaddleY }}></div>
         <div className={style.ai} style={{ top: aiPaddleY }}></div>
