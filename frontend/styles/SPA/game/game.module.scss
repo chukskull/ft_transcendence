@@ -6,22 +6,12 @@
     align-items: center;
     justify-content: center;
     .gameHeader {
-        margin-top: -3rem;
+        margin-top: -7rem;
         width: 100%;
         display: flex;
         align-items: center;
         flex-direction: column;
 
-        h1 {
-            color: #fff;
-            font-size: 24px;
-            font-style: normal;
-            font-weight: 600;
-            line-height: normal;
-            letter-spacing: 3px;
-            text-align: center;
-            word-spacing: 5px;
-        }
         .players {
             display: flex;
             align-items: center;
@@ -79,7 +69,8 @@
         align-items: center;
         justify-content: center;
         gap: 20px;
-        margin-top: 10px;
+        margin-top: 30px;
+
         width: 100%;
         height: 30px;
         .map {
@@ -128,12 +119,31 @@
         gap: 200px;
         margin-top: 30px;
         .game {
+
+            outline: none;
             width: 860px;
             height: 505px;
-            flex-shrink: 0;
             border-radius: 15px;
             background: #35014d;
             position: relative;
+            cursor: none;
+            border: 5px solid transparent; /* Set border color to transparent */
+            animation: borderAnimation 1s infinite;
+            @keyframes borderAnimation {
+                0% {
+                    border-color: #f417c4;
+                    box-shadow: 0px 0px 16px rgba(244, 23, 196, 0.5);
+                }
+                50% {
+                    border-color: #8805d9;
+                    box-shadow: 0px 0px 16px rgba(136, 5, 217, 0.5);
+                }
+                100% {
+                    border-color: #f417c4;
+                    box-shadow: 0px 0px 16px rgba(244, 23, 196, 0.5);
+                }
+            }
+
             .player {
                 position: absolute;
                 width: 5px;
@@ -172,6 +182,8 @@
             background: #000;
             border: 5px solid #fff;
             border-radius: 0px;
+            animation: none;
+
             .player {
                 background: #fff;
                 box-shadow: none;
@@ -199,6 +211,68 @@
                 );
             }
         }
+
+        .minecraft {
+            @extend .game;
+            border: 5px solid #00a105;
+            border-radius: 0px;
+            animation: none;
+            background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/00f3ad63-982c-4e4c-aa1c-6db3e982cf3e/dexjjuy-04cec02e-040b-4549-9d79-9c33569d54bb.png/v1/fill/w_1136,h_704,q_70,strp/minecraft_8_bit_2d_background_by_gamecubian_dexjjuy-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzY3IiwicGF0aCI6IlwvZlwvMDBmM2FkNjMtOTgyYy00ZTRjLWFhMWMtNmRiM2U5ODJjZjNlXC9kZXhqanV5LTA0Y2VjMDJlLTA0MGItNDU0OS05ZDc5LTljMzM1NjlkNTRiYi5wbmciLCJ3aWR0aCI6Ijw9MTIzOCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.85bDmsfjGH4r8vt2seWyGwGBkPZpKY4AGRM9MM29XY4");
+            background-size: cover;
+            background-position: center;
+            .player {
+                box-shadow: none;
+                border-radius: 0px;
+                background-image: url("https://static.wikia.nocookie.net/minecraft_gamepedia/images/8/8f/Steve_%28classic%29_JE6.png");
+                transform: scaleX(-1);
+                background-size: cover;
+                background-position: center;
+                width: 50px;
+                background-color: transparent;
+                left: 5px;
+            }
+            .ai {
+                transform: scaleX(1);
+
+                border-radius: 0px;
+                background-image: url("https://static.wikia.nocookie.net/characters/images/7/78/368px-Enderman_normal.png");
+                right: 5px;
+                left: auto;
+            }
+            .ball {
+                box-shadow: none;
+                border-radius: 0px;
+                filter: none;
+                background-image: url("https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/7a/Eye_of_Ender_JE2_BE2.png");
+                background-size: cover;
+                background-position: center;
+                width: 35px;
+                height: 35px;
+                background-color: transparent;
+            }
+        }
+        .gym {
+            @extend .game;
+            border: 5px solid #000000;
+            border-radius: 0px;
+            animation: none;
+            background-image: url("https://media.tenor.com/NuHYIZ9z0j4AAAAd/kyriakos-grizzly-kyriakos.gif");
+            background-size: cover;
+            background-position: center;
+            .player {
+                background: black;
+                box-shadow: none;
+                border-radius: 0px;
+            }
+            .ball {
+                background-image: url("https://pngimg.com/uploads/weight_plate/weight_plate_PNG11.png");
+                background-size: cover;
+                background-position: center;
+                width: 40px;
+                height: 40px;
+                background-color: transparent;
+            }
+        }
         p {
             color: #fff;
             font-size: 64px;
@@ -207,5 +281,18 @@
             line-height: normal;
             margin-top: -5rem;
         }
+        h3 {
+            color: #fff;
+            font-size: 40px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            margin-top: -1rem;
+            position: absolute;
+            z-index: 2;
+            letter-spacing: 5px;
+            text-align: center;
+        }
+
     }
 }

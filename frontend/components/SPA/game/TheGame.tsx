@@ -20,6 +20,7 @@ const useKeyHandler = () => {
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
@@ -29,23 +30,35 @@ const useKeyHandler = () => {
   return keys;
 };
 
-export default function TheGame(map: string) {
+export default function TheGame({
+  map,
+  onlinemode,
+}: {
+  map: string;
+  onlinemode: boolean;
+}) {
+  const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
-  const [classMap, setClassMap] = useState<string>("retro");
   const [score, setScore] = useState<Score>({ player: 0, ai: 0 });
   const [ball, setBall] = useState({
-    x: 430,
-    y: 250,
+    x: 417,
+    y: 240,
+
     speedX: 2,
     speedY: 2,
   });
   const [playerPaddleY, setPlayerPaddleY] = useState(210);
-  const [aiPaddleY, setAiPaddleY] = useState(210);
+  const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
+
 
   const keys = useKeyHandler();
 
   useEffect(() => {
+    if (!gameStarted) {
+      return;
+    }
+
     const gameLoop = () => {
       // Update paddle position
       if (keys["ArrowUp"] && playerPaddleY > 0) {
@@ -70,38 +83,45 @@ export default function TheGame(map: string) {
           setScore((prev) => ({ ...prev, ai: prev.ai + 1 }));
         }
         setBall({
-          x: canvasWidth / 2,
-          y: canvasHeight / 2,
+          x: 417,
+          y: 240,
           speedX: 2,
           speedY: 2,
         });
+        return;
+
       }
 
       // Ball collisions with top and bottom walls
       if (
-        ball.y + ball.speedY > canvasHeight - 10 ||
-        ball.y + ball.speedY < 1
+
+        ball.y + ball.speedY > canvasHeight - 15 ||
+        ball.y + ball.speedY < -3
+
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
 
       // Ball collisions with paddles
       if (
-        ball.x + ball.speedX > canvasWidth - 42 ||
+        ball.x + ball.speedX > canvasWidth - 53 ||
         (ball.x + ball.speedX < 25 &&
-          ball.y > playerPaddleY &&
-          ball.y < playerPaddleY + 110)
+          ball.y >= playerPaddleY &&
+          ball.y <= playerPaddleY + 110)
       ) {
         // Increase ball speed on paddle collision
-        const increasedSpeedX = -ball.speedX * 1.07; // Increase speed by a factor (e.g., 1.2)
+        const increasedSpeedX = -ball.speedX * 1.05; // Increase speed by a factor (e.g., 1.2)
         setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
       }
 
       // Update AI paddle position based on ball's y-coordinate
-      if (aiPaddleY + 40 < ball.y && aiPaddleY + 110 < canvasHeight - 10) {
-        setAiPaddleY(aiPaddleY + 2);
-      } else if (aiPaddleY + 40 > ball.y && aiPaddleY > 5) {
-        setAiPaddleY(aiPaddleY - 2);
+      if (!onlinemode) {
+        if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + 110 < canvasHeight) {
+          setEnemyPaddleY(EnemyPaddleY + 2);
+        } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
+          setEnemyPaddleY(EnemyPaddleY - 2);
+        }
+
       }
     };
 
@@ -110,36 +130,26 @@ export default function TheGame(map: string) {
     return () => {
       clearInterval(gameInterval);
     };
-  }, [ball, playerPaddleY, aiPaddleY, keys]);
+  }, [ball, playerPaddleY, EnemyPaddleY, keys, gameStarted, onlinemode]);
 
-  useEffect(() => {
-    switch (map) {
-      case "retro":
-        setClassMap("retro");
-        break;
-      case "minecraft":
-        setClassMap("minecraft");
-        break;
-      case "gym":
-        setClassMap("gym");
-        break;
-      default:
-        setClassMap("retro");
-        break;
+  const handleStartGame = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === " ") {
+      setGameStarted(!gameStarted);
     }
-  }, [map]);
-
+  };
   return (
-    <div className={style.gameBody}>
+    <div className={style.gameBody} onKeyDown={handleStartGame} tabIndex={0}>
       <p>{score.player}</p>
-      <div
-        className={style[`${classMap}`]}
-        tabIndex={0}
-        style={{ cursor: "none" }}
-      >
-        <div className={style.middleLine}></div>
+      {!gameStarted && (
+        <h3>
+          Press SPACE <br />
+          to start the game
+        </h3>
+      )}
+      <div className={style[`${map}`]} tabIndex={0}>
+        <div className={style.middleLine} />
         <div className={style.player} style={{ top: playerPaddleY }}></div>
-        <div className={style.ai} style={{ top: aiPaddleY }}></div>
+        <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
         <div
           className={style.ball}
           style={{

@@ -5,12 +5,26 @@ import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
 
 const Game: React.FC = () => {
-  const [map, setMap] = useState<string>("2077");
+  const [map, setMap] = useState<string>("game");
+  const [gameStarted, setGameStarted] = useState(false);
+  const [score, setScore] = useState<Record<string, number>>({
+    player: 0,
+    enemy: 0,
+  });
+  const [ball, setBall] = useState({
+    x: 430,
+    y: 250,
+    speedX: 2,
+    speedY: 2,
+  });
+  const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
+  const [online, setOnline] = useState<boolean>(false);
+
   return (
     <div className={style.gamePage}>
       <GHeader />
       <div className={style.mapSelector}>
-        <div className={style.map} onClick={() => setMap("2077")}>
+        <div className={style.map} onClick={() => setMap("game")}>
           <p>2077</p>
           <img src="https://img.asmedia.epimg.net/resizer/ZoSGJHZZZxMPC694PogLeAI0u8E=/644x362/cloudfront-eu-central-1.images.arcpublishing.com/diarioas/G2RDQ2OAUBAHBOFENCS5F23WFA.png" />
         </div>
@@ -27,7 +41,7 @@ const Game: React.FC = () => {
           <img src="https://greekreporter.com/wp-content/uploads/2023/01/kyriakos-grizzly-credit-kyriakos-kapakoulak-youtube.jpg.webp" />
         </div>
       </div>
-      <TheGame map={map} />
+      <TheGame map={map} onlinemode={online} />
     </div>
   );
 };
