@@ -19,6 +19,7 @@ const Game: React.FC = () => {
   });
   const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
   const [online, setOnline] = useState<boolean>(false);
+
   return (
     <div className={style.gamePage}>
       <GHeader />

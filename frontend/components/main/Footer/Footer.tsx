@@ -30,24 +30,25 @@ const StudentsInfos = [
   {
     name: "Achref Maghous",
     title: "Full Stack Developer",
-    img: "/assets/main/Footer/temp.jpg",
-    parag:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
+    img: "https://imgur.com/a1hqc0G.jpg",
+    parag: "Only available for girls under 12 years old (optional 15).",
   },
   {
     name: "Saleh Nagat",
     title: "Software Engineer",
-    img: "/assets/main/Footer/temp.jpg",
+    img: "https://imgur.com/x0IAtXw.jpg",
     parag:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.  ",
+      "Iam dating mums and milfs , Only open for sweet girls and if u are a male more female then dounia batema (Debatable)",
   },
   {
     name: "Ahmed El Mountassir",
     title: "Full Stack Developer",
+
     img:
       "https://cdn.intra.42.fr/users/4c64d229a66a2142250bb8ab0ffacbd7/mountassir.jpg",
     parag:
       "There is no such thing as enough femboys",
+
   },
 ];
 

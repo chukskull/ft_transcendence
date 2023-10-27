@@ -5,6 +5,7 @@ import { GiSwordsEmblem } from "react-icons/gi";
 export default function GHeader() {
   return (
     <div className={style.gameHeader}>
+
       <div className={style.players}>
         <div className={style.player}>
           <div className={style.hexAvatar}>

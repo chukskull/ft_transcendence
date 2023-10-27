@@ -8,6 +8,7 @@ type Score = {
 
 const useKeyHandler = () => {
   const [keys, setKeys] = useState<Record<string, boolean>>({});
+
   const handleKeyDown = (e: KeyboardEvent) => {
     setKeys((prevKeys) => ({ ...prevKeys, [e.key]: true }));
   };
@@ -43,11 +44,13 @@ export default function TheGame({
   const [ball, setBall] = useState({
     x: 417,
     y: 240,
+
     speedX: 2,
     speedY: 2,
   });
   const [playerPaddleY, setPlayerPaddleY] = useState(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
+
 
   const keys = useKeyHandler();
 
@@ -55,6 +58,7 @@ export default function TheGame({
     if (!gameStarted) {
       return;
     }
+
     const gameLoop = () => {
       // Update paddle position
       if (keys["ArrowUp"] && playerPaddleY > 0) {
@@ -85,12 +89,15 @@ export default function TheGame({
           speedY: 2,
         });
         return;
+
       }
 
       // Ball collisions with top and bottom walls
       if (
+
         ball.y + ball.speedY > canvasHeight - 15 ||
         ball.y + ball.speedY < -3
+
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
@@ -114,6 +121,7 @@ export default function TheGame({
         } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
           setEnemyPaddleY(EnemyPaddleY - 2);
         }
+
       }
     };
 
