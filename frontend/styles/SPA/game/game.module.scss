@@ -256,6 +256,28 @@
                 background-color: transparent;
             }
         }
+        .gym {
+            @extend .game;
+            border: 5px solid #000000;
+            border-radius: 0px;
+            animation: none;
+            background-image: url("https://media.tenor.com/NuHYIZ9z0j4AAAAd/kyriakos-grizzly-kyriakos.gif");
+            background-size: cover;
+            background-position: center;
+            .player {
+                background: black;
+                box-shadow: none;
+                border-radius: 0px;
+            }
+            .ball {
+                background-image: url("https://pngimg.com/uploads/weight_plate/weight_plate_PNG11.png");
+                background-size: cover;
+                background-position: center;
+                width: 40px;
+                height: 40px;
+                background-color: transparent;
+            }
+        }
         p {
             color: #fff;
             font-size: 64px;
