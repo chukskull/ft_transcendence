@@ -4,13 +4,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-@import url("./fonts.css");
-@import url("./main/header/_header.css");
-@import url("./main/Hero/_hero.css");
-@import url("./main/Footer/_footer.css");
-@import url("./Login.css");
-@import "components/TopLeftNav.module";
-@import "SPA/Profile/profile.scss";
+@import "mixin";
+@import "main.scss";
 
 
 
@@ -22,6 +17,7 @@
   --transition: cubic-bezier(0.59, 0, 0.06, 1);
   --light: white;
   --dark: black;
+  
 }
 
 * {
@@ -42,6 +38,13 @@ body {
   position: relative;
   overflow-x: hidden;
   overflow-x: hidden;
+}
+
+.Home {
+  width: 100%;
+  max-width: 1280px;
+  height: 100%;
+  margin: auto;
 }
 ::-webkit-scrollbar {
   width: 0.4rem;
