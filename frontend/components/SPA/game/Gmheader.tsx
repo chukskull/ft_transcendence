@@ -14,7 +14,7 @@ export default function GHeader() {
         </div>
         <GiSwordsEmblem className={style.vs} />
         <div className={style.player}>
-          <h3>Player 2 Name</h3>
+          <h3>AI</h3>
           <div className={style.hexAvatar}>
             <img src="https://i.pravatar.cc/300?img=21" alt="Player 2" />
           </div>
