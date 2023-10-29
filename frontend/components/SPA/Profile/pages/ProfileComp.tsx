@@ -10,7 +10,6 @@ import { useQuery } from "react-query";
 import { getUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 
-
 interface ProfileProps {
   id: string;
 }
@@ -69,6 +68,7 @@ export default function Profile({ id }: ProfileProps) {
                 whenClick={() => handleActive(index)}
                 text={name}
                 active={active === index}
+                isItprofile={true}
               />
             ))}
           </div>
