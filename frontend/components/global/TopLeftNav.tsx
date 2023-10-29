@@ -49,21 +49,27 @@ export default function TopLeftNav() {
       <div className={style["left-bar"]}>
         <div className={style["left_menu"]}>
           <Link href="/chat">
-            <BsChatLeftText size={30} />
+            <img src="/assets/main/Navbar/chat.svg" />
           </Link>
           <Link href="/game">
-            <BsController size={30} />
+            <img src="/assets/main/Navbar/Game.svg" />
           </Link>
           <Link href="/profile">
-            <BsPersonVcard size={30} />
+            <img src="/assets/main/Navbar/Profile.svg" />
           </Link>
           <Link href="/shop">
-            <BsCart3 size={30} />
+            <img src="/assets/main/Navbar/Shop.svg" />
           </Link>
         </div>
         <div className={style["left_bottom_menu"]}>
-          <LuSettings size={30} onClick={() => handleClick("setting")} />
-          <BiLogOut size={30} onClick={() => handleClick("Logout")} />
+          <img
+            src="/assets/main/Navbar/Setting.svg"
+            onClick={() => handleClick("setting")}
+          />
+          <img
+            src="/assets/main/Navbar/Logout.svg"
+            onClick={() => handleClick("Logout")}
+          />
         </div>
       </div>
       <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
