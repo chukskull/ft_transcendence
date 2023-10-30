@@ -4,6 +4,7 @@ import { useState } from "react";
 import "@/styles/globals.scss";
 import { useAddUser } from "@/utils/addUser";
 
+import { useForm } from "react-hook-form";
 interface Styles {
   label: string;
   input: string[];
@@ -37,63 +38,94 @@ const styles: Styles = {
 };
 
 export default function Fill() {
-  const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [nickName, setNickName] = useState("");
   const { mutate } = useAddUser();
 
-  function addNewUser() {
-    console.log(name, lastName, nickName);
-    const user = { name, lastName, nickName };
+  const addNewUser = async (user: any) => {
     mutate(user);
-  }
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      lastName: "",
+      nickName: "",
+    },
+  });
 
   return (
     <>
       <div className="h-screen w-screen flex items-center justify-center">
         <div className="rectangle flex  items-center justify-center">
-          <div className="w-80 flex flex-col items-center justify-center gap-12">
-            <Input
-              type="name"
-              label="Name"
-              isClearable
-              variant="bordered"
-              classNames={{
-                ...styles,
-              }}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Input
-              type="lastname"
-              label="Last Name"
-              isClearable
-              variant="bordered"
-              classNames={{
-                ...styles,
-              }}
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            <Input
-              type="nickname"
-              label="Nickname"
-              isClearable
-              variant="bordered"
-              classNames={{
-                ...styles,
-              }}
-              value={nickName}
-              onChange={(e) => setNickName(e.target.value)}
-            />
-            <Button
-              className="mt-2 w-[140px] h-[40px] gradient-button 
+          <form action="">
+            <div className="w-80 flex flex-col items-center justify-center gap-12">
+              <Input
+                {...register("name", {
+                  required: "This field is required",
+                  maxLength: 20,
+                  minLength: 3,
+                })}
+                type="name"
+                label="Name"
+                variant="bordered"
+                isInvalid={errors.name ? true : false}
+                errorMessage={errors.name && "This field is required"}
+                classNames={{
+                  ...styles,
+                }}
+                // value={name}
+                // onChange={(e) => setName(e.target.value)}
+              />
+
+              <Input
+                {...register("lastName", {
+                  required: "This field is required",
+                  maxLength: 20,
+                  minLength: 3,
+                })}
+                type="lastname"
+                label="Last Name"
+                isInvalid={errors.lastName ? true : false}
+                errorMessage={errors.lastName && errors.lastName.message}
+                variant="bordered"
+                classNames={{
+                  ...styles,
+                }}
+                // value={lastName}
+                // onChange={(e) => setLastName(e.target.value)}
+              />
+
+              <Input
+                {...register("nickName", {
+                  required: "This field is required",
+                  maxLength: 20,
+                  minLength: 3,
+                })}
+                type="nickname"
+                label="Nickname"
+                variant="bordered"
+                isInvalid={errors.nickName ? true : false}
+                errorMessage={errors.nickName && errors.nickName?.message}
+                classNames={{
+                  ...styles,
+                }}
+                // value={nickName}
+                // onChange={(e) => setNickName(e.target.value)}
+              />
+
+              <Button
+                type="submit"
+                className="mt-2 w-[140px] h-[40px] gradient-button 
            text-white shadow-lg rounded-3xl"
-              onClick={addNewUser}
-            >
-              Play
-            </Button>
-          </div>
+                onClick={handleSubmit(addNewUser)}
+              >
+                Play
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </>
