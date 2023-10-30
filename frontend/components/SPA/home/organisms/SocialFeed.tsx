@@ -13,7 +13,7 @@ export const SocialFeed = () => {
           </h1>
         </div>
 
-        <div className="flex flex-col justify-center  px-12 gap-6 m-6 max-sm:px-6 max-sm:gap-3 max-sm:m-3 overflow-y-auto">
+        <div className="flex flex-col   px-12 gap-6 m-6 max-sm:px-6 max-sm:gap-3 max-sm:m-3 overflow-y-auto">
           {fakeData.length > 0 ? (
             fakeData.map((game, index) => (
               <LiveGameRec
@@ -38,7 +38,7 @@ export const SocialFeed = () => {
         <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
           Invite Friends
         </h1>
-        <div className="flex flex-row  justify-center   flex-wrap gap-6 max-sm:gap-6 max-sm:px-10 overflow-y-auto">
+        <div className="flex flex-row  justify-center  m-5 flex-wrap gap-6 max-sm:gap-6 max-sm:px-10 overflow-y-auto">
           {Friends.length > 0 ? (
             Friends.map((friend, index) => (
               <MiniProf key={index} image={friend.imaeg} name={friend.name} />
