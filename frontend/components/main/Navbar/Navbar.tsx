@@ -4,7 +4,7 @@ import ButtonNav from "@/components/main/atoms/ButtonNav";
 // import CustomButton from "./CustomButton";
 
 interface NavBarProps {
-  boolBut: boolean;
+  boolBut?: boolean;
 }
 const NavBar = ({ boolBut }: NavBarProps) => (
   <div className="wrapper-header">
@@ -12,6 +12,7 @@ const NavBar = ({ boolBut }: NavBarProps) => (
       <a href="#" className="Header-Logo">
         <div>
           <Image
+            className="img-logo"
             src="/assets/main/Navbar/Vector.svg"
             alt="temp-logo"
             width={57}
@@ -26,7 +27,7 @@ const NavBar = ({ boolBut }: NavBarProps) => (
           </li>
         ))}
       </ul>
-      {boolBut ? <ButtonNav /> : <span></span>}
+      <ButtonNav />
     </div>
   </div>
 );

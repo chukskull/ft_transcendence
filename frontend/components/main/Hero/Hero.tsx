@@ -20,8 +20,8 @@ export const Hero = () => {
           src={"/assets/main/Hero/fontshapes.svg"}
           alt={"background shapes"}
         />
-        <div className=" flex flex-col gap-y-12 text-bc bg-none absolute top-[0%] xl:right-[50%] 2xl:right-[50%] my-[11.25rem]  p-[1.25rem]">
-          <h1 className="bg-none text-white my-2 w-[604px] font-[Josefin Sans] text-8xl font-style-normal font-medium">
+        <div className=" flex flex-col gap-y-12 text-bc bg-none absolute top-[0%] xl:right-[50%] 2xl:right-[50%] xl:my-[11.25rem] my-[8.25rem] p-[1.25rem]">
+          <h1 className="bg-none text-white my-2  font-[Josefin Sans] text-5xl md:text-7xl lg:text-8xl font-style-normal font-medium">
             BEST <span className="gamesvg bg-none">GAME !</span>
             <br></br>
             ON DEMAND
