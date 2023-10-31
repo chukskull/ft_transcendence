@@ -2,22 +2,12 @@
 import style from "@/styles/components/TopLeftNav.module.scss";
 import "@/styles/globals.scss";
 import Image from "next/image";
-import {
-  BsChatLeftText,
-  BsController,
-  BsPersonVcard,
-  BsCart3,
-  BsBell,
-} from "react-icons/bs";
-import { BiLogOut, BiSearchAlt } from "react-icons/bi";
-import { LuSettings } from "react-icons/lu";
+import { BsBell } from "react-icons/bs";
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
 import Link from "next/link";
 import ProfileSettingModal from "./ProfileSettingModal";
-import Search from "antd/es/input/Search";
-import Searchbar from "@/utils/nm";
 import SearchComp from "./SearchComp";
 
 export default function TopLeftNav() {
