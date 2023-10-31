@@ -1,11 +1,10 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
-import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
-import { Switch } from "@nextui-org/react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { useState } from "react";
 import InFosPlayer from "../Profile/atoms/InFosPlayer";
 import ChannelSettings from "./ChannelSettings";
+
 
 const InviteSection = ({}) => {
   return (
@@ -62,27 +61,29 @@ const InviteSection = ({}) => {
 };
 const AuthoritySection = ({}) => {
   return (
-    <div className={style["authority-section"]}>
-      <h2>Owners</h2>
-      <ProfileComp
-        img="https://i.pravatar.cc/300?img=1"
-        nickName="hamza_lkr"
-        firstName="Saleh"
-        lastName="Nagat"
-      />
-      <h2>Moderators</h2>
-      <div className={style["list"]}>
-        {[...Array(10)].map((e, i) => (
-          <ProfileComp
-            key={i}
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Saleh"
-            lastName="Nagat"
-          />
-        ))}
+
+      <div className={style["authority-section"]}>
+        <h2>Owners</h2>
+        <ProfileComp
+          img="https://i.pravatar.cc/300?img=1"
+          nickName="hamza_lkr"
+          firstName="Saleh"
+          lastName="Nagat"
+        />
+        <h2>Moderators</h2>
+        <div className={style["list"]}>
+          {[...Array(10)].map((e, i) => (
+            <ProfileComp
+              key={i}
+              img="https://i.pravatar.cc/300?img=1"
+              nickName="hamza_lkr"
+              firstName="Saleh"
+              lastName="Nagat"
+            />
+          ))}
+        </div>
       </div>
-    </div>
+
   );
 };
 
