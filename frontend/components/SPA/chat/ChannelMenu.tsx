@@ -1,13 +1,12 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
-import {
-  AiOutlineUserAdd,
-  AiOutlineIssuesClose,
-  AiOutlineSound,
-} from "react-icons/ai";
+import { Switch } from "@nextui-org/react";
+import { AiOutlineUserAdd } from "react-icons/ai";
 import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { useState } from "react";
 import InFosPlayer from "../Profile/atoms/InFosPlayer";
+import ChannelSettings from "./ChannelSettings";
+
 const InviteSection = ({}) => {
   return (
     <div className={style["invite-section"]}>
@@ -105,116 +104,6 @@ const MembersSection = ({}) => {
         ))}
       </div>
       <div className={style["total"]}>Total: 33</div>
-    </div>
-  );
-};
-
-const ChannelSettings = ({}) => {
-  return (
-    <div className={style["channel-settings"]}>
-      <div className={style["channel-type"]}>
-        <div>
-          <h2>Channel Privacy</h2>
-          <div className={style["prv-options"]}>
-            <div className={style["privacy"]}>
-              <input
-                type="radio"
-                name="privacy"
-                id="public"
-                className={style["radio-input"]}
-              />
-              <label className={style["radio-label"]}>Public</label>
-            </div>
-            <div className={style["privacy"]}>
-              <input
-                type="radio"
-                name="privacy"
-                id="private"
-                className={style["radio-input"]}
-              />
-              <label className={style["radio-label"]}>Private</label>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h2>Set Password</h2>
-          <div className={style["password"]}>
-            <input type="password" placeholder="New Password" />
-          </div>
-        </div>
-      </div>
-      <div className={style["punished-group"]}>
-        <div className={style["banned"]}>
-          <h2>Banned</h2>
-          <div className={style["list"]}>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineIssuesClose />
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className={style["muted"]}>
-          <h2>Muted</h2>
-          <div className={style["list"]}>
-            <div className={style["user"]}>
-              <AvatarBubble avatar="/assets/components/Profile.svg" online />
-              <div className={style["friend-name"]}>Le Mountassir</div>
-              <button>
-                <AiOutlineSound />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className={style["btns"]}>
-        <button>Delete Channel</button>
-        <button>Save Changes</button>
-      </div>
     </div>
   );
 };
