@@ -5,14 +5,14 @@ import { useState } from "react";
 import AvatarBubble from "./AvatarBubble";
 const dmList = [
   {
-    name: "John Doe",
+    name: "John3464 Doe",
     online: true,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "02:00 PM",
     avatar: "/assets/components/Profile.svg",
   },
   {
-    name: "John Doe",
+    name: "Joh234n Doe",
     online: false,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "11:00 AM",
@@ -26,28 +26,28 @@ const dmList = [
     avatar: "/assets/components/Profile.svg",
   },
   {
-    name: "John Doe",
+    name: "John123 Doe",
     online: false,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "11:00 AM",
     avatar: "/assets/components/Profile.svg",
   },
   {
-    name: "John Doe",
+    name: "John 5364Doe",
     online: true,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "12:00 PM",
     avatar: "/assets/components/Profile.svg",
   },
   {
-    name: "John Doe",
+    name: "John D34oe",
     online: false,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "11:00 AM",
     avatar: "/assets/components/Profile.svg",
   },
   {
-    name: "John Doe",
+    name: "Joh3434n Doe",
     online: true,
     lastMsg: "Hey, how are you?",
     lastMsgTime: "12:00 PM",
@@ -57,47 +57,47 @@ const dmList = [
 
 const friendsList = [
   {
-    nicknae: "John Doe",
+    nicknae: "John32523646 Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "John D23523oe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "John 343434523Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "John 34Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "Joh1n Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "Joh3n Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "John4 Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "Jo6hn Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
   {
-    nicknae: "John Doe",
+    nicknae: "Jo9hn Doe",
     online: true,
     avatar: "/assets/components/Profile.svg",
   },
@@ -117,7 +117,6 @@ const FindFriendModal = () => {
               key={friend.nicknae}
             />
             <h3>{friend.nicknae}</h3>
-            
           </div>
         ))}
       </div>
@@ -125,8 +124,11 @@ const FindFriendModal = () => {
   );
 };
 
-const DmSection = () => {
+const DmSection = ({ SendconversationId2p }: any) => {
   const [findFriendModal, setFindFriendModal] = useState<boolean>(false);
+  const handleConversationId = (conversationId: string) => {
+    SendconversationId2p(conversationId);
+  };
 
   return (
     <>
@@ -150,7 +152,7 @@ const DmSection = () => {
         </div>
         <div className={style["dm-list"]}>
           {dmList.map((dm) => (
-            <DMbox dm={dm} key={dm.name} />
+            <DMbox dm={dm} key={dm.name} SendConversationId={() => handleConversationId(dm.name)} />
           ))}
         </div>
       </div>

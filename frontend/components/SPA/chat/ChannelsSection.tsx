@@ -64,23 +64,10 @@ const CreateChannelModal = ({}) => {
     </>
   );
 };
-
-const FindFriendsModal = ({}) => {
-  return (
-    <>
-      <h1>Select Friends</h1>
-      <div className={style["input-group"]}>
-        <div>
-          <label>Username</label>
-          <input type="text" id="username" placeholder="Username" />
-        </div>
-      </div>
-      <button className={style["create-btn"]}>Create</button>
-    </>
-  );
-};
-
-const ChannelsSection = () => {
+interface ChannelProps {
+  sendConversationId: (id: string) => void;
+}
+const ChannelsSection = (sendConversationId: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const channelList: Channel[] = chanList;
   const groupedChannels = channelList.reduce((acc, channel) => {
@@ -127,7 +114,13 @@ const ChannelsSection = () => {
             <div key={category}>
               <h3>{getCategoryTitle(category)}</h3>
               {groupedChannels[category].map((channel) => (
-                <div className={style["channel-item"]} key={channel.name}>
+                <div
+                  className={style["channel-item"]}
+                  key={channel.name}
+                  onClick={() =>
+                    sendConversationId.sendConversationId(channel.name)
+                  }
+                >
                   {channel.name}
                 </div>
               ))}

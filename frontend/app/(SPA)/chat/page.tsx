@@ -51,21 +51,29 @@ const msgsdb = [
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
+  const [conversationId, setConversationId] = useState("");
   const handleEmojiClick = (event: any, emojiObject: any) => {
     console.log(emojiObject);
     console.log(event);
     setMessage(message + emojiObject.emoji);
   };
+
+  console.log(conversationId);
   return (
     <>
       <div className={style["chat-container"]}>
         <div className={style["menu-sections"]}>
-          <ChannelsSection />
-          <DmSection />
+          <ChannelsSection sendConversationId={setConversationId} />
+          <DmSection SendconversationId2p={setConversationId} />
         </div>
         <div className={style["chat-section"]}>
-          <ChatHeader group={true} name="#lacastiekho" online avatar="" />
+          <ChatHeader
+            avatar="https://i.pravatar.cc/300?img=4"
+            name="Saleh"
+            isChannel={true}
+            online={true}
+          />
+
           <div className={style["chat"]}>
             <div className={style["msgs"]}>
               <MsgsList msgs={msgsdb} />
