@@ -1,19 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class message {
-	@PrimaryGeneratedColumn()
-	msgId: number;
+  @PrimaryGeneratedColumn()
+  msgId: number;
 
-	@Column()
-	channelId: number;
+  @Column()
+  channelId: number;
 
-	@Column()
-	senderId: number;
+  @Column()
+  senderId: number;
 
-	@Column()
-	content: string;
+  @Column()
+  content: string;
 
-	@Column()
-	timestamp: Date;
+  @Column()
+  timestamp: Date;
 }
