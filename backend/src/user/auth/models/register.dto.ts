@@ -1,26 +1,26 @@
-import {IsEmail, IsNotEmpty, IsPhoneNumber} from "class-validator";
+import { IsEmail, IsNotEmpty, IsPhoneNumber } from 'class-validator';
 
 export class RegisterDto {
-    id: number;
+  id: number;
 
-    avatar: string;
+  avatar: string;
 
-    @IsNotEmpty()
-    username: string;
+  @IsNotEmpty()
+  username: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    email: string;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
-    @IsNotEmpty()
-    @IsPhoneNumber('NL')
-    phonenumber: string;
+  @IsNotEmpty()
+  @IsPhoneNumber('NL')
+  phonenumber: string;
 
-    authentication: boolean;
+  authentication: boolean;
 
-    pendingInvite: boolean;
+  pendingInvite: boolean;
 
-    status: string;
+  status: string;
 
-    twoFactorSecret?: string;
+  twoFactorSecret?: string;
 }

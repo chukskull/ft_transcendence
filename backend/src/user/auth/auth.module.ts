@@ -14,10 +14,10 @@ import { HttpModule } from '@nestjs/axios';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' }
+      signOptions: { expiresIn: '1h' },
     }),
     HttpModule,
-    ],
+  ],
   controllers: [AuthController],
   providers: [AuthService, FortyTwoStrategy],
 })

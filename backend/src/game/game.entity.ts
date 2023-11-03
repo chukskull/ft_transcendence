@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity()
 export class Game {
@@ -12,7 +12,7 @@ export class Game {
   player2Id: string;
 
   @Column()
-  status: "pending" | "active" | "finished";
+  status: 'pending' | 'active' | 'finished';
 
   @Column()
   winnerId: string | null;

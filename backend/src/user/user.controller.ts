@@ -8,8 +8,8 @@ import { User } from './user.entity';
 export class UserController {
   constructor(
     private readonly usersService: UserService,
-    private readonly authService: AuthService
-  ) { }
+    private readonly authService: AuthService,
+  ) {}
   @UseGuards(verifyUser)
   @Get()
   async all(): Promise<User[]> {
@@ -28,5 +28,4 @@ export class UserController {
     const id = await this.authService.clientID(req.user.id);
     return this.usersService.findOne(id);
   }
-
 }

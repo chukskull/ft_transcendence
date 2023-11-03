@@ -1,54 +1,56 @@
-import { ChannelUser } from "src/chat/channel/channelUsers.entity";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	login: string
+  @Column()
+  login: string;
 
-	@Column()
-	name: string
+  @Column()
+  name: string;
 
-	@Column()
-	email: string
+  @Column()
+  email: string;
 
-	@Column()
-	avatarUrl: string
+  @Column()
+  avatarUrl: string;
 
-	@Column()
-	authenticated: boolean
+  @Column()
+  authenticated: boolean;
 
-	@Column()
-	twoFactorAuthEnabled: boolean
+  @Column()
+  twoFactorAuthEnabled: boolean;
 
-	@Column({ nullable: true })
-	twoFactorSecret: string
+  @Column({ nullable: true })
+  twoFactorSecret: string;
 
-	@OneToMany(() => ChannelUser, channelUser => channelUser.user)
-	channelLinks: Promise<ChannelUser[]>
+  @ManyToMany(() => User)
+  @JoinTable()
+  friends: User[];
 
-	@ManyToMany(() => User)
-	@JoinTable()
-	friends: User[]
+  @Column()
+  status: string;
 
-	@Column()
-	status: string
+  @Column()
+  pendingInvite: boolean;
 
-	@Column()
-	pendingInvite: boolean
+  @Column()
+  stats: object;
 
-	@Column()
-	stats: object
+  @Column()
+  matchHistory: object;
 
-	@Column()
-	matchHistory: object
+  @Column()
+  isBanned: boolean;
 
-	@Column()
-	isBanned: boolean
-
-	@Column()
-	isAdmin: string
+  @Column()
+  isAdmin: string;
 }
