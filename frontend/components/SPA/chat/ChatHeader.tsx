@@ -10,13 +10,12 @@ import Modal from "react-modal";
 interface chatHeaderProps {
   avatar: string;
   name: string;
-  group: boolean;
+  isChannel: boolean;
   online: boolean;
 }
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
-  const [isChannel, setIsChannel] = useState(true);
   return (
     <>
       <Modal
@@ -25,15 +24,17 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           setShow(false);
         }}
         className={
-          isChannel ? style["channel-menu-modal"] : style["user-menu-modal"]
+          chatHeaderProps?.isChannel
+            ? style["channel-menu-modal"]
+            : style["user-menu-modal"]
         }
         overlayClassName={style["modal-overlay"]}
       >
-        {isChannel ? <ChannelMenu /> : <UserMenu />}
+        {chatHeaderProps?.isChannel ? <ChannelMenu /> : <UserMenu />}
       </Modal>
       <div className={style["chat-header"]}>
         <div className={style["chat-user-group"]}>
-          {!chatHeaderProps.group && (
+          {!chatHeaderProps?.isChannel && (
             <AvatarBubble avatar="/assets/components/Profile.svg" online />
           )}
           <div className={style["name"]}>{chatHeaderProps.name}</div>
@@ -49,7 +50,9 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
             />
           </button>
         </div>
-        {chatHeaderProps.group && <FiLogOut className={style["leave-group"]} />}
+        {chatHeaderProps?.isChannel && (
+          <FiLogOut className={style["leave-group"]} />
+        )}
       </div>
     </>
   );
