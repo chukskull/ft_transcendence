@@ -36,11 +36,11 @@ export const AddFriend = ({
         </div>
       </button>
       {!clicked ? (
-        <h1 className="text-white font-ClashGrotesk-Medium text-lg group-hover:text-white transitio opacity-80">
+        <h1 className="text-white font-ClashGrotesk-Regular text-base group-hover:text-white transitio opacity-80">
           Add Friend
         </h1>
       ) : (
-        <h1 className="text-white font-ClashGrotesk-Medium text-lg group-hover:text-white transitio opacity-80">
+        <h1 className="text-white font-ClashGrotesk-Regular text-base group-hover:text-white transitio opacity-80">
           Friend Request Sent
         </h1>
       )}

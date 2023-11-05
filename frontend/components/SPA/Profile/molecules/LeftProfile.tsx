@@ -30,7 +30,7 @@ export const LeftProfile = ({ image, name, nickName }: LeftProfileProps) => {
         <AddFriend
           //depends its my profile or not
           display={true}
-          whenClicked={() => handleClick()}
+          whenClicked={handleClick}
           clicked={add}
         />
       </div>
