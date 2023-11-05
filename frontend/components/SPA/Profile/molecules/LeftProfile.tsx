@@ -1,4 +1,6 @@
-import React from "react";
+import React, { use, useEffect, useState } from "react";
+import { AddFriend } from "../atoms/AddFriend";
+import { set } from "react-hook-form";
 
 interface LeftProfileProps {
   image: string;
@@ -7,6 +9,10 @@ interface LeftProfileProps {
 }
 
 export const LeftProfile = ({ image, name, nickName }: LeftProfileProps) => {
+  const [add, setAdd] = useState(false);
+  function handleClick() {
+    setAdd(!add);
+  }
   return (
     <div className="profile-user  ">
       <div className="hex">
@@ -21,6 +27,12 @@ export const LeftProfile = ({ image, name, nickName }: LeftProfileProps) => {
         <h1 className="font-ClashGrotesk-Medium  text-white opacity-80">
           #{nickName}
         </h1>
+        <AddFriend
+          //depends its my profile or not
+          display={true}
+          whenClicked={() => handleClick()}
+          clicked={add}
+        />
       </div>
     </div>
   );
