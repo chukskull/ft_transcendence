@@ -2,7 +2,7 @@ import {
   Controller,
   Post,
   Body,
-  // Param,
+  Param,
   Delete,
   Patch,
   Get,
@@ -34,10 +34,10 @@ export class ChannelController {
     return this.channelService.deleteChannel(id);
   }
 
-  // @Post(':chanId/join')
-  // join(@Param('id') id: number) {
-  //   return this.channelService.joinChannel(id);
-  // }
+  @Post(':chanId/join')
+  join(@Param('chanId') chanId: number) {
+    return this.channelService.joinChannel(chanId);
+  }
 
   // @Post(':chanId/leave')
   // leave(@Param('id') id: number) {

@@ -78,17 +78,26 @@ export class ChannelService {
     await this.channelRepository.remove(channel);
   }
 
-  // async joinChannel(id: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+  async joinChannel(chanId: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    const userId = 14124;
 
-  //   // Add user to channel.members
-  //   channel.members.push(user);
-
-  //   return this.channelRepository.save(channel);
-  // }
+    // check if user is already in channel members list
+    const isAlreadyMember = channel.members.some(
+      (member) => member.id === userId,
+    );
+    if (isAlreadyMember) {
+      throw new NotFoundException('User already in channel');
+    }
+    else {
+      channel.members.push(new User());
+    }
+    
+    return this.channelRepository.save(channel);
+  }
 
   // async leaveChannel(id: number): Promise<Channel> {
   //   const channel = await this.channelRepository.findOne(id);
