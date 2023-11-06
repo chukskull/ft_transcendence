@@ -3,24 +3,41 @@ import ProfileComp from "../molecules/ProfileComp";
 import { useQuery } from "react-query";
 import { getLeadProfiles } from "@/utils/getLeadProfiles";
 
-export const Leadrboard = () => {
+interface LeaderboardProps {
+  MonStyle: "Home" | "Profile";
+}
+
+export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
   const { isLoading, error, data } = useQuery("profiles", async () => {
     return getLeadProfiles();
   });
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return "An error has occurred: " + error.message;
+
+  // Optimize rendering by checking data length before mapping
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col justify-center">
+        <h1 className="text-gray-400 text-4xl font-semibold">No Users :</h1>
+      </div>
+    );
+  }
+
+  let bgStyle: string =
+    MonStyle === "Profile" ? "bg-purpleProfile" : "bg-friend";
   return (
-    <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
+    <div className="flex flex-col items-center justify-center gap-4 flex-grow ">
       {data?.map((user, index) => (
         <div
-          key={index}
-          className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex  justify-center"
+          key={user.id} // Use a unique identifier for each user
+          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-center p-4`}
         >
-          <h1 className="text-center text-white  font-ClashGrotesk-Semibold text-lg flex items-center pr-12">
+          <span className="text-center text-white font-ClashGrotesk-Semibold text-lg flex items-center pr-12 ">
             #{index + 1}
-          </h1>
+          </span>
           <ProfileComp
-            // key={index}
+            // key={index} // Remove redundant key prop for ProfileComp
             img={user.img}
             nickName={user.nickName}
             firstName={user.firstName}
@@ -31,4 +48,5 @@ export const Leadrboard = () => {
     </div>
   );
 };
+
 export default Leadrboard;

@@ -1,37 +1,18 @@
 import React from "react";
 import LiveGameRec from "../molecules/LiveGameRec";
 import MiniProf from "../molecules/MiniProf";
+import Leadrboard from "../../Profile/organisms/Leadrboard";
 
 export const SocialFeed = () => {
   return (
     <div className="flex flex-row max-sm:items-center  gap-16 p-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-3/4">
       <div className="flex flex-col  flex-grow border-1 border-white  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
-        <div className="relative">
-          <div className="absolute w-3 h-3 rounded-full bg-red-500 top-2/4 left-11 max-sm:hidden"></div>
-          <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
-            Live Games
-          </h1>
-        </div>
+        <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6  max-sm:mx-3">
+          Leaderboard
+        </h1>
 
         <div className="flex flex-col   px-12 gap-6 m-6 max-sm:px-6 max-sm:gap-3 max-sm:m-3 overflow-y-auto">
-          {fakeData.length > 0 ? (
-            fakeData.map((game, index) => (
-              <LiveGameRec
-                key={index}
-                LeftProf={game.imageLeft}
-                RightProf={game.imageRight}
-                scoreLeft={game.scoreLeft}
-                scoreRight={game.scoreRight}
-                boolBut={true}
-              />
-            ))
-          ) : (
-            <div className="flex flex-col justify-center  ">
-              <h1 className="text-gray-400 text-4xl font-semibold ">
-                No Live Games
-              </h1>
-            </div>
-          )}
+          <Leadrboard MonStyle="Home" />
         </div>
       </div>
       <div className="flex flex-col  border-2  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-fit">
