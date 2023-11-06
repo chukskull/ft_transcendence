@@ -17,15 +17,8 @@ export class UserController {
   }
 
   @UseGuards(verifyUser)
-  @Get('findName')
-  async findName(@Req() req): Promise<User> {
-    return this.usersService.findName(req.user.id);
-  }
-
-  @UseGuards(verifyUser)
-  @Get('getActiveUserID')
-  async getActiveUserID(@Req() req): Promise<User> {
-    const id = await this.authService.clientID(req.user.id);
-    return this.usersService.findOne(id);
+  @Get(':login')
+  async findUser(@Req() req): Promise<User> {
+    return this.usersService.findOne(req.user.id);
   }
 }

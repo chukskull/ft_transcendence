@@ -1,5 +1,6 @@
 import { IsString, IsBoolean } from 'class-validator';
 
+
 export class CreateChannelDto {
   @IsString()
   name: string;

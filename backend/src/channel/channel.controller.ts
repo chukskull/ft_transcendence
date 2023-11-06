@@ -1,19 +1,22 @@
-import { Controller, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+  Get,
+} from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { CreateChannelDto, UpdateChannelDto } from
+import { CreateChannelDto } from './dto/create-channel.dto';
+import { UpdateChannelDto } from './dto/update-channel.dto';
 
-@Controller('channel')
-export class ChannelController
-{
+@Controller('channels')
+export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  @Get()
-  findAll() {
-    return this.channelService.getChannels();
-  }
-
   @Get(':userId')
-  findAll() {
+  find() {
     return this.channelService.getChannels();
   }
 
@@ -59,12 +62,11 @@ export class ChannelController
 
   @Post(':chanId/mod/:userId/:action')
   mod(@Param('id') id: number) {
-    return this.channelService.modUser(id);
+    return this.channelService.modUnmodFromChannel(id, userId);
   }
 
   @Post(':chanId/owner/:userId/')
   owner(@Param('id') id: number) {
-    return this.channelService.ownerUser(id);
+    return this.channelService.makeOwner(id, userId);
   }
-
 }
