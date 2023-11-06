@@ -5,7 +5,7 @@ import MiniProf from "../molecules/MiniProf";
 export const SocialFeed = () => {
   return (
     <div className="flex flex-row max-sm:items-center  gap-16 p-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-3/4">
-      <div className="flex flex-col justify-center flex-grow border-1 border-white  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
+      <div className="flex flex-col  flex-grow border-1 border-white  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
         <div className="relative">
           <div className="absolute w-3 h-3 rounded-full bg-red-500 top-2/4 left-11 max-sm:hidden"></div>
           <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
@@ -13,7 +13,7 @@ export const SocialFeed = () => {
           </h1>
         </div>
 
-        <div className="flex flex-col justify-center  px-12 gap-6 m-6 max-sm:px-6 max-sm:gap-3 max-sm:m-3 overflow-y-auto">
+        <div className="flex flex-col   px-12 gap-6 m-6 max-sm:px-6 max-sm:gap-3 max-sm:m-3 overflow-y-auto">
           {fakeData.length > 0 ? (
             fakeData.map((game, index) => (
               <LiveGameRec
@@ -38,7 +38,7 @@ export const SocialFeed = () => {
         <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
           Invite Friends
         </h1>
-        <div className="flex flex-row  justify-center   flex-wrap gap-6 max-sm:gap-6 max-sm:px-10 overflow-y-auto">
+        <div className="flex flex-row  justify-center  m-5 flex-wrap gap-6 max-sm:gap-6 max-sm:px-10 overflow-y-auto">
           {Friends.length > 0 ? (
             Friends.map((friend, index) => (
               <MiniProf key={index} image={friend.imaeg} name={friend.name} />
@@ -166,6 +166,42 @@ const fakeData = [
     imageRight: "https://i.pravatar.cc/300?img=12",
     scoreLeft: 1,
     scoreRight: 5,
+  },
+  {
+    imageLeft: "https://i.pravatar.cc/300?img=13",
+    imageRight: "https://i.pravatar.cc/300?img=14",
+    scoreLeft: 3,
+    scoreRight: 4,
+  },
+  {
+    imageLeft: "https://i.pravatar.cc/300?img=15",
+    imageRight: "https://i.pravatar.cc/300?img=16",
+    scoreLeft: 1,
+    scoreRight: 3,
+  },
+  {
+    imageLeft: "https://i.pravatar.cc/300?img=13",
+    imageRight: "https://i.pravatar.cc/300?img=14",
+    scoreLeft: 3,
+    scoreRight: 4,
+  },
+  {
+    imageLeft: "https://i.pravatar.cc/300?img=15",
+    imageRight: "https://i.pravatar.cc/300?img=16",
+    scoreLeft: 1,
+    scoreRight: 3,
+  },
+  {
+    imageLeft: "https://i.pravatar.cc/300?img=13",
+    imageRight: "https://i.pravatar.cc/300?img=14",
+    scoreLeft: 3,
+    scoreRight: 4,
+  },
+  {
+    imageLeft: "https://i.pravatar.cc/300?img=15",
+    imageRight: "https://i.pravatar.cc/300?img=16",
+    scoreLeft: 1,
+    scoreRight: 3,
   },
   {
     imageLeft: "https://i.pravatar.cc/300?img=13",

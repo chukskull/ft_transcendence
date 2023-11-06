@@ -24,7 +24,6 @@ const styles: Styles = {
   ],
   innerWrapper: "bg-transparent",
   inputWrapper: [
-    "w-80",
     "h-[48px]",
     "rounded-3xl",
     "border-0",
@@ -60,8 +59,8 @@ export default function Fill() {
     <>
       <div className="h-screen w-screen flex items-center justify-center">
         <div className="rectangle flex  items-center justify-center">
-          <form action="">
-            <div className="w-80 flex flex-col items-center justify-center gap-12">
+          <form action="" className="w-[80%]">
+            <div className=" flex flex-col items-center justify-center gap-12">
               <Input
                 {...register("name", {
                   required: "This field is required",

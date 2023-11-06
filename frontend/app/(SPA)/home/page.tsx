@@ -1,6 +1,5 @@
 "use client";
-import { MatchButton } from "@/components/SPA/home/atoms/MatchButton";
-import { LiveGameRec } from "@/components/SPA/home/molecules/LiveGameRec";
+
 import { MatchMaking } from "@/components/SPA/home/molecules/MatchMaking";
 import { SocialFeed } from "@/components/SPA/home/organisms/SocialFeed";
 

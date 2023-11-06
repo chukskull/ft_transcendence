@@ -13,7 +13,7 @@ export const LogButton = ({ isGoogle, image, text, altr }: LogButtonProps) => {
   return (
     <>
       <Button
-        className="bg-inherit rounded-3xl border-2 px-16 py-2 text-center text-white text-base font-light
+        className=" w-[90%] bg-inherit rounded-3xl border-2 px-16 py-2 text-center text-white text-base font-light
       animation duration-300 ease-in-out hover:scale-105"
       >
         <Image
