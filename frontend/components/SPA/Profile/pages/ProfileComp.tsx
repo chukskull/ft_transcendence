@@ -51,13 +51,15 @@ export default function Profile({ id }: ProfileProps) {
       </div>
 
       <div className="item-2">
-        <div className="C-1" style={{ overflow: "auto" }}>
-          <div className="flex items-center justify-center">
-            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2">
-              Leaderboard
-            </h1>
-          </div>
-          <Leadrboard />
+        <div
+          className="C-1"
+          style={{ overflow: "auto", paddingInline: "40px" }}
+        >
+          <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2 text-center">
+            Leaderboard
+          </h1>
+
+          <Leadrboard MonStyle="Profile" />
         </div>
 
         <div className="C-2 " style={{ overflow: "auto" }}>
