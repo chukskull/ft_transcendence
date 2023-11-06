@@ -1,12 +1,10 @@
-import { Match } from "src/match/entities/match.entity";
-import { ChannelUser } from "src/chat/channel/channelUsers.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { MatchHistory } from "src/match-history/entities/match-history.entity";
 
 @Entity()
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
 	@Column()
 	username: string
@@ -20,36 +18,36 @@ export class User {
 	@Column()
 	lastName: string
 
-	@Column()
-	email: string
+  @Column()
+  avatarUrl: string;
 
-	@Column()
-	avatarUrl: string
+  @Column()
+  twoFactorAuthEnabled: boolean;
 
-	@Column()
-	authenticated: boolean
+  @Column({ nullable: true })
+  twoFactorSecret: string;
 
-	@Column()
-	twoFactorAuthEnabled: boolean
+  @ManyToMany(() => User)
+  @JoinTable()
+  friends: User[];
 
-	@Column({ nullable: true })
-	twoFactorSecret: string
+  @Column()
+  status: string;
 
-	@OneToMany(() => ChannelUser, channelUser => channelUser.user)
-	channelLinks: Promise<ChannelUser[]>
+  @Column()
+  pendingInvite: boolean;
 
-	@ManyToMany(() => User)
-	@JoinTable()
-	friends: User[]
+  @Column()
+  stats: string;
 
-	@Column()
-	status: string
+  @Column()
+  matchHistory: object;
 
-	@Column()
-	pendingInvite: boolean
+  @Column()
+  experience: number;
 
-	@Column()
-	stats: object
+  @Column()
+  level: number;
 
 	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player1)
 	player1Matches: Promise<MatchHistory[]>
@@ -61,4 +59,13 @@ export class User {
 	winnerMatches: Promise<MatchHistory[]>
 
 	
+  @Column()
+  wins: number;
+
+  @Column()
+  totalGames: number;
+
+  @ManyToMany(() => Conversations)
+  @JoinTable()
+  conversations: Conversations[];
 }
