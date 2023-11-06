@@ -59,6 +59,7 @@ const ChannelSettings = ({}) => {
                 type="password"
                 placeholder="New Password"
                 value={password}
+                minLength={4}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setFormData({ ...formData, password: e.target.value });

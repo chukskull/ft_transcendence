@@ -1,12 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./user.entity";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
   async all(): Promise<User[]> {
@@ -20,7 +20,7 @@ export class UserService {
   async findPrivateGame(): Promise<User> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     queryBuilder.where('user.pendingInvite = true');
-    return  queryBuilder.getOne();
+    return queryBuilder.getOne();
   }
 
   async create(data): Promise<User> {
