@@ -1,5 +1,7 @@
+import { Match } from "src/match/entities/match.entity";
 import { ChannelUser } from "src/chat/channel/channelUsers.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { MatchHistory } from "src/match-history/entities/match-history.entity";
 
 @Entity()
 export class User {
@@ -7,10 +9,16 @@ export class User {
 	id: number
 
 	@Column()
-	login: string
+	username: string
 
 	@Column()
-	name: string
+	nickName: string
+
+	@Column()
+	firstName: string
+
+	@Column()
+	lastName: string
 
 	@Column()
 	email: string
@@ -43,12 +51,14 @@ export class User {
 	@Column()
 	stats: object
 
-	@Column()
-	matchHistory: object
+	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player1)
+	player1Matches: Promise<MatchHistory[]>
 
-	@Column()
-	isBanned: boolean
+	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player2)
+	player2Matches: Promise<MatchHistory[]>
 
-	@Column()
-	isAdmin: string
+	@OneToMany(() => MatchHistory, matchHistory => matchHistory.winner)
+	winnerMatches: Promise<MatchHistory[]>
+
+	
 }

@@ -64,6 +64,6 @@ export class UserService {
   }
 
   async findName(data: any): Promise<User> {
-    return await this.userRepository.findOne(data.name);
+    return await this.userRepository.findOne(data.nickName);
   }
 }

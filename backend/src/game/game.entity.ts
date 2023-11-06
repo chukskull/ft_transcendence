@@ -1,15 +1,16 @@
+import { User } from "src/user/user.entity";
 import { Entity, PrimaryColumn, Column } from "typeorm";
 
-@Entity()
+@Entity('games')
 export class Game {
   @PrimaryColumn()
   id: number;
 
   @Column()
-  player1Id: string;
+  player1: User;
 
   @Column()
-  player2Id: string;
+  player2 : User;
 
   @Column()
   status: "pending" | "active" | "finished";

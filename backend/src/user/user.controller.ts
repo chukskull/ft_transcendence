@@ -19,7 +19,7 @@ export class UserController {
   @UseGuards(verifyUser)
   @Get('findName')
   async findName(@Req() req): Promise<User> {
-    return this.usersService.findName(req.user.id);
+    return this.usersService.findName(req.user.nickName);
   }
 
   @UseGuards(verifyUser)

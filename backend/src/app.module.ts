@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatGatewayModule } from './chat/chat-gateway.module';
 import { ChannelModule } from './chat/channel/channel.module';
 import { MessageModule } from './chat/message/message.module';
+import { MatchModule } from './match-history/match-.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { MessageModule } from './chat/message/message.module';
     database: process.env.POSTGRES_DB,
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: true
-  })],
+  }),
+    MatchModule],
   controllers: [AppController],
   providers: [AppService],
 })
