@@ -50,7 +50,7 @@ export class ChannelController {
 
   @Post(':chanId/banning/:userId/:action')
   ban(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
-    return this.channelService.banUnbanFromChannel(id, 14124);
+    return this.channelService.banUnbanFromChannel(chanId, userId, action);
   }
 
   // @Post(':chanId/muting/:userId/:action')

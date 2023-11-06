@@ -14,6 +14,7 @@ export class ChannelService {
   constructor(
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
+    private conversationRepository: Repository<Conversations>,
   ) {}
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
     const { name, is_private, password } = createChannelDto;
@@ -132,17 +133,38 @@ export class ChannelService {
     return this.channelRepository.save(channel);
   }
 
-  // async banUnbanFromChannel(id: number, user: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
-
-  //   // Remove user from channel.members
-  //   channel.members = channel.members.filter((member) => member.id !== user.id);
-
-  //   return this.channelRepository.save(channel);
-  // }
+  async banUnbanFromChannel(chanId: number, userId: number, action: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    const conv = await this.conversationRepository.findOne({ id: channel.conversation.id });
+    if (!conv) {
+      throw new NotFoundException('Conversation not found');
+    }
+    if (action == 1) {
+      // check if user is already in channel banned list
+      const isAlreadyBanned = channel.BannedUsers.some(
+        (member) => member.id === userId,
+      );
+      if (isAlreadyBanned) {
+        throw new NotFoundException('User already banned from channel');
+      }
+      else {
+        channel.BannedUsers.push(new User());
+        conv.BannedUsers.push(new User());
+      }
+    }
+    else {
+      // Remove user from channel.members list
+      channel.BannedUsers = channel.BannedUsers.filter((member) => member.id !== userId);
+      conv.BannedUsers = conv.BannedUsers.filter((member) => member.id !== userId);
+    }
+    
+    
+    await this.conversationRepository.save(conv);
+    return this.channelRepository.save(channel);
+  }
   // async muteUnmuteFromChannel(id: number, user: number): Promise<Channel> {
   //   const channel = await this.channelRepository.findOne(id);
   //   if (!channel) {
