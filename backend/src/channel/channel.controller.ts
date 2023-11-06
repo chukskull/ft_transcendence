@@ -59,13 +59,13 @@ export class ChannelController {
   }
 
 
-  // @Post(':chanId/mod/:userId/:action')
-  // mod(@Param('id') id: number) {
-  //   return this.channelService.modUnmodFromChannel(id, 14124);
-  // }
+  @Post(':chanId/mod/:userId/:action')
+  mod(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
+    return this.channelService.modUnmodFromChannel(chanId, userId, action);
+  }
 
-  // @Post(':chanId/owner/:userId/')
-  // owner(@Param('id') id: number) {
-  //   return this.channelService.makeOwner(id, 14124);
-  // }
+  @Post(':chanId/owner/:userId/')
+  owner(@Param('chanId') chanId: number, @Param('userId') userId: number) {
+    return this.channelService.makeOwner(chanId, userId);
+  }
 }

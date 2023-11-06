@@ -200,15 +200,39 @@ export class ChannelService {
     return this.channelRepository.save(channel);
   }
 
-  // async makeOwner(id: number, user: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+  async modUnmodFromChannel(chanId: number, userId: number, action: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    if (action == 1) {
+      const isAlreadyMod = channel.Moderators.some(
+        (member) => member.id === userId,
+      );
+      if (isAlreadyMod) {
+        throw new NotFoundException('User already mod from channel');
+      }
+      else {
+        channel.Moderators.push(new User());
+      }
+    }
+    else {
+      // Remove user from channel.members list
+      channel.Moderators = channel.Moderators.filter((member) => member.id !== userId);
+    }
+    return this.channelRepository.save(channel);
 
-  //   // Remove user from channel.members
-  //   channel.members = channel.members.filter((member) => member.id !== user.id);
+  }
 
-  //   return this.channelRepository.save(channel);
-  // }
+  async makeOwner(chanId: number, userId: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    // if (channel.owner.id === requestMaker.id) {
+    //   channel.owner = userId;
+    // }
+    return this.channelRepository.save(channel);
+  }
+
 }
