@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './user/auth/auth.module';
+// import { AuthModule } from './user/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
+// import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChatGatewayModule } from './chat/chat-gateway.module';
-import { ChannelModule } from './chat/channel/channel.module';
-import { MessageModule } from './chat/message/message.module';
+// import { ChatGatewayModule } from './chat/chat-gateway.module';
+import { ChannelModule } from './channel/channel.module';
+// import { MessageModule } from './chat/message/message.module';
 
 @Module({
   imports: [
-    AuthModule,
-    ChatGatewayModule,
+    // AuthModule,
+    // ChatGatewayModule,
     ChannelModule,
-    MessageModule,
+    // MessageModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env',
     }),
-    UserModule,
+    // UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

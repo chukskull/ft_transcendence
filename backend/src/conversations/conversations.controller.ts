@@ -1,4 +1,6 @@
 import { Controller } from '@nestjs/common';
+import { Get, Param } from '@nestjs/common';
+import { ConversationsService } from './conversations.service';
 
 @Controller('conversations')
 export class ConversationsController {
