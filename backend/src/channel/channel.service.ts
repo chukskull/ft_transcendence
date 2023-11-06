@@ -6,7 +6,8 @@ import { Channel } from './channel.entity';
 import { CreateChannelDto } from './dtos/create-channel.dto';
 // import { UpdateChannelDto } from './dtos/update-channel.dto';
 // import { User } from '../user/user.entity';
-// import { NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
+import { Conversations } from '../conversations/conversations.entity';
 
 @Injectable()
 export class ChannelService {
@@ -15,14 +16,19 @@ export class ChannelService {
     private channelRepository: Repository<Channel>,
   ) {}
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const { name, is_private } = createChannelDto;
-    console.log(createChannelDto);
-
+    const { name, is_private, password } = createChannelDto;
     const channel = new Channel();
     channel.name = name;
-    channel.is_private = is_private;
-    // channel.conversation = createConversationDto;
-
+    if (password) {
+      channel.password = password;
+      channel.is_protected = true;
+    }
+    else 
+      channel.is_protected = false;
+    
+    channel.conversation = new Conversations();
+    // channel.owner = 
+    // channel.members.push();
     return this.channelRepository.save(channel);
   }
   async getChannels(): Promise<Channel[]> {

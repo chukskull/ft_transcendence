@@ -27,6 +27,9 @@ export class Channel {
   @Column()
   is_private: boolean;
 
+  @Column()
+  is_protected: boolean;
+
   @ManyToOne(() => Conversations, { nullable: true })
   @JoinColumn({ name: 'conversation_id' })
   conversation: Conversations;
