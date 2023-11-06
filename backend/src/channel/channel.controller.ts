@@ -53,10 +53,10 @@ export class ChannelController {
     return this.channelService.banUnbanFromChannel(chanId, userId, action);
   }
 
-  // @Post(':chanId/muting/:userId/:action')
-  // mute(@Param('id') id: number) {
-  //   return this.channelService.muteUnmuteFromChannel(id, 14124);
-  // }
+  @Post(':chanId/muting/:userId/:action')
+  mute(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
+    return this.channelService.muteUnmuteFromChannel(chanId, userId, action);
+  }
 
 
   // @Post(':chanId/mod/:userId/:action')

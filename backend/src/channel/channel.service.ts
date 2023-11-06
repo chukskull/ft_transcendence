@@ -165,28 +165,41 @@ export class ChannelService {
     await this.conversationRepository.save(conv);
     return this.channelRepository.save(channel);
   }
-  // async muteUnmuteFromChannel(id: number, user: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
 
-  //   // Remove user from channel.members
-  //   channel.members = channel.members.filter((member) => member.id !== user.id);
 
-  //   return this.channelRepository.save(channel);
-  // }
-  // async modUnmodFromChannel(id: number, user: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+  async muteUnmuteFromChannel(chanId: number, userId: number, action: number): Promise<Channel> {
 
-  //   // Remove user from channel.members
-  //   channel.members = channel.members.filter((member) => member.id !== user.id);
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    const conv = await this.conversationRepository.findOne({ id: channel.conversation.id });
+    if (!conv) {
+      throw new NotFoundException('Conversation not found');
+    }
+    if (action == 1) {
+      // check if user is already in channel muted list
+      const isAlreadyMuted = channel.MutedUsers.some(
+        (member) => member.id === userId,
+      );
+      if (isAlreadyMuted) {
+        throw new NotFoundException('User already muted from channel');
+      }
+      else {
+        channel.MutedUsers.push(new User());
+        conv.MutedUsers.push(new User());
+      }
+    }
+    else {
+      // Remove user from channel.members list
+      channel.MutedUsers = channel.MutedUsers.filter((member) => member.id !== userId);
+      conv.MutedUsers = conv.MutedUsers.filter((member) => member.id !== userId);
+    }
 
-  //   return this.channelRepository.save(channel);
-  // }
+    await this.conversationRepository.save(conv);
+    return this.channelRepository.save(channel);
+  }
+
   // async makeOwner(id: number, user: number): Promise<Channel> {
   //   const channel = await this.channelRepository.findOne(id);
   //   if (!channel) {
