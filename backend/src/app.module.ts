@@ -5,9 +5,10 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 // import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { ChatGatewayModule } from './chat/chat-gateway.module';
-import { ChannelModule } from './channel/channel.module';
-// import { MessageModule } from './chat/message/message.module';
+import { ChatGatewayModule } from './chat/chat-gateway.module';
+import { ChannelModule } from './chat/channel/channel.module';
+import { MessageModule } from './chat/message/message.module';
+import { MatchModule } from './match-history/match-.module';
 
 @Module({
   imports: [
@@ -21,16 +22,16 @@ import { ChannelModule } from './channel/channel.module';
     }),
     // UserModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
-  ],
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: true
+  }),
+    MatchModule],
   controllers: [AppController],
   providers: [AppService],
 })
