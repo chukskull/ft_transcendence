@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class ConversationsService {
+export class ConversationService {
     constructor() {}
 
     async getConversation(convId: number) {

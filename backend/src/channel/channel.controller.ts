@@ -10,6 +10,7 @@ import {
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dtos/create-channel.dto';
 import { UpdateChannelDto } from './dtos/update-channel.dto';
+import Password from 'antd/es/input/Password';
 
 @Controller('channels')
 export class ChannelController {
@@ -35,8 +36,8 @@ export class ChannelController {
   }
 
   @Post(':chanId/join')
-  join(@Param('chanId') chanId: number) {
-    return this.channelService.joinChannel(chanId);
+  join(@Param('chanId') chanId: number, @Body() Password: string) {
+    return this.channelService.joinChannel(chanId, Password);
   }
 
   @Post(':chanId/leave')

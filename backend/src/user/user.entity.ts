@@ -5,7 +5,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Conversations } from "src/conversations/conversations.entity";
+import { Conversation } from "src/conversation/conversation.entity";
 
 @Entity()
 export class MatchHistory {
@@ -69,7 +69,7 @@ export class User {
   @Column()
   totalGames: number;
 
-  @ManyToMany(() => Conversations)
+  @ManyToMany(() => Conversation)
   @JoinTable()
-  conversations: Conversations[];
+  conversations: Conversation[];
 }

@@ -7,14 +7,14 @@ import { CreateChannelDto } from './dtos/create-channel.dto';
 import { UpdateChannelDto } from './dtos/update-channel.dto';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
-import { Conversations } from '../conversations/conversations.entity';
+import { Conversation } from '../conversation/conversation.entity';
 
 @Injectable()
 export class ChannelService {
   constructor(
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
-    private conversationRepository: Repository<Conversations>,
+    private conversationRepository: Repository<Conversation>,
   ) {}
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
     const { name, is_private, password } = createChannelDto;
@@ -28,7 +28,7 @@ export class ChannelService {
     else 
       channel.is_protected = false;
     
-    channel.conversation = new Conversations();
+    channel.conversation = new Conversation();
     // channel.members.push();
     console.log(channel); 
     return this.channelRepository.save(channel);
@@ -79,11 +79,19 @@ export class ChannelService {
     await this.channelRepository.remove(channel);
   }
 
-  async joinChannel(chanId: number): Promise<Channel> {
+  async joinChannel(chanId: number, password: string): Promise<Channel> {
     const channel = await this.channelRepository.findOne({ id: chanId });
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
+    if (channel.is_protected && channel.password !== password) {
+      throw new NotFoundException('Password is incorrect');
+    }
+
+    if (channel.is_private) {
+      throw new NotFoundException('Channel is private');
+    }
+
     const userId = 14124;
 
     // check if user is already in channel members list

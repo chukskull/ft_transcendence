@@ -28,15 +28,12 @@ export class Chat {
   time: Date;
 }
 
-@Entity('conversations')
-export class Conversations {
+@Entity('conversation')
+export class Conversation {
   @PrimaryGeneratedColumn({
     comment: 'Unique identifier for a conversation',
   })
   id: number;
-
-  @Column()
-  convId: string;
 
   @ManyToMany(() => User)
   @JoinTable()
@@ -57,3 +54,4 @@ export class Conversations {
   @JoinTable()
   chats: Chat[];
 }
+
