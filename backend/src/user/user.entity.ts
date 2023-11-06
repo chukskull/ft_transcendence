@@ -1,22 +1,22 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Conversations } from '../conversations/conversations.entity';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { MatchHistory } from "src/match-history/entities/match-history.entity";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  login: string;
+	@Column()
+	username: string
 
-  @Column()
-  name: string;
+	@Column()
+	nickName: string
+
+	@Column()
+	firstName: string
+
+	@Column()
+	lastName: string
 
   @Column()
   avatarUrl: string;
@@ -49,6 +49,16 @@ export class User {
   @Column()
   level: number;
 
+	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player1)
+	player1Matches: Promise<MatchHistory[]>
+
+	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player2)
+	player2Matches: Promise<MatchHistory[]>
+
+	@OneToMany(() => MatchHistory, matchHistory => matchHistory.winner)
+	winnerMatches: Promise<MatchHistory[]>
+
+	
   @Column()
   wins: number;
 
