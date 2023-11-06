@@ -3,7 +3,7 @@ import {
   Post,
   Body,
   // Param,
-  // Delete,
+  Delete,
   Patch,
   Get,
 } from '@nestjs/common';
@@ -29,10 +29,10 @@ export class ChannelController {
     return this.channelService.updateChannel(updateChannelDto);
   }
 
-  // @Delete(':chanId')
-  // delete(@Param('id') id: number) {
-  //   return this.channelService.deleteChannel(id);
-  // }
+  @Delete()
+  delete(@Body() id: number) {
+    return this.channelService.deleteChannel(id);
+  }
 
   // @Post(':chanId/join')
   // join(@Param('id') id: number) {

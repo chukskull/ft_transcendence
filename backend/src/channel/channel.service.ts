@@ -66,18 +66,17 @@ export class ChannelService {
       channel.name = name;
     }
     channel.is_private = is_private;
-    
+
     return this.channelRepository.save(channel);
   }
 
-  // async deleteChannel(id: number): Promise<void> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
-
-  //   await this.channelRepository.remove(channel);
-  // }
+  async deleteChannel(id: number): Promise<void> {
+    const channel = await this.channelRepository.findOne(id);
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    await this.channelRepository.remove(channel);
+  }
 
   // async joinChannel(id: number): Promise<Channel> {
   //   const channel = await this.channelRepository.findOne(id);
