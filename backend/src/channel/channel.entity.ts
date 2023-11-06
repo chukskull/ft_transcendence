@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Conversation } from '../conversation/conversation.entity';
+import { Conversations } from '../conversations/conversations.entity';
 
 @Entity('channel')
 export class Channel {
@@ -18,7 +18,7 @@ export class Channel {
   id: number;
 
   @Column()
-  channelName: string;
+  name: string;
 
   @ManyToMany(() => User)
   @JoinTable()
@@ -27,9 +27,9 @@ export class Channel {
   @Column()
   is_private: boolean;
 
-  @ManyToOne(() => Conversation, { nullable: true })
+  @ManyToOne(() => Conversations, { nullable: true })
   @JoinColumn({ name: 'conversation_id' })
-  conversation: Conversation;
+  conversation: Conversations;
 
   @ManyToMany(() => User)
   @JoinTable()
