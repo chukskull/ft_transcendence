@@ -5,6 +5,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Conversations } from '../conversations/conversations.entity';
 
 @Entity()
 export class User {
@@ -18,13 +19,7 @@ export class User {
   name: string;
 
   @Column()
-  email: string;
-
-  @Column()
   avatarUrl: string;
-
-  @Column()
-  authenticated: boolean;
 
   @Column()
   twoFactorAuthEnabled: boolean;
@@ -43,14 +38,24 @@ export class User {
   pendingInvite: boolean;
 
   @Column()
-  stats: object;
+  stats: string;
 
   @Column()
   matchHistory: object;
 
   @Column()
-  isBanned: boolean;
+  experience: number;
 
   @Column()
-  isAdmin: string;
+  level: number;
+
+  @Column()
+  wins: number;
+
+  @Column()
+  totalGames: number;
+
+  @ManyToMany(() => Conversations)
+  @JoinTable()
+  conversations: Conversations[];
 }
