@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Conversations } from '../conversations/conversations.entity';
+import { Conversation } from '../conversation/conversation.entity';
 
 @Entity('channel')
 export class Channel {
@@ -27,9 +27,11 @@ export class Channel {
   @Column()
   is_private: boolean;
 
-  @ManyToOne(() => Conversations, { nullable: true })
-  @JoinColumn({ name: 'conversation_id' })
-  conversation: Conversations;
+  @Column()
+  is_protected: boolean;
+
+  @ManyToOne(() => Conversation, { nullable: true })
+  conversation: Conversation;
 
   @ManyToMany(() => User)
   @JoinTable()
@@ -43,10 +45,9 @@ export class Channel {
   @JoinTable()
   Moderators: User[];
 
-  @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'owner_id' })
+  @ManyToOne(() => User, { nullable: true })
   owner: User;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 }

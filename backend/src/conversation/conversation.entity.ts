@@ -4,15 +4,21 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import { User } from '../user/user.entity';
 
-class Chat {
+@Entity()
+export class Chat {
   @PrimaryGeneratedColumn({
     comment: 'Unique identifier for a chat',
   })
-  @Column()
+  id: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn()
   sender: User;
 
   @Column()
@@ -22,15 +28,12 @@ class Chat {
   time: Date;
 }
 
-@Entity('conversations')
-export class Conversations {
+@Entity('conversation')
+export class Conversation {
   @PrimaryGeneratedColumn({
     comment: 'Unique identifier for a conversation',
   })
   id: number;
-
-  @Column()
-  convId: string;
 
   @ManyToMany(() => User)
   @JoinTable()
@@ -51,3 +54,4 @@ export class Conversations {
   @JoinTable()
   chats: Chat[];
 }
+

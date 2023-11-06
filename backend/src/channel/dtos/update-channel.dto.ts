@@ -1,6 +1,12 @@
-import { IsOptional, IsString, IsBoolean, IsArray } from 'class-validator';
+import { IsOptional, IsString, IsBoolean, IsArray , IsNumber, IsNotEmpty
+} from 'class-validator';
 
 export class UpdateChannelDto {
+
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+  
   @IsOptional()
   @IsString()
   name: string;
