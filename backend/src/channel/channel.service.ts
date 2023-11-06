@@ -95,33 +95,42 @@ export class ChannelService {
     else {
       channel.members.push(new User());
     }
-    
+
     return this.channelRepository.save(channel);
   }
 
-  // async leaveChannel(id: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+  async leaveChannel(chanId: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    const userId = 14124;
+    // Remove user from channel.members list
+    channel.members = channel.members.filter((member) => member.id !== userId);
 
-  //   // Remove user from channel.members
-  //   channel.members = channel.members.filter((member) => member.id !== user.id);
 
-  //   return this.channelRepository.save(channel);
-  // }
+    return this.channelRepository.save(channel);
+  }
 
-  // async inviteToChannel(id: number, user: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+  async inviteToChannel(chanId: number, userId: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne({ id: chanId });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
 
-  //   // Add user to channel.members
-  //   channel.members.push(user);
+    const isAlreadyMember = channel.members.some(
+      (member) => member.id === userId,
+    );
 
-  //   return this.channelRepository.save(channel);
-  // }
+    if (isAlreadyMember) {
+      throw new NotFoundException('User already in channel');
+    }
+    else {
+      channel.members.push(new User());
+    }
+
+    return this.channelRepository.save(channel);
+  }
 
   // async banUnbanFromChannel(id: number, user: number): Promise<Channel> {
   //   const channel = await this.channelRepository.findOne(id);

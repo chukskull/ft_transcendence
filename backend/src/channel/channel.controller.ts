@@ -39,25 +39,25 @@ export class ChannelController {
     return this.channelService.joinChannel(chanId);
   }
 
-  // @Post(':chanId/leave')
-  // leave(@Param('id') id: number) {
-  //   return this.channelService.leaveChannel(id);
-  // }
+  @Post(':chanId/leave')
+  leave(@Param('chanId') chanId: number) {
+    return this.channelService.leaveChannel(chanId);
+  }
+  @Post(':chanId/invite/:userId')
+  invite(@Param('chanId') chanId: number, @Param('userId') userId: number) {
+    return this.channelService.inviteToChannel(chanId, userId);
+  }
 
-  // @Post(':chanId/banning/:userId/:action')
-  // ban(@Param('id') id: number) {
-  //   return this.channelService.banUnbanFromChannel(id, 14124);
-  // }
+  @Post(':chanId/banning/:userId/:action')
+  ban(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
+    return this.channelService.banUnbanFromChannel(id, 14124);
+  }
 
   // @Post(':chanId/muting/:userId/:action')
   // mute(@Param('id') id: number) {
   //   return this.channelService.muteUnmuteFromChannel(id, 14124);
   // }
 
-  // @Post(':chanId/invite/:userId')
-  // invite(@Param('id') id: number) {
-  //   return this.channelService.inviteToChannel(id, 14124);
-  // }
 
   // @Post(':chanId/mod/:userId/:action')
   // mod(@Param('id') id: number) {
