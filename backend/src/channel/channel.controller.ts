@@ -4,12 +4,12 @@ import {
   Body,
   // Param,
   // Delete,
-  // Patch,
+  Patch,
   Get,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dtos/create-channel.dto';
-// import { UpdateChannelDto } from './dtos/update-channel.dto';
+import { UpdateChannelDto } from './dtos/update-channel.dto';
 
 @Controller('channels')
 export class ChannelController {
@@ -24,10 +24,10 @@ export class ChannelController {
   findAll() {
     return this.channelService.getChannels();
   }
-  // @Patch(':chanId')
-  // update(@Param('id') id: number, @Body() updateChannelDto: UpdateChannelDto) {
-  //   return this.channelService.updateChannel(id, updateChannelDto);
-  // }
+  @Patch()
+  update(@Body() updateChannelDto: UpdateChannelDto) {
+    return this.channelService.updateChannel(updateChannelDto);
+  }
 
   // @Delete(':chanId')
   // delete(@Param('id') id: number) {

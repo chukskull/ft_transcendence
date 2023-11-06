@@ -42,3 +42,58 @@
 2023-11-06 18:43:12.146 GMT [95851] ERROR:  null value in column "password" of relation "channel" violates not-null constraint
 2023-11-06 18:43:12.146 GMT [95851] DETAIL:  Failing row contains (1, test1, t, null, null, null).
 2023-11-06 18:43:12.146 GMT [95851] STATEMENT:  INSERT INTO "channel"("name", "is_private", "password", "conversation_id", "owner_id") VALUES ($1, $2, DEFAULT, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 18:49:33.493 GMT [97140] ERROR:  null value in column "owner_id" of relation "channel" violates not-null constraint
+2023-11-06 18:49:33.493 GMT [97140] DETAIL:  Failing row contains (2, test1, t, teeeetwe, null, null, t).
+2023-11-06 18:49:33.493 GMT [97140] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversation_id", "owner_id") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 18:50:28.095 GMT [97261] ERROR:  null value in column "owner_id" of relation "channel" violates not-null constraint
+2023-11-06 18:50:28.095 GMT [97261] DETAIL:  Failing row contains (3, test1, t, teeeetwe, null, null, t).
+2023-11-06 18:50:28.095 GMT [97261] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversation_id", "owner_id") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 18:50:42.923 GMT [97288] ERROR:  null value in column "ownerId" of relation "channel" violates not-null constraint
+2023-11-06 18:50:42.923 GMT [97288] DETAIL:  Failing row contains (4, test1, t, teeeetwe, null, null, t).
+2023-11-06 18:50:42.923 GMT [97288] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversation_id", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 18:51:01.301 GMT [97317] ERROR:  null value in column "ownerId" of relation "channel" violates not-null constraint
+2023-11-06 18:51:01.301 GMT [97317] DETAIL:  Failing row contains (5, test1, t, teeeetwe, null, null, t).
+2023-11-06 18:51:01.301 GMT [97317] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 18:53:23.225 GMT [98461] ERROR:  null value in column "ownerId" of relation "channel" violates not-null constraint
+2023-11-06 18:53:23.225 GMT [98461] DETAIL:  Failing row contains (6, test1, t, teeeetwe, null, null, t).
+2023-11-06 18:53:23.225 GMT [98461] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 19:13:06.874 GMT [99549] ERROR:  relation "pg_name" does not exist at character 21
+2023-11-06 19:13:06.874 GMT [99549] STATEMENT:  select usename from pg_name;
+2023-11-06 19:13:07.854 GMT [99549] ERROR:  relation "pg_name" does not exist at character 21
+2023-11-06 19:13:07.854 GMT [99549] STATEMENT:  select usename from pg_name;
+2023-11-06 19:24:26.536 GMT [242] ERROR:  null value in column "ownerId" of relation "channel" violates not-null constraint
+2023-11-06 19:24:26.536 GMT [242] DETAIL:  Failing row contains (7, test1, t, teeeetwe, null, null, t).
+2023-11-06 19:24:26.536 GMT [242] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 19:26:50.939 GMT [99549] FATAL:  terminating connection due to administrator command
+2023-11-06 19:27:18.323 GMT [402] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:21.342 GMT [410] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:24.347 GMT [416] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:27.356 GMT [419] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:30.369 GMT [423] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:33.380 GMT [424] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:36.396 GMT [429] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:39.401 GMT [432] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:27:42.419 GMT [434] FATAL:  database "ft_transgender" does not exist
+2023-11-06 19:28:26.417 GMT [583] ERROR:  null value in column "ownerId" of relation "channel" violates not-null constraint
+2023-11-06 19:28:26.417 GMT [583] DETAIL:  Failing row contains (1, test1, t, t, teeeetwe, null, null).
+2023-11-06 19:28:26.417 GMT [583] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 19:29:42.554 GMT [647] ERROR:  column "ownerId" of relation "channel" does not exist at character 91
+2023-11-06 19:29:42.554 GMT [647] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 19:30:05.163 GMT [695] ERROR:  null value in column "ownerId" of relation "channel" violates not-null constraint
+2023-11-06 19:30:05.163 GMT [695] DETAIL:  Failing row contains (2, test1, t, t, teeeetwe, null, null).
+2023-11-06 19:30:05.163 GMT [695] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 19:57:03.110 GMT [1599] ERROR:  null value in column "password" of relation "channel" violates not-null constraint
+2023-11-06 19:57:03.110 GMT [1599] DETAIL:  Failing row contains (5, test1, f, f, null, null, null).
+2023-11-06 19:57:03.110 GMT [1599] STATEMENT:  INSERT INTO "channel"("name", "is_private", "is_protected", "password", "conversationId", "ownerId") VALUES ($1, $2, $3, DEFAULT, DEFAULT, DEFAULT) RETURNING "id"
+2023-11-06 20:02:17.522 GMT [1794] ERROR:  syntax error at or near "select" at character 30
+2023-11-06 20:02:17.522 GMT [1794] STATEMENT:  select * from ft_transgender
+	select * from ft_transgender;
+2023-11-06 20:02:20.345 GMT [1794] ERROR:  syntax error at or near "select" at character 30
+2023-11-06 20:02:20.345 GMT [1794] STATEMENT:  select * from ft_transgender
+	select * from ft_transgender;
+2023-11-06 20:02:27.217 GMT [1794] ERROR:  relation "ft_transgender" does not exist at character 15
+2023-11-06 20:02:27.217 GMT [1794] STATEMENT:  select * from ft_transgender;
+2023-11-06 20:02:29.361 GMT [1794] ERROR:  relation "ft_transgender" does not exist at character 15
+2023-11-06 20:02:29.361 GMT [1794] STATEMENT:  select * from ft_transgender;
+2023-11-06 20:02:39.624 GMT [1794] ERROR:  relation "ft_transgender" does not exist at character 15
+2023-11-06 20:02:39.624 GMT [1794] STATEMENT:  select * from "ft_transgender";

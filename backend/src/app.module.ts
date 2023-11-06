@@ -22,7 +22,7 @@ import { ChannelModule } from './channel/channel.module';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'admin',
+      username: 'mountassir',
       password: 'admin',
       database: 'ft_transgender',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],

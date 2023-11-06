@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from './channel.entity';
 import { CreateChannelDto } from './dtos/create-channel.dto';
-// import { UpdateChannelDto } from './dtos/update-channel.dto';
-// import { User } from '../user/user.entity';
+import { UpdateChannelDto } from './dtos/update-channel.dto';
+import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { Conversations } from '../conversations/conversations.entity';
 
@@ -19,6 +19,7 @@ export class ChannelService {
     const { name, is_private, password } = createChannelDto;
     const channel = new Channel();
     channel.name = name;
+    channel.is_private = is_private;
     if (password) {
       channel.password = password;
       channel.is_protected = true;
@@ -27,41 +28,47 @@ export class ChannelService {
       channel.is_protected = false;
     
     channel.conversation = new Conversations();
-    // channel.owner = 
     // channel.members.push();
+    console.log(channel); 
     return this.channelRepository.save(channel);
   }
+
   async getChannels(): Promise<Channel[]> {
     // Return all non-private channels
     return this.channelRepository.find();
   }
-  // async getChannel(id: number): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+  async getChannel(id: number): Promise<Channel> {
+    const channel = await this.channelRepository.findOne(id);
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
 
-  //   return channel;
-  // }
-  // async updateChannel(
-  //   id: number,
-  //   updateChannelDto: UpdateChannelDto,
-  // ): Promise<Channel> {
-  //   const channel = await this.channelRepository.findOne(id);
-  //   if (!channel) {
-  //     throw new NotFoundException('Channel not found');
-  //   }
+    return channel;
+  }
 
-  //   // Update channel properties based on updateChannelDto
-  //   if (updateChannelDto.name !== undefined) {
-  //     // channel.channel_name = updateChannelDto.channel_name;
-  //   }
-  //   if (updateChannelDto.members !== undefined) {
-  //     channel.members = updateChannelDto.members;
-  //   }
+  async updateChannel(
+    updateChannelDto: UpdateChannelDto,
+  ): Promise<Channel> {
+    const { id, name, is_private, password } = updateChannelDto;
 
-  //   return this.channelRepository.save(channel);
-  // }
+    const channel = await this.channelRepository.findOne({ id });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    if (password && password.length > 5) {
+      channel.password = password;
+      channel.is_protected = true;
+    }
+    else 
+      channel.is_protected = false;
+
+    if (name) {
+      channel.name = name;
+    }
+    channel.is_private = is_private;
+    
+    return this.channelRepository.save(channel);
+  }
 
   // async deleteChannel(id: number): Promise<void> {
   //   const channel = await this.channelRepository.findOne(id);

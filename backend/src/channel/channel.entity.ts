@@ -31,7 +31,6 @@ export class Channel {
   is_protected: boolean;
 
   @ManyToOne(() => Conversations, { nullable: true })
-  @JoinColumn({ name: 'conversation_id' })
   conversation: Conversations;
 
   @ManyToMany(() => User)
@@ -46,10 +45,9 @@ export class Channel {
   @JoinTable()
   Moderators: User[];
 
-  @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'owner_id' })
+  @ManyToOne(() => User, { nullable: true })
   owner: User;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 }
