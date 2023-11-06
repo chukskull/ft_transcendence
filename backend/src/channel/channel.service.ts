@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from './channel.entity';
-import { CreateChannelDto, UpdateChannelDto } from './channel.dto';
+import { CreateChannelDto } from './dtos/create-channel.dto';
+import { UpdateChannelDto } from './dtos/update-channel.dto';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 
@@ -31,14 +32,12 @@ export class ChannelService {
     return channel;
   }
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const { channel_name, members, is_private, conversation } =
-      createChannelDto;
+    const { name, is_private } = createChannelDto;
 
     const channel = new Channel();
-    channel.channel_name = channel_name;
-    channel.members = members;
+    channel.name = name;
     channel.is_private = is_private;
-    channel.conversation = conversation;
+    // channel.conversation = createConversationDto;
 
     return this.channelRepository.save(channel);
   }
@@ -53,17 +52,11 @@ export class ChannelService {
     }
 
     // Update channel properties based on updateChannelDto
-    if (updateChannelDto.channel_name !== undefined) {
+    if (updateChannelDto.name !== undefined) {
       // channel.channel_name = updateChannelDto.channel_name;
     }
     if (updateChannelDto.members !== undefined) {
       channel.members = updateChannelDto.members;
-    }
-    if (updateChannelDto.is_private !== undefined) {
-      channel.is_private = updateChannelDto.is_private;
-    }
-    if (updateChannelDto.conversation !== undefined) {
-      channel.conversation = updateChannelDto.conversation;
     }
 
     return this.channelRepository.save(channel);
