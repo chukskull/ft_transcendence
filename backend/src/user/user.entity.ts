@@ -1,5 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { MatchHistory } from "src/match-history/entities/match-history.entity";
+import { Conversations } from "src/conversations/conversations.entity";
 
 @Entity()
 export class User {
@@ -50,15 +51,11 @@ export class User {
   level: number;
 
 	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player1)
-	player1Matches: Promise<MatchHistory[]>
+  playerMatches: Promise<MatchHistory[]>
 
-	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player2)
-	player2Matches: Promise<MatchHistory[]>
+  @OneToMany(() => MatchHistory, matchHistory => matchHistory.winner)
+	wonMatches: Promise<MatchHistory[]>
 
-	@OneToMany(() => MatchHistory, matchHistory => matchHistory.winner)
-	winnerMatches: Promise<MatchHistory[]>
-
-	
   @Column()
   wins: number;
 

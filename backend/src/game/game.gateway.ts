@@ -9,7 +9,7 @@ import {
 	ConnectedSocket,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { Socket, Server } from 'ws';
+import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 
 @WebSocketGateway()
