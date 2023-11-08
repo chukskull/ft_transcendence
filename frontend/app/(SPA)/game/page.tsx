@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
+import { MatchMaking } from "@/components/SPA/home/molecules/MatchMaking";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -41,7 +42,10 @@ const Game: React.FC = () => {
           <img src="https://greekreporter.com/wp-content/uploads/2023/01/kyriakos-grizzly-credit-kyriakos-kapakoulak-youtube.jpg.webp" />
         </div>
       </div>
-      <TheGame map={map} onlinemode={online} />
+      <div className="flex flex-col gap-9 justify-center items-center">
+        <TheGame map={map} onlinemode={online} />
+        <MatchMaking />
+      </div>
     </div>
   );
 };
