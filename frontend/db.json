@@ -211,17 +211,20 @@
       {
         "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
         "nickName": "private",
-        "name": "Pedago"
+        "name": "Pedago",
+        "type": "Private"
       },
       {
         "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
         "nickName": "private",
-        "name": "Pedago"
+        "name": "Pedago",
+        "type": "Private"
       },
       {
         "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
         "nickName": "private",
-        "name": "Pedago"
+        "name": "Pedago",
+        "type": "Public"
       }
     ]
   }

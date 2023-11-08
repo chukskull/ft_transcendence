@@ -5,7 +5,6 @@ import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 
 const SearchComp = () => {
   const [activeSearch, setActiveSearch] = useState([]);
-
   const handleSearch = (e) => {
     if (e.target.value === "") {
       setActiveSearch([]);

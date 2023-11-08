@@ -26,6 +26,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
 
   let bgStyle: string =
     MonStyle === "Profile" ? "bg-purpleProfile" : "bg-friend";
+  let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow ">
       {data?.map((user, index) => (
@@ -36,12 +37,14 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
           <span className="text-center text-white font-ClashGrotesk-Semibold text-lg flex items-center pr-12 ">
             #{index + 1}
           </span>
+
           <ProfileComp
             // key={index} // Remove redundant key prop for ProfileComp
             img={user.img}
             nickName={user.nickName}
             firstName={user.firstName}
             lastName={user.lastName}
+            color={colors[index]}
           />
         </div>
       ))}
