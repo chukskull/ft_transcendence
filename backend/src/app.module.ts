@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 // import { AuthModule } from './user/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-// import { UserModule } from './user/user.module';
+import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelModule } from './channel/channel.module';
 
@@ -12,6 +12,7 @@ import { ChannelModule } from './channel/channel.module';
     // AuthModule,
     // ChatGatewayModule,
     ChannelModule,
+    UserModule,
     // MessageModule,
     ConfigModule.forRoot({
       isGlobal: true,
