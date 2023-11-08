@@ -9,6 +9,27 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  // this func returns a promise of a user so uneed to use await
+  async createNewUser(intraLogin: string, avatarUrl: string): Promise<User> {
+    if (!intraLogin) {
+      return null;
+    }
+    const alreadyExists = await this.userRepository.findOne({
+      where: {
+        intraLogin: intraLogin,
+      },
+    });
+    if (alreadyExists) {
+      return null;
+    }
+    const user = this.userRepository.create({ intraLogin, avatarUrl });
+    user.level = 0;
+    user.experience = 0;
+    user.wins = 0;
+    user.totalGames = 0;
+    return this.userRepository.save(user);
+  }
+
   async all(): Promise<User[]> {
     return this.userRepository.find();
   }
@@ -57,5 +78,16 @@ export class UserService {
 
   async setStatus(clientID: number, status: string): Promise<any> {
     return this.userRepository.update(clientID, { status: status });
+  }
+
+  // return an array of users in descending order of experience use await
+  async getLeaderboard(): Promise<User[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    queryBuilder.orderBy('user.experience', 'DESC');
+    return queryBuilder.getMany();
+  }
+
+  async addFriend(friendID: number): Promise<any> {
+    return this.userRepository.update(friendID, { pendingInvite: true });
   }
 }
