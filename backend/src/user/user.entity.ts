@@ -5,7 +5,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Conversation } from "src/conversation/conversation.entity";
+import { Conversation } from "src/conversations/conversation.entity";
 
 @Entity()
 export class MatchHistory {
@@ -17,9 +17,6 @@ export class MatchHistory {
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  username: string;
 
   @Column()
   nickName: string;

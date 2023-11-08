@@ -13,8 +13,29 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findOne(login: any): Promise<User> {
-    return this.userRepository.findOne(login);
+  async findUser(id: any): Promise<User> {
+    if (typeof id === 'number') {
+      return this.userRepository.findOne({ where: { id } });
+    } else {
+      return this.userRepository.findOne({ where: { nickName: id } });
+    }
+  }
+
+  async fillData(userId: number, data): Promise<any> {
+    const { nickName, firstName, lastName } = data;
+
+    const alreadyExists = await this.userRepository.findOne({
+      where: { nickName },
+    });
+    if (alreadyExists) {
+      return { message: 'NickName already exists' };
+    } else {
+      return this.userRepository.update(userId, {
+        nickName,
+        firstName,
+        lastName,
+      });
+    }
   }
 
   async findPrivateGame(): Promise<User> {
@@ -23,20 +44,18 @@ export class UserService {
     return queryBuilder.getOne();
   }
 
-  async update(id: number, data): Promise<any> {
+  async updateUserInfo(id: number, data): Promise<any> {
+    const { nickName, profilePicture, twoFa } = data;
+
+    const alreadyExists = await this.userRepository.findOne({
+      where: { nickName },
+    });
+    if (alreadyExists) {
+    }
     return this.userRepository.update(id, data);
-  }
-
-
-  async sendGameInvite(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { pendingInvite: true });
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {
     return this.userRepository.update(clientID, { status: status });
-  }
-
-  async acceptGameInvite(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { pendingInvite: false });
   }
 }
