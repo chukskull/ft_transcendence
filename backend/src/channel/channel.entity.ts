@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Conversation } from '../conversation/conversation.entity';
+import { Conversation } from '../conversations/conversation.entity';
 
 @Entity('channel')
 export class Channel {

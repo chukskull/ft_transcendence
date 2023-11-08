@@ -5,7 +5,6 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
-  JoinColumn,
 } from 'typeorm';
 
 import { User } from '../user/user.entity';
@@ -18,7 +17,6 @@ export class Chat {
   id: number;
 
   @ManyToOne(() => User)
-  @JoinColumn()
   sender: User;
 
   @Column()
@@ -54,4 +52,3 @@ export class Conversation {
   @JoinTable()
   chats: Chat[];
 }
-
