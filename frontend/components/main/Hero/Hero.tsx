@@ -20,13 +20,13 @@ export const Hero = () => {
           src={"/assets/main/Hero/fontshapes.svg"}
           alt={"background shapes"}
         />
-        <div className=" flex flex-col gap-y-12 text-bc bg-none absolute top-[0%] xl:right-[50%] 2xl:right-[50%] xl:my-[11.25rem] my-[8.25rem] p-[1.25rem]">
+        <div className=" flex flex-col  gap-y-12 text-bc bg-none absolute top-[0%] xl:right-[50%] 2xl:right-[50%] xl:my-[11.25rem] my-[8.25rem] p-[1.25rem]">
           <h1 className="bg-none text-white my-2  font-[Josefin Sans] text-5xl md:text-7xl lg:text-8xl font-style-normal font-medium">
             BEST <span className="gamesvg bg-none">GAME !</span>
             <br></br>
             ON DEMAND
           </h1>
-          <p className="paragraph">
+          <p className="paragraph font-ClashGrotesk-Regular text-base">
             {" "}
             Step into the fast-paced and addictive world of ping pong Game! Get
             ready to experience the thrill of virtual table tennis from the
@@ -35,7 +35,7 @@ export const Hero = () => {
           <Button
             onClick={handleClick}
             className=" w-[165px] h-[45px] gradient-button 
-           text-white shadow-lg rounded-2xl"
+           text-white shadow-lg rounded-2xl font-ClashGrotesk-Regular text-base"
           >
             Join Now
           </Button>

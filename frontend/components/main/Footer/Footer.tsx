@@ -11,7 +11,7 @@ export const Footer = () => {
         </h1>
       </div>
       <div className=" Footer-wrapper mb-2">
-        <svg
+        {/* <svg
           id="crown1"
           fill="#0f74b5"
           data-name="Layer 1"
@@ -22,7 +22,7 @@ export const Footer = () => {
             className="cls-1"
             points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
           />
-        </svg>
+        </svg> */}
 
         {StudentsInfos.map((student, index) => (
           <CardComponent

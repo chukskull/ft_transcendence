@@ -121,7 +121,7 @@ const ChannelsSection = (sendConversationId: ChannelProps) => {
                     sendConversationId.sendConversationId(channel.name)
                   }
                 >
-                  {channel.name}
+                  {channel.name} + {"kys"}
                 </div>
               ))}
             </div>
