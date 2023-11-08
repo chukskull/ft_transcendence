@@ -49,20 +49,35 @@ export class UserController {
   }
 
   @UseGuards(verifyUser)
-  @Post(':userId/fill')
+  @Post('/fill/:userId')
   async fill(@Param('userId') userId: number, @Body() data: fillDto) {
     return this.usersService.fillData(userId, data);
   }
 
   @UseGuards(verifyUser)
-  @Post(':userId/update')
+  @Post('/update/:userId')
   async update(@Param('userId') userId: number, @Body() data: updateDto) {
     return this.usersService.updateUserInfo(userId, data);
   }
 
   @UseGuards(verifyUser)
   @Post(':userId/status/:status')
-  async setStatus(@Param('userId') userId: number, @Param('status') status: string) {
+  async setStatus(
+    @Param('userId') userId: number,
+    @Param('status') status: string,
+  ) {
     return this.usersService.setStatus(userId, status);
+  }
+
+  @UseGuards(verifyUser)
+  @Get('/leaderboard')
+  async getLeaderboard(): Promise<User[]> {
+    return this.usersService.getLeaderboard();
+  }
+
+  @UseGuards(verifyUser)
+  @Post('/addFriend/:ufriendId')
+  async addFriend(@Param('userId') userId: number) {
+    return this.usersService.addFriend(userId);
   }
 }

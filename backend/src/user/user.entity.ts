@@ -19,6 +19,9 @@ export class User {
   id: number;
 
   @Column()
+  intraLogin: string;
+  
+  @Column()
   nickName: string;
 
   @Column()

@@ -95,7 +95,7 @@ export default function Chat() {
         <ChatHeader
           avatar="https://i.pravatar.cc/300?img=4"
           name="Saleh"
-          isChannel={true}
+          isChannel={false}
           online={true}
         />
 
