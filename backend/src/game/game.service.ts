@@ -6,8 +6,8 @@ import { GameGateway } from './game.gateway';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 
-export const GAME_WIDTH = 1000
-export const GAME_HEIGHT = 600
+export const GAME_WIDTH = 860
+export const GAME_HEIGHT = 500
 export const BALL_RADIUS = 10
 export const PADDLE_WIDTH = 10
 export const PADDLE_HEIGHT = 100
@@ -15,7 +15,7 @@ export const PADDLE_SPEED = 10
 export const INIT_BALL_SPEED = 10
 export const PADDLE1_POSITION = { x: 10, y: GAME_HEIGHT /2}
 export const PADDLE2_POSITION = { x: 980, y: GAME_HEIGHT /2}
-export const BALL_POSITION = { x: 500, y: 300 }
+export const BALL_POSITION = { x: GAME_WIDTH/2, y: GAME_HEIGHT/2 }
 export const DAMPING = 0.999
 export const MAX_ANGLE = 5 * Math.PI / 12
 
@@ -36,5 +36,7 @@ export class GameService {
 		@InjectRepository(User)
 		private readonly userRepository: Repository<User>,
 		private readonly gameGateway: GameGateway,
-	) { }
+	) {
+		
+	}
 }
