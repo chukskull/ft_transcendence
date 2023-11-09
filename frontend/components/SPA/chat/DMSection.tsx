@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import { useState } from "react";
 import AvatarBubble from "./AvatarBubble";
 import { get } from "http";
+import { set } from "react-hook-form";
 const dmList = [
   {
     name: "John3464 Doe",
@@ -128,15 +129,19 @@ const FindFriendModal = () => {
 interface DmSectionProps {
   SendconversationId2p: any;
   getNameAndType: (OBJ: { name: string; type: boolean }) => void;
+  CompType: boolean;
 }
 const DmSection = ({
   SendconversationId2p,
   getNameAndType,
+  CompType,
 }: DmSectionProps) => {
   const [findFriendModal, setFindFriendModal] = useState<boolean>(false);
+  const [active, setActive] = useState<string>("");
   const handleConversationId = (conversationId: string) => {
     SendconversationId2p(conversationId);
     getNameAndType({ name: conversationId, type: false });
+    setActive(conversationId);
   };
 
   return (
@@ -159,15 +164,20 @@ const DmSection = ({
             +
           </button>
         </div>
-        <div className={style["dm-list"]}>
-          {dmList.map((dm) => (
+        {dmList.map((dm, index) => (
+          <div key={index} className={style["dm-list"]}>
             <DMbox
+              className={
+                active === dm.name && !CompType
+                  ? "bg-gray-500 rounded-md"
+                  : "bg-bghover rounded-md"
+              }
               dm={dm}
               key={dm.name}
               SendConversationId={() => handleConversationId(dm.name)}
             />
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </>
   );

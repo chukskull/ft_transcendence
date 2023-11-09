@@ -70,10 +70,12 @@ const CreateChannelModal = ({}) => {
 interface ChannelProps {
   sendConversationId: (id: string) => void;
   getNameAndType: (Channel: { name: string; type: boolean }) => void;
+  CompType: boolean;
 }
 const ChannelsSection = ({
   sendConversationId,
   getNameAndType,
+  CompType,
 }: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const channelList: Channel[] = chanList;
@@ -128,7 +130,9 @@ const ChannelsSection = ({
               {groupedChannels[category].map((channel) => (
                 <div
                   className={`${style["channel-item"]} ${
-                    active === channel.name ? "bg-bghover rounded-md" : ""
+                    active === channel.name && CompType
+                      ? "bg-bghover rounded-md"
+                      : ""
                   }`}
                   key={channel.name}
                   onClick={() => handleClick(channel)}

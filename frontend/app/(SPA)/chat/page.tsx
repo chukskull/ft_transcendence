@@ -15,7 +15,7 @@ const msgsdb = [
   {
     name: "Saleh Nagat",
     online: true,
-    lastMsg: "egwegewewg",
+    lastMsg: "Hi how are you",
     lastMsgTime: "02:00 PM",
     avatar: "https://i.pravatar.cc/300?img=2",
   },
@@ -23,14 +23,14 @@ const msgsdb = [
   {
     name: "Saleh Nagat",
     online: true,
-    lastMsg: "fineewgewgewgw, thanks",
+    lastMsg: "i love you, thanks",
     lastMsgTime: "02:00 PM",
     avatar: "https://i.pravatar.cc/300?img=1",
   },
   {
     name: "Saleh Nagat",
     online: false,
-    lastMsg: "oh greewgegwegwegweg",
+    lastMsg: "oh idont",
     lastMsgTime: "11:00 AM",
     avatar: "https://i.pravatar.cc/300?img=1",
   },
@@ -95,10 +95,12 @@ export default function Chat() {
         <ChannelsSection
           sendConversationId={setConversationId}
           getNameAndType={getNameAndType}
+          CompType={Type}
         />
         <DmSection
           SendconversationId2p={setConversationId}
           getNameAndType={getNameAndType}
+          CompType={Type}
         />
       </div>
       <div className={style["chat-section"]}>
