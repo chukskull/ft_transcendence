@@ -242,18 +242,23 @@
                     font-style: normal;
                     font-family: ClashGrotesk-Semibold;
                     line-height: 134.5%;
-                    margin-top: 26px;
+                    margin-top: 20px;
                 }
                 .channel-item {
+                    padding: 4px;
                     color: #fff;
                     font-size: 19px;
                     font-style: normal;
+                   
                     font-family: ClashGrotesk-Medium;
                     line-height: 134.5%;
-                    margin-top: 10px;
+                    margin-top: 6px;
                     cursor: pointer;
                     &:hover {
                         transform: scale(1s1);
+                        background: rgba(254, 252, 252, 0.20);
+
+                        border-radius: 6px;
                     }
                 }
             }

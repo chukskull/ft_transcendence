@@ -8,7 +8,7 @@ import ChannelsSection from "@/components/SPA/chat/ChannelsSection";
 import ChatHeader from "@/components/SPA/chat/ChatHeader";
 import MsgsList from "@/components/SPA/chat/MessagesList";
 import DmSection from "@/components/SPA/chat/DMSection";
-import io from "socket.io-client";
+// import io from "socket.io-client";
 import { set } from "react-hook-form";
 
 const msgsdb = [
@@ -59,32 +59,30 @@ export default function Chat() {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
 
-  const socket = io("http://localhost:1337");
+  // const socket = io("http://localhost:1337");
 
   useEffect(() => {
-    socket.on("open", () => {
-      console.log("WebSocket connected");
-    });
-
-    socket.on("message", (event) => {
-      console.log("WebSocket message:", event);
-    });
-
-    return () => {
-      socket.close(); // Close the WebSocket when the component unmounts
-    };
+    // socket.on("open", () => {
+    //   console.log("WebSocket connected");
+    // });
+    // socket.on("message", (event) => {
+    //   console.log("WebSocket message:", event);
+    // });
+    // return () => {
+    //   socket.close(); // Close the WebSocket when the component unmounts
+    // };
   }, []);
 
   const handleSend = () => {
-    if (socket) {
-      socket.emit("message", {
-        conversationId,
-        senderId: "1",
-        message,
-      });
-      setMessage("");
-    }
+    // if (socket) {
+    //   socket.emit("message", {
+    //     conversationId,
+    //     senderId: "1",
+    //     message,
+    //   });
+    setMessage("");
   };
+  // };
   const [Name, setName] = useState(msgsdb[0].name);
   const [Type, setType] = useState(false);
   const getNameAndType = (OBJ: { name: string; type: boolean }) => {
