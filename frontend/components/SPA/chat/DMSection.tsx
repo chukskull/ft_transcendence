@@ -3,6 +3,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import { useState } from "react";
 import AvatarBubble from "./AvatarBubble";
+import { get } from "http";
 const dmList = [
   {
     name: "John3464 Doe",
@@ -124,10 +125,18 @@ const FindFriendModal = () => {
   );
 };
 
-const DmSection = ({ SendconversationId2p }: any) => {
+interface DmSectionProps {
+  SendconversationId2p: any;
+  getNameAndType: (OBJ: { name: string; type: boolean }) => void;
+}
+const DmSection = ({
+  SendconversationId2p,
+  getNameAndType,
+}: DmSectionProps) => {
   const [findFriendModal, setFindFriendModal] = useState<boolean>(false);
   const handleConversationId = (conversationId: string) => {
     SendconversationId2p(conversationId);
+    getNameAndType({ name: conversationId, type: false });
   };
 
   return (
@@ -152,7 +161,11 @@ const DmSection = ({ SendconversationId2p }: any) => {
         </div>
         <div className={style["dm-list"]}>
           {dmList.map((dm) => (
-            <DMbox dm={dm} key={dm.name} SendConversationId={() => handleConversationId(dm.name)} />
+            <DMbox
+              dm={dm}
+              key={dm.name}
+              SendConversationId={() => handleConversationId(dm.name)}
+            />
           ))}
         </div>
       </div>

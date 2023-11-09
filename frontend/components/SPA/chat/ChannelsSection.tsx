@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import { BiLock } from "react-icons/bi";
+import { get } from "http";
 interface Channel {
   type: string;
   name: string;
@@ -66,8 +67,12 @@ const CreateChannelModal = ({}) => {
 };
 interface ChannelProps {
   sendConversationId: (id: string) => void;
+  getNameAndType: (Channel: { name: string; type: boolean }) => void;
 }
-const ChannelsSection = (sendConversationId: ChannelProps) => {
+const ChannelsSection = ({
+  sendConversationId,
+  getNameAndType,
+}: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const channelList: Channel[] = chanList;
   const groupedChannels = channelList.reduce((acc, channel) => {
@@ -88,7 +93,10 @@ const ChannelsSection = (sendConversationId: ChannelProps) => {
         return "Protected Channels";
     }
   };
-
+  function handleClick(channel: Channel) {
+    sendConversationId(channel.name);
+    getNameAndType({ name: channel.name, type: true });
+  }
   return (
     <>
       <Modal
@@ -117,11 +125,9 @@ const ChannelsSection = (sendConversationId: ChannelProps) => {
                 <div
                   className={style["channel-item"]}
                   key={channel.name}
-                  onClick={() =>
-                    sendConversationId.sendConversationId(channel.name)
-                  }
+                  onClick={() => handleClick(channel)}
                 >
-                  {channel.name} + {"kys"}
+                  {channel.name}
                 </div>
               ))}
             </div>

@@ -8,7 +8,8 @@ import ChannelsSection from "@/components/SPA/chat/ChannelsSection";
 import ChatHeader from "@/components/SPA/chat/ChatHeader";
 import MsgsList from "@/components/SPA/chat/MessagesList";
 import DmSection from "@/components/SPA/chat/DMSection";
-import io from 'socket.io-client';
+import io from "socket.io-client";
+import { set } from "react-hook-form";
 
 const msgsdb = [
   {
@@ -54,14 +55,13 @@ export default function Chat() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [conversationId, setConversationId] = useState("");
 
-  const handleEmojiClick = (emojiObject:any) => {
+  const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
 
   const socket = io("http://localhost:1337");
 
   useEffect(() => {
-
     socket.on("open", () => {
       console.log("WebSocket connected");
     });
@@ -85,23 +85,35 @@ export default function Chat() {
       setMessage("");
     }
   };
+  const [Name, setName] = useState(msgsdb[0].name);
+  const [Type, setType] = useState(false);
+  const getNameAndType = (OBJ: { name: string; type: boolean }) => {
+    setName(OBJ.name);
+    setType(OBJ.type);
+  };
   return (
     <div className={style["chat-container"]}>
       <div className={style["menu-sections"]}>
-        <ChannelsSection sendConversationId={setConversationId} />
-        <DmSection SendconversationId2p={setConversationId} />
+        <ChannelsSection
+          sendConversationId={setConversationId}
+          getNameAndType={getNameAndType}
+        />
+        <DmSection
+          SendconversationId2p={setConversationId}
+          getNameAndType={getNameAndType}
+        />
       </div>
       <div className={style["chat-section"]}>
         <ChatHeader
-          avatar="https://i.pravatar.cc/300?img=4"
-          name="Saleh"
-          isChannel={false}
+          // avatar="https://i.pravatar.cc/300?img=4"
+          name={Name}
+          isChannel={Type}
           online={true}
         />
 
         <div className={style["chat"]}>
           <div className={style["msgs"]}>
-            <MsgsList msgs={msgsdb} />
+            <MsgsList msgs={msgsdb} getNameAndType={getNameAndType} />
           </div>
           <div className={style["msg-input"]}>
             <button
