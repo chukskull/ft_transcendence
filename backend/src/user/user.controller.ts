@@ -80,4 +80,10 @@ export class UserController {
   async addFriend(@Param('userId') userId: number) {
     return this.usersService.addFriend(userId);
   }
+
+  @UseGuards(verifyUser)
+  @Post('/blockFriend/:ufriendId')
+  async blockFriend(@Param('userId') userId: number) {
+    return this.usersService.blockUser(userId);
+  }
 }

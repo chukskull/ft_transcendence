@@ -8,6 +8,7 @@ import { UpdateChannelDto } from './dtos/update-channel.dto';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { Conversation } from '../conversations/conversation.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -22,13 +23,16 @@ export class ChannelService {
     const channel = new Channel();
     channel.name = name;
     channel.is_private = is_private;
+
     if (password) {
-      channel.password = password;
+      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+      channel.password = hashedPassword;
       channel.is_protected = true;
-    } else channel.is_protected = false;
+    } else {
+      channel.is_protected = false;
+    }
 
     channel.conversation = new Conversation();
-    // channel.members.push();
     console.log(channel);
     return this.chanRepository.save(channel);
   }
@@ -85,11 +89,16 @@ export class ChannelService {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
     });
+
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
-    if (channel.is_protected && channel.password !== password) {
-      throw new NotFoundException('Password is incorrect');
+
+    if (channel.is_protected) {
+      const passwordMatch = await bcrypt.compare(password, channel.password);
+      if (!passwordMatch) {
+        throw new NotFoundException('Password is incorrect');
+      }
     }
 
     if (channel.is_private) {

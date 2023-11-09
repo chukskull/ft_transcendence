@@ -4,14 +4,14 @@ import {
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Conversation } from "src/conversations/conversation.entity";
-
+} from 'typeorm';
+import { Conversation } from 'src/conversations/conversation.entity';
+import { Achievement } from '../achievement/achievement.entity';
 @Entity()
 export class MatchHistory {
   @PrimaryGeneratedColumn()
   id: number;
-    }
+}
 
 @Entity()
 export class User {
@@ -20,7 +20,7 @@ export class User {
 
   @Column()
   intraLogin: string;
-  
+
   @Column()
   nickName: string;
 
@@ -43,6 +43,10 @@ export class User {
   @JoinTable()
   friends: User[];
 
+  @ManyToMany(() => User)
+  @JoinTable()
+  blockedUsers: User[];
+
   @Column()
   status: string;
 
@@ -62,7 +66,6 @@ export class User {
   @Column()
   level: number;
 
-
   @Column()
   wins: number;
 
@@ -72,4 +75,8 @@ export class User {
   @ManyToMany(() => Conversation)
   @JoinTable()
   conversations: Conversation[];
+
+  @ManyToMany(() => Achievement)
+  @JoinTable()
+  achievements: Achievement[];
 }

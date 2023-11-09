@@ -6,6 +6,9 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelModule } from './channel/channel.module';
+import { AchievementController } from './achievement/achievement.controller';
+import { AchievementService } from './achievement/achievement.service';
+import { AchievementModule } from './achievement/achievement.module';
 
 @Module({
   imports: [
@@ -13,6 +16,7 @@ import { ChannelModule } from './channel/channel.module';
     // ChatGatewayModule,
     ChannelModule,
     UserModule,
+    AchievementModule,
     // MessageModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -29,6 +33,7 @@ import { ChannelModule } from './channel/channel.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    AchievementModule,
     // MatchHistoryModule,
   ],
   controllers: [AppController],

@@ -88,6 +88,26 @@ export class UserService {
   }
 
   async addFriend(friendID: number): Promise<any> {
-    return this.userRepository.update(friendID, { pendingInvite: true });
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+    });
+    if (!friend) {
+      return { message: 'User not found' };
+    }
+    // const friends
+  }
+
+  async blockUser(blockedID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      // where: { id: clientID },
+    });
+    const blocked = await this.userRepository.findOne({
+      where: { id: blockedID },
+    });
+    if (!client || !blocked) {
+      return { message: 'User not found' };
+    }
+    // client.blocked.push(blocked);
+    return this.userRepository.save(client);
   }
 }
