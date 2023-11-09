@@ -3,8 +3,12 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import { useState } from "react";
 import AvatarBubble from "./AvatarBubble";
+<<<<<<< HEAD
 import { get } from "http";
 import { set } from "react-hook-form";
+=======
+import { Badge } from "@nextui-org/react";
+>>>>>>> main
 const dmList = [
   {
     name: "John3464 Doe",
