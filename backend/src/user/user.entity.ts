@@ -53,8 +53,6 @@ export class User {
   @Column()
   pendingInvite: boolean;
 
-  @Column()
-  stats: string;
 
   @ManyToMany(() => MatchHistory)
   @JoinTable()

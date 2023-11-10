@@ -36,6 +36,12 @@ export class UserController {
   constructor(
     private readonly usersService: UserService, // private readonly authService: AuthService,
   ) {}
+
+  @Post('create')
+  async create(@Body() data): Promise<User> {
+    return this.usersService.createNewUser(data.intraLogin, data.avatarUrl);
+  }
+
   @UseGuards(verifyUser)
   @Get()
   async all(): Promise<User[]> {
