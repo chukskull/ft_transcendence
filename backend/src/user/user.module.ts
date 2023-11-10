@@ -8,9 +8,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/models/constants';
 import { Channel } from '../channel/channel.entity';
 import { Conversation } from '../conversations/conversation.entity';
+import { Achievement } from '../achievement/achievement.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Channel, Conversation]),
+    TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },

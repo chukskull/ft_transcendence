@@ -27,6 +27,17 @@ export class UserService {
     user.experience = 0;
     user.wins = 0;
     user.totalGames = 0;
+    user.firstName = ' ';
+    user.lastName = ' ';
+    user.twoFactorAuthEnabled = false;
+    user.twoFactorSecret = '';
+    user.friends = [];
+    user.blockedUsers = [];
+    user.matchHistory = [];
+    user.pendingInvite = false;
+    user.status = 'online';
+    
+    user.nickName = intraLogin;
     return this.userRepository.save(user);
   }
 
@@ -88,6 +99,26 @@ export class UserService {
   }
 
   async addFriend(friendID: number): Promise<any> {
-    return this.userRepository.update(friendID, { pendingInvite: true });
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+    });
+    if (!friend) {
+      return { message: 'User not found' };
+    }
+    // const friends
+  }
+
+  async blockUser(blockedID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      // where: { id: clientID },
+    });
+    const blocked = await this.userRepository.findOne({
+      where: { id: blockedID },
+    });
+    if (!client || !blocked) {
+      return { message: 'User not found' };
+    }
+    // client.blocked.push(blocked);
+    return this.userRepository.save(client);
   }
 }
