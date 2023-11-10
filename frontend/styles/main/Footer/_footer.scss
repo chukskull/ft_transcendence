@@ -1,4 +1,5 @@
 .Card {
+  height: 50%;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -7,6 +8,7 @@
   padding: 2.3rem 1rem;
   gap: 1rem;
   width: 25%;
+ 
   
   flex-shrink: 0;
   border-radius: 22px;
@@ -62,6 +64,8 @@
 }
 
 .Footer-wrapper {
+
+  padding: 10px;
   width: 100%;
   display:  flex;
   flex-direction: row;
@@ -81,6 +85,9 @@
   // position: relative;
   gap: 4rem;
 }
+#crown1 {
+  fill:  #ffc500;
+ }
 
 /* .Footer-wrapper::before {
   content: "";

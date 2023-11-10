@@ -26,7 +26,7 @@ export const MiddleComponent = ({ index }: MiddleComponentProps) => {
         data?.userFriends?.map((user, index) => (
           <div
             key={index}
-            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex justify-center"
+            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
           >
             <ProfileComp
               img={user.img}
@@ -52,15 +52,16 @@ export const MiddleComponent = ({ index }: MiddleComponentProps) => {
 
       {index === 2 &&
         data &&
-        data?.userChannels?.map((channel, index) => (
+        data?.Channels?.map((channel, index) => (
           <div
             key={index}
-            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex justify-center"
+            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
           >
             <ProfileComp
               img={channel.img}
-              nickName={channel.nickName}
+              nickName={channel.type}
               firstName={channel.name}
+              type={channel.type}
             />
           </div>
         ))}

@@ -30,6 +30,7 @@ const config: Config = {
         purpleProfile : "#15011EB3",
         modalBackground: "#1D0229",
         buttonbg: "#3E0756",
+        bghover: "#fefcfc33",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

@@ -11,9 +11,15 @@ export default function Page() {
   return (
     <main className="Home">
       <NavBar boolBut={true} />;
-      <Hero />
-      <About />
-      <Footer />
+      <section id="Home">
+        <Hero />
+      </section>
+      <section id={"About"}>
+        <About />
+      </section>
+      <section id={"Team"}>
+        <Footer />
+      </section>
     </main>
   );
 }

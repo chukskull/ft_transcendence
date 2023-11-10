@@ -47,20 +47,7 @@ export const Stats = ({ perc, rank, money, matches }: StatsProps) => {
           Ranking
         </h1>
       </div>
-      <div className="flex flex-col items-center  justify-between gap-2">
-        <Image
-          src="/assets/SPA/Profile/Money.png"
-          width={88}
-          height={80}
-          alt="money"
-        />
-        <h1 className=" text-white font-ClashGrotesk-Medium text-xl">
-          {money}$
-        </h1>
-        <h1 className=" text-white font-ClashGrotesk-Regular text-lg">
-          Cash earned
-        </h1>
-      </div>
+
       <div className="flex flex-col items-center  justify-between gap-2">
         <Image
           src="/assets/SPA/Profile/Punch.png"

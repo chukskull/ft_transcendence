@@ -52,6 +52,36 @@
       "lastName": "blondy"
     },
     {
+      "img": "https://i.pravatar.cc/300?img=1",
+      "nickName": "blonde",
+      "firstName": "Hajar",
+      "lastName": "blondy"
+    },
+    {
+      "img": "https://i.pravatar.cc/300?img=1",
+      "nickName": "blonde",
+      "firstName": "Hajar",
+      "lastName": "blondy"
+    },
+    {
+      "img": "https://i.pravatar.cc/300?img=1",
+      "nickName": "blonde",
+      "firstName": "Hajar",
+      "lastName": "blondy"
+    },
+    {
+      "img": "https://i.pravatar.cc/300?img=1",
+      "nickName": "blonde",
+      "firstName": "Hajar",
+      "lastName": "blondy"
+    },
+    {
+      "img": "https://i.pravatar.cc/300?img=1",
+      "nickName": "blonde",
+      "firstName": "Hajar",
+      "lastName": "blondy"
+    },
+    {
       "img": "https://i.pravatar.cc/300?img=2",
       "nickName": "lemntsr",
       "firstName": "mountassir",
@@ -181,17 +211,20 @@
       {
         "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
         "nickName": "private",
-        "name": "Pedago"
+        "name": "Pedago",
+        "type": "Private"
       },
       {
         "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
         "nickName": "private",
-        "name": "Pedago"
+        "name": "Pedago",
+        "type": "Private"
       },
       {
         "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
         "nickName": "private",
-        "name": "Pedago"
+        "name": "Pedago",
+        "type": "Public"
       }
     ]
   }

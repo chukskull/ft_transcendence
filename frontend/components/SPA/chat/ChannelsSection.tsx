@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import { BiLock } from "react-icons/bi";
+import { get } from "http";
+import { act } from "react-dom/test-utils";
+
 interface Channel {
   type: string;
   name: string;
@@ -66,8 +69,14 @@ const CreateChannelModal = ({}) => {
 };
 interface ChannelProps {
   sendConversationId: (id: string) => void;
+  getNameAndType: (Channel: { name: string; type: boolean }) => void;
+  CompType: boolean;
 }
-const ChannelsSection = (sendConversationId: ChannelProps) => {
+const ChannelsSection = ({
+  sendConversationId,
+  getNameAndType,
+  CompType,
+}: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const channelList: Channel[] = chanList;
   const groupedChannels = channelList.reduce((acc, channel) => {
@@ -88,7 +97,12 @@ const ChannelsSection = (sendConversationId: ChannelProps) => {
         return "Protected Channels";
     }
   };
-
+  const [active, setActive] = useState<string>("");
+  function handleClick(channel: Channel) {
+    sendConversationId(channel.name);
+    getNameAndType({ name: channel.name, type: true });
+    setActive(channel.name);
+  }
   return (
     <>
       <Modal
@@ -111,15 +125,17 @@ const ChannelsSection = (sendConversationId: ChannelProps) => {
         </div>
         <div className={style["channel-categories"]}>
           {Object.keys(groupedChannels).map((category) => (
-            <div key={category}>
+            <div className="flex flex-col gap-1" key={category}>
               <h3>{getCategoryTitle(category)}</h3>
               {groupedChannels[category].map((channel) => (
                 <div
-                  className={style["channel-item"]}
+                  className={`${style["channel-item"]} ${
+                    active === channel.name && CompType
+                      ? "bg-bghover rounded-md"
+                      : ""
+                  }`}
                   key={channel.name}
-                  onClick={() =>
-                    sendConversationId.sendConversationId(channel.name)
-                  }
+                  onClick={() => handleClick(channel)}
                 >
                   {channel.name}
                 </div>
