@@ -1,5 +1,7 @@
-import { Badge, DropdownSection } from "@nextui-org/react";
-import React from "react";
+"use client";
+
+import { Badge, DropdownSection, badge } from "@nextui-org/react";
+import React, { use, useEffect } from "react";
 import { NotificationIcon } from "./NotificationIcon";
 import {
   Dropdown,
@@ -11,12 +13,26 @@ import {
 } from "@nextui-org/react";
 import Profile from "@/app/(SPA)/profile/page";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
+import { Avatar } from "antd";
 
 interface NotificationCompProps {
   content?: string;
+  isAchie?: boolean;
+  count?: any;
 }
 
-export const NotificationComp = ({ content }: NotificationCompProps) => {
+export const NotificationComp = ({
+  content,
+  isAchie,
+  count,
+}: NotificationCompProps) => {
+  count = 5;
+  const [showBadge, setShowBadge] = React.useState(false);
+  if (!count) setShowBadge(true);
+
+  const handleClick = () => {
+    setShowBadge(true);
+  };
   return (
     <>
       <Dropdown
@@ -25,9 +41,9 @@ export const NotificationComp = ({ content }: NotificationCompProps) => {
           base: "bg-black", // change arrow background
         }}
       >
-        <DropdownTrigger>
+        <DropdownTrigger onClick={handleClick}>
           <div>
-            <Badge content={69} color="danger">
+            <Badge content={count} isInvisible={showBadge} color="danger">
               <NotificationIcon width={25} height={25} />
             </Badge>
           </div>
@@ -57,34 +73,47 @@ export const NotificationComp = ({ content }: NotificationCompProps) => {
             }}
             title="Actions"
           >
-            {users.map((user, index) => (
-              <DropdownItem key={index}>
-                <div className="flex flex-col  gap-1 p-1">
-                  <div className="flex flex-row gap-2 " key={index}>
-                    <ProfileComp
+            {data.map((user, index) =>
+              user.type === "Achievement" ? (
+                <DropdownItem key={index}>
+                  <div className="flex flex-col  gap-1 p-1">
+                    <div
+                      className="flex flex-row gap-4 items-center "
                       key={index}
-                      img={user.img}
-                      firstName={user.firstName}
-                      lastName={user.lastName}
-                      nickName={user.nickName}
-                    />
-                    <h6 className="text-xs py-1">
-                      has invited you to play a game
-                    </h6>
+                    >
+                      <Avatar src={user.img} size={"large"} />
+                      <h6 className="text-base font-ClashGrotesk-Regular text-white py-1">
+                        {`Congratulations ! ${user.description}`}
+                      </h6>
+                    </div>
                   </div>
-                  <div className="flex flex-row gap-1 justify-end">
-                    <Button size="sm" color="success">
-                      {" "}
-                      Accept
-                    </Button>
-                    <Button size="sm" color="danger">
-                      {" "}
-                      Decline{" "}
-                    </Button>
+                </DropdownItem>
+              ) : (
+                <DropdownItem key={index}>
+                  <div className="flex flex-col  gap-1 p-1">
+                    <div className="flex gap-2 " key={index}>
+                      <ProfileComp
+                        key={index}
+                        img={user.img}
+                        firstName={user.firstName}
+                        lastName={user.lastName}
+                        nickName="has invited you to play a game"
+                      />
+                    </div>
+                    <div className="flex flex-row gap-1 justify-end">
+                      <Button size="sm" color="success">
+                        {" "}
+                        Accept
+                      </Button>
+                      <Button size="sm" color="danger">
+                        {" "}
+                        Decline{" "}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </DropdownItem>
-            ))}
+                </DropdownItem>
+              )
+            )}
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>
@@ -92,7 +121,15 @@ export const NotificationComp = ({ content }: NotificationCompProps) => {
   );
 };
 
-const users = [
+const data = [
+  {
+    id: 0,
+    img: "https://i.pravatar.cc/300?img=0",
+    firstName: "Gold Level",
+    description: "You have reached the gold level",
+    type: "Achievement",
+  },
+
   {
     id: 1,
     img: "https://i.pravatar.cc/300?img=1",
@@ -155,5 +192,12 @@ const users = [
     nickName: "GadgetGuru",
     firstName: "Mason",
     lastName: "Smith",
+  },
+  {
+    id: 10,
+    img: "https://i.pravatar.cc/300?img=0",
+    firstName: "Gold Level",
+    description: "You have reached the gold level",
+    type: "Achievement",
   },
 ];

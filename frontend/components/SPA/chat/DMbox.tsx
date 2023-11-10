@@ -14,9 +14,15 @@ interface DMSectionProps {
   dm: DMboxProps;
   SendConversationId: (id: string) => void;
   className?: string;
+  badge?: any;
 }
 
-const DMbox = ({ dm, SendConversationId, className }: DMSectionProps) => {
+const DMbox = ({
+  dm,
+  SendConversationId,
+  className,
+  badge,
+}: DMSectionProps) => {
   const sendConversationId = () => {
     SendConversationId(dm.name);
   };
@@ -27,7 +33,7 @@ const DMbox = ({ dm, SendConversationId, className }: DMSectionProps) => {
       onClick={sendConversationId}
     >
       {" "}
-      <AvatarBubble badge={5} avatar={dm.avatar} online={dm.online} />
+      <AvatarBubble badge={badge} avatar={dm.avatar} online={dm.online} />
       <div className={style["dm-info"]}>
         <div className={style["dm-name"]}>{dm.name}</div>
         <div className={style["dm-last-msg"]}>{dm.lastMsg}</div>
