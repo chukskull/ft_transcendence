@@ -1,29 +1,34 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { MatchHistory } from "src/match-history/entities/match-history.entity";
-import { Conversations } from "src/conversations/conversations.entity";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Conversation } from 'src/conversations/conversation.entity';
+import { Achievement } from '../achievement/achievement.entity';
+@Entity()
+export class MatchHistory {
+  @PrimaryGeneratedColumn()
+  id: number;
+}
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-	@Column()
-  username: string
-  
   @Column()
-  email: string;
+  intraLogin: string;
 
-	@Column()
-	nickName: string
-
-	@Column()
-	firstName: string
-
-	@Column()
-  lastName: string
-  
   @Column()
-  authenticated: boolean;
+  nickName: string;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
 
   @Column()
   avatarUrl: string;
@@ -38,17 +43,20 @@ export class User {
   @JoinTable()
   friends: User[];
 
+  @ManyToMany(() => User)
+  @JoinTable()
+  blockedUsers: User[];
+
   @Column()
   status: string;
 
   @Column()
   pendingInvite: boolean;
 
-  @Column()
-  stats: string;
 
-  @Column()
-  matchHistory: object;
+  @ManyToMany(() => MatchHistory)
+  @JoinTable()
+  matchHistory: MatchHistory[];
 
   @Column()
   experience: number;
@@ -56,19 +64,17 @@ export class User {
   @Column()
   level: number;
 
-	@OneToMany(() => MatchHistory, matchHistory => matchHistory.player1)
-  playerMatches: Promise<MatchHistory[]>
-
-  @OneToMany(() => MatchHistory, matchHistory => matchHistory.winner)
-	wonMatches: Promise<MatchHistory[]>
-
   @Column()
   wins: number;
 
   @Column()
   totalGames: number;
 
-  @ManyToMany(() => Conversations)
+  @ManyToMany(() => Conversation)
   @JoinTable()
-  conversations: Conversations[];
+  conversations: Conversation[];
+
+  @ManyToMany(() => Achievement)
+  @JoinTable()
+  achievements: Achievement[];
 }

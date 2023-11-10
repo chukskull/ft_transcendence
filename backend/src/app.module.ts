@@ -3,18 +3,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 // import { AuthModule } from './user/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-// import { UserModule } from './user/user.module';
+import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChatGatewayModule } from './chat/chat-gateway.module';
-import { ChannelModule } from './chat/channel/channel.module';
-import { MessageModule } from './chat/message/message.module';
-import { MatchModule } from './match-history/match-.module';
+import { ChannelModule } from './channel/channel.module';
+import { AchievementController } from './achievement/achievement.controller';
+import { AchievementService } from './achievement/achievement.service';
+import { AchievementModule } from './achievement/achievement.module';
 
 @Module({
   imports: [
     // AuthModule,
     // ChatGatewayModule,
     ChannelModule,
+    UserModule,
+    AchievementModule,
     // MessageModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -22,16 +24,18 @@ import { MatchModule } from './match-history/match-.module';
     }),
     // UserModule,
     TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB,
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    synchronize: true
-  }),
-    MatchModule],
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'mountassir',
+      password: 'admin',
+      database: 'ft_transgender',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true,
+    }),
+    AchievementModule,
+    // MatchHistoryModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

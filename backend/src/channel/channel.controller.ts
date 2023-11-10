@@ -2,20 +2,20 @@ import {
   Controller,
   Post,
   Body,
-  // Param,
-  // Delete,
-  // Patch,
+  Param,
+  Delete,
+  Patch,
   Get,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dtos/create-channel.dto';
-// import { UpdateChannelDto } from './dtos/update-channel.dto';
+import { UpdateChannelDto } from './dtos/update-channel.dto';
 
 @Controller('channels')
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createChannelDto: CreateChannelDto) {
     return this.channelService.createChannel(createChannelDto);
   }
@@ -24,48 +24,54 @@ export class ChannelController {
   findAll() {
     return this.channelService.getChannels();
   }
-  // @Patch(':chanId')
-  // update(@Param('id') id: number, @Body() updateChannelDto: UpdateChannelDto) {
-  //   return this.channelService.updateChannel(id, updateChannelDto);
-  // }
 
-  // @Delete(':chanId')
-  // delete(@Param('id') id: number) {
-  //   return this.channelService.deleteChannel(id);
-  // }
+  @Get('myChannels')
+  findMyChannels() {
+    return this.channelService.getMyChannels();
+  }
 
-  // @Post(':chanId/join')
-  // join(@Param('id') id: number) {
-  //   return this.channelService.joinChannel(id);
-  // }
+  @Patch()
+  update(@Body() updateChannelDto: UpdateChannelDto) {
+    return this.channelService.updateChannel(updateChannelDto);
+  }
 
-  // @Post(':chanId/leave')
-  // leave(@Param('id') id: number) {
-  //   return this.channelService.leaveChannel(id);
-  // }
+  @Delete()
+  delete(@Body() id: number) {
+    return this.channelService.deleteChannel(id);
+  }
 
-  // @Post(':chanId/banning/:userId/:action')
-  // ban(@Param('id') id: number) {
-  //   return this.channelService.banUnbanFromChannel(id, 14124);
-  // }
+  @Post(':chanId/join')
+  join(@Param('chanId') chanId: number, @Body() Password: string) {
+    return this.channelService.joinChannel(chanId, Password);
+  }
 
-  // @Post(':chanId/muting/:userId/:action')
-  // mute(@Param('id') id: number) {
-  //   return this.channelService.muteUnmuteFromChannel(id, 14124);
-  // }
+  @Post(':chanId/leave')
+  leave(@Param('chanId') chanId: number) {
+    return this.channelService.leaveChannel(chanId);
+  }
+  @Post(':chanId/invite/:userId')
+  invite(@Param('chanId') chanId: number, @Param('userId') userId: number) {
+    return this.channelService.inviteToChannel(chanId, userId);
+  }
 
-  // @Post(':chanId/invite/:userId')
-  // invite(@Param('id') id: number) {
-  //   return this.channelService.inviteToChannel(id, 14124);
-  // }
+  @Post(':chanId/banning/:userId/:action')
+  ban(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
+    return this.channelService.banUnbanFromChannel(chanId, userId, action);
+  }
 
-  // @Post(':chanId/mod/:userId/:action')
-  // mod(@Param('id') id: number) {
-  //   return this.channelService.modUnmodFromChannel(id, 14124);
-  // }
+  @Post(':chanId/muting/:userId/:action')
+  mute(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
+    return this.channelService.muteUnmuteFromChannel(chanId, userId, action);
+  }
 
-  // @Post(':chanId/owner/:userId/')
-  // owner(@Param('id') id: number) {
-  //   return this.channelService.makeOwner(id, 14124);
-  // }
+
+  @Post(':chanId/mod/:userId/:action')
+  mod(@Param('chanId') chanId: number, @Param('userId') userId: number, @Param('action') action: number) {
+    return this.channelService.modUnmodFromChannel(chanId, userId, action);
+  }
+
+  @Post(':chanId/owner/:userId/')
+  owner(@Param('chanId') chanId: number, @Param('userId') userId: number) {
+    return this.channelService.makeOwner(chanId, userId);
+  }
 }
