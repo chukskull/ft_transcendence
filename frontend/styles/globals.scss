@@ -8,6 +8,7 @@
 @import "main.scss";
 @import "Login.scss";
 @import "SPA/Profile/profile.scss";
+@import "fonts.css";
 
 
 
@@ -34,6 +35,8 @@ html {
   scroll-padding-top: 8rem;
   font-size: 100%;
   background: var(--color-background);
+  scroll-behavior: smooth;
+
 }
 
 body {

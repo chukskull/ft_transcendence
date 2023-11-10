@@ -8,7 +8,7 @@ import ChannelMenu from "@/components/SPA/chat/ChannelMenu";
 import Modal from "react-modal";
 
 interface chatHeaderProps {
-  avatar: string;
+  avatar?: string;
   name: string;
   isChannel: boolean;
   online: boolean;
@@ -34,9 +34,9 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
       </Modal>
       <div className={style["chat-header"]}>
         <div className={style["chat-user-group"]}>
-          {!chatHeaderProps?.isChannel && (
+          {/* {!chatHeaderProps?.isChannel && (
             <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          )}
+          )} */}
           <div className={style["name"]}>{chatHeaderProps.name}</div>
           <button
             onClick={() => {

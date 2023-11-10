@@ -3,12 +3,15 @@ import style from "@/styles/components/TopLeftNav.module.scss";
 import "@/styles/globals.scss";
 import Image from "next/image";
 import { BsBell } from "react-icons/bs";
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import { Badge, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
 import Link from "next/link";
 import ProfileSettingModal from "./ProfileSettingModal";
 import SearchComp from "./SearchComp";
+import { NotificationIcon } from "./NotificationIcon";
+import { notification } from "antd";
+import { NotificationComp } from "./NotificationComp";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -18,6 +21,7 @@ export default function TopLeftNav() {
     onOpen();
     setString(comp);
   };
+  const notificationClicked = () => {};
   return (
     <>
       <div className={style["top-bar"]}>
@@ -33,7 +37,7 @@ export default function TopLeftNav() {
         </div>
         <SearchComp />
         <div className={style["top_notif"]}>
-          <BsBell size={25} />
+          <NotificationComp />
         </div>
       </div>
       <div className={style["left-bar"]}>

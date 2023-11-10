@@ -1,54 +1,80 @@
-import { ChannelUser } from "src/chat/channel/channelUsers.entity";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Conversation } from 'src/conversations/conversation.entity';
+import { Achievement } from '../achievement/achievement.entity';
+@Entity()
+export class MatchHistory {
+  @PrimaryGeneratedColumn()
+  id: number;
+}
 
 @Entity()
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	login: string
+  @Column()
+  intraLogin: string;
 
-	@Column()
-	name: string
+  @Column()
+  nickName: string;
 
-	@Column()
-	email: string
+  @Column()
+  firstName: string;
 
-	@Column()
-	avatarUrl: string
+  @Column()
+  lastName: string;
 
-	@Column()
-	authenticated: boolean
+  @Column()
+  avatarUrl: string;
 
-	@Column()
-	twoFactorAuthEnabled: boolean
+  @Column()
+  twoFactorAuthEnabled: boolean;
 
-	@Column({ nullable: true })
-	twoFactorSecret: string
+  @Column({ nullable: true })
+  twoFactorSecret: string;
 
-	@OneToMany(() => ChannelUser, channelUser => channelUser.user)
-	channelLinks: Promise<ChannelUser[]>
+  @ManyToMany(() => User)
+  @JoinTable()
+  friends: User[];
 
-	@ManyToMany(() => User)
-	@JoinTable()
-	friends: User[]
+  @ManyToMany(() => User)
+  @JoinTable()
+  blockedUsers: User[];
 
-	@Column()
-	status: string
+  @Column()
+  status: string;
 
-	@Column()
-	pendingInvite: boolean
+  @Column()
+  pendingInvite: boolean;
 
-	@Column()
-	stats: object
 
-	@Column()
-	matchHistory: object
+  @ManyToMany(() => MatchHistory)
+  @JoinTable()
+  matchHistory: MatchHistory[];
 
-	@Column()
-	isBanned: boolean
+  @Column()
+  experience: number;
 
-	@Column()
-	isAdmin: string
+  @Column()
+  level: number;
+
+  @Column()
+  wins: number;
+
+  @Column()
+  totalGames: number;
+
+  @ManyToMany(() => Conversation)
+  @JoinTable()
+  conversations: Conversation[];
+
+  @ManyToMany(() => Achievement)
+  @JoinTable()
+  achievements: Achievement[];
 }
