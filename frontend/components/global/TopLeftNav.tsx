@@ -43,7 +43,14 @@ export default function TopLeftNav() {
       <div className={style["left-bar"]}>
         <div className={style["left_menu"]}>
           <Link href="/chat">
-            <img src="/assets/main/Navbar/chat.svg" />
+            <Badge
+              isOneChar
+              shape="circle"
+              color="danger"
+              content={<NotificationIcon size={1} />}
+            >
+              <img src="/assets/main/Navbar/chat.svg" />
+            </Badge>
           </Link>
           <Link href="/game">
             <img src="/assets/main/Navbar/Game.svg" />

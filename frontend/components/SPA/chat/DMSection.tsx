@@ -176,6 +176,7 @@ const DmSection = ({
               dm={dm}
               key={dm.name}
               SendConversationId={() => handleConversationId(dm.name)}
+              badge={0}
             />
           </div>
         ))}
