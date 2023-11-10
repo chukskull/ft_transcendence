@@ -121,4 +121,24 @@ export class UserService {
     // client.blocked.push(blocked);
     return this.userRepository.save(client);
   }
+
+  async saveTwoFactorSecret(secret: string, clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { twoFactorSecret: secret });
+  }
+
+  async setOnline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'ONLINE' });
+  }
+
+  async setOffline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'OFFLINE' });
+  }
+
+  async enableTwoFactor(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { twoFactorAuthEnabled: true });
+  }
+
+  async disableTwoFactor(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { twoFactorAuthEnabled: false });
+  }
 }
