@@ -36,7 +36,7 @@ export default function TopLeftNav() {
           </Link>
         </div>
         <SearchComp />
-        <div className={style["top_notif"]}>
+        <div className={`${style["top_notif"]} + cursor-pointer`}>
           <NotificationComp />
         </div>
       </div>

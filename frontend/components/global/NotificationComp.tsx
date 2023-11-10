@@ -12,7 +12,11 @@ import {
 import Profile from "@/app/(SPA)/profile/page";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 
-export const NotificationComp = () => {
+interface NotificationCompProps {
+  content?: string;
+}
+
+export const NotificationComp = ({ content }: NotificationCompProps) => {
   return (
     <>
       <Dropdown
@@ -46,24 +50,38 @@ export const NotificationComp = () => {
         >
           <DropdownSection
             style={{
-              width: "400px",
+              width: "500px",
               overflow: "auto",
               maxHeight: "400px",
-              padding: "12px",
+              padding: "20px",
             }}
             title="Actions"
           >
             {users.map((user, index) => (
               <DropdownItem key={index}>
-                <div className="flex flex-row gap-4" key={index}>
-                  <ProfileComp
-                    key={index}
-                    img={user.img}
-                    firstName={user.firstName}
-                    lastName={user.lastName}
-                    nickName={user.nickName}
-                  />
-                  <h1>has invited to play a game</h1>
+                <div className="flex flex-col  gap-1 p-1">
+                  <div className="flex flex-row gap-2 " key={index}>
+                    <ProfileComp
+                      key={index}
+                      img={user.img}
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      nickName={user.nickName}
+                    />
+                    <h6 className="text-xs py-1">
+                      has invited you to play a game
+                    </h6>
+                  </div>
+                  <div className="flex flex-row gap-1 justify-end">
+                    <Button size="sm" color="success">
+                      {" "}
+                      Accept
+                    </Button>
+                    <Button size="sm" color="danger">
+                      {" "}
+                      Decline{" "}
+                    </Button>
+                  </div>
                 </div>
               </DropdownItem>
             ))}
