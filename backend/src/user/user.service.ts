@@ -13,6 +13,10 @@ export class UserService {
     return this.userRepository.find();
   }
 
+  async create(data): Promise<User> {
+    return this.userRepository.save(data);
+  }
+
   async findOne(login: any): Promise<User> {
     return this.userRepository.findOne(login);
   }
@@ -38,5 +42,25 @@ export class UserService {
 
   async acceptGameInvite(clientID: number): Promise<any> {
     return this.userRepository.update(clientID, { pendingInvite: false });
+  }
+
+  async saveTwoFactorSecret(secret: string, clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { twoFactorSecret: secret });
+  }
+
+  async setOnline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'ONLINE' });
+  }
+
+  async setOffline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'OFFLINE' });
+  }
+
+  async enableTwoFactor(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { twoFactorAuthEnabled: true });
+  }
+
+  async disableTwoFactor(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { twoFactorAuthEnabled: false });
   }
 }

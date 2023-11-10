@@ -66,15 +66,80 @@ export class GameService {
 				acc.push([key, game])
 				return acc
 			}, []))
-			if (this.queue.length > 2) {
+			if (this.queue.length >= 2) {
 				let [player1, player2] = this.queue.splice(0, 2)
-				this.currPlayers.push(player1)
-				this.currPlayers.push(player2)
-				this.activeGames[player1.id + ',' + player2.id] = new GameInstance(player1.socket, player2.socket)
+				if (this.onlineUsers.get(player1.id) && this.onlineUsers.get(player2.id)) {
+					this.currPlayers.push(player1, player2)
+					this.activeGames[player1.id + ',' + player2.id] = new GameInstance(player1.socket, player2.socket)
+				} else if (this.onlineUsers.get(player1.id)) {
+					this.queue.unshift(player2)
+				} else if (this.onlineUsers.get(player2.id)) {
+					this.queue.unshift(player1)
+				}
 			}
 		}, 1000);
+	}
+
+	/*
+	* creates a game instance and adds it to the activeGames object
+	*/
+	create(socket: Socket, payload: any) {
+		const { player1, player2 } = payload
+		if (this.currPlayers.find(player => player.id === player1.id) || this.currPlayers.find(player => player.id === player2.id)) {
+			return
 		}
-
-
+		/*
+		* if player2 is not defined, player1 is the only player in the game
+		*/
+		if (!player2) {
+			if (!this.queue.find(player => player.id === player1.id)) {
+				this.queue.push({ id: player1.id, socket })
+				socket.emit('changeState', { state: 'waitingForOponent' })
+			}
+			else {
+				this.queue = this.queue.filter((player) => {
+					return player.id !== player1.id
+				})
+				this.queue.push({ id: player1.id, socket })
+				socket.emit('changeState', { state: 'inGame' })
+			}
+		}
+		/*
+		* if player2 is defined, player1 and player2 are in the game
+	 */
+		else {
+			const invUser = this.onlineUsers.get(player2.id)
+			/*
+			* if player2 is online, send an invite to player2
+			*/
+			if (invUser) {
+				invUser.forEach(sock => {
+					sock.emit('invite', { player: player1, color: Color.White })
+					sock.removeAllListeners('invResponse')
+					sock.once('invResponse', (response) => {
+						invUser.forEach(sock_ => {
+							/*
+							* if player2 accepted the invite, remove player1 and player2 from the queue
+							* and add them to the currPlayers array
+							*/
+							if (sock_ !== sock && response == true && !this.currPlayers.find(player => player.id === player2.id) && !this.currPlayers.find(player => player.id === player1.id) && this.onlineUsers.get(player1.id)?.has(socket)) {
+								/*
+								* if player1 or player2 are in the queue, remove them from the queue
+								*/
+								if (this.queue.find(player => player.id === player1.id) || this.queue.find(player => player.id === player2.id)) {
+									this.queue = this.queue.filter((player) => {
+										return player.id !== player1.id && player.id !== player2.id
+									})
+								}
+								socket.emit('changeState', { state: 'inGame' })
+								sock_.emit('changeState', { state: 'inGame' })
+								this.currPlayers.push({ id: player1.id, socket }, { id: player2.id, socket: sock_ })
+								this.activeGames[player1.id + ',' + player2.id] = new GameInstance(socket, sock_)
+							}
+						})
+					})
+				})
+			}
+		}
 	}
 }

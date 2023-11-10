@@ -11,6 +11,8 @@ import {
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from 'src/user/auth/auth.service';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -18,14 +20,25 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@WebSocketServer() server;
 	private logger: Logger = new Logger('GameGateway');
 
-	constructor(private readonly gameService: GameService) { }
+	constructor(private readonly gameService: GameService
+		, private readonly jwtService: JwtService,
+	private readonly authService: AuthService) { }
 
 	afterInit(server: any) {
 		this.logger.log('Initialized');
 	}
 
 	handleConnection(client: Socket, ...args: any[]) {
-		this.logger.log(`Client connected: ${client.id}`);
+		const cookie = client.handshake.headers.cookie.split(';').find(c => c.trim().startsWith('token=')).split('=')[1]
+
+		if (!cookie) {
+			client.disconnect()
+			return
+		}
+		const data = this.jwtService.verify(cookie)
+		const id = data['id']
+		this.authService.setOnline(id)
+		this.gameService.onlineUsers.set(id, new Set<Socket>())
 	}
 
 	handleDisconnect(client: Socket) {
@@ -34,9 +47,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('createGame')
 	async handleCreateGame(@MessageBody() data: any) {
-		const game = await this.gameService.createGame(data.player1Id, data.player2Id, data.customizationOptions);
-		const res = JSON.stringify({ event: 'gameCreated', data: game });
-		this.server.emit('gameCreated', res);
+		
 	}
 
 	@SubscribeMessage('updateGame')

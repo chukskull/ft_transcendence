@@ -8,7 +8,10 @@ export class User {
   id: number;
 
 	@Column()
-	username: string
+  username: string
+  
+  @Column()
+  email: string;
 
 	@Column()
 	nickName: string
@@ -17,7 +20,10 @@ export class User {
 	firstName: string
 
 	@Column()
-	lastName: string
+  lastName: string
+  
+  @Column()
+  authenticated: boolean;
 
   @Column()
   avatarUrl: string;
