@@ -5,14 +5,11 @@ export class MatchHistory {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	// games played as player 1
-	@ManyToOne(() => User, user => user.player1Matches)
+	@ManyToOne(() => User, user => user.id)
 	player1: User;
 
-	// games played as player 2
-	@ManyToOne(() => User, user => user.player2Matches)
+	@ManyToOne(() => User, user => user.id)
 	player2: User;
-
 
 	@ManyToOne(() => User, user => user.id)
 	winner: User;

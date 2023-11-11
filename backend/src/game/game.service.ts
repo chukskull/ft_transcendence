@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../user/user.entity';
-import { GameGateway } from './game.gateway';
+import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { Stats } from './stats.entity';
+import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 
 export const GAME_WIDTH = 860
 export const GAME_HEIGHT = 500
@@ -36,6 +36,7 @@ export class GameService {
 
 	constructor(
 		private matchHistory: MatchHistoryService,
+		private jwtService: JwtService,
 		@InjectRepository(Stats) private readonly statsRepository: Repository<Stats>) {
 		setInterval(() => {
 			Object.entries(this.activeGames).forEach(([key, game]) => {
@@ -83,7 +84,7 @@ export class GameService {
 	/*
 	* creates a game instance and adds it to the activeGames object
 	*/
-	create(socket: Socket, payload: any) {
+	createGame(socket: Socket, payload: any) {
 		const { player1, player2 } = payload
 		if (this.currPlayers.find(player => player.id === player1.id) || this.currPlayers.find(player => player.id === player2.id)) {
 			return
@@ -141,5 +142,29 @@ export class GameService {
 				})
 			}
 		}
+	}
+	/*
+	* checks if the cookie is valid
+	*/
+	async checkCookie(@ConnectedSocket() client: Socket) : Promise<any> {
+		const cookie = client.handshake.headers?.cookie?.split(';').find(c => c.trim().startsWith(process.env.TOKEN)).split('=')[1]
+		if (!cookie) {
+			client.disconnect()
+			return
+		}
+		const data = this.jwtService.verify(cookie)
+		return data
+		// for jwt refresh token check
+		// const decodedCookie = this.jwtService.decode(cookie);
+		// if (
+    //   !decodedCookie ||
+    //   (await this.authService.checkToken(
+    //     decodedCookie.sub || '',
+    //     cookie,
+    //   )) == false
+    // ) {
+    //   client.disconnect();
+    //   return false;
+    // }
 	}
 }

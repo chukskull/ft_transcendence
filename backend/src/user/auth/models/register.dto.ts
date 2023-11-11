@@ -3,6 +3,9 @@ import { IsEmail, IsNotEmpty, IsPhoneNumber } from 'class-validator';
 export class RegisterDto {
   id: number;
 
+  @IsNotEmpty()
+  intraLogin: string;
+
   avatar: string;
 
   @IsNotEmpty()

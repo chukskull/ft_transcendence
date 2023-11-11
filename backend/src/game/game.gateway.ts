@@ -27,47 +27,38 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	afterInit(server: any) {
 		this.logger.log('Initialized');
 	}
-
-	handleConnection(client: Socket, ...args: any[]) {
-		const cookie = client.handshake.headers.cookie.split(';').find(c => c.trim().startsWith('token=')).split('=')[1]
-
-		if (!cookie) {
-			client.disconnect()
-			return
-		}
-		const data = this.jwtService.verify(cookie)
-		const id = data['id']
+	/*
+	*	Handle connection and disconnection
+	*/
+	async	handleConnection(client: Socket, ...args: any[]) {
+		const id = await this.gameService.checkCookie(client)['id']
 		this.authService.setOnline(id)
-		this.gameService.onlineUsers.set(id, new Set<Socket>())
+		let connectedSockets = this.gameService.onlineUsers.get(id)
+		if (!connectedSockets)
+			connectedSockets = new Set<Socket>()
+		connectedSockets.add(client)
+		this.gameService.onlineUsers.set(id, connectedSockets)
+
 	}
 
-	handleDisconnect(client: Socket) {
-		this.logger.log(`Client disconnected: ${client.id}`);
+	async handleDisconnect(client: Socket) {
+		const id = await this.gameService.checkCookie(client)['id']
+		let connectedSockets = this.gameService.onlineUsers.get(id)
+		if (connectedSockets) {
+			connectedSockets.delete(client)
+			if (connectedSockets.size == 0) {
+				this.authService.setOffline(id)
+				this.gameService.onlineUsers.delete(id)
+			}
+		}
 	}
-
+	/*
+	*	create Game
+	*/
 	@SubscribeMessage('createGame')
-	async handleCreateGame(@MessageBody() data: any) {
-		
-	}
-
-	@SubscribeMessage('updateGame')
-	async handleUpdateGame(@MessageBody() data: any) {
-		const game = await this.gameService.updateGame(data.gameId, data.status, data.winnerId);
-		const res = JSON.stringify({ event: 'gameUpdated', data: game });
-		this.server.emit('gameUpdated', res);
-	}
-
-	@SubscribeMessage('getGame')
-	async handleGetGame(@MessageBody() data: any) {
-		const game = await this.gameService.getGame(data.gameId);
-		const res = JSON.stringify({ event: 'game', data: game });
-		this.server.emit('game', res);
-	}
-
-	@SubscribeMessage('getGames')
-	async handleGetGames(@MessageBody() data: any) {
-		const games = await this.gameService.getGames();
-		const res = JSON.stringify({ event: 'games', data: games });
-		this.server.emit('games', res);
+	async createGame(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
+		const id = await this.gameService.checkCookie(client)['id']
+		this.gameService.onlineUsers.get(id).add(client)
+		this.gameService.createGame(client, payload)
 	}
 }

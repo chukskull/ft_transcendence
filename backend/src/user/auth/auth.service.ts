@@ -11,18 +11,18 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UserService,
-  ) {}
+  ) { }
 
-  async twoFactorAuthSecret(clientID: number) {
-    const client = await this.userService.findOne(clientID);
-    const secret = authenticator.generateSecret();
-    await this.userService.saveTwoFactorSecret(secret, clientID);
+  // async twoFactorAuthSecret(clientID: number) {
+  //   const client = await this.userService.findUser(clientID);
+  //   const secret = authenticator.generateSecret();
+  //   await this.userService.saveTwoFactorSecret(secret, clientID);
 
-    return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
-  }
+  //   return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
+  // }
 
   async twoFactorAuthVerify(code: string, clientID: number) {
-    const client = await this.userService.findOne(clientID);
+    const client = await this.userService.findUser(clientID);
 
     return authenticator.verify({
       token: code,
@@ -37,17 +37,21 @@ export class AuthService {
     return data['id'];
   }
 
-  async newUser(@Body() data: RegisterDto, clientID: number) {
-    data.avatar = 'http://localhost:8000/api/uploads/egg.jpeg';
-    data.id = clientID;
-    data.authentication = false;
-    data.pendingInvite = false;
-    data.status = 'ONLINE';
-
-    await this.userService.create(data);
+  async newUser(@Body() data: RegisterDto) {
+    const user = await this.userService.createNewUser(data.intraLogin, data.avatar);
+    return user;
   }
 
   async updateUser(@Body() data: UpdateDto) {
-    await this.userService.update(data.id, data);
+    await this.userService.updateUserInfo(data.id, data);
   }
+
+  async setOnline(clientID: number) {
+    await this.userService.setOnline(clientID);
+  }
+
+  async setOffline(clientID: number) {
+    await this.userService.setOffline(clientID);
+  }
+  
 }
