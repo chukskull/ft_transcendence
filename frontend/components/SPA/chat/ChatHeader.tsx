@@ -4,14 +4,12 @@ import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
-import ChannelMenu from "@/components/SPA/chat/ChannelMenu";
+import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
 
 interface chatHeaderProps {
-  avatar?: string;
-  name: string;
   isChannel: boolean;
-  online: boolean;
+  dmOrChannel:any;
 }
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
@@ -37,7 +35,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           {/* {!chatHeaderProps?.isChannel && (
             <AvatarBubble avatar="/assets/components/Profile.svg" online />
           )} */}
-          <div className={style["name"]}>{chatHeaderProps.name}</div>
+          <div className={style["name"]}>{chatHeaderProps?.dmOrChannel?.name}</div>
           <button
             onClick={() => {
               setShow(true);

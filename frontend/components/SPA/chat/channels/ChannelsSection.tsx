@@ -1,84 +1,40 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
-import { BiLock } from "react-icons/bi";
-import { get } from "http";
-import { act } from "react-dom/test-utils";
+import CreateChannelModal from "./CreateChannel";
+import axios from "axios";
 
 interface Channel {
   type: string;
   name: string;
+  id: number;
+  is_private: boolean;
+  is_protected: boolean;
 }
 
-const chanList = [
-  {
-    name: "#General",
-    type: "public",
-  },
-  {
-    name: "#Random",
-    type: "public",
-  },
-  {
-    name: "#Pedago",
-    type: "public",
-  },
-  {
-    name: "#WatchRoom",
-    type: "private",
-  },
-  {
-    name: "#GameRoom",
-    type: "private",
-  },
-  {
-    name: "#SecretRoom",
-    type: "protected",
-  },
-];
 
-const CreateChannelModal = ({}) => {
-  return (
-    <>
-      <h1>Create Channel</h1>
-      <div className={style["input-group"]}>
-        <div>
-          <label>Channel Name</label>
-          <input type="text" id="channel-name" placeholder="#NewChannel" />
-        </div>
-        <div>
-          <label>Channel Password (Optional)</label>
-          <input
-            type="password"
-            id="channel-paswd"
-            name="channel-paswd"
-            placeholder="Set Password"
-          />
-        </div>
-        <div className={style["prv-btn"]}>
-          <h3>
-            <BiLock />
-            Private Channel
-          </h3>
-          <input type="checkbox" />
-        </div>
-      </div>
-      <button className={style["create-btn"]}>Create</button>
-    </>
-  );
-};
+
 interface ChannelProps {
-  sendConversationId: (id: string) => void;
-  getNameAndType: (Channel: { name: string; type: boolean }) => void;
+  sendDmOrChannel: (channel: any) => void;
+  getType: (type: boolean ) => void;
   CompType: boolean;
 }
 const ChannelsSection = ({
-  sendConversationId,
-  getNameAndType,
+  sendDmOrChannel,
+  getType,
   CompType,
 }: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
-  const channelList: Channel[] = chanList;
+  const [channelList, setChannelList] = useState<Channel[]>([]);
+  const [active, setActive] = useState<string>("");
+
+  useEffect(() => {
+    axios.get("http://localhost:1337/api/channels").then((res) => {
+      console.log(res);
+      setChannelList(res.data);
+    });
+  }
+  , []);
   const groupedChannels = channelList.reduce((acc, channel) => {
     if (!acc[channel.type]) {
       acc[channel.type] = [];
@@ -97,10 +53,9 @@ const ChannelsSection = ({
         return "Protected Channels";
     }
   };
-  const [active, setActive] = useState<string>("");
   function handleClick(channel: Channel) {
-    sendConversationId(channel.name);
-    getNameAndType({ name: channel.name, type: true });
+    sendDmOrChannel(channel);
+    getType(true );
     setActive(channel.name);
   }
   return (

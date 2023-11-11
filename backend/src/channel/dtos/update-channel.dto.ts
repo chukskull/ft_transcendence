@@ -1,12 +1,17 @@
-import { IsOptional, IsString, IsBoolean, IsArray , IsNumber, IsNotEmpty
+import {
+  IsOptional,
+  IsString,
+  IsBoolean,
+  IsArray,
+  IsNumber,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class UpdateChannelDto {
-
   @IsNotEmpty()
   @IsNumber()
   id: number;
-  
+
   @IsOptional()
   @IsString()
   name: string;
@@ -18,8 +23,4 @@ export class UpdateChannelDto {
   @IsOptional()
   @IsBoolean()
   is_private: boolean;
-
-  @IsOptional()
-  @IsArray()
-  members: number[];
 }
