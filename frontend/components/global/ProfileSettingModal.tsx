@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Input } from "antd";
+import { Avatar, Input, Skeleton } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
 
 import { Button, Switch } from "@nextui-org/react";
 
 import { useUpdate } from "@/utils/UpdaTeUser";
-import { send } from "process";
+import { SkeletonComp } from "./Skeleton";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -58,6 +58,10 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       setFile(null);
     }, 1000);
   };
+
+  if (isLoading) {
+    <SkeletonComp />;
+  }
 
   return (
     <>
