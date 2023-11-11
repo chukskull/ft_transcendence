@@ -27,11 +27,10 @@ export const NotificationComp = ({
   count,
 }: NotificationCompProps) => {
   count = 5;
-  const [showBadge, setShowBadge] = React.useState(false);
-  if (!count) setShowBadge(true);
+  const [NotifCount, setNotifCount] = React.useState(count);
 
   const handleClick = () => {
-    setShowBadge(true);
+    setNotifCount(0);
   };
   return (
     <>
@@ -43,7 +42,11 @@ export const NotificationComp = ({
       >
         <DropdownTrigger onClick={handleClick}>
           <div>
-            <Badge content={count} isInvisible={showBadge} color="danger">
+            <Badge
+              content={count}
+              isInvisible={NotifCount === 0 ? true : false}
+              color="danger"
+            >
               <NotificationIcon width={25} height={25} />
             </Badge>
           </div>

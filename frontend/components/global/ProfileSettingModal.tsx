@@ -8,20 +8,43 @@ import {
 import axios from "axios";
 import { useQuery } from "react-query";
 
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Input } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
+import { UserSquare } from "lucide-react";
+import { postImage } from "@/utils/addUser";
+import { send } from "process";
 interface ProfileSettingModalProps {
   onClose: any;
 }
 
 export const ProfileSettingModal = ({ onClose }: ProfileSettingModalProps) => {
   const [checked, setChecked] = React.useState(false);
-  const { isLoading, error, data } = useQuery("profiles", async () => {
-    return axios.get("http://localhost:4000/user/");
-  });
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return "An error has occurred: " + error.message;
+  // const { isLoading, error, data } = useQuery("profiles", async () => {
+  //   return axios.get("http://localhost:4000/user/");
+  // });
+  // if (isLoading) return <div>Loading...</div>;
+  // if (error) return "An error has occurred: " + error.message;
+
+  const [file, setFile] = useState(null);
+  const { mutate } = postImage();
+
+  const sendImage = async (file: any) => {
+    mutate(file);
+  };
+  const handleClick = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.click();
+    fileInput.addEventListener("change", (e: any) => {
+      setFile(e.target.files[0]);
+    });
+  };
+
+  if (file) {
+    sendImage(file);
+  }
   return (
     <>
       <div className="flex flex-col gap-4 items-center">
@@ -29,8 +52,15 @@ export const ProfileSettingModal = ({ onClose }: ProfileSettingModalProps) => {
           Settings
         </h1>
         <div className="relative h-24 w-24 mt-2">
-          <Avatar src={"https://i.pravatar.cc/300?img=1"} size={100} className="relative" />
-          <div className=" absolute w-10  h-10 rounded-full bg-white  flex items-center justify-center top-2/3 left-2/3">
+          <Avatar
+            src={"https://i.pravatar.cc/300?img=1"}
+            size={100}
+            className="relative"
+          />
+          <div
+            onClick={handleClick}
+            className="cursor-pointer  absolute w-10  h-10 rounded-full bg-white  flex items-center justify-center top-2/3 left-2/3"
+          >
             <BsFillCameraFill className="w-5 h-5" />
           </div>
         </div>
@@ -57,24 +87,23 @@ export const ProfileSettingModal = ({ onClose }: ProfileSettingModalProps) => {
           onChange={() => setChecked(!checked)}
         />
       </div>
-     
-        <div className="flex items-center justify-between gap-10">
-          <Button
-            // color="danger"
-            className="bg-inherit text-white font-ClashGrotesk-Medium text-base text-center"
-            // variant="light"
-            onPress={onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            className="bg-buttonbg text-white font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
-            onPress={onClose}
-          >
-            {"Save"}
-          </Button>
-        </div>
-     
+
+      <div className="flex items-center justify-between gap-10">
+        <Button
+          // color="danger"
+          className="bg-inherit text-white font-ClashGrotesk-Medium text-base text-center"
+          // variant="light"
+          onPress={onClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          className="bg-buttonbg text-white font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
+          onPress={onClose}
+        >
+          {"Save"}
+        </Button>
+      </div>
     </>
   );
 };
