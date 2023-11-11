@@ -1,4 +1,4 @@
-import { use } from "react";
+
 import { useMutation } from "react-query";
 import axios from "axios";
 
@@ -12,16 +12,19 @@ export const useAddUser = () => {
 };
 
 
-const changeImage = async (image: any) => {
-  if(image === null) {
-    console.log("image is null");
-  }
-  const {data} = await axios.post("http://localhost:4000/users", image);
+const Update = async (sdata: any) => {
+  const formData = new FormData();
+  formData.append(sdata, "any");
+  const {data} = await axios.post("http://localhost:4000/users", {
+    image: sdata.image,
+    isEnbled: sdata.enableTwoFa,
+    name: sdata.name,
+  });
 
-  console.log(data);
   return data;
 
 };
-export const postImage = () => {
-  return useMutation(changeImage);
+export const usePostImage = () => {
+ return useMutation(Update);
+  
 };
