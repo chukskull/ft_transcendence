@@ -56,6 +56,7 @@ export class AchievementController {
 
   @Get(':id')
   findOne(@Param('id') id: number) {
+    console.log(id);
     return this.achievementService.findAc(id);
   }
 

@@ -1,11 +1,8 @@
 import DMbox from "@/components/SPA/chat/DMbox";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AvatarBubble from "./AvatarBubble";
-import { get } from "http";
-import { set } from "react-hook-form";
-import { Badge } from "@nextui-org/react";
 const dmList = [
   {
     name: "John3464 Doe",
@@ -128,21 +125,17 @@ const FindFriendModal = () => {
 };
 
 interface DmSectionProps {
-  SendconversationId2p: any;
-  getNameAndType: (OBJ: { name: string; type: boolean }) => void;
+  getType: (type: boolean) => void;
+  sendDmOrChannel: (dm: any) => void;
   CompType: boolean;
 }
-const DmSection = ({
-  SendconversationId2p,
-  getNameAndType,
-  CompType,
-}: DmSectionProps) => {
+const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   const [findFriendModal, setFindFriendModal] = useState<boolean>(false);
   const [active, setActive] = useState<string>("");
-  const handleConversationId = (conversationId: string) => {
-    SendconversationId2p(conversationId);
-    getNameAndType({ name: conversationId, type: false });
-    setActive(conversationId);
+  const [dm, setDm] = useState<any>([]);
+  const handleConversationId = (dm: any) => {
+    getType(false);
+    sendDmOrChannel(dm);
   };
 
   return (

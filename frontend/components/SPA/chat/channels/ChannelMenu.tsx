@@ -2,7 +2,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
 import { useState } from "react";
-import InFosPlayer from "../Profile/atoms/InFosPlayer";
+import InFosPlayer from "../../Profile/atoms/InFosPlayer";
 import ChannelSettings from "./ChannelSettings";
 
 

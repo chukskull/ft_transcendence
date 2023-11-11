@@ -5,7 +5,7 @@ import { User } from '../user/user.entity';
 import { GameGateway } from './game.gateway';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([User])],
-	providers: [GameService, GameGateway],
+  imports: [TypeOrmModule.forFeature([User])],
+  providers: [GameService, GameGateway],
 })
-export class GameModule { }
+export class GameModule {}

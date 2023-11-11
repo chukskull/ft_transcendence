@@ -9,7 +9,6 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  // this func returns a promise of a user so uneed to use await
   async createNewUser(intraLogin: string, avatarUrl: string): Promise<User> {
     if (!intraLogin) {
       return null;
@@ -27,8 +26,8 @@ export class UserService {
     user.experience = 0;
     user.wins = 0;
     user.totalGames = 0;
-    user.firstName = ' ';
-    user.lastName = ' ';
+    user.firstName = '';
+    user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
     user.friends = [];
@@ -36,7 +35,7 @@ export class UserService {
     user.matchHistory = [];
     user.pendingInvite = false;
     user.status = 'online';
-    
+
     user.nickName = intraLogin;
     return this.userRepository.save(user);
   }
@@ -53,16 +52,16 @@ export class UserService {
     }
   }
 
-  async fillData(userId: number, data): Promise<any> {
-    const { nickName, firstName, lastName } = data;
-
+  async fillData(data: any): Promise<any> {
+    const { nickName, firstName, lastName, id } = data;
+    console.log(data);
     const alreadyExists = await this.userRepository.findOne({
-      where: { nickName },
+      where: { id },
     });
-    if (alreadyExists) {
+    if (!alreadyExists) {
       return { message: 'NickName already exists' };
     } else {
-      return this.userRepository.update(userId, {
+      return this.userRepository.update(id, {
         nickName,
         firstName,
         lastName,
@@ -76,13 +75,18 @@ export class UserService {
     return queryBuilder.getOne();
   }
 
-  async updateUserInfo(id: number, data): Promise<any> {
-    const { nickName, profilePicture, twoFa } = data;
+  async updateUserInfo(data): Promise<any> {
+    const { nickName, profilePicture, twoFa, id } = data;
 
     const alreadyExists = await this.userRepository.findOne({
-      where: { nickName },
+      where: { id },
     });
     if (alreadyExists) {
+      await this.userRepository.update(id, {
+        nickName,
+        avatarUrl: profilePicture,
+        twoFactorAuthEnabled: twoFa,
+      });
     }
     return this.userRepository.update(id, data);
   }
@@ -139,6 +143,8 @@ export class UserService {
   }
 
   async disableTwoFactor(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { twoFactorAuthEnabled: false });
+    return this.userRepository.update(clientID, {
+      twoFactorAuthEnabled: false,
+    });
   }
 }
