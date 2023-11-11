@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Input } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
-import { usePostImage } from "@/utils/addUser";
+
 import { Button, Switch } from "@nextui-org/react";
-import { useForm } from "react-hook-form";
-import { register } from "module";
+
+import { useUpdate } from "@/utils/UpdaTeUser";
 import { send } from "process";
 
 interface ProfileSettingModalProps {
@@ -14,19 +14,10 @@ interface ProfileSettingModalProps {
 export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   onClose,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-    },
-  });
   const [checked, setChecked] = useState(false);
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const { mutate, isLoading } = usePostImage();
+  const { mutate, isLoading } = useUpdate();
 
   const Update = async (data: any) => {
     if (data) {
@@ -48,32 +39,29 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     });
   };
 
-  const sendUpdate = () => {
+  const sendUpdate = async () => {
     const s = {} as any;
-    s.image = file;
+    if (file !== null) {
+      s.image = file;
+    }
     s.enableTwoFa = !checked;
     s.name = name;
-    console.log(s, "why am mid");
 
     return Update(s);
   };
 
   const handleOnClose = () => {
     onClose();
-    setFile(null);
+    setTimeout(() => {
+      setChecked(false);
+      setName("");
+      setFile(null);
+    }, 1000);
   };
-  useEffect(() => {
-    if (file === null && name === "") {
-      return;
-    }
-  }, [file, name]);
 
   return (
     <>
-      <form
-        className="flex flex-col  gap-3"
-        onSubmit={handleSubmit(sendUpdate)}
-      >
+      <form className="flex flex-col  gap-3" onSubmit={sendUpdate}>
         <div className="flex flex-col gap-4 items-center">
           <h1 className="text-white font-ClashGrotesk-Semibold text-2xl">
             Settings
