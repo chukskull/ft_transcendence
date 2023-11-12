@@ -1,6 +1,6 @@
 "use client";
 import style from "@/styles/components/TopLeftNav.module.scss";
-import "@/styles/globals.scss";
+
 import Image from "next/image";
 import { BsBell } from "react-icons/bs";
 import { Badge, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
@@ -21,7 +21,10 @@ export default function TopLeftNav() {
     onOpen();
     setString(comp);
   };
-  const notificationClicked = () => {};
+  const [badge, setBadge] = useState(false);
+  const handleBadge = () => {
+    setBadge(true);
+  };
   return (
     <>
       <div className={style["top-bar"]}>
@@ -36,14 +39,22 @@ export default function TopLeftNav() {
           </Link>
         </div>
         <SearchComp />
-        <div className={style["top_notif"]}>
+        <div className={`${style["top_notif"]} + cursor-pointer`}>
           <NotificationComp />
         </div>
       </div>
       <div className={style["left-bar"]}>
         <div className={style["left_menu"]}>
           <Link href="/chat">
-            <img src="/assets/main/Navbar/chat.svg" />
+            <Badge
+              isInvisible={badge}
+              isOneChar
+              shape="circle"
+              color="danger"
+              content={<NotificationIcon size={1} />}
+            >
+              <img src="/assets/main/Navbar/chat.svg" onClick={handleBadge} />
+            </Badge>
           </Link>
           <Link href="/game">
             <img src="/assets/main/Navbar/Game.svg" />

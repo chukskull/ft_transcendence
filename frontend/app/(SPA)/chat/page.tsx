@@ -4,12 +4,11 @@ import { LiaTelegramPlane } from "react-icons/lia";
 import EmojiPicker from "emoji-picker-react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import "@/styles/globals.scss";
-import ChannelsSection from "@/components/SPA/chat/ChannelsSection";
+import ChannelsSection from "@/components/SPA/chat/channels/ChannelsSection";
 import ChatHeader from "@/components/SPA/chat/ChatHeader";
 import MsgsList from "@/components/SPA/chat/MessagesList";
 import DmSection from "@/components/SPA/chat/DMSection";
 // import io from "socket.io-client";
-import { set } from "react-hook-form";
 
 const msgsdb = [
   {
@@ -53,8 +52,8 @@ const msgsdb = [
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [conversationId, setConversationId] = useState("");
-
+  const [Type, setType] = useState(false);
+  const [DmOrChannel, setDmOrChannel] = useState(null);
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
@@ -82,38 +81,26 @@ export default function Chat() {
     //   });
     setMessage("");
   };
-  // };
-  const [Name, setName] = useState(msgsdb[0].name);
-  const [Type, setType] = useState(false);
-  const getNameAndType = (OBJ: { name: string; type: boolean }) => {
-    setName(OBJ.name);
-    setType(OBJ.type);
-  };
   return (
     <div className={style["chat-container"]}>
       <div className={style["menu-sections"]}>
         <ChannelsSection
-          sendConversationId={setConversationId}
-          getNameAndType={getNameAndType}
+          sendDmOrChannel={setDmOrChannel}
+          getType={setType}
           CompType={Type}
         />
         <DmSection
-          SendconversationId2p={setConversationId}
-          getNameAndType={getNameAndType}
+          sendDmOrChannel={setDmOrChannel}
+          getType={setType}
           CompType={Type}
         />
       </div>
       <div className={style["chat-section"]}>
-        <ChatHeader
-          // avatar="https://i.pravatar.cc/300?img=4"
-          name={Name}
-          isChannel={Type}
-          online={true}
-        />
+        <ChatHeader isChannel={Type} dmOrChannel={DmOrChannel} />
 
         <div className={style["chat"]}>
           <div className={style["msgs"]}>
-            <MsgsList msgs={msgsdb} getNameAndType={getNameAndType} />
+            <MsgsList msgs={msgsdb} />
           </div>
           <div className={style["msg-input"]}>
             <button

@@ -1,17 +1,15 @@
+'use client';
 import { FiLogOut } from "react-icons/fi";
 import { useState } from "react";
-import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
-import ChannelMenu from "@/components/SPA/chat/ChannelMenu";
+import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
 
 interface chatHeaderProps {
-  avatar?: string;
-  name: string;
   isChannel: boolean;
-  online: boolean;
+  dmOrChannel: any;
 }
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
@@ -30,14 +28,20 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         }
         overlayClassName={style["modal-overlay"]}
       >
-        {chatHeaderProps?.isChannel ? <ChannelMenu /> : <UserMenu />}
+        {chatHeaderProps?.isChannel ? (
+          <ChannelMenu channel={chatHeaderProps?.dmOrChannel} />
+        ) : (
+          <UserMenu user={chatHeaderProps?.dmOrChannel} />
+        )}
       </Modal>
       <div className={style["chat-header"]}>
         <div className={style["chat-user-group"]}>
           {/* {!chatHeaderProps?.isChannel && (
             <AvatarBubble avatar="/assets/components/Profile.svg" online />
           )} */}
-          <div className={style["name"]}>{chatHeaderProps.name}</div>
+          <div className={style["name"]}>
+            {chatHeaderProps?.dmOrChannel?.name}
+          </div>
           <button
             onClick={() => {
               setShow(true);

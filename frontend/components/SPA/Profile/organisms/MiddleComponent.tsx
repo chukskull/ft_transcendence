@@ -4,6 +4,8 @@ import LiveGameRec from "../../home/molecules/LiveGameRec";
 import { useQuery } from "react-query";
 
 import { getDataProfile } from "@/utils/getDataProfile";
+import { Skeleton } from "antd";
+import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface MiddleComponentProps {
   index: number;
@@ -17,7 +19,12 @@ export const MiddleComponent = ({ index }: MiddleComponentProps) => {
     });
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex flex-col  gap-4 m-6">
+        <SkeletonComp large={10} />
+      </div>
+    );
   if (error) return <h2>{error}</h2>;
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
