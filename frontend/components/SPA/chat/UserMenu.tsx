@@ -11,7 +11,7 @@ import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 
-const UserMenu = () => {
+const UserMenu = (user:any) => {
   return (
     <>
       <div className={style["user-info"]}>

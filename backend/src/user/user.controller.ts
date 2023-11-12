@@ -1,9 +1,15 @@
 import { Controller, UseGuards, Get, Post, Param, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { AuthService } from './auth/auth.service';
-import { verifyUser } from './auth/strategies/auth.guard';
+// import {  } from './auth/strategies/auth.guard';
 import { User } from './user.entity';
-import { IsString, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsBoolean,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 
 class fillDto {
   @IsString()
@@ -18,6 +24,9 @@ class fillDto {
 }
 
 class updateDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
   @IsString()
   @IsOptional()
   nickName: string;
@@ -42,54 +51,52 @@ export class UserController {
     return this.usersService.createNewUser(data.intraLogin, data.avatarUrl);
   }
 
-  @UseGuards(verifyUser)
+  @UseGuards()
   @Get()
   async all(): Promise<User[]> {
     return this.usersService.all();
   }
 
-  @UseGuards(verifyUser)
-  @Post('/find/:id')
-  async findUser(@Param('id') id: any): Promise<User> {
+  @UseGuards()
+  @Post('/find')
+  async findUser(@Body() id): Promise<User> {
+    console.log('findUser', id);
     return this.usersService.findUser(id);
   }
 
-  @UseGuards(verifyUser)
-  @Post('/fill/:userId')
-  async fill(@Param('userId') userId: number, @Body() data: fillDto) {
-    return this.usersService.fillData(userId, data);
+  @UseGuards()
+  @Post('/fill')
+  async fill(@Body() data: fillDto) {
+    return this.usersService.fillData(data);
   }
 
-  @UseGuards(verifyUser)
-  @Post('/update/:userId')
-  async update(@Param('userId') userId: number, @Body() data: updateDto) {
-    return this.usersService.updateUserInfo(userId, data);
+  @UseGuards()
+  @Post('/update')
+  async update(@Body() data: updateDto) {
+    return this.usersService.updateUserInfo(data);
   }
 
-  @UseGuards(verifyUser)
-  @Post(':userId/status/:status')
-  async setStatus(
-    @Param('userId') userId: number,
-    @Param('status') status: string,
-  ) {
-    return this.usersService.setStatus(userId, status);
+  @UseGuards()
+  @Post('/status')
+  async setStatus(@Body('userId') id: number, @Body('status') status: string) {
+    return this.usersService.setStatus(id, status);
   }
 
-  @UseGuards(verifyUser)
+  @UseGuards()
   @Get('/leaderboard')
   async getLeaderboard(): Promise<User[]> {
     return this.usersService.getLeaderboard();
   }
 
-  @UseGuards(verifyUser)
-  @Post('/addFriend/:ufriendId')
-  async addFriend(@Param('userId') userId: number) {
-    return this.usersService.addFriend(userId);
+  @UseGuards()
+  @Post('/addFriend')
+  async addFriend(@Body('id') id: number) {
+    return this.usersService.addFriend(id);
   }
 
-  @UseGuards(verifyUser)
-  @Post('/blockFriend/:ufriendId')
-  async blockFriend(@Param('userId') userId: number) {
-    return this.usersService.blockUser(userId);
+  @UseGuards()
+  @Post('/blockFriend')
+  async blockFriend(@Body('id') id: number) {
+    return this.usersService.blockUser(id);
   }
 }

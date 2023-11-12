@@ -12,8 +12,9 @@ export class MatchHistoryService {
     @InjectRepository(MatchHistory)
     private matchHistoryRepository: Repository<MatchHistory>,
     private userService: UserService,
-    @InjectRepository(Stats) private readonly statsRepository: Repository<Stats>
-  ) { }
+    @InjectRepository(Stats)
+    private readonly statsRepository: Repository<Stats>,
+  ) {}
 
   /**
    * Creates a new match history entry in the database.
@@ -25,13 +26,20 @@ export class MatchHistoryService {
     mh.player2 = await this.userService.findUser(createMatchHistoryDto.player2ID);
     mh.winner = await this.userService.findUser(createMatchHistoryDto.winnerID);
     mh.date = new Date();
-    this.matchHistoryRepository.save(mh)
+    this.matchHistoryRepository.save(mh);
   }
 
   // TODO: rebuild getMatchHistory
 
   async getMatchHistory(UserID: number) {
-    const mh = await this.matchHistoryRepository.createQueryBuilder('mh').leftJoinAndSelect('match.player1', 'player1').leftJoinAndSelect('match.player2', 'player2').leftJoinAndSelect('match.winner', 'winner').where('player1.id = :id OR player2.id = :id', { UserID }).orderBy('match.date', 'DESC').getMany();
+    const mh = await this.matchHistoryRepository
+      .createQueryBuilder('mh')
+      .leftJoinAndSelect('match.player1', 'player1')
+      .leftJoinAndSelect('match.player2', 'player2')
+      .leftJoinAndSelect('match.winner', 'winner')
+      .where('player1.id = :id OR player2.id = :id', { UserID })
+      .orderBy('match.date', 'DESC')
+      .getMany();
     return mh.map((matchHistory) => {
       return matchHistory.player1.id === UserID ? {
         id: matchHistory.id,

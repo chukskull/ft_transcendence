@@ -2,6 +2,8 @@ import React from "react";
 import ProfileComp from "../molecules/ProfileComp";
 import { useQuery } from "react-query";
 import { getLeadProfiles } from "@/utils/getLeadProfiles";
+import { Skeleton } from "antd";
+import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface LeaderboardProps {
   MonStyle: "Home" | "Profile";
@@ -12,14 +14,16 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     return getLeadProfiles();
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <SkeletonComp large={10} />;
   if (error) return "An error has occurred: " + error.message;
 
   // Optimize rendering by checking data length before mapping
   if (!data || data.length === 0) {
     return (
       <div className="flex flex-col justify-center">
-        <h1 className="text-gray-400 text-4xl font-semibold">No Users :</h1>
+        <h1 className="text-gray-400 text-3xl font-semibold text-center">
+          No Users {":)"}
+        </h1>
       </div>
     );
   }

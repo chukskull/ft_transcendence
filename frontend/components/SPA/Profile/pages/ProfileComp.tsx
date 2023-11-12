@@ -9,6 +9,8 @@ import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
 import { getUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
+import { Skeleton } from "antd";
+import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface ProfileProps {
   id: string;
@@ -25,7 +27,7 @@ export default function Profile({ id }: ProfileProps) {
     return getUserProfile(id);
   });
   console.log(data);
-  if (isLoading) return <div>Loading...</div>;
+
   if (error) return "An error has occurred: " + error.message;
 
   return (

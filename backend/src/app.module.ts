@@ -6,15 +6,15 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelModule } from './channel/channel.module';
-import { AchievementController } from './achievement/achievement.controller';
-import { AchievementService } from './achievement/achievement.service';
 import { AchievementModule } from './achievement/achievement.module';
+import { ConversationModule } from './conversations/conversation.module';
 
 @Module({
   imports: [
     ChannelModule,
     UserModule,
     AchievementModule,
+    ConversationModule,
     // MessageModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -27,7 +27,7 @@ import { AchievementModule } from './achievement/achievement.module';
       port: 5432,
       username: 'mountassir',
       password: 'admin',
-      database: 'ft_transgender',
+      database: 'transDb',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),

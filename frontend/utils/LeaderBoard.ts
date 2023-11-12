@@ -5,7 +5,7 @@ interface i {
   };
 }
 
-const Sort = (backendObject: i)  => {
+const Sort = (backendObject: i) => {
   const sorted = Object.keys(backendObject).sort((a, b) => {
     return backendObject[b].score - backendObject[a].score;
   });
@@ -45,6 +45,4 @@ const backendObject = {
 };
 
 const sorted = Sort(backendObject);
-sorted.map(({ name, score }) => {
-  console.log(name, score);
-});
+sorted.map(({ name, score }) => {});
