@@ -14,4 +14,9 @@ export class ConversationController {
   async startConversation(@Param() userId: number) {
     return this.conversationService.startConversation(userId);
   }
+
+  @Get('/myDms')
+  async getMyDms() {
+    return this.conversationService.getMyDms();
+  }
 }

@@ -5,7 +5,7 @@ import { User } from 'src/user/user.entity';
 // import { AuthService } from 'src/user/auth/auth.service';
 import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './auth/models/constants';
+// import { jwtConstants } from './auth/models/constants';
 import { Channel } from '../channel/channel.entity';
 import { Conversation } from '../conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
@@ -13,7 +13,7 @@ import { Achievement } from '../achievement/achievement.entity';
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
     JwtModule.register({
-      secret: jwtConstants.secret,
+      // secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
     }),
   ],

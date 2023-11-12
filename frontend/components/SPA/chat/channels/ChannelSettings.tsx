@@ -10,16 +10,18 @@ import {
 import { useState } from "react";
 
 const ChannelSettings = ({}) => {
-  const [isPrivate, setPrivate] = useState(false);
+  const [is_private, setPrivate] = useState(false);
   const [password, setPassword] = useState("");
-  const [formData, setFormData] = useState({ isPrivate, password });
-
+  const [formData, setFormData] = useState({ is_private, password, id: 1 });
+  const [error, setError] = useState<null | string>(null);
+  const [mutedUsers, setMutedUsers] = useState([]);
+  const [bannedUsers, setBannedUsers] = useState([]);
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
       const response = await axios.patch(
-        "http://localhost:4000/channel",
+        "http://localhost:1337/channel/update",
         formData
       );
       console.log("Update successful", response.data);
@@ -37,16 +39,16 @@ const ChannelSettings = ({}) => {
               <div className={style["privacy"]}>
                 <Switch
                   color="success"
-                  onValueChange={() => setPrivate(!isPrivate)}
-                  isSelected={isPrivate}
+                  onValueChange={() => setPrivate(!is_private)}
+                  isSelected={is_private}
                 />
                 Public
               </div>
               <div className={style["privacy"]}>
                 <Switch
                   color="danger"
-                  onValueChange={() => setPrivate(!isPrivate)}
-                  isSelected={!isPrivate}
+                  onValueChange={() => setPrivate(!is_private)}
+                  isSelected={!is_private}
                 />
                 Private
               </div>

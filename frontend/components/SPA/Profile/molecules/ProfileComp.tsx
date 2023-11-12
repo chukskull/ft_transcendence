@@ -9,7 +9,7 @@ import axios from "axios";
 interface ProfileCompProps {
   key?: number;
   img: string;
-  nickName: string;
+  nickName?: string;
   firstName: string;
   lastName?: string;
   color?: string;
@@ -76,7 +76,8 @@ const ProfileComp = ({
             {firstName} {lastName}
           </h4>
           <h6 className="text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0">
-            #{nickName}
+            {nickName ? "#" : ""}
+            {nickName}
           </h6>
         </div>
       </div>

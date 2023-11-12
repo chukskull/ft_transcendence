@@ -1,53 +1,53 @@
-// import { Body, Injectable } from '@nestjs/common';
-// import { authenticator } from 'otplib';
-// import { Request } from 'express';
-// import { JwtService } from '@nestjs/jwt';
-// import { RegisterDto } from './models/register.dto';
-// import { UserService } from '../user.service';
-// import { UpdateDto } from './models/update.dto';
+import { Body, Injectable } from '@nestjs/common';
+import { authenticator } from 'otplib';
+import { Request } from 'express';
+import { JwtService } from '@nestjs/jwt';
+import { RegisterDto } from './models/register.dto';
+import { UserService } from '../user.service';
+import { UpdateDto } from './models/update.dto';
 
-// @Injectable()
-// export class AuthService {
-//   constructor(
-//     private jwtService: JwtService,
-//     private userService: UserService,
-//   ) {}
+@Injectable()
+export class AuthService {
+  constructor(
+    private jwtService: JwtService,
+    private userService: UserService,
+  ) {}
 
-//   async twoFactorAuthSecret(clientID: number) {
-//     const client = await this.userService.findOne(clientID);
-//     const secret = authenticator.generateSecret();
-//     await this.userService.saveTwoFactorSecret(secret, clientID);
+  async twoFactorAuthSecret(clientID: number) {
+    const client = await this.userService.findOne(clientID);
+    const secret = authenticator.generateSecret();
+    await this.userService.saveTwoFactorSecret(secret, clientID);
 
-//     return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
-//   }
+    return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
+  }
 
-//   async twoFactorAuthVerify(code: string, clientID: number) {
-//     const client = await this.userService.findOne(clientID);
+  async twoFactorAuthVerify(code: string, clientID: number) {
+    const client = await this.userService.findOne(clientID);
 
-//     return authenticator.verify({
-//       token: code,
-//       secret: client.twoFactorSecret,
-//     });
-//   }
+    return authenticator.verify({
+      token: code,
+      secret: client.twoFactorSecret,
+    });
+  }
 
-//   async clientID(request: Request): Promise<number> {
-//     const cookie = request.cookies['clientID'];
-//     const data = await this.jwtService.verifyAsync(cookie);
+  async clientID(request: Request): Promise<number> {
+    const cookie = request.cookies['clientID'];
+    const data = await this.jwtService.verifyAsync(cookie);
 
-//     return data['id'];
-//   }
+    return data['id'];
+  }
 
-//   async newUser(@Body() data: RegisterDto, clientID: number) {
-//     data.avatar = 'http://localhost:8000/api/uploads/egg.jpeg';
-//     data.id = clientID;
-//     data.authentication = false;
-//     data.pendingInvite = false;
-//     data.status = 'ONLINE';
+  async newUser(@Body() data: RegisterDto, clientID: number) {
+    data.avatar = 'http://localhost:8000/api/uploads/egg.jpeg';
+    data.id = clientID;
+    data.authentication = false;
+    data.pendingInvite = false;
+    data.status = 'ONLINE';
 
-//     await this.userService.create(data);
-//   }
+    await this.userService.create(data);
+  }
 
-//   async updateUser(@Body() data: UpdateDto) {
-//     await this.userService.update(data.id, data);
-//   }
-// }
+  async updateUser(@Body() data: UpdateDto) {
+    await this.userService.update(data.id, data);
+  }
+}

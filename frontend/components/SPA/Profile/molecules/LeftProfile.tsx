@@ -1,18 +1,26 @@
 import React, { use, useEffect, useState } from "react";
 import { AddFriend } from "../atoms/AddFriend";
 import { set } from "react-hook-form";
+import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface LeftProfileProps {
+  isLoading?: boolean;
   image: string;
   name: string;
   nickName: string;
 }
 
-export const LeftProfile = ({ image, name, nickName }: LeftProfileProps) => {
+export const LeftProfile = ({
+  image,
+  name,
+  nickName,
+  isLoading,
+}: LeftProfileProps) => {
   const [add, setAdd] = useState(false);
   function handleClick() {
     setAdd(!add);
   }
+  if (isLoading) return <SkeletonComp large={9} />;
   return (
     <div className="profile-user  ">
       <div className="hex">
