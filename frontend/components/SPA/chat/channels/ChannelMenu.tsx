@@ -1,12 +1,12 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import ProfileComp from "@/components/SPA/Profile/molecules/ProfileComp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InFosPlayer from "../../Profile/atoms/InFosPlayer";
 import ChannelSettings from "./ChannelSettings";
+import axios from "axios";
 
-
-const InviteSection = ({}) => {
+const InviteSection = () => {
   return (
     <div className={style["invite-section"]}>
       <h1>
@@ -61,29 +61,27 @@ const InviteSection = ({}) => {
 };
 const AuthoritySection = ({}) => {
   return (
-
-      <div className={style["authority-section"]}>
-        <h2>Owners</h2>
-        <ProfileComp
-          img="https://i.pravatar.cc/300?img=1"
-          nickName="hamza_lkr"
-          firstName="Saleh"
-          lastName="Nagat"
-        />
-        <h2>Moderators</h2>
-        <div className={style["list"]}>
-          {[...Array(10)].map((e, i) => (
-            <ProfileComp
-              key={i}
-              img="https://i.pravatar.cc/300?img=1"
-              nickName="hamza_lkr"
-              firstName="Saleh"
-              lastName="Nagat"
-            />
-          ))}
-        </div>
+    <div className={style["authority-section"]}>
+      <h2>Owners</h2>
+      <ProfileComp
+        img="https://i.pravatar.cc/300?img=1"
+        nickName="hamza_lkr"
+        firstName="Saleh"
+        lastName="Nagat"
+      />
+      <h2>Moderators</h2>
+      <div className={style["list"]}>
+        {[...Array(10)].map((e, i) => (
+          <ProfileComp
+            key={i}
+            img="https://i.pravatar.cc/300?img=1"
+            nickName="hamza_lkr"
+            firstName="Saleh"
+            lastName="Nagat"
+          />
+        ))}
       </div>
-
+    </div>
   );
 };
 
@@ -109,9 +107,10 @@ const MembersSection = ({}) => {
   );
 };
 
-const ChannelMenu = ({}) => {
+const ChannelMenu = ({ channel }: any) => {
   const [activeSection, setActiveSection] = useState<string>("Invite");
   const [active, setActive] = useState(0);
+  const [channelData, setChannelData] = useState<any>(null);
 
   const handleButtonClick = (sectionName: string) => {
     setActiveSection(sectionName);
@@ -119,10 +118,23 @@ const ChannelMenu = ({}) => {
   function handleActive(index: number) {
     setActive(index);
   }
+
+  useEffect(() => {
+    try {
+      axios
+        .get(`http://localhost:1337/api/channels/${channel.id}`)
+        .then((res) => {
+          setChannelData(res.data);
+          console.log(res.data);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   return (
     <>
       <div className={style["menu-header"]}>
-        <h1>#Channel Title</h1>
+        <h1>{channel.name}</h1>
         <div className={style["menu-list"]}>
           {OptionsSections.map((e, i) => (
             <InFosPlayer

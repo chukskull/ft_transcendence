@@ -52,8 +52,6 @@ const msgsdb = [
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [conversationId, setConversationId] = useState("");
-  const [Name, setName] = useState(msgsdb[0].name);
   const [Type, setType] = useState(false);
   const [DmOrChannel, setDmOrChannel] = useState(null);
   const handleEmojiClick = (emojiObject: any) => {
@@ -82,12 +80,6 @@ export default function Chat() {
     //     message,
     //   });
     setMessage("");
-  };
-  // };
-
-  const getNameAndType = (OBJ: { name: string; type: boolean }) => {
-    setName(OBJ.name);
-    setType(OBJ.type);
   };
   return (
     <div className={style["chat-container"]}>

@@ -25,6 +25,11 @@ export class ChannelController {
     return this.channelService.getChannels();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.channelService.getChannel(id);
+  }
+
   @Get('myChannels')
   findMyChannels() {
     return this.channelService.getMyChannels();

@@ -22,12 +22,29 @@ export class ChannelService {
   ) {}
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
     const { name, is_private, password } = createChannelDto;
-    const channel = await this.chanRepository.create({
+    const userId = 4;
+
+    const owner: User | undefined = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!owner) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const newConversation = await this.conversationRepository.create();
+
+    // Create the channel
+    const channel = this.chanRepository.create({
       name,
       is_private,
       password,
+      owner,
+      members: [owner],
+      // conversation: newConversation,
     });
 
+    // If a password is provided, hash it
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
       channel.password = hashedPassword;
@@ -36,10 +53,11 @@ export class ChannelService {
       channel.is_protected = false;
     }
 
-    // channel.conversation = await this.conversationRepository.create();
-    // console.log(channel.conversation);
-    console.log(channel);
-    return this.chanRepository.save(channel);
+    // Save the channel
+    const savedChannel = await this.chanRepository.save(channel);
+    console.log(savedChannel);
+
+    return savedChannel;
   }
 
   async getChannels(): Promise<Channel[]> {
@@ -47,11 +65,31 @@ export class ChannelService {
     return this.chanRepository.find();
   }
   async getChannel(id: number): Promise<Channel> {
-    const channel = await this.chanRepository.find({ where: { id } });
+    const channel = await this.chanRepository.findOne({
+      where: { id },
+      relations: [
+        'members',
+        'conversation',
+        'BannedUsers',
+        'MutedUsers',
+        'Moderators',
+        'owner',
+      ],
+    });
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
-    return channel[0];
+    // const userId = 14124;
+    // const isAlreadyMember = channel.members?.some(
+    //   (member) => member.id === userId,
+    // );
+    // if (isAlreadyMember) {
+      // exclude the password from the channel return
+
+      return channel;
+    // } else {
+    //   throw new NotFoundException('User not in channel');
+    // }
   }
   async getMyChannels(): Promise<Channel[]> {
     // const userId = requestMaker.id;
@@ -108,7 +146,7 @@ export class ChannelService {
       throw new NotFoundException('Channel is private');
     }
 
-    const userId = 1;
+    const userId = 6;
     const user = await this.userRepository.findOne({ where: { id: userId } }); // Fetch the user from userRepository
     if (!user) {
       throw new NotFoundException('User not found');
