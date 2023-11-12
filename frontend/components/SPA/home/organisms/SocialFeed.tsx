@@ -7,7 +7,7 @@ export const SocialFeed = () => {
   return (
     <div className="flex flex-row max-sm:items-center  gap-16 p-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-3/4">
       <div className="flex flex-col  flex-grow border-1 border-white  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
-        <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6  max-sm:mx-3">
+        <h1 className="text-white text-3xl font-semibold py-6 px-12 mx-6 max-sm:px-6  max-sm:mx-3">
           Leaderboard
         </h1>
 
@@ -16,7 +16,7 @@ export const SocialFeed = () => {
         </div>
       </div>
       <div className="flex flex-col  border-2  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-fit">
-        <h1 className="text-white text-4xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
+        <h1 className="text-white text-3xl font-semibold py-6 px-12 mx-6 max-sm:px-6 max-sm:py-3 max-sm:mx-3">
           Invite Friends
         </h1>
         <div className="flex flex-row  justify-center  m-5 flex-wrap gap-6 max-sm:gap-6 max-sm:px-10 overflow-y-auto">

@@ -6,33 +6,40 @@ import { get } from "http";
 import { act } from "react-dom/test-utils";
 
 interface Channel {
+  id: number;
   type: string;
   name: string;
 }
 
 const chanList = [
   {
-    name: "#General",
+    id: 1,
+    name: "General",
     type: "public",
   },
   {
-    name: "#Random",
+    id: 2,
+    name: "Random",
     type: "public",
   },
   {
-    name: "#Pedago",
+    id: 3,
+    name: "Pedago",
     type: "public",
   },
   {
-    name: "#WatchRoom",
+    id: 4,
+    name: "WatchRoom",
     type: "private",
   },
   {
-    name: "#GameRoom",
+    id: 5,
+    name: "GameRoom",
     type: "private",
   },
   {
-    name: "#SecretRoom",
+    id: 6,
+    name: "SecretRoom",
     type: "protected",
   },
 ];
@@ -68,12 +75,16 @@ const CreateChannelModal = ({}) => {
   );
 };
 interface ChannelProps {
-  sendConversationId: (id: string) => void;
-  getNameAndType: (Channel: { name: string; type: boolean }) => void;
+  // sendConversationId: (id: string) => void;
+  getNameAndType: (Channel: {
+    name: string;
+    type: boolean;
+    id: number;
+  }) => void;
   CompType: boolean;
 }
 const ChannelsSection = ({
-  sendConversationId,
+  // sendConversationId,
   getNameAndType,
   CompType,
 }: ChannelProps) => {
@@ -99,8 +110,8 @@ const ChannelsSection = ({
   };
   const [active, setActive] = useState<string>("");
   function handleClick(channel: Channel) {
-    sendConversationId(channel.name);
-    getNameAndType({ name: channel.name, type: true });
+    // sendConversationId(channel.name);
+    getNameAndType({ name: channel.name, type: true, id: channel.id });
     setActive(channel.name);
   }
   return (
@@ -137,6 +148,7 @@ const ChannelsSection = ({
                   key={channel.name}
                   onClick={() => handleClick(channel)}
                 >
+                  {"#"}
                   {channel.name}
                 </div>
               ))}

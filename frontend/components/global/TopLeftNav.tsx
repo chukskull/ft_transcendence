@@ -40,7 +40,7 @@ export default function TopLeftNav() {
         </div>
         <SearchComp />
         <div className={`${style["top_notif"]} + cursor-pointer`}>
-          <NotificationComp />
+          <NotificationComp count={5} />
         </div>
       </div>
       <div className={style["left-bar"]}>
