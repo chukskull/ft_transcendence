@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { FiLogOut } from "react-icons/fi";
 import { useState } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
