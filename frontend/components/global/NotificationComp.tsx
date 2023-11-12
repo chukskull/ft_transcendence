@@ -15,19 +15,8 @@ import Profile from "@/app/(SPA)/profile/page";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
 
-interface NotificationCompProps {
-  content?: string;
-  isAchie?: boolean;
-  count?: any;
-}
-
-export const NotificationComp = ({
-  content,
-  isAchie,
-  count,
-}: NotificationCompProps) => {
-  count = 5;
-  const [NotifCount, setNotifCount] = React.useState(count);
+export const NotificationComp = ({}) => {
+  const [notifCount, setNotifCount] = React.useState(data.length);
 
   const handleClick = () => {
     setNotifCount(0);
@@ -43,8 +32,8 @@ export const NotificationComp = ({
         <DropdownTrigger onClick={handleClick}>
           <div>
             <Badge
-              content={count}
-              isInvisible={NotifCount === 0 ? true : false}
+              content={notifCount}
+              isInvisible={notifCount === 0 ? true : false}
               color="danger"
             >
               <NotificationIcon width={25} height={25} />
