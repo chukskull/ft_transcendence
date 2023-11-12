@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import CreateChannelModal from "./CreateChannel";
@@ -12,11 +12,9 @@ interface Channel {
   is_protected: boolean;
 }
 
-
-
 interface ChannelProps {
   sendDmOrChannel: (channel: any) => void;
-  getType: (type: boolean ) => void;
+  getType: (type: boolean) => void;
   CompType: boolean;
 }
 const ChannelsSection = ({
@@ -30,11 +28,9 @@ const ChannelsSection = ({
 
   useEffect(() => {
     axios.get("http://localhost:1337/api/channels").then((res) => {
-      console.log(res);
       setChannelList(res.data);
     });
-  }
-  , []);
+  }, []);
   const groupedChannels = channelList.reduce((acc, channel) => {
     if (!acc[channel.type]) {
       acc[channel.type] = [];
@@ -55,7 +51,7 @@ const ChannelsSection = ({
   };
   function handleClick(channel: Channel) {
     sendDmOrChannel(channel);
-    getType(true );
+    getType(true);
     setActive(channel.name);
   }
   return (
