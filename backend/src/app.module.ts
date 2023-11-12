@@ -12,8 +12,6 @@ import { AchievementModule } from './achievement/achievement.module';
 
 @Module({
   imports: [
-    // AuthModule,
-    // ChatGatewayModule,
     ChannelModule,
     UserModule,
     AchievementModule,
@@ -34,7 +32,6 @@ import { AchievementModule } from './achievement/achievement.module';
       synchronize: true,
     }),
     AchievementModule,
-    // MatchHistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

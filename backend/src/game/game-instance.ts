@@ -1,4 +1,4 @@
-import Matter, { Body, Bodies, Engine, World, Common, Vector, Events, Runner } from 'matter-js';
+import Matter, { Body, Bodies, Engine, World, Common, Events} from 'matter-js';
 import { Socket } from 'socket.io';
 import * as flatbuffers from 'flatbuffers';
 import { PositionState } from './position-state';

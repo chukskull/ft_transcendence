@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body} from '@nestjs/common';
 import { MatchHistoryService } from './match-history.service';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
-import { UpdateMatchHistoryDto } from './dto/update-match-history.dto';
 
 @Controller('match-history')
 export class MatchHistoryController {
