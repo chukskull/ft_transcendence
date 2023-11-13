@@ -15,22 +15,38 @@ export class ConversationService {
   ) {}
 
   async getMyDms() {
-    const user = await this.UserRepository.findOne({ where: { id: 1 } });
+    const MyUser = 1;
+    const user = await this.UserRepository.findOne({ where: { id: MyUser } });
     if (!user) {
       throw new NotFoundException('User not found');
     } else {
       const myConvs = await this.conversationRepository.find({
         where: { members: user, is_group: false },
       });
-      // remove my user from members
       myConvs.forEach((conv) => {
-        conv.members = conv.members.filter((member) => member.id !== 1);
+        conv.members = conv.members.filter((member) => member.id !== MyUser);
       });
       return myConvs;
     }
   }
   async getConversation(convId: number) {
-    return `This action returns a #${convId} conversation`;
+    const conv = await this.conversationRepository.findOne({
+      where: { id: convId },
+      relations: ['members', 'chats'],
+    });
+    if (!conv) {
+      throw new NotFoundException('Conversation not found');
+    } else {
+      const myUser = 1;
+      // check if user is in the conversation
+      const user = conv.members.find((member) => member.id === myUser);
+      if (!user) {
+        throw new NotFoundException('User not found in this conversation');
+      } else {
+        conv.members = conv.members.filter((member) => member.id !== myUser);
+        return conv;
+      }
+    }
   }
 
   async addMessageToConversation(convId: number, message: Chat) {
@@ -38,21 +54,5 @@ export class ConversationService {
       where: { id: convId },
     });
     conv.chats.push(message);
-  }
-
-  async startConversation(userId: number) {
-    try {
-      const user = await this.UserRepository.findOne({ where: { id: userId } });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      } else {
-        const newConversation = await this.conversationRepository.create();
-        // newConversation.members.push(user);
-        // newConversation.members.push(myUser);
-        return this.conversationRepository.save(newConversation);
-      }
-    } catch (err) {
-      return err;
-    }
   }
 }

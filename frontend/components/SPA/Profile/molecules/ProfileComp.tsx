@@ -7,7 +7,7 @@ import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
 
 interface ProfileCompProps {
-  key?: number;
+  id?: number;
   img: string;
   nickName?: string;
   firstName: string;
@@ -17,7 +17,7 @@ interface ProfileCompProps {
 }
 
 const ProfileComp = ({
-  key,
+  id,
   img,
   nickName,
   firstName,

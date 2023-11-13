@@ -2,32 +2,49 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import { Switch } from "@nextui-org/react";
 import axios from "axios";
-import {
-  AiOutlineUserAdd,
-  AiOutlineIssuesClose,
-  AiOutlineSound,
-} from "react-icons/ai";
+import { AiOutlineIssuesClose, AiOutlineSound } from "react-icons/ai";
 import { useState } from "react";
 
-const ChannelSettings = ({}) => {
-  const [is_private, setPrivate] = useState(false);
+const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
+  const [is_private, setPrivate] = useState(chPrivate);
   const [password, setPassword] = useState("");
-  const [formData, setFormData] = useState({ is_private, password, id: 1 });
-  const [error, setError] = useState<null | string>(null);
-  const [mutedUsers, setMutedUsers] = useState([]);
-  const [bannedUsers, setBannedUsers] = useState([]);
+  const [formData, setFormData] = useState({ is_private, password, id: id });
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
       const response = await axios.patch(
-        "http://localhost:1337/channel/update",
+        `http://localhost:1337/channel/update/`,
         formData
       );
       console.log("Update successful", response.data);
     } catch (error) {
       console.error("Error updating channel", error);
     }
+  };
+  const unban = (userId: number) => {
+    axios
+      .post(`http://localhost:1337//api/channels/${id}/banning/${userId}/0`) //0 to unban 1 to ban
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
+  const unmute = (userId: number) => {
+    axios
+      .post(`http://localhost:1337//api/channels/${id}/muting/${userId}/0`) //0 to unmute 1 to mute
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
+  const deleteChannel = (channelId: number) => {
+    axios
+      .delete(`http://localhost:1337/api/channels/delete/${channelId}`)
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((err) => console.log(err));
   };
   return (
     <form onSubmit={handleFormSubmit}>
@@ -74,37 +91,34 @@ const ChannelSettings = ({}) => {
           <div className={style["banned"]}>
             <h2>Banned</h2>
             <div className={style["list"]}>
-              <div className={style["user"]}>
-                <AvatarBubble avatar="/assets/components/Profile.svg" online />
-                <div className={style["friend-name"]}>Le Mountassir</div>
-                <button>
-                  <AiOutlineIssuesClose />
-                </button>
-              </div>
-              <div className={style["user"]}>
-                <AvatarBubble avatar="/assets/components/Profile.svg" online />
-                <div className={style["friend-name"]}>Le Mountassir</div>
-                <button>
-                  <AiOutlineIssuesClose />
-                </button>
-              </div>
+              {banned?.map((e: any) => (
+                <div className={style["user"]}>
+                  <AvatarBubble avatar={e.avatarUrl} online />
+                  <div className={style["friend-name"]}>{e.nickName}</div>
+                  <button onClick={() => unban(e.id)}>
+                    <AiOutlineIssuesClose />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
           <div className={style["muted"]}>
             <h2>Muted</h2>
             <div className={style["list"]}>
-              <div className={style["user"]}>
-                <AvatarBubble avatar="/assets/components/Profile.svg" online />
-                <div className={style["friend-name"]}>Le Mountassir</div>
-                <button>
-                  <AiOutlineSound />
-                </button>
-              </div>
+              {muted?.map((e: any) => (
+                <div className={style["user"]}>
+                  <AvatarBubble avatar={e.avatarUrl} online />
+                  <div className={style["friend-name"]}>{e.nickName}</div>
+                  <button onClick={() => unmute(e.id)}>
+                    <AiOutlineSound />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
         <div className={style["btns"]}>
-          <button>Delete Channel</button>
+          <button onClick={() => deleteChannel(id)}>Delete Channel</button>
           <button type="submit">Save Changes</button>
         </div>
       </div>
