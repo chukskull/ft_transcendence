@@ -151,7 +151,7 @@ export default function VerifyPage() {
             })}
           </div>
           <Button
-            className={`w-full  text-xs text-white font-ClashGrotesk-Medium h-12 ${style["button"]}`}
+            className={`w-full  text-base text-white font-ClashGrotesk-Medium h-12 ${style["button"]}`}
             disabled={status === "pending"}
           >
             {status === "pending" ? "Verifying..." : "Verify"}
