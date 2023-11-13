@@ -3,10 +3,14 @@ import React, { useState, useEffect } from "react";
 import { LiaTelegramPlane } from "react-icons/lia";
 import EmojiPicker from "emoji-picker-react";
 import style from "@/styles/SPA/chat/chat.module.scss";
+
 import MsgsList from "@/components/SPA/chat/MessagesList";
 
 // import io from "socket.io-client";
 
+interface ChatRoomsProps {
+  id: String | String[];
+}
 const msgsdb = [
   {
     name: "Saleh Nagat",
@@ -46,10 +50,10 @@ const msgsdb = [
   },
 ];
 
-export default function Chat() {
+export default function ChatRooms({ id }: ChatRoomsProps) {
+  console.log(id, "kys");
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [conversationId, setConversationId] = useState("");
 
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
