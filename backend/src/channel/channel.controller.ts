@@ -40,8 +40,8 @@ export class ChannelController {
     return this.channelService.updateChannel(updateChannelDto);
   }
 
-  @Delete()
-  delete(@Body() id: number) {
+  @Delete('/delete/:id')
+  delete(@Param('id') id: number) {
     return this.channelService.deleteChannel(id);
   }
 
@@ -51,33 +51,44 @@ export class ChannelController {
     return this.channelService.joinChannel(chanId, Password);
   }
 
-  @Post('/leave')
-  leave(@Body() data) {
-    const { chanId } = data;
+  @Post(':chanId/leave')
+  leave(@Param('chanId') chanId: number) {
     return this.channelService.leaveChannel(chanId);
   }
-  @Post('/invite')
-  invite(@Body() chanId: number, @Body() userId: number) {
+  @Post(':chandId/invite/:userId')
+  invite(@Param('chandId') chanId: number, @Param('userId') userId: number) {
     return this.channelService.inviteToChannel(chanId, userId);
   }
 
-  @Post('/banning')
-  ban(@Body() chanId: number, @Body() userId: number, @Body() action: number) {
+  @Post(':chandId/banning/:userId/:action')
+  ban(
+    @Param('chandId') chanId: number,
+    @Param('userId') userId: number,
+    @Param('action') action: number,
+  ) {
     return this.channelService.banUnbanFromChannel(chanId, userId, action);
   }
 
-  @Post('/muting')
-  mute(@Body() chanId: number, @Body() userId: number, @Body() action: number) {
+  @Post(':chandId/muting/:userId/:action')
+  mute(
+    @Param('chandId') chanId: number,
+    @Param('userId') userId: number,
+    @Param('action') action: number,
+  ) {
     return this.channelService.muteUnmuteFromChannel(chanId, userId, action);
   }
 
-  @Post('/mod')
-  mod(@Body() chanId: number, @Body() userId: number, @Body() action: number) {
+  @Post(':chandId/modding/:userId/:action')
+  mod(
+    @Param('chandId') chanId: number,
+    @Param('userId') userId: number,
+    @Param('action') action: number,
+  ) {
     return this.channelService.modUnmodFromChannel(chanId, userId, action);
   }
 
-  @Post('/owner')
-  owner(@Body() chanId: number, @Body() userId: number) {
+  @Post(':chandId/owner/:userId')
+  owner(@Param('chandId') chanId: number, @Param('userId') userId: number) {
     return this.channelService.makeOwner(chanId, userId);
   }
 }

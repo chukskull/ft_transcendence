@@ -31,24 +31,42 @@ const ChannelsSection = ({
       setChannelList(res.data);
     });
   }, []);
-  const groupedChannels = channelList.reduce((acc, channel) => {
-    if (!acc[channel.type]) {
-      acc[channel.type] = [];
-    }
-    acc[channel.type].push(channel);
-    return acc;
-  }, {} as Record<string, Channel[]>);
 
-  const getCategoryTitle = (category: string) => {
-    switch (category) {
-      case "public":
-        return "Public Channels";
-      case "private":
-        return "Private Channels";
-      default:
-        return "Protected Channels";
-    }
-  };
+  const channelCategoriesOrder = [
+    {
+      category: "public",
+      property: "is_private",
+      value: false,
+      label: "Public Channels",
+    },
+    {
+      category: "private",
+      property: "is_private",
+      value: true,
+      label: "Private Channels",
+    },
+    {
+      category: "protected",
+      property: "is_protected",
+      value: true,
+      label: "Protected Channels",
+    },
+  ];
+
+  const groupedChannels = channelList.reduce(
+    (acc, channel) => {
+      if (channel.is_private) {
+        acc.private.push(channel);
+      } else if (channel.is_protected) {
+        acc.protected.push(channel);
+      } else {
+        acc.public.push(channel);
+      }
+      return acc;
+    },
+    { public: [], private: [], protected: [] } as Record<string, Channel[]>
+  );
+
   function handleClick(channel: Channel) {
     sendDmOrChannel(channel);
     getType(true);
@@ -75,9 +93,9 @@ const ChannelsSection = ({
           </button>
         </div>
         <div className={style["channel-categories"]}>
-          {Object.keys(groupedChannels).map((category) => (
+          {channelCategoriesOrder.map(({ category, label }) => (
             <div className="flex flex-col gap-1" key={category}>
-              <h3>{getCategoryTitle(category)}</h3>
+              <h3>{label}</h3>
               {groupedChannels[category].map((channel) => (
                 <div
                   className={`${style["channel-item"]} ${
