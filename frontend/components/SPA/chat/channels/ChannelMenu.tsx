@@ -7,6 +7,16 @@ import ChannelSettings from "./ChannelSettings";
 import axios from "axios";
 
 const InviteSection = () => {
+  const [friends, setFriends] = useState<any>([]);
+  useEffect(() => {
+    try {
+      axios.get("http://localhost:1337/api/friends").then((res) => {
+        setFriends(res.data);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   return (
     <div className={style["invite-section"]}>
       <h1>
@@ -19,65 +29,48 @@ const InviteSection = () => {
       />
 
       <div className={style["invite-list"]}>
-        <div className={style["friend"]}>
-          <ProfileComp
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Le mountassir"
-            lastName="fatFaggot"
-          />
-          <button>
-            <AiOutlineUserAdd />
-            Invite
-          </button>
-        </div>
-        <div className={style["friend"]}>
-          <ProfileComp
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Transgender"
-            lastName="Nagat"
-          />
-          <button>
-            <AiOutlineUserAdd />
-            Invite
-          </button>
-        </div>
-        <div className={style["friend"]}>
-          <ProfileComp
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Achref"
-            lastName="Femboy"
-          />
-          <button>
-            <AiOutlineUserAdd />
-            Invite
-          </button>
-        </div>
+        {friends.map((e: any) => (
+          <div className={style["friend"]}>
+            <ProfileComp
+              key={e.id}
+              id={e.id}
+              img={e.avatarUrl}
+              nickName={e.nickName}
+              firstName={e.firstName}
+              lastName={e.lastName}
+            />
+            <button>
+              <AiOutlineUserAdd />
+              Invite
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
-const AuthoritySection = ({}) => {
+
+const AuthoritySection = ({ owner, mods }: any) => {
   return (
     <div className={style["authority-section"]}>
       <h2>Owners</h2>
       <ProfileComp
-        img="https://i.pravatar.cc/300?img=1"
-        nickName="hamza_lkr"
-        firstName="Saleh"
-        lastName="Nagat"
+        id={owner?.id}
+        img={owner?.avatarUrl}
+        nickName={owner?.nickName}
+        firstName={owner?.firstName}
+        lastName={owner?.lastName}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>
-        {[...Array(10)].map((e, i) => (
+        {mods?.map((e: any) => (
           <ProfileComp
-            key={i}
-            img="https://i.pravatar.cc/300?img=1"
-            nickName="hamza_lkr"
-            firstName="Saleh"
-            lastName="Nagat"
+            key={e.id}
+            id={e.id}
+            img={e.avatarUrl}
+            nickName={e.nickName}
+            firstName={e.firstName}
+            lastName={e.lastName}
           />
         ))}
       </div>
@@ -85,24 +78,25 @@ const AuthoritySection = ({}) => {
   );
 };
 
-const MembersSection = ({}) => {
+const MembersSection = ({ members }: any) => {
   return (
     <div className={style["members-section"]}>
       <h2>Members</h2>
       <div className={style["members-list"]}>
-        {[...Array(222)].map((e, i) => (
-          <div className={style["member"]} key={""}>
+        {members?.map((e: any) => (
+          <div className={style["member"]}>
             <ProfileComp
-              key={i}
-              img="https://i.pravatar.cc/300?img=1"
-              nickName="hamza_lkr"
-              firstName="Saleh"
-              lastName="Nagat"
+              key={e.id}
+              id={e.id}
+              img={e.avatarUrl}
+              nickName={e.nickName}
+              firstName={e.firstName}
+              lastName={e.lastName}
             />
           </div>
         ))}
       </div>
-      <div className={style["total"]}>Total: 33</div>
+      <div className={style["total"]}>Total: {members.length}</div>
     </div>
   );
 };
@@ -125,7 +119,6 @@ const ChannelMenu = ({ channel }: any) => {
         .get(`http://localhost:1337/api/channels/${channel.id}`)
         .then((res) => {
           setChannelData(res.data);
-          console.log(res.data);
         });
     } catch (err) {
       console.log(err);
@@ -154,9 +147,23 @@ const ChannelMenu = ({ channel }: any) => {
       </div>
       <div className={style["menu-body"]}>
         {activeSection === "Invite" && <InviteSection />}
-        {activeSection === "Authority Hub" && <AuthoritySection />}
-        {activeSection === "Members" && <MembersSection />}
-        {activeSection === "Settings" && <ChannelSettings />}
+        {activeSection === "Authority Hub" && (
+          <AuthoritySection
+            owner={channelData.owner}
+            mods={channelData.Moderators}
+          />
+        )}
+        {activeSection === "Members" && (
+          <MembersSection members={channelData.members} />
+        )}
+        {activeSection === "Settings" && (
+          <ChannelSettings
+            banned={channelData.banned}
+            muted={channelData.muted}
+            id={channel.id}
+            chPrivate={channelData.is_private}
+          />
+        )}
       </div>
     </>
   );
