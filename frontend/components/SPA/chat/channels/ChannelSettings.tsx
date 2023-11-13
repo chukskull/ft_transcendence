@@ -42,7 +42,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
     axios
       .delete(`http://localhost:1337/api/channels/delete/${channelId}`)
       .then((res) => {
-        console.log(res.data);
+        window.location.reload();
       })
       .catch((err) => console.log(err));
   };

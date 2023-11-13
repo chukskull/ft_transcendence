@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-
+import { Conversation } from '../conversations/conversation.entity';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User)
+    private conversationRepository: Repository<Conversation>,
   ) {}
 
   async createNewUser(intraLogin: string, avatarUrl: string): Promise<User> {
@@ -35,8 +37,8 @@ export class UserService {
     user.matchHistory = [];
     user.pendingInvite = false;
     user.status = 'online';
-
     user.nickName = intraLogin;
+    user.conversations = [];
     return this.userRepository.save(user);
   }
 
@@ -109,7 +111,43 @@ export class UserService {
     if (!friend) {
       return { message: 'User not found' };
     }
-    // const friends
+    const myUser = 1;
+    const client = await this.userRepository.findOne({
+      where: { id: myUser },
+      relations: ['friends', 'blockedUsers', 'conversations'],
+    });
+    if (!client) {
+      return { message: 'User not found' };
+    }
+    const alreadyFriend = client.friends.find(
+      (friend) => friend.id === friendID,
+    );
+    if (alreadyFriend) {
+      return { message: 'User already in friends' };
+    }
+    const blocked = client.blockedUsers.find(
+      (blocked) => blocked.id === friendID,
+    );
+    if (blocked) {
+      return { message: 'User is blocked' };
+    }
+    const conversation = client.conversations.find(
+      (conversation) =>
+        conversation.is_group === false &&
+        conversation.members.find((member) => member.id === friendID),
+    );
+    if (conversation) {
+      client.friends.push(friend);
+    } else {
+      const newConversation = await this.conversationRepository.create({
+        is_group: false,
+        members: [client, friend],
+        chats: [],
+      });
+      client.conversations.push(newConversation);
+      friend.conversations.push(newConversation);
+      client.friends.push(friend);
+    }
   }
 
   async blockUser(blockedID: number): Promise<any> {
@@ -122,20 +160,40 @@ export class UserService {
     if (!client || !blocked) {
       return { message: 'User not found' };
     }
-    // client.blocked.push(blocked);
+    const alreadyBlocked = client.blockedUsers.find(
+      (user) => user.id === blockedID,
+    );
+    if (alreadyBlocked) {
+      return { message: 'User already blocked' };
+    }
+    const friend = client.friends.find((user) => user.id === blockedID);
+    if (friend) {
+      client.friends = client.friends.filter((user) => user.id !== blockedID);
+    }
+
+    client.blockedUsers.push(blocked);
+    return this.userRepository.save(client);
+  }
+
+  async unblockUser(blockedID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: 1 },
+    });
+    const blocked = await this.userRepository.findOne({
+      where: { id: blockedID },
+    });
+    if (!client || !blocked) {
+      return { message: 'User not found' };
+    }
+    client.blockedUsers = client.blockedUsers.filter(
+      (user) => user.id !== blockedID,
+    );
+
     return this.userRepository.save(client);
   }
 
   async saveTwoFactorSecret(secret: string, clientID: number): Promise<any> {
     return this.userRepository.update(clientID, { twoFactorSecret: secret });
-  }
-
-  async setOnline(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { status: 'ONLINE' });
-  }
-
-  async setOffline(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { status: 'OFFLINE' });
   }
 
   async enableTwoFactor(clientID: number): Promise<any> {
