@@ -9,8 +9,6 @@ import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
 import { getUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
-import { Skeleton } from "antd";
-import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface ProfileProps {
   id: string;
@@ -29,7 +27,7 @@ export default function Profile({ id }: ProfileProps) {
   console.log(data);
 
   if (error) return "An error has occurred: " + error.message;
-
+  if (isLoading) return "Loading...";
   return (
     <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
