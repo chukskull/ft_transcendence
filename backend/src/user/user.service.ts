@@ -46,12 +46,20 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findUser(id: any): Promise<User> {
+  async userProfile(id: any): Promise<User> {
+    let user = null;
     if (typeof id === 'number') {
-      return this.userRepository.findOne({ where: { id } });
+      user = this.userRepository.findOne({
+        where: { id },
+        relations: ['matchHistory', 'channels', 'achievements', 'friends'],
+      });
     } else {
-      return this.userRepository.findOne({ where: { nickName: id } });
+      user = this.userRepository.findOne({
+        where: { id },
+        relations: ['matchHistory', 'channels', 'achievements', 'friends'],
+      });
     }
+    return user;
   }
 
   async fillData(data: any): Promise<any> {
