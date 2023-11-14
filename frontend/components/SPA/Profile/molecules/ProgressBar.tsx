@@ -3,10 +3,11 @@ import Bar from "../atoms/Bar";
 
 interface ProgressBarProps {
   lvl: number;
+  prec: number;
   exp: number;
   maxExp: number;
 }
-export const ProgressBar = ({ lvl, exp, maxExp }: ProgressBarProps) => {
+export const ProgressBar = ({ prec, lvl, exp, maxExp }: ProgressBarProps) => {
   return (
     <div className="flex flex-col justify-center gap-3 flex-grow max-w-[384px]">
       <div className="flex items-center justify-between">
