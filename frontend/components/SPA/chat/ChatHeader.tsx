@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { FiLogOut } from "react-icons/fi";
 import { useState } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
@@ -36,11 +36,10 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
       </Modal>
       <div className={style["chat-header"]}>
         <div className={style["chat-user-group"]}>
-          {/* {!chatHeaderProps?.isChannel && (
-            <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          )} */}
           <div className={style["name"]}>
-            {chatHeaderProps?.dmOrChannel?.name}
+            {chatHeaderProps?.isChannel
+              ? chatHeaderProps?.dmOrChannel?.name
+              : chatHeaderProps?.dmOrChannel}
           </div>
           <button
             onClick={() => {

@@ -1,106 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
-import { BiLock } from "react-icons/bi";
-import { get } from "http";
-import { act } from "react-dom/test-utils";
+import CreateChannelModal from "./CreateChannel";
+import axios from "axios";
 
 interface Channel {
   type: string;
   name: string;
+  id: number;
+  is_private: boolean;
+  is_protected: boolean;
 }
 
-const chanList = [
-  {
-    name: "#General",
-    type: "public",
-  },
-  {
-    name: "#Random",
-    type: "public",
-  },
-  {
-    name: "#Pedago",
-    type: "public",
-  },
-  {
-    name: "#WatchRoom",
-    type: "private",
-  },
-  {
-    name: "#GameRoom",
-    type: "private",
-  },
-  {
-    name: "#SecretRoom",
-    type: "protected",
-  },
-];
-
-const CreateChannelModal = ({}) => {
-  return (
-    <>
-      <h1>Create Channel</h1>
-      <div className={style["input-group"]}>
-        <div>
-          <label>Channel Name</label>
-          <input type="text" id="channel-name" placeholder="#NewChannel" />
-        </div>
-        <div>
-          <label>Channel Password (Optional)</label>
-          <input
-            type="password"
-            id="channel-paswd"
-            name="channel-paswd"
-            placeholder="Set Password"
-          />
-        </div>
-        <div className={style["prv-btn"]}>
-          <h3>
-            <BiLock />
-            Private Channel
-          </h3>
-          <input type="checkbox" />
-        </div>
-      </div>
-      <button className={style["create-btn"]}>Create</button>
-    </>
-  );
-};
 interface ChannelProps {
-  sendConversationId: (id: string) => void;
-  getNameAndType: (Channel: { name: string; type: boolean }) => void;
+  sendDmOrChannel: (channel: any) => void;
+  getType: (type: boolean) => void;
   CompType: boolean;
 }
 const ChannelsSection = ({
-  sendConversationId,
-  getNameAndType,
+  sendDmOrChannel,
+  getType,
   CompType,
 }: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
-  const channelList: Channel[] = chanList;
-  const groupedChannels = channelList.reduce((acc, channel) => {
-    if (!acc[channel.type]) {
-      acc[channel.type] = [];
-    }
-    acc[channel.type].push(channel);
-    return acc;
-  }, {} as Record<string, Channel[]>);
-
-  const getCategoryTitle = (category: string) => {
-    switch (category) {
-      case "public":
-        return "Public Channels";
-      case "private":
-        return "Private Channels";
-      default:
-        return "Protected Channels";
-    }
-  };
+  // const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
+
+  // useEffect(() => {
+  //   axios.get("http://localhost:1337/api/channels").then((res) => {
+  //     setChannelList(res.data);
+  //   });
+  // }, []);
+
+  const channelCategoriesOrder = [
+    {
+      category: "public",
+      property: "is_private",
+      value: false,
+      label: "Public Channels",
+    },
+    {
+      category: "private",
+      property: "is_private",
+      value: true,
+      label: "Private Channels",
+    },
+    {
+      category: "protected",
+      property: "is_protected",
+      value: true,
+      label: "Protected Channels",
+    },
+  ];
+
+  const groupedChannels = m.reduce(
+    (acc, channel) => {
+      if (channel.is_private) {
+        acc.private.push(channel);
+      } else if (channel.is_protected) {
+        acc.protected.push(channel);
+      } else {
+        acc.public.push(channel);
+      }
+      return acc;
+    },
+    { public: [], private: [], protected: [] } as Record<string, Channel[]>
+  );
+
   function handleClick(channel: Channel) {
-    sendConversationId(channel.name);
-    getNameAndType({ name: channel.name, type: true });
+    sendDmOrChannel(channel);
+    getType(true);
     setActive(channel.name);
   }
   return (
@@ -124,9 +93,9 @@ const ChannelsSection = ({
           </button>
         </div>
         <div className={style["channel-categories"]}>
-          {Object.keys(groupedChannels).map((category) => (
+          {channelCategoriesOrder.map(({ category, label }) => (
             <div className="flex flex-col gap-1" key={category}>
-              <h3>{getCategoryTitle(category)}</h3>
+              <h3>{label}</h3>
               {groupedChannels[category].map((channel) => (
                 <div
                   className={`${style["channel-item"]} ${
@@ -137,6 +106,7 @@ const ChannelsSection = ({
                   key={channel.name}
                   onClick={() => handleClick(channel)}
                 >
+                  {"#"}
                   {channel.name}
                 </div>
               ))}
@@ -149,3 +119,68 @@ const ChannelsSection = ({
 };
 
 export default ChannelsSection;
+const m = [
+  {
+    id: 7,
+    name: "global channel",
+    is_private: false,
+    is_protected: true,
+    password: "$2b$10$EIgZTi.crlB5JPABNpVcrOurlfUqGE/T2kKNbvDIujENf576QcBE2",
+  },
+  {
+    id: 8,
+    name: "testtaazz",
+    is_private: false,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 9,
+    name: "حثيشلقهلثتقهلتثقتلثقلخقثل",
+    is_private: true,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 10,
+    name: "23r23rr",
+    is_private: true,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 11,
+    name: "fes69",
+    is_private: false,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 17,
+    name: "ownerhsip",
+    is_private: false,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 18,
+    name: "memberstest2",
+    is_private: false,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 19,
+    name: "testnagat",
+    is_private: false,
+    is_protected: false,
+    password: "",
+  },
+  {
+    id: 20,
+    name: "yrethjerher",
+    is_private: false,
+    is_protected: false,
+    password: "",
+  },
+];
