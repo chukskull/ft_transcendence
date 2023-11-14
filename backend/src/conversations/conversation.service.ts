@@ -22,6 +22,7 @@ export class ConversationService {
     } else {
       const myConvs = await this.conversationRepository.find({
         where: { members: user, is_group: false },
+        relations: ['members', 'chats'],
       });
       myConvs.forEach((conv) => {
         conv.members = conv.members.filter((member) => member.id !== MyUser);
