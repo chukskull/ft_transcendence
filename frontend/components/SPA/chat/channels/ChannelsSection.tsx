@@ -106,6 +106,7 @@ const ChannelsSection = ({
                   key={channel.name}
                   onClick={() => handleClick(channel)}
                 >
+                  {"#"}
                   {channel.name}
                 </div>
               ))}

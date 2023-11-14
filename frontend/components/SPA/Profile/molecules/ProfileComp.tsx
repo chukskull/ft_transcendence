@@ -13,7 +13,7 @@ interface ProfileCompProps {
   firstName: string;
   lastName?: string;
   color?: string;
-  type?: "Private" | "Public" | null;
+  type?: "Protected" | "Public" | null;
 }
 
 const ProfileComp = ({
@@ -28,7 +28,7 @@ const ProfileComp = ({
   const [showModal, setShow] = React.useState(false);
 
   const handleModalClick = () => {
-    if (type === "Private") {
+    if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
       axios.post("/api/auth/join");
@@ -46,31 +46,14 @@ const ProfileComp = ({
         className={style["user-menu-modal"]}
       >
         {showModal &&
-          (type === "Private" ? (
-            <ProtectedModal /> // Show protected modal for private channels
+          (type === "Protected" ? (
+            <ProtectedModal /> // Show protected modal for Protected channels
           ) : (
             <UserMenu /> // Show standard user menu for other channel types
           ))}
       </Modal>
       <div className="flex items-center  gap-5" onClick={handleModalClick}>
         <Avatar isBordered color="success" src={img} />
-        {/* {color ? (
-          <svg
-            className="absolute z-12 top-[-16%] right-[68%] w-12"
-            id="crown"
-            fill={color}
-            data-name="Layer 1"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 100 50"
-          >
-            <polygon
-              className="cls-1"
-              points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
-            />
-          </svg>
-        ) : (
-          <span> </span>
-        )} */}
         <div className="m-0 p-0">
           <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0">
             {firstName} {lastName}

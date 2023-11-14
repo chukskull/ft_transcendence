@@ -42,6 +42,13 @@
       "lastName": "Nagat",
       "nickName": "Ostora",
       "id": 5
+    },
+    {
+      "headers": {
+        "Content-Type": "multipart/form-data"
+      },
+      "body": {},
+      "id": 6
     }
   ],
   "Leadrboard": [
@@ -209,22 +216,22 @@
     ],
     "Channels": [
       {
-        "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+        "img": "",
         "nickName": "private",
         "name": "Pedago",
-        "type": "Private"
+        "type": "Protected"
       },
       {
-        "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Private"
-      },
-      {
-        "img": "https://cdn.discordapp.com/attachments/877643868007510272/877643897971959828/unknown.png",
+        "img": "",
         "nickName": "private",
         "name": "Pedago",
         "type": "Public"
+      },
+      {
+        "img": "",
+        "nickName": "private",
+        "name": "Pedago",
+        "type": "Protected"
       }
     ]
   }
