@@ -192,15 +192,15 @@ function Input({
     });
   }, [isFocused]);
 
-  function handleChange(e: Event) {
+  function handleChange(e: any) {
     onChange(index, e?.target?.value);
   }
 
-  function handlePaste(e: ClipboardEvent) {
+  function handlePaste(e: any) {
     onPaste(e?.clipboardData?.getData("text"));
   }
 
-  function handleKeyDown(e: KeyboardEvent) {
+  function handleKeyDown(e: any) {
     if (e?.key === "Backspace") {
       onBackspace();
     }
@@ -217,6 +217,7 @@ function Input({
       ref={ref}
       type="text"
       value={value}
+      onKeyDown={handleKeyDown}
       onChange={handleChange}
       onPaste={handlePaste}
       maxLength={"1"}

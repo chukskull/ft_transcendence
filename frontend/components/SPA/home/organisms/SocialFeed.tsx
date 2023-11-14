@@ -5,7 +5,7 @@ import Leadrboard from "../../Profile/organisms/Leadrboard";
 
 export const SocialFeed = () => {
   return (
-    <div className="flex flex-row max-sm:items-center  gap-16 p-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-3/4">
+    <div className="flex flex-row max-sm:items-center  gap-16 px-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-[80%]">
       <div className="flex flex-col  flex-grow border-1 border-white  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
         <h1 className="text-white text-3xl font-semibold py-6 px-12 mx-6 max-sm:px-6  max-sm:mx-3">
           Leaderboard
