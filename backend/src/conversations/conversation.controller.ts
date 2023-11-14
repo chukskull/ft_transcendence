@@ -11,6 +11,11 @@ export class ConversationController {
     return this.conversationService.getConversation(convId);
   }
 
+  @Post('create')
+  async getConversations() {
+    return this.conversationService.createConversation();
+  }
+
   @Get('/myDms')
   async getMyDms() {
     return this.conversationService.getMyDms();
