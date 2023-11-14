@@ -5,10 +5,15 @@ import { Channel } from './channel.entity';
 import { ChannelController } from './channel.controller';
 import { ChannelService } from './channel.service';
 import { Conversation } from '../conversations/conversation.entity';
+import { ConversationService } from '../conversations/conversation.service';
+import { ConversationModule } from 'src/conversations/conversation.module';
 import { User } from '../user/user.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel, Conversation, User])],
+  imports: [
+    ConversationModule,
+    TypeOrmModule.forFeature([Channel, Conversation, User]),
+  ],
   controllers: [ChannelController],
-  providers: [ChannelService],
+  providers: [ChannelService, ConversationService],
 })
 export class ChannelModule {}

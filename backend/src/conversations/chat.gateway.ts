@@ -5,10 +5,12 @@ import {
   SubscribeMessage,
   WebSocketServer,
   MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
 import { Chat } from './conversation.entity';
+import { User } from '../user/user.entity';
 
 @WebSocketGateway({ namespace: 'chat' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -22,8 +24,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket) {
-    // You can uncomment this line if you want to leave all rooms when disconnecting.
-    // client.leaveAll();
+    // Handle any necessary disconnection logic
   }
 
   @SubscribeMessage('message')
@@ -31,14 +32,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     data: {
       conversationId: number;
-      sender: number;
+      sender: User;
       message: string;
     },
+    @ConnectedSocket() client: Socket,
   ) {
     const { conversationId, sender, message } = data;
 
     const chatMessage = new Chat();
-    // chatMessage.sender = sender;
+    chatMessage.sender = sender;
     chatMessage.message = message;
     chatMessage.time = new Date();
 
@@ -48,10 +50,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         chatMessage,
       );
 
-      // Broadcast the message to all clients in the conversation room
-      this.server
-        .to(`conversation_${conversationId}`)
-        .emit('newMessage', chatMessage);
+      // Get the room name for the conversation
+      const roomName = `conversation_${conversationId}`;
+
+      // Broadcast the message to users in the conversation
+      this.server.to(roomName).emit('newMessage', chatMessage);
     } catch (error) {
       console.error('Error saving and broadcasting the message:', error);
     }
