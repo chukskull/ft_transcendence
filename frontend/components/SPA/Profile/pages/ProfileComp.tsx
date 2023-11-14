@@ -22,6 +22,23 @@ export default function Profile({ id }: ProfileProps) {
     setActive(index);
   }
   const { isLoading, error, data } = useQuery("userList", async () => {
+    {
+      /*NOTICE2 this function  fetch from the api axios.get(`http://localhost:1337/api/:${id}`) id reffering of params.slug in first
+      and its return the data of the user with the id example 
+      "user": {
+          "id": 1,
+          "fullName": "${first_name} + ${last_name},
+          "firstName": "John",
+          "lastName": "Doe",
+          "nickName": "Johny67",
+          "level": 90,
+          "userExp": 6399,
+          "WinPerc": 90,
+          "userMatches": 14, => matchHistory.length() whatever
+          "avatarUrl": "https://i.pravatar.cc/300?img=9"
+  },
+      */
+    }
     return getUserProfile(id);
   });
   console.log(data);
@@ -32,21 +49,26 @@ export default function Profile({ id }: ProfileProps) {
     <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
         <span style={{ display: "flex", alignItems: "center" }}>
-          <FaUser style={{ marginRight: "0.5rem" }} /> Welcome, {data?.FullName}
+          <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
+          {`${data.firstName} + ${data.lastName}`}
         </span>
       </h1>
       <div className="item-1  relative ">
         <LeftProfile
-          image={data?.userImage}
-          name={data?.FullName}
+          image={data?.avatarUrl}
+          name={`${data.firstName} + ${data.lastName}`}
           nickName={data?.nickName}
         />
         <div className="min-w-[80px] h-0"></div>
-        <ProgressBar lvl={data?.Lvl} exp={data?.userExp} maxExp={12798} />
+        <ProgressBar
+          prec={data?.expersience / 12798}
+          lvl={data?.level}
+          exp={data?.expersience}
+          maxExp={12798}
+        />
         <Stats
-          perc={data?.WinPerc}
-          money={data?.userMoney}
-          matches={data?.userMatches}
+          perc={data?.wins / data?.matchHistory?.length}
+          matches={data?.matchHistory?.length}
         />
       </div>
 
@@ -75,7 +97,7 @@ export default function Profile({ id }: ProfileProps) {
             ))}
           </div>
 
-          <MiddleComponent index={active} />
+          <MiddleComponent index={active} data={data} isLoading={isLoading} />
         </div>
         <div className="C-3">
           <div className="flex items-center justify-center">
