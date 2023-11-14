@@ -45,7 +45,6 @@ export default function Profile({ id }: ProfileProps) {
 
   if (error) return "An error has occurred: " + error.message;
   if (isLoading) return "Loading...";
-
   return (
     <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
