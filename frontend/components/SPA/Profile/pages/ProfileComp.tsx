@@ -67,8 +67,8 @@ export default function Profile({ id }: ProfileProps) {
           maxExp={12798}
         />
         <Stats
-          perc={data?.wins / data?.matchHistory?.length}
-          matches={data?.matchHistory?.length}
+          perc={data?.wins / data?.totalGames}
+          matches={data?.totalGames}
         />
       </div>
 
