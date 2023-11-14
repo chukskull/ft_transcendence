@@ -61,4 +61,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.gameService.onlineUsers.get(id).add(client)
 		this.gameService.createGame(client, payload)
 	}
+
+	/*
+	* handling invite friends
+	*/
+	@SubscribeMessage('inviteFriend')
+	async inviteFriend(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
+		const id = await this.gameService.checkCookie(client)['id']
+		this.gameService.inviteFriend(client, payload)
+	}
 }
