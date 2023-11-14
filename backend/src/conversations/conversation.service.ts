@@ -22,6 +22,7 @@ export class ConversationService {
     } else {
       const myConvs = await this.conversationRepository.find({
         where: { members: user, is_group: false },
+        relations: ['members', 'chats'],
       });
       myConvs.forEach((conv) => {
         conv.members = conv.members.filter((member) => member.id !== MyUser);
@@ -54,5 +55,18 @@ export class ConversationService {
       where: { id: convId },
     });
     conv.chats.push(message);
+  }
+
+  async createConversation() {
+    const newConversation = await this.conversationRepository.create();
+    newConversation.is_group = false;
+    newConversation.members = [];
+    newConversation.chats = [];
+    console.log(newConversation);
+    const user1 = await this.UserRepository.findOne({ where: { id: 1 } });
+    const user2 = await this.UserRepository.findOne({ where: { id: 2 } });
+    newConversation.members.push(user1);
+    newConversation.members.push(user2);
+    return this.conversationRepository.save(newConversation);
   }
 }
