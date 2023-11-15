@@ -2,6 +2,7 @@
   "dependencies": {
     "@nestjs/cli": "^10.1.14",
     "antd": "^5.9.4",
+    "npm": "^10.2.3",
     "socket.io-client": "^4.7.2"
   }
 }

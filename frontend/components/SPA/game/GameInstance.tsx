@@ -80,6 +80,7 @@ const GameInstance = () => {
 
 		const socket = io();
 
+
 		socket.on("connect", () => {
 			console.log("Connected to server");
 			socket.emit("createGame");
@@ -89,11 +90,37 @@ const GameInstance = () => {
 			setPlayer2PaddleY(data.y);
 		});
 
-		socket.on("ballMoved", (data: any) => {
+		socket.on("updateBallState", (data: any) => {
 			Body.setPosition(ball, { x: data.x, y: data.y });
 		});
 
-		socket.on("scoreUpdated", (data: any) => {
+		Events.on(engine, "collisionStart", (event) => {
+			event.pairs.forEach((collision) => {
+				const { bodyA, bodyB } = collision;
+
+				// Check if the collision is between the ball and a paddle
+				if (
+					(bodyA === ball && bodyB === paddle1) ||
+					(bodyA === paddle1 && bodyB === ball) ||
+					(bodyA === ball && bodyB === paddle2) ||
+					(bodyA === paddle2 && bodyB === ball)
+				) {
+					// Reverse the ball's x-velocity to simulate a bounce
+					Body.setVelocity(ball, {
+						x: -ball.velocity.x,
+						y: ball.velocity.y,
+					});
+
+					// Emit an event to update the ball's position on the other player's screen
+					socket.emit("updateBallState", {
+						x: ball.position.x,
+						y: ball.position.y,
+					});
+				}
+			});
+		});
+
+		socket.on("updateScore", (data: any) => {
 			setPlayer1Score(data.player1Score);
 			setPlayer2Score(data.player2Score);
 		});
