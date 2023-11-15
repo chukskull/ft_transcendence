@@ -15,6 +15,13 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
+  const router = useRouter();
+
+  if (Type && DmOrChannel !== null) {
+    router.push(`/chat/channels/${DmOrChannel}`);
+  } else {
+    if (DmOrChannel !== null) router.push(`${"/chat/users/" + DmOrChannel}`);
+  }
 
   // const socket = io("http://localhost:1337");
 

@@ -8,6 +8,7 @@ import { UpdateChannelDto } from './dtos/update-channel.dto';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { Conversation } from '../conversations/conversation.entity';
+import { ConversationService } from '../conversations/conversation.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -19,6 +20,7 @@ export class ChannelService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private readonly conversationService: ConversationService,
   ) {}
   async createChannel(createChannelDto: CreateChannelDto): Promise<Channel> {
     const { name, is_private, password } = createChannelDto;
@@ -32,21 +34,22 @@ export class ChannelService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    const newConversation = await this.conversationRepository.create();
+    const newConversation = await this.conversationService.createConversation(
+      1,
+      2,
+    );
 
-    // Create the channel
     const channel = this.chanRepository.create({
       name,
       is_private,
       password,
       owner,
       members: [owner],
-      // conversation: newConversation,
+      conversation: newConversation,
     });
 
-    // If a password is provided, hash it
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+      const hashedPassword = await bcrypt.hash(password, 10);
       channel.password = hashedPassword;
       channel.is_protected = true;
     } else {
@@ -84,9 +87,9 @@ export class ChannelService {
     //   (member) => member.id === userId,
     // );
     // if (isAlreadyMember) {
-      // exclude the password from the channel return
+    // exclude the password from the channel return
 
-      return channel;
+    return channel;
     // } else {
     //   throw new NotFoundException('User not in channel');
     // }
@@ -160,6 +163,7 @@ export class ChannelService {
       throw new NotFoundException('User already in channel');
     } else {
       channel.members.push(user);
+      user.conversations.push(channel.conversation);
     }
 
     return this.chanRepository.save(channel);
@@ -177,6 +181,14 @@ export class ChannelService {
     // Remove user from channel.members list
     channel.members = channel.members.filter((member) => member.id !== userId);
 
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.conversations = user.conversations.filter(
+      (conv) => conv.id !== channel.conversation.id,
+    );
+    this.userRepository.save(user);
     return this.chanRepository.save(channel);
   }
 

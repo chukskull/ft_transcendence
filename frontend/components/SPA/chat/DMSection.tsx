@@ -136,6 +136,7 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   const handleConversationId = (dm: any) => {
     getType(false);
     sendDmOrChannel(dm);
+    setActive(dm);
   };
 
   return (

@@ -58,10 +58,9 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/find')
-  async findUser(@Body() id): Promise<User> {
-    console.log('findUser', id);
-    return this.usersService.findUser(id);
+  @Post('/profile/:userId')
+  async findUser(@Param('userId') userId: number): Promise<User> {
+    return this.usersService.userProfile(userId);
   }
 
   @UseGuards()

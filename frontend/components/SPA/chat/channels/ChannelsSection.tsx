@@ -25,12 +25,19 @@ const ChannelsSection = ({
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
+  console.log("test " + process.env.NEXT_PUBLIC_BACKEND_URL);
 
-  useEffect(() => {
-    axios.get("http://localhost:1337/api/channels").then((res) => {
-      setChannelList(res.data);
-    });
-  }, []);
+  try {
+    useEffect(() => {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`)
+        .then((res) => {
+          setChannelList(res.data);
+        });
+    }, []);
+  } catch (error) {
+    console.log(error);
+  }
 
   const channelCategoriesOrder = [
     {
@@ -106,6 +113,7 @@ const ChannelsSection = ({
                   key={channel.name}
                   onClick={() => handleClick(channel)}
                 >
+                  {"#"}
                   {channel.name}
                 </div>
               ))}

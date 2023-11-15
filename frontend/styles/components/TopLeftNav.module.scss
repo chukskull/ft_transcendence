@@ -67,11 +67,13 @@ $background-color: #3d0655;
     height: 100%;
     flex-direction: column;
     align-items: center;
+    justify-content: space-around;
 
     .left_menu {
         margin-top: 150px;
         display: flex;
         flex-direction: column;
+        
         gap: 4rem;
         svg {
             &:hover {

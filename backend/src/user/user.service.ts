@@ -11,7 +11,7 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string): Promise<User> {
+  async createNewUser(intraLogin: string, avatarUrl: string) {
     if (!intraLogin) {
       return null;
     }
@@ -46,12 +46,11 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findUser(id: any): Promise<User> {
-    if (typeof id === 'number') {
-      return this.userRepository.findOne({ where: { id } });
-    } else {
-      return this.userRepository.findOne({ where: { nickName: id } });
-    }
+  async userProfile(id: any): Promise<User> {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['matchHistory', 'channels', 'achievements', 'friends'],
+    });
   }
 
   async fillData(data: any): Promise<any> {

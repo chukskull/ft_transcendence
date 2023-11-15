@@ -6,10 +6,16 @@ interface rankMap {
   [key: string]: string;
 }
 
+const rankMap: rankMap = {
+  Silver: "https://i.imgur.com/OazydMA.png",
+  Gold: "https://imgur.com/I8ctvsh.png",
+  Iron: "https://i.imgur.com/GMh5g0V.png",
+  Bronze: "https://i.imgur.com/JTbrxcF.png",
+};
 interface StatsProps {
   perc: number;
-  rank?: rankMap;
-  money: number;
+  rank?: string | undefined;
+
   matches: number;
 }
 
@@ -23,7 +29,7 @@ font-style: ClashGrotesk-Regular;
 font-weight: 400;
 line-height: 46.209px; /* 330.064% */
 
-export const Stats = ({ perc, rank, money, matches }: StatsProps) => {
+export const Stats = ({ perc, rank, matches }: StatsProps) => {
   return (
     <div className="flex   items-center gap-16">
       <div className="flex flex-col items-center  justify-between gap-2">
@@ -37,12 +43,14 @@ export const Stats = ({ perc, rank, money, matches }: StatsProps) => {
       </div>
       <div className="flex flex-col items-center  justify-between gap-2">
         <Image
-          src="/assets/SPA/Profile/rank[2].svg"
+          src={rank ? rankMap[rank] : rankMap["Iron"]}
           width={74}
           height={82}
           alt="rank"
         />
-        <h1 className=" text-white font-ClashGrotesk-Medium text-xl">SILVER</h1>
+        <h1 className=" text-white font-ClashGrotesk-Medium text-xl">
+          {rank ? rank : "Iron"}
+        </h1>
         <h1 className=" text-white font-ClashGrotesk-Regular text-lg">
           Ranking
         </h1>
@@ -51,8 +59,8 @@ export const Stats = ({ perc, rank, money, matches }: StatsProps) => {
       <div className="flex flex-col items-center  justify-between gap-2">
         <Image
           src="/assets/SPA/Profile/Punch.png"
-          width={84}
-          height={76}
+          width={74}
+          height={60}
           alt="punch"
         />
         <h1 className=" text-white font-ClashGrotesk-Medium text-xl">

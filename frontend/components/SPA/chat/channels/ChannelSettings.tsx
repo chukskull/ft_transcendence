@@ -14,7 +14,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:1337/channel/update/`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/channel/update/`,
         formData
       );
       console.log("Update successful", response.data);
@@ -22,9 +22,10 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
       console.error("Error updating channel", error);
     }
   };
+
   const unban = (userId: number) => {
     axios
-      .post(`http://localhost:1337//api/channels/${id}/banning/${userId}/0`) //0 to unban 1 to ban
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`) //0 to unban 1 to ban
       .then((res) => {
         console.log(res.data);
       })
@@ -32,7 +33,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   };
   const unmute = (userId: number) => {
     axios
-      .post(`http://localhost:1337//api/channels/${id}/muting/${userId}/0`) //0 to unmute 1 to mute
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/muting/${userId}/0`) //0 to unmute 1 to mute
       .then((res) => {
         console.log(res.data);
       })
@@ -40,7 +41,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   };
   const deleteChannel = (channelId: number) => {
     axios
-      .delete(`http://localhost:1337/api/channels/delete/${channelId}`)
+      .delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/delete/${channelId}`)
       .then((res) => {
         window.location.reload();
       })
