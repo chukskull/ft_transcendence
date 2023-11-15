@@ -9,7 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { Channel } from '../channel/channel.entity';
 import { Conversation } from '../conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
