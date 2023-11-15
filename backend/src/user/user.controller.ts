@@ -48,7 +48,11 @@ export class UserController {
 
   @Post('create')
   async create(@Body() data): Promise<User> {
-    return this.usersService.createNewUser(data.intraLogin, data.avatarUrl);
+    return this.usersService.createNewUser(
+      data.intraLogin,
+      data.avatarUrl,
+      data.email,
+    );
   }
 
   @UseGuards()
