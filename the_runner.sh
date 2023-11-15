@@ -11,7 +11,6 @@ cleanup() {
     docker volume prune --force
 }
 
-# Function to build Docker containers and clean npm caches
 build() {
     rm -rf ./frontend/node_modules
     rm -rf ./backend/node_modules
@@ -23,7 +22,6 @@ build() {
     docker-compose up --build
 }
 
-# Execute the chosen command
 case "$1" in
     "del")
         cleanup

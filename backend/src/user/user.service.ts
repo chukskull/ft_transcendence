@@ -11,7 +11,7 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string): Promise<User> {
+  async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
     if (!intraLogin) {
       return null;
     }
@@ -23,7 +23,7 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl });
+    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
     user.level = 0;
     user.experience = 0;
     user.wins = 0;
