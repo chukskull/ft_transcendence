@@ -2,11 +2,10 @@ FROM node:alpine
 
 WORKDIR /trans
 
-COPY . .
+COPY package*.json ./
 
 RUN npm install
 
-CMD [ "npm", "run", "start:dev" ]
+COPY . .
 
-# RUN npm run build
-# CMD [ "npm", "run", "start" ]
+CMD ["npm", "run", "start:dev"]

@@ -25,12 +25,15 @@ const ChannelsSection = ({
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
-
-  useEffect(() => {
-    axios.get("http://localhost:1337/api/channels").then((res) => {
-      setChannelList(res.data);
-    });
-  }, []);
+  try {
+    useEffect(() => {
+      axios.get("http://localhost:1337/api/channels").then((res) => {
+        setChannelList(res.data);
+      });
+    }, []);
+  } catch (error) {
+    console.log(error);
+  }
 
   const channelCategoriesOrder = [
     {
