@@ -1,37 +1,39 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { AuthModule } from './user/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelModule } from './channel/channel.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
+import { AuthModule } from './auth/auth.module';
+import { config } from 'dotenv';
+import { APP_GUARD } from '@nestjs/core';
+config();
 
 @Module({
   imports: [
+    AuthModule,
     ChannelModule,
     UserModule,
     AchievementModule,
     ConversationModule,
-    // MessageModule,
+    AchievementModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env',
     }),
-    // UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'mountassir',
-      password: 'admin',
-      database: 'transDb',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      entities: ['dist/**/*.entity.js'],
       synchronize: true,
     }),
-    AchievementModule,
   ],
   controllers: [AppController],
   providers: [AppService],

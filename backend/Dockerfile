@@ -1,13 +1,12 @@
-# Use Node.js as the base image
-FROM node:alpine
+# Use the official Node.js 18.18.2 image as the base image
+FROM node:18.18.2
 
 WORKDIR /trans
 
-COPY . .
+COPY package*.json ./
 
 RUN npm install
 
-# CMD [ "npm", "run", "start:dev" ]
+COPY . .
 
-RUN npm run build
-CMD [ "npm", "run", "start" ]
+CMD ["npm", "run", "start:dev"]
