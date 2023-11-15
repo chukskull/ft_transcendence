@@ -3,10 +3,8 @@ import React, { useState, useEffect } from "react";
 import { LiaTelegramPlane } from "react-icons/lia";
 import EmojiPicker from "emoji-picker-react";
 import style from "@/styles/SPA/chat/chat.module.scss";
-
+import io from "socket.io-client";
 import MsgsList from "@/components/SPA/chat/MessagesList";
-
-// import io from "socket.io-client";
 
 interface ChatRoomsProps {
   id: String | String[];
@@ -51,39 +49,59 @@ const msgsdb = [
 ];
 
 export default function ChatRooms({ id }: ChatRoomsProps) {
-  console.log(id, "kys");
+  const [socket, setSocket] = useState<any>(null);
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [msgs, setMsgs] = useState([]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:1337");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("connect_error", (error: any) => {
+      console.error("WebSocket connection error:", error);
+    });
+
+    socket.on("disconnect", (reason: any) => {
+      console.warn("WebSocket disconnected:", reason);
+    });
+
+    socket.on("newMessage", (newMessage: any) => {
+      setMsgs((prevMsgs): any => [...prevMsgs, newMessage]);
+    });
+
+    return () => {
+      socket.off("connect_error");
+      socket.off("disconnect");
+      socket.off("newMessage");
+    };
+  }, [socket]);
 
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
 
-  // const socket = io("http://localhost:1337");
-
-  useEffect(() => {
-    // socket.on("open", () => {
-    //   console.log("WebSocket connected");
-    // });
-    // socket.on("message", (event) => {
-    //   console.log("WebSocket message:", event);
-    // });
-    // return () => {
-    //   socket.close(); // Close the WebSocket when the component unmounts
-    // };
-  }, []);
-
   const handleSend = () => {
-    // if (socket) {
-    //   socket.emit("message", {
-    //     conversationId,
-    //     senderId: "1",
-    //     message,
-    //   });
-    setMessage("");
-  };
-  // };
+    if (socket) {
+      socket.emit("messageSent", {
+        conversationId: id,
+        sender: "me",
+        message: message,
+      });
 
+      setMessage("");
+    } else {
+      console.error("WebSocket is not connected. Message not sent.");
+    }
+  };
   return (
     <div className={style["chat"]}>
       <div className={style["msgs"]}>

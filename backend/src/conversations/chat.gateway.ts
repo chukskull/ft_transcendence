@@ -27,7 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Handle any necessary disconnection logic
   }
 
-  @SubscribeMessage('message')
+  @SubscribeMessage('messageSent')
   async handleMessage(
     @MessageBody()
     data: {
