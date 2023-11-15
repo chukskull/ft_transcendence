@@ -42,6 +42,18 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async validate42Callback(code: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: {
+        intraLogin: code,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
   async all(): Promise<User[]> {
     return this.userRepository.find();
   }

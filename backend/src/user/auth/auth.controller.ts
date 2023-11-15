@@ -38,7 +38,16 @@ export class AuthController {
       return res.redirect('http://localhost:3000/2fa');
     else return res.redirect('http://localhost:3000/profile');
   }
-
+  @Get('42/callback')
+    async handle42Callback(@Req() req: Request, @Res() res: Response) {
+      const user = await this.authService.validate42Callback(req.query.code);
+      if (user) {
+        await this.authService.login(req, user);
+        return res.redirect('http://localhost:3000/profile');
+      } else {
+        return res.redirect('http://localhost:3000/login');
+      }
+  }
   @UseGuards(verifyUser)
   @Get('2fa/generate')
   async generate2fa(@Req() req, @Res({ passthrough: true }) res: Response) {
