@@ -4,7 +4,8 @@ import React from "react";
 export const Profile = () => {
   return (
     <div>
-      <ProfileComp id={"user"} />
+      {/* NOTICE1 the id is "me" instead of params.slug li kayna f routing example profile/{params.slug} so here {me} reffering to the current session user */}
+      <ProfileComp id={"me"} />
     </div>
   );
 };

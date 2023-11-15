@@ -62,9 +62,6 @@ export default function TopLeftNav() {
           <Link href="/profile">
             <img src="/assets/main/Navbar/Profile.svg" />
           </Link>
-          <Link href="/shop">
-            <img src="/assets/main/Navbar/Shop.svg" />
-          </Link>
         </div>
         <div className={style["left_bottom_menu"]}>
           <img
