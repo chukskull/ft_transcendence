@@ -11,7 +11,7 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string, email: string): Promise<User> {
+  async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
     if (!intraLogin) {
       return null;
     }
@@ -28,6 +28,7 @@ export class UserService {
     user.experience = 0;
     user.wins = 0;
     user.totalGames = 0;
+    user.email = email;
     user.firstName = '';
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
@@ -35,7 +36,6 @@ export class UserService {
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
-    user.pendingInvite = false;
     user.status = 'online';
     user.nickName = intraLogin;
     user.conversations = [];
@@ -58,12 +58,11 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findUser(id: any): Promise<User> {
-    if (typeof id === 'number') {
-      return this.userRepository.findOne({ where: { id } });
-    } else {
-      return this.userRepository.findOne({ where: { nickName: id } });
-    }
+  async userProfile(id: any): Promise<User> {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['matchHistory', 'channels', 'achievements', 'friends'],
+    });
   }
 
   async fillData(data: any): Promise<any> {

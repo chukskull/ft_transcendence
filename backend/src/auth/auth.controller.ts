@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from '../user.service';
+import { UserService } from '../user/user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
@@ -24,13 +24,13 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
   ) {}
-  @UseGuards(AuthGuard('42'))
   @Get('42')
+  @UseGuards(AuthGuard('42'))
   async login42(@Req() req, @Res({ passthrough: true }) res: Response) {
     await res.cookie('clientID', req.user, { httpOnly: true });
     const client = await this.jwtService.verifyAsync(req.user);
 
-    const clientData = await this.userService.findUser(client.id);
+    const clientData = await this.userService.userProfile(client.id);
 
     if (!clientData) return res.redirect('http://localhost:3000/register');
     else await this.userService.setOnline(client.id);
@@ -110,13 +110,13 @@ export class AuthController {
   @UseGuards(verifyUser)
   @Get('userData')
   async userData(@Req() req: Request) {
-    return await this.userService.findUser(await this.authService.clientID(req));
+    return await this.userService.userProfile(await this.authService.clientID(req));
   }
 
   @UseGuards(verifyUser)
   @Post('publicUserData')
   async publicUserData(@Body() req: Request, @Body() data) {
-    return await this.userService.findUser(data.id);
+    return await this.userService.userProfile(data.id);
   }
 
   @UseGuards(verifyUser)

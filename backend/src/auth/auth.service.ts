@@ -3,7 +3,7 @@ import { authenticator } from 'otplib';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './models/register.dto';
-import { UserService } from '../user.service';
+import { UserService } from '../user/user.service';
 import { UpdateDto } from './models/update.dto';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class AuthService {
     return user;
   }
   async twoFactorAuthSecret(clientID: number) {
-    const client = await this.userService.findUser(clientID);
+    const client = await this.userService.userProfile(clientID);
     const secret = authenticator.generateSecret();
     await this.userService.saveTwoFactorSecret(secret, clientID);
 
@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   async twoFactorAuthVerify(code: string, clientID: number) {
-    const client = await this.userService.findUser(clientID);
+    const client = await this.userService.userProfile(clientID);
 
     return authenticator.verify({
       token: code,
