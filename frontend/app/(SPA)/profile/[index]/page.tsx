@@ -1,10 +1,12 @@
 "use client";
 import ProfileComp from "@/components/SPA/Profile/pages/ProfileComp";
+import { useParams } from "next/navigation";
 
 import React from "react";
 
-export const Profile = ({ params }: { params: { slug: string } }) => {
-  return <div>{<ProfileComp id={params.slug} />}</div>;
+const Profile = async () => {
+  const params = useParams();
+  return <ProfileComp id={params.index} />;
 };
 
 export default Profile;

@@ -7,7 +7,7 @@ import { Conversation } from '../conversations/conversation.entity';
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(User)
+    @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,
   ) {}
 
@@ -23,12 +23,11 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl });
+    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
     user.level = 0;
     user.experience = 0;
     user.wins = 0;
     user.totalGames = 0;
-    user.email = email;
     user.firstName = '';
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
@@ -47,9 +46,15 @@ export class UserService {
   }
 
   async userProfile(id: any): Promise<User> {
-    return this.userRepository.findOne({
+    if (typeof id === 'string') {
+      return this.userRepository.findOne({
+        where: { nickName: id },
+        relations: ['matchHistory', 'channels', 'conversations'],
+      });
+    }
+    const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['matchHistory', 'channels', 'achievements', 'friends'],
+      relations: ['matchHistory', 'channels', 'conversations'],
     });
   }
 
@@ -70,10 +75,15 @@ export class UserService {
     }
   }
 
-  async findPrivateGame(): Promise<User> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-    queryBuilder.where('user.pendingInvite = true');
-    return queryBuilder.getOne();
+  async getFriends(): Promise<User[]> {
+    const client = await this.userRepository.findOne({
+      where: { id: 1 },
+      relations: ['friends'],
+    });
+    if (!client) {
+      return null;
+    }
+    return client.friends;
   }
 
   async updateUserInfo(data): Promise<any> {

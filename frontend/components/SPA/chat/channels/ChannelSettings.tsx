@@ -25,7 +25,9 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
 
   const unban = (userId: number) => {
     axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`) //0 to unban 1 to ban
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`
+      ) //0 to unban 1 to ban
       .then((res) => {
         console.log(res.data);
       })
@@ -33,7 +35,9 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   };
   const unmute = (userId: number) => {
     axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/muting/${userId}/0`) //0 to unmute 1 to mute
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/muting/${userId}/0`
+      ) //0 to unmute 1 to mute
       .then((res) => {
         console.log(res.data);
       })
@@ -41,7 +45,9 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   };
   const deleteChannel = (channelId: number) => {
     axios
-      .delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/delete/${channelId}`)
+      .delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/delete/${channelId}`
+      )
       .then((res) => {
         window.location.reload();
       })

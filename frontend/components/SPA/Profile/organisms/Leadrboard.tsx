@@ -15,7 +15,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
   });
 
   if (isLoading) return <SkeletonComp large={10} />;
-  if (error) return "An error has occurred: " + error.message;
+  if (error) return "An error has occurred: " + error;
 
   // Optimize rendering by checking data length before mapping
   if (!data || data.length === 0) {
@@ -33,7 +33,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
   let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow ">
-      {data?.map((user, index) => (
+      {data?.map((user: any, index: any) => (
         <div
           key={user.id} // Use a unique identifier for each user
           className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-center p-4`}

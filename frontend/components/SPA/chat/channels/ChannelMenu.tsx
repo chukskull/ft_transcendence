@@ -10,7 +10,7 @@ const InviteSection = () => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     try {
-      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/friends`).then((res) => {
+      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`).then((res) => {
         setFriends(res.data);
       });
     } catch (err) {
