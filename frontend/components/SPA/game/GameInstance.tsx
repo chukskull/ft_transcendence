@@ -8,12 +8,12 @@ import Matter, { Engine, Render, World, Bodies, Body, Events } from "matter-js";
 const GameInstance = () => {
 	const [engine, setEngine] = useState<Engine>();
 	const [render, setRender] = useState<Render>();
-	const [playerPaddleY, setPlayerPaddleY] = useState(210);
-	const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
+	const [player1PaddleY, setPlayer1PaddleY] = useState(210);
+	const [player2PaddleY, setPlayer2PaddleY] = useState(210);
 	const [ball, setBall] = useState<Body>();
 	const [socket, setSocket] = useState<any>();
 	const [player1Score, setPlayer1Score] = useState(0);
-	const [EnemyScore, setEnemyScore] = useState(0);
+	const [Player2Score, setPlayer2Score] = useState(0);
 
 	useEffect(() => {
 		const engine = Engine.create();
@@ -23,38 +23,41 @@ const GameInstance = () => {
 			options: {
 				width: 860,
 				height: 500,
+				/*
+				When wireframes are set to true, the physics bodies are displayed as wireframes, which can be useful for debugging and testing purposes. When wireframes are set to false, the physics bodies are hidden and only the filled shapes are displayed.
+				*/
 				wireframes: false,
 			},
 		});
 
-		const player = Bodies.rectangle(100, playerPaddleY, 20, 100, {
+		const paddle1 = Bodies.rectangle(10, player1PaddleY, 13, 110, {
 			isStatic: true,
 			render: {
 				fillStyle: "white",
 			},
 		});
 
-		const enemy = Bodies.rectangle(700, EnemyPaddleY, 20, 100, {
+		const paddle2 = Bodies.rectangle(850, player2PaddleY, 13, 110, {
 			isStatic: true,
 			render: {
 				fillStyle: "white",
 			},
 		});
 
-		const ball = Bodies.rectangle(417, 240, 10, 10,{
+		const ball = Bodies.rectangle(417, 240, 32, 32,{
 			render: {
 				fillStyle: "white",
 			},
 		});
 
-		const topWall = Bodies.rectangle(400, 0, 800, 20, {
+		const topWall = Bodies.rectangle(430, 0, 860, 10, {
 			isStatic: true,
 			render: {
 				fillStyle: "white",
 			},
 		});
 
-		const bottomWall = Bodies.rectangle(400, 600, 800, 20, {
+		const bottomWall = Bodies.rectangle(860, 600, 860, 20, {
 			isStatic: true,
 			render: {
 				fillStyle: "white",
@@ -83,7 +86,7 @@ const GameInstance = () => {
 		});
 
 		socket.on("sendPaddleState", (data: any) => {
-			setEnemyPaddleY(data.y);
+			setPlayer2PaddleY(data.y);
 		});
 
 		socket.on("ballMoved", (data: any) => {
@@ -92,12 +95,12 @@ const GameInstance = () => {
 
 		socket.on("scoreUpdated", (data: any) => {
 			setPlayer1Score(data.player1Score);
-			setEnemyScore(data.player2Score);
+			setPlayer2Score(data.player2Score);
 		});
 
 		World.add(engine.world, [
-			player,
-			enemy,
+			paddle1,
+			paddle2,
 			ball,
 			topWall,
 			bottomWall,

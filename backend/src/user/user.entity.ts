@@ -19,6 +19,9 @@ export class User {
   id: number;
 
   @Column()
+  email: string;
+
+  @Column()
   intraLogin: string;
 
   @Column()
@@ -51,12 +54,16 @@ export class User {
   status: string;
 
   @Column()
+  authenticated: boolean;
+
+  @Column()
   pendingInvite: boolean;
 
 
   @ManyToMany(() => MatchHistory)
   @JoinTable()
   matchHistory: MatchHistory[];
+
 
   @Column()
   experience: number;

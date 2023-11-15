@@ -13,13 +13,13 @@ export class AuthService {
     private userService: UserService,
   ) { }
 
-  // async twoFactorAuthSecret(clientID: number) {
-  //   const client = await this.userService.findUser(clientID);
-  //   const secret = authenticator.generateSecret();
-  //   await this.userService.saveTwoFactorSecret(secret, clientID);
+  async twoFactorAuthSecret(clientID: number) {
+    const client = await this.userService.findUser(clientID);
+    const secret = authenticator.generateSecret();
+    await this.userService.saveTwoFactorSecret(secret, clientID);
 
-  //   return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
-  // }
+    return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
+  }
 
   async twoFactorAuthVerify(code: string, clientID: number) {
     const client = await this.userService.findUser(clientID);

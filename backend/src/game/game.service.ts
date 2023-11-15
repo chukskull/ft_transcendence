@@ -10,13 +10,13 @@ import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
-export const BALL_RADIUS = 10;
+export const BALL_RADIUS = 16;
 export const PADDLE_WIDTH = 13;
 export const PADDLE_HEIGHT = 110;
 export const PADDLE_SPEED = 10;
 export const INIT_BALL_SPEED = 10;
 export const PADDLE1_POSITION = { x: 10, y: GAME_HEIGHT / 2 };
-export const PADDLE2_POSITION = { x: 980, y: GAME_HEIGHT / 2 };
+export const PADDLE2_POSITION = { x: GAME_WIDTH - 10, y: GAME_HEIGHT / 2 };
 export const BALL_POSITION = { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 };
 export const DAMPING = 0.999;
 export const MAX_ANGLE = (5 * Math.PI) / 12;
