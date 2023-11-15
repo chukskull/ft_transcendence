@@ -39,7 +39,6 @@ export class ChannelService {
       2,
     );
 
-    // Create the channel
     const channel = this.chanRepository.create({
       name,
       is_private,
@@ -50,7 +49,7 @@ export class ChannelService {
     });
 
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+      const hashedPassword = await bcrypt.hash(password, 10);
       channel.password = hashedPassword;
       channel.is_protected = true;
     } else {

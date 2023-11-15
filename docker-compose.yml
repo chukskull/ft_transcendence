@@ -10,6 +10,8 @@ services:
       - 5432:5432
     networks:
       - web
+    volumes:
+      - postgres_data:/Users/mountassir/Desktop/docker-db/
     restart: always
   nestjs:
     build: ./backend
@@ -39,3 +41,5 @@ networks:
   web:
     name: web
     driver: bridge
+volumes:
+  postgres_data:
