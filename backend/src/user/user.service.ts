@@ -11,7 +11,7 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string): Promise<User> {
+  async createNewUser(intraLogin: string, avatarUrl: string, email: string): Promise<User> {
     if (!intraLogin) {
       return null;
     }
@@ -69,12 +69,6 @@ export class UserService {
         lastName,
       });
     }
-  }
-
-  async findPrivateGame(): Promise<User> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-    queryBuilder.where('user.pendingInvite = true');
-    return queryBuilder.getOne();
   }
 
   async updateUserInfo(data): Promise<any> {

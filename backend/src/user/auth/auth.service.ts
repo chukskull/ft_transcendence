@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   async newUser(@Body() data: RegisterDto) {
-    const user = await this.userService.createNewUser(data.intraLogin, data.avatar);
+    const user = await this.userService.createNewUser(data.intraLogin, data.avatar, data.email);
     return user;
   }
 
