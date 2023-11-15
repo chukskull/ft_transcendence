@@ -11,7 +11,7 @@ services:
     networks:
       - web
     volumes:
-      - postgres_data:/Users/mountassir/Desktop/docker-db/
+      - postgres_data:/Users/${USER}/Desktop/docker-db/
     restart: always
   nestjs:
     build: ./backend
