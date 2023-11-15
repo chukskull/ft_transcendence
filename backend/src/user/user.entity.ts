@@ -22,6 +22,9 @@ export class User {
   @Column()
   intraLogin: string;
 
+  @Column({ nullable: true })
+  email: string;
+
   @Column()
   nickName: string;
 
@@ -50,9 +53,6 @@ export class User {
 
   @Column()
   status: string;
-
-  @Column()
-  pendingInvite: boolean;
 
   @ManyToMany(() => MatchHistory)
   @JoinTable()
