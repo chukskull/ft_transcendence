@@ -62,11 +62,16 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/profile/:userId')
-  async findUser(@Param('userId') userId: number): Promise<User> {
+  @Get('profile/:userId')
+  async findUser(@Param('userId') userId: any): Promise<User> {
     return this.usersService.userProfile(userId);
   }
 
+  @UseGuards()
+  @Get('/friends')
+  async getFriends(): Promise<User[]> {
+    return this.usersService.getFriends();
+  }
   @UseGuards()
   @Post('/fill')
   async fill(@Body() data: fillDto) {

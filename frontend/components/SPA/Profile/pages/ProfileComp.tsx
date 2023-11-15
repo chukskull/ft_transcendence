@@ -10,11 +10,7 @@ import { useQuery } from "react-query";
 import { getUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 
-interface ProfileProps {
-  id: string;
-}
-
-export default function Profile({ id }: ProfileProps) {
+export default function Profile({ id }: any) {
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
 
@@ -24,9 +20,8 @@ export default function Profile({ id }: ProfileProps) {
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
-  console.log(data);
 
-  // if (error) return "An error has occurred: " + error.message;
+  if (error) return "An error has occurred: " + error;
   if (isLoading) return "Loading...";
   return (
     <div className="Parent max-w-[1536px] m-auto">
