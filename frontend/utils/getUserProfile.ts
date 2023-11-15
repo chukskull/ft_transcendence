@@ -1,8 +1,10 @@
 import axios from "axios";
 
-export async function getUserProfile(id:string) {
+export async function getUserProfile(id: string) {
   try {
-    const response = await axios.get(`http://localhost:1337/api/:${id}`); // Replace with your API endpoint
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile${id}`
+    ); // Replace with your API endpoint
     const userData = await response.data;
     return userData;
   } catch (error) {

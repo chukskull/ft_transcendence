@@ -22,28 +22,11 @@ export default function Profile({ id }: ProfileProps) {
     setActive(index);
   }
   const { isLoading, error, data } = useQuery("userList", async () => {
-    {
-      /*NOTICE2 this function  fetch from the api axios.get(`http://localhost:1337/api/:${id}`) id reffering of params.slug in first
-      and its return the data of the user with the id example 
-      "user": {
-          "id": 1,
-          "fullName": "${first_name} + ${last_name},
-          "firstName": "John",
-          "lastName": "Doe",
-          "nickName": "Johny67",
-          "level": 90,
-          "userExp": 6399,
-          "WinPerc": 90,
-          "userMatches": 14, => matchHistory.length() whatever
-          "avatarUrl": "https://i.pravatar.cc/300?img=9"
-  },
-      */
-    }
     return getUserProfile(id);
   });
   console.log(data);
 
-  if (error) return "An error has occurred: " + error.message;
+  // if (error) return "An error has occurred: " + error.message;
   if (isLoading) return "Loading...";
   return (
     <div className="Parent max-w-[1536px] m-auto">
@@ -104,6 +87,7 @@ export default function Profile({ id }: ProfileProps) {
             <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2">
               Archivements
             </h1>
+            {/* LOCALHOST: */}
           </div>
         </div>
       </div>

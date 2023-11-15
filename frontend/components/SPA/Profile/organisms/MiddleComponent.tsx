@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ProfileComp from "../molecules/ProfileComp";
 import LiveGameRec from "../../home/molecules/LiveGameRec";
 import { useQuery } from "react-query";
-
 import { getDataProfile } from "@/utils/getDataProfile";
 import { Skeleton } from "antd";
 import { SkeletonComp } from "@/components/global/Skeleton";
