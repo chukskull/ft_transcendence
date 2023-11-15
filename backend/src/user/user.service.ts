@@ -205,4 +205,12 @@ export class UserService {
       twoFactorAuthEnabled: false,
     });
   }
+
+  async setOnline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'online' });
+  }
+
+  async setOffline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'offline' });
+  }
 }

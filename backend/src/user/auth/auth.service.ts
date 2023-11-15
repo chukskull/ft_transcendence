@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   async updateUser(@Body() data: UpdateDto) {
-    await this.userService.updateUserInfo(data.id, data);
+    await this.userService.updateUserInfo(data);
   }
 
   async setOnline(clientID: number) {
