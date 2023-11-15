@@ -24,9 +24,7 @@ export const MiddleComponent = ({
   //     setError(err.message);
   //   });
   // });
-  {
-    /*NOTICE3  Ok getting the data users form data prop and rest is so obvious*/
-  }
+
   const getChannelStatus = (channel: any) => {
     if (channel.isPrivate) {
       return "Private";
@@ -42,11 +40,14 @@ export const MiddleComponent = ({
         <SkeletonComp large={10} />
       </div>
     );
+  const friends = data?.friends;
+  const matches = data?.userLastScore;
+  const Channels = data?.Channels;
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
       {index === 0 &&
         data &&
-        data?.friends?.map((user, index) => (
+        data?.friends?.map((user: any) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
@@ -62,7 +63,7 @@ export const MiddleComponent = ({
 
       {index === 1 &&
         data &&
-        data?.userLastScore?.map((data, index) => (
+        data?.userLastScore?.map((data: any) => (
           <LiveGameRec
             key={index}
             LeftProf={data.imageLeft}
@@ -75,7 +76,7 @@ export const MiddleComponent = ({
 
       {index === 2 &&
         data &&
-        data?.Channels?.map((channel, index) => (
+        data?.Channels?.map((channel: any) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
