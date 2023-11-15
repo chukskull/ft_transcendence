@@ -11,7 +11,7 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
+  async createNewUser(intraLogin: string, avatarUrl: string) {
     if (!intraLogin) {
       return null;
     }
@@ -23,7 +23,7 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
+    const user = this.userRepository.create({ intraLogin, avatarUrl });
     user.level = 0;
     user.experience = 0;
     user.wins = 0;
@@ -47,19 +47,10 @@ export class UserService {
   }
 
   async userProfile(id: any): Promise<User> {
-    let user = null;
-    if (typeof id === 'number') {
-      user = this.userRepository.findOne({
-        where: { id },
-        relations: ['matchHistory', 'channels', 'achievements', 'friends'],
-      });
-    } else {
-      user = this.userRepository.findOne({
-        where: { id },
-        relations: ['matchHistory', 'channels', 'achievements', 'friends'],
-      });
-    }
-    return user;
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['matchHistory', 'channels', 'achievements', 'friends'],
+    });
   }
 
   async fillData(data: any): Promise<any> {

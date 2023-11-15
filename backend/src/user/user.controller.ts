@@ -59,8 +59,8 @@ export class UserController {
 
   @UseGuards()
   @Post('/profile/:userId')
-  async findUser(@Param('userId') id: number): Promise<User> {
-    return this.usersService.userProfile(id);
+  async findUser(@Param('userId') userId: number): Promise<User> {
+    return this.usersService.userProfile(userId);
   }
 
   @UseGuards()

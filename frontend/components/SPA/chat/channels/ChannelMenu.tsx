@@ -10,7 +10,7 @@ const InviteSection = () => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     try {
-      axios.get("http://localhost:1337/api/friends").then((res) => {
+      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/friends`).then((res) => {
         setFriends(res.data);
       });
     } catch (err) {
@@ -112,11 +112,10 @@ const ChannelMenu = ({ channel }: any) => {
   function handleActive(index: number) {
     setActive(index);
   }
-
   useEffect(() => {
     try {
       axios
-        .get(`http://localhost:1337/api/channels/${channel.id}`)
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`)
         .then((res) => {
           setChannelData(res.data);
         });
