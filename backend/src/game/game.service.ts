@@ -150,6 +150,10 @@ export class GameService {
     }
   }
 
+  /*
+    * checks if the cookie is valid
+  */
+  
   async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
     const cookie = client.handshake.headers?.cookie?.split(';').find(c => c.trim().startsWith(process.env.TOKEN))?.split('=')[1];
     if (!cookie) {
