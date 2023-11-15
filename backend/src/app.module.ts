@@ -8,6 +8,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelModule } from './channel/channel.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
+import { config } from 'dotenv';
+
+config();
 
 @Module({
   imports: [
@@ -24,14 +27,14 @@ import { ConversationModule } from './conversations/conversation.module';
     }),
     // UserModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'mountassir',
-      password: 'admin',
-      database: 'transDb',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+    type: 'postgres',
+    host: process.env.POSTGRES_HOST,
+    port: Number(process.env.POSTGRES_PORT),
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    entities: ['dist/**/*.entity.js'],
+    synchronize: true,
     }),
     AchievementModule,
     // MatchHistoryModule,

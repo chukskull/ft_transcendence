@@ -1,6 +1,5 @@
 "use client";
 
-import { MatchMaking } from "@/components/SPA/home/molecules/MatchMaking";
 import { SocialFeed } from "@/components/SPA/home/organisms/SocialFeed";
 
 export default function Home() {

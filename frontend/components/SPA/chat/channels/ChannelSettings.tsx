@@ -22,6 +22,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
       console.error("Error updating channel", error);
     }
   };
+
   const unban = (userId: number) => {
     axios
       .post(`http://localhost:1337//api/channels/${id}/banning/${userId}/0`) //0 to unban 1 to ban

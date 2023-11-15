@@ -18,7 +18,7 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   if (Type && DmOrChannel !== null) {
-    router.push(`/chat/channels/${DmOrChannel.id}`);
+    router.push(`/chat/channels/${DmOrChannel}`);
   } else {
     if (DmOrChannel !== null) router.push(`${"/chat/users/" + DmOrChannel}`);
   }

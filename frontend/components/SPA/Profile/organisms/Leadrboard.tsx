@@ -44,7 +44,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
 
           <ProfileComp
             // key={index} // Remove redundant key prop for ProfileComp
-            img={user.img}
+            img={user.avatarUrl}
             nickName={user.nickName}
             firstName={user.firstName}
             lastName={user.lastName}

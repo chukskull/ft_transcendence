@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function getLeadProfiles() {
   try {
-    const response = await axios.get("http://localhost:4000/Leadrboard"); // Replace with your API endpoint
+    const response = await axios.get("http://localhost:1337/api/users/leaderboard"); // Replace with your API endpoint
     const userData = await response.data;
     return userData;
   } catch (error) {
