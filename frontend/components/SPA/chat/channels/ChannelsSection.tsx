@@ -25,11 +25,15 @@ const ChannelsSection = ({
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
+  console.log("test " + process.env.NEXT_PUBLIC_BACKEND_URL);
+
   try {
     useEffect(() => {
-      axios.get("http://localhost:1337/api/channels").then((res) => {
-        setChannelList(res.data);
-      });
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`)
+        .then((res) => {
+          setChannelList(res.data);
+        });
     }, []);
   } catch (error) {
     console.log(error);

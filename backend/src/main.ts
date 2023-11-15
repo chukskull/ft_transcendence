@@ -3,6 +3,8 @@ import 'reflect-metadata';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
+// use .env file
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: 'http://localhost:1337',
+    origin: 'http://localhost:3000',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
