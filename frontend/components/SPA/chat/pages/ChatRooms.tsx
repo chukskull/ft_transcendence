@@ -9,44 +9,6 @@ import MsgsList from "@/components/SPA/chat/MessagesList";
 interface ChatRoomsProps {
   id: String | String[];
 }
-const msgsdb = [
-  {
-    name: "Saleh Nagat",
-    online: true,
-    lastMsg: "Hi how are you",
-    lastMsgTime: "02:00 PM",
-    avatar: "https://i.pravatar.cc/300?img=2",
-  },
-
-  {
-    name: "Saleh Nagat",
-    online: true,
-    lastMsg: "i love you, thanks",
-    lastMsgTime: "02:00 PM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-  {
-    name: "Saleh Nagat",
-    online: false,
-    lastMsg: "oh idont",
-    lastMsgTime: "11:00 AM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-  {
-    name: "Saleh Nagat",
-    online: true,
-    lastMsg: "i hate 9/11 its just a sad story",
-    lastMsgTime: "02:00 PM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-  {
-    name: "le_mountassir",
-    online: false,
-    lastMsg: "KYS",
-    lastMsgTime: "11:00 AM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-];
 
 export default function ChatRooms({ id }: ChatRoomsProps) {
   const [socket, setSocket] = useState<any>(null);
@@ -55,7 +17,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
   const [msgs, setMsgs] = useState([]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:1337");
+    const newSocket = io("http://localhost:1337/chatSocket");
     setSocket(newSocket);
 
     return () => {
@@ -75,6 +37,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
     });
 
     socket.on("newMessage", (newMessage: any) => {
+      console.log("newMessage : " + newMessage);
       setMsgs((prevMsgs): any => [...prevMsgs, newMessage]);
     });
 
@@ -92,7 +55,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
   const handleSend = () => {
     if (socket) {
       socket.emit("messageSent", {
-        conversationId: id,
+        conversationId: 432423,
         sender: "me",
         message: message,
       });
@@ -105,7 +68,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
   return (
     <div className={style["chat"]}>
       <div className={style["msgs"]}>
-        <MsgsList msgs={msgsdb} />
+        <MsgsList msgs={msgs} />
       </div>
       <div className={style["msg-input"]}>
         <button
