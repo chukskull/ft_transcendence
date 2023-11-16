@@ -8,7 +8,7 @@ import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class AuthService {
-  constructor (private readonly userservice: UserService, private readonly jwtservice: JwtService) {}
+  constructor (private readonly userservice: UserService) {}
 
 
   async userValid(profile: User) {
@@ -20,7 +20,7 @@ export class AuthService {
     }
   }
 
-  async generateNewToken(user: User)  {
-    return this.jwtservice.sign({id: user.id , login: user.intraLogin});
-  }
+  // async generateNewToken(user: User)  {
+  //   return this.jwtservice.sign({id: user.id , login: user.intraLogin});
+  // }
 }

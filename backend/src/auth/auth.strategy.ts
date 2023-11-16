@@ -18,13 +18,13 @@ export class AuthStrategy extends PassportStrategy(Strategy, '42') {
     refreshToken: string,
     profile: Profile,
   ): Promise<any> {
-    // console.log(profile);
-    const info = profile._json;
+    console.log(profile);
+    // const info = profile._json;
     // const user = this.authService.userValid({
     //     email: info.email,
     //     avatarUrl: info.image.link,
     //     intraLogin: info.login,
     // });
-    return info;
+    return profile;
   }
 }
