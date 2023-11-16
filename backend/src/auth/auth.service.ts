@@ -7,11 +7,9 @@ import { Strategy } from 'passport-42';
 export class AuthService extends PassportStrategy(Strategy, '42') {
   constructor() {
     super({
-      clientID:
-        'u-s4t2af-35e5781340a03b0d3d84474cedb18c70dfbe95dd2a9cf9b4b65e871abfac6b6f',
-      clientSecret:
-        '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',
-      callbackURL: 'http://localhost:1337/api/auth/42/callback',
+      clientID:process.env.INTRA_ID,
+      clientSecret:process.env.INTRA_SECRET,
+      callbackURL:process.env.INTRA_CALLBACK,
     });
   }
 

@@ -48,7 +48,11 @@ export class UserController {
 
   @Post('create')
   async create(@Body() data): Promise<User> {
-    return this.usersService.createNewUser(data.intraLogin, data.avatarUrl);
+    return this.usersService.createNewUser(
+      data.intraLogin,
+      data.avatarUrl,
+      data.email,
+    );
   }
 
   @UseGuards()
@@ -58,11 +62,16 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/profile/:userId')
-  async findUser(@Param('userId') userId: number): Promise<User> {
+  @Get('profile/:userId')
+  async findUser(@Param('userId') userId: any): Promise<User> {
     return this.usersService.userProfile(userId);
   }
 
+  @UseGuards()
+  @Get('/friends')
+  async getFriends(): Promise<User[]> {
+    return this.usersService.getFriends();
+  }
   @UseGuards()
   @Post('/fill')
   async fill(@Body() data: fillDto) {
@@ -88,9 +97,15 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/addFriend')
-  async addFriend(@Body('id') id: number) {
-    return this.usersService.addFriend(id);
+  @Post('/sendFriendRequest/:friendId')
+  async addFriend(@Param('friendId') id: number) {
+    return this.usersService.sendFriendRequest(id);
+  }
+
+  @UseGuards()
+  @Post('/acceptFriendRequest/:friendId')
+  async acceptFriendRequest(@Param('friendId') id: number) {
+    return this.usersService.acceptFriendRequest(id);
   }
 
   @UseGuards()

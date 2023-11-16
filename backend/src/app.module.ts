@@ -9,7 +9,7 @@ import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
-import { APP_GUARD } from '@nestjs/core';
+import { ChatGateway } from './conversations/chat.gateway';
 config();
 
 @Module({
@@ -17,7 +17,6 @@ config();
     AuthModule,
     ChannelModule,
     UserModule,
-    AchievementModule,
     ConversationModule,
     AchievementModule,
     ConfigModule.forRoot({
