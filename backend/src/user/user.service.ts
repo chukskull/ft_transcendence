@@ -293,6 +293,43 @@ export class UserService {
     return { client, blocked };
   }
 
+  async enableTwoFactor(clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorAuthEnabled = true;
+    return this.userRepository.save(client);
+  }
+
+  async disableTwoFactor(clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorAuthEnabled = false;
+    return this.userRepository.save(client);
+  }
+
+  async saveTwoFactorSecret(secret: string, clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorSecret = secret;
+    return this.userRepository.save(client);
+  }
+
+  
   private isAlreadyBlocked(client: User, blocked: User): boolean {
     return client.blockedUsers.some((user) => user.id === blocked.id);
   }
