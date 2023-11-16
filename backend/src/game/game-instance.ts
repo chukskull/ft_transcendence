@@ -9,13 +9,13 @@ import {
 export class GameInstance {
 		private engine: Matter.Engine;
 		private world: Matter.World;
-		private ball: Matter.Body;
-		private paddle1: Matter.Body;
-		private paddle2: Matter.Body;
+		public ball: Matter.Body;
+		public paddle1: Matter.Body;
+		public paddle2: Matter.Body;
 		private player1ready: boolean = false;
 		private player2ready: boolean = false;
 		public score: { player1: number, player2: number } = { player1: 0, player2: 0 };
-		private speed: number = INIT_BALL_SPEED;
+		public speed: number = INIT_BALL_SPEED;
 		public inactive = false;
 		public toRemove = false;
 		loop: NodeJS.Timeout;
@@ -233,7 +233,7 @@ export class GameInstance {
 	 * This function is called to generate a random start position and velocity for the ball.
 	 */
 
-	private getNewStart(gameWidth: number, gameHeight: number) {
+	public getNewStart(gameWidth: number, gameHeight: number) {
 		this.speed = INIT_BALL_SPEED;
 		const angle = Common.random(-MAX_ANGLE, MAX_ANGLE);
 		const angleRad = angle * Math.PI / 180;
