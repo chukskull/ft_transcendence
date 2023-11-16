@@ -97,9 +97,15 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/addFriend')
-  async addFriend(@Body('id') id: number) {
-    return this.usersService.addFriend(id);
+  @Post('/sendFriendRequest/:friendId')
+  async addFriend(@Param('friendId') id: number) {
+    return this.usersService.sendFriendRequest(id);
+  }
+
+  @UseGuards()
+  @Post('/acceptFriendRequest/:friendId')
+  async acceptFriendRequest(@Param('friendId') id: number) {
+    return this.usersService.acceptFriendRequest(id);
   }
 
   @UseGuards()
