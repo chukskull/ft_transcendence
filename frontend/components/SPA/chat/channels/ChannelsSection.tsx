@@ -3,6 +3,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import CreateChannelModal from "./CreateChannel";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 interface Channel {
   type: string;
@@ -17,6 +18,7 @@ interface ChannelProps {
   getType: (type: boolean) => void;
   CompType: boolean;
 }
+
 const ChannelsSection = ({
   sendDmOrChannel,
   getType,
@@ -25,19 +27,29 @@ const ChannelsSection = ({
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
-  console.log("test " + process.env.NEXT_PUBLIC_BACKEND_URL);
+  const params = useParams();
 
-  try {
-    useEffect(() => {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`)
-        .then((res) => {
-          setChannelList(res.data);
-        });
-    }, []);
-  } catch (error) {
-    console.log(error);
-  }
+  useEffect(() => {
+    const channelId = parseInt(params.id as string);
+    if (!isNaN(channelId)) {
+      const selectedChannel = channelList.find(
+        (channel) => channel.id === channelId
+      );
+      if (selectedChannel) {
+        sendDmOrChannel(selectedChannel);
+        getType(true);
+        setActive(selectedChannel.name);
+      }
+    }
+  }, [channelList, params.id, sendDmOrChannel, getType]);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`)
+      .then((res) => {
+        setChannelList(res.data);
+      });
+  }, []);
 
   const channelCategoriesOrder = [
     {
