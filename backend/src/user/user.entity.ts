@@ -65,6 +65,10 @@ export class User {
   @JoinTable()
   channels: Channel[];
 
+  @ManyToMany(() => User)
+  @JoinTable()
+  pendingFriendRequests: User[];
+
   @Column()
   level: number;
 
