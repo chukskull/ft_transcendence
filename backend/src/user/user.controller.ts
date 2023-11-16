@@ -1,7 +1,5 @@
 import { Controller, UseGuards, Get, Post, Param, Body } from '@nestjs/common';
 import { UserService } from './user.service';
-// import { AuthService } from './auth/auth.service';
-// import {  } from './auth/strategies/auth.guard';
 import { User } from './user.entity';
 import {
   IsString,
@@ -43,7 +41,7 @@ class updateDto {
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly usersService: UserService, // private readonly authService: AuthService,
+    private readonly usersService: UserService
   ) {}
 
   @Post('create')
