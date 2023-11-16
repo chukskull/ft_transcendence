@@ -29,6 +29,7 @@ const CreateChannelModal = () => {
         formData
       );
       window.location.reload();
+      console.log(res.data);
     } catch (error) {
       console.error("Error creating channel:", error);
     }

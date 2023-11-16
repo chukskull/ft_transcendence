@@ -148,19 +148,19 @@ const ChannelMenu = ({ channel }: any) => {
         {activeSection === "Invite" && <InviteSection />}
         {activeSection === "Authority Hub" && (
           <AuthoritySection
-            owner={channelData.owner}
-            mods={channelData.Moderators}
+            owner={channelData?.owner}
+            mods={channelData?.Moderators}
           />
         )}
         {activeSection === "Members" && (
-          <MembersSection members={channelData.members} />
+          <MembersSection members={channelData?.members} />
         )}
         {activeSection === "Settings" && (
           <ChannelSettings
-            banned={channelData.banned}
-            muted={channelData.muted}
-            id={channel.id}
-            chPrivate={channelData.is_private}
+            banned={channelData?.banned}
+            muted={channelData?.muted}
+            id={channel?.id}
+            chPrivate={channelData?.is_private}
           />
         )}
       </div>
