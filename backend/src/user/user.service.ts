@@ -13,7 +13,6 @@ export class UserService {
 
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
     if (!intraLogin) {
-      console.log("LLLLLLLLLLLLLLLLLLLLLLLL");
       return null;
     }
     const alreadyExists = await this.userRepository.findOne({

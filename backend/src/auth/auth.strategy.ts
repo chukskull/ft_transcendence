@@ -1,30 +1,31 @@
+// auth.service.ts
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy , Profile } from 'passport-42';
-import { AuthService } from './auth.service';
+import { Strategy } from 'passport-42';
 
 @Injectable()
-export class AuthStrategy extends PassportStrategy(Strategy, '42') {
-  constructor(private readonly authService: AuthService) {
+export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
+  constructor() {
     super({
-      clientID: process.env.INTRA_ID,
-      clientSecret: process.env.INTRA_SECRET,
-      callbackURL: process.env.INTRA_CALLBACK,
+      clientID:process.env.INTRA_ID,
+      clientSecret:process.env.INTRA_SECRET,
+      callbackURL:process.env.INTRA_CALLBACK,
     });
   }
 
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: Profile,
+    profile: any,
   ): Promise<any> {
-    console.log(profile);
-    // const info = profile._json;
-    // const user = this.authService.userValid({
-    //     email: info.email,
-    //     avatarUrl: info.image.link,
-    //     intraLogin: info.login,
-    // });
-    return profile;
+    // console.log(profile);
+
+    
+    return {
+      userId: profile.id,
+      username: profile.username,
+      accessToken,
+      refreshToken,
+    };
   }
 }

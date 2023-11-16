@@ -1,28 +1,26 @@
 // auth.controller.ts
-import { Controller, Get, Req, Res, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards , Request} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
 import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService,
-    // private readonly jwtService: JwtService,
-    ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Get('/42')
   @UseGuards(FtOauthGuard)
-  async login42(): Promise<any> {}
+  login42(): void{}
 
   @Get('/42/callback')
   @UseGuards(FtOauthGuard)
-  async callback42(@Req() req, @Res() res): Promise<any> {
-    console.log(process.env.INTRA_ID);
-    // const token = this.authService.generateNewToken(req.user);
-    console.log("HEEEREEE");
-    // console.log(token);
-    // res.cookie('jwt', token);
-    // console.log(req.user['activated']);
+  async callback42(@Req() req: any, @Res({ passthrough: true}) res:Response): Promise<any> {
 
+      const token = await this.authService.generateNewToken(req.user);
+      console.log("TOKEN");
+      console.log(token);
+      res.cookie('jwt', token);
+    return req.user;
   }
 }
