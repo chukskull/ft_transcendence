@@ -3,91 +3,72 @@ import React, { useState, useEffect } from "react";
 import { LiaTelegramPlane } from "react-icons/lia";
 import EmojiPicker from "emoji-picker-react";
 import style from "@/styles/SPA/chat/chat.module.scss";
-
+import io from "socket.io-client";
 import MsgsList from "@/components/SPA/chat/MessagesList";
-
-// import io from "socket.io-client";
 
 interface ChatRoomsProps {
   id: String | String[];
 }
-const msgsdb = [
-  {
-    name: "Saleh Nagat",
-    online: true,
-    lastMsg: "Hi how are you",
-    lastMsgTime: "02:00 PM",
-    avatar: "https://i.pravatar.cc/300?img=2",
-  },
-
-  {
-    name: "Saleh Nagat",
-    online: true,
-    lastMsg: "i love you, thanks",
-    lastMsgTime: "02:00 PM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-  {
-    name: "Saleh Nagat",
-    online: false,
-    lastMsg: "oh idont",
-    lastMsgTime: "11:00 AM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-  {
-    name: "Saleh Nagat",
-    online: true,
-    lastMsg: "i hate 9/11 its just a sad story",
-    lastMsgTime: "02:00 PM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-  {
-    name: "le_mountassir",
-    online: false,
-    lastMsg: "KYS",
-    lastMsgTime: "11:00 AM",
-    avatar: "https://i.pravatar.cc/300?img=1",
-  },
-];
 
 export default function ChatRooms({ id }: ChatRoomsProps) {
-  console.log(id, "kys");
+  const [socket, setSocket] = useState<any>(null);
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [msgs, setMsgs] = useState([]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:1337/chatSocket");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("connect_error", (error: any) => {
+      console.error("WebSocket connection error:", error);
+    });
+
+    socket.on("disconnect", (reason: any) => {
+      console.warn("WebSocket disconnected:", reason);
+    });
+
+    socket.on("newMessage", (newMessage: any) => {
+      console.log("newMessage : " + newMessage);
+      setMsgs((prevMsgs): any => [...prevMsgs, newMessage]);
+    });
+
+    return () => {
+      socket.off("connect_error");
+      socket.off("disconnect");
+      socket.off("newMessage");
+    };
+  }, [socket]);
 
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
 
-  // const socket = io("http://localhost:1337");
-
-  useEffect(() => {
-    // socket.on("open", () => {
-    //   console.log("WebSocket connected");
-    // });
-    // socket.on("message", (event) => {
-    //   console.log("WebSocket message:", event);
-    // });
-    // return () => {
-    //   socket.close(); // Close the WebSocket when the component unmounts
-    // };
-  }, []);
-
   const handleSend = () => {
-    // if (socket) {
-    //   socket.emit("message", {
-    //     conversationId,
-    //     senderId: "1",
-    //     message,
-    //   });
-    setMessage("");
-  };
-  // };
+    if (socket) {
+      socket.emit("messageSent", {
+        conversationId: 432423,
+        sender: "me",
+        message: message,
+      });
 
+      setMessage("");
+    } else {
+      console.error("WebSocket is not connected. Message not sent.");
+    }
+  };
   return (
     <div className={style["chat"]}>
       <div className={style["msgs"]}>
-        <MsgsList msgs={msgsdb} />
+        <MsgsList msgs={msgs} />
       </div>
       <div className={style["msg-input"]}>
         <button

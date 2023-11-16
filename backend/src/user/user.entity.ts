@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Conversation } from 'src/conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
+import { Channel } from '../channel/channel.entity';
 @Entity()
 export class MatchHistory {
   @PrimaryGeneratedColumn()
@@ -67,6 +68,14 @@ export class User {
 
   @Column()
   experience: number;
+
+  @ManyToMany(() => Channel)
+  @JoinTable()
+  channels: Channel[];
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  pendingFriendRequests: User[];
 
   @Column()
   level: number;

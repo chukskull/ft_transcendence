@@ -5,53 +5,60 @@ import {
   SubscribeMessage,
   WebSocketServer,
   MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
+import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
 import { Chat } from './conversation.entity';
+import { User } from '../user/user.entity';
 
-@WebSocketGateway({ namespace: 'chat' })
+@Injectable()
+@WebSocketGateway({ namespace: 'chatSocket', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private conversationService: ConversationService) {}
   @WebSocketServer() server: Server;
 
-  constructor(private conversationService: ConversationService) {}
-
   handleConnection(client: Socket) {
+    console.log('new connection');
     const conversationId = client.handshake.query.conversationId;
     client.join(`conversation_${conversationId}`);
   }
 
-  handleDisconnect(client: Socket) {
-    // You can uncomment this line if you want to leave all rooms when disconnecting.
-    // client.leaveAll();
-  }
+  handleDisconnect(client: Socket) {}
 
-  @SubscribeMessage('message')
+  @SubscribeMessage('messageSent')
   async handleMessage(
     @MessageBody()
     data: {
       conversationId: number;
-      sender: number;
+      sender: User;
       message: string;
     },
+    @ConnectedSocket() client: Socket,
   ) {
     const { conversationId, sender, message } = data;
-
+    console.log('messageSent', data);
     const chatMessage = new Chat();
-    // chatMessage.sender = sender;
+    chatMessage.sender = null;
     chatMessage.message = message;
     chatMessage.time = new Date();
 
     try {
-      await this.conversationService.addMessageToConversation(
-        conversationId,
-        chatMessage,
-      );
+      // await this.conversationService.addMessageToConversation(
+      //   conversationId,
+      //   chatMessage,
+      // );
 
-      // Broadcast the message to all clients in the conversation room
-      this.server
-        .to(`conversation_${conversationId}`)
-        .emit('newMessage', chatMessage);
+      // Get the room name for the conversation
+      // const roomName = `conversation_${conversationId}`;
+
+      // Broadcast the message to users in the conversation
+      // this.server.to(roomName).emit('newMessage', message);
+      this.server.emit('newMessage', {
+        message: message,
+        sender: sender,
+      });
     } catch (error) {
       console.error('Error saving and broadcasting the message:', error);
     }

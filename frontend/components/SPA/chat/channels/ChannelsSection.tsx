@@ -3,6 +3,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import CreateChannelModal from "./CreateChannel";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 interface Channel {
   type: string;
@@ -17,20 +18,38 @@ interface ChannelProps {
   getType: (type: boolean) => void;
   CompType: boolean;
 }
+
 const ChannelsSection = ({
   sendDmOrChannel,
   getType,
   CompType,
 }: ChannelProps) => {
   const [addChModal, setAddChModal] = useState<boolean>(false);
-  // const [channelList, setChannelList] = useState<Channel[]>([]);
+  const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
+  const params = useParams();
 
-  // useEffect(() => {
-  //   axios.get("http://localhost:1337/api/channels").then((res) => {
-  //     setChannelList(res.data);
-  //   });
-  // }, []);
+  useEffect(() => {
+    const channelId = parseInt(params.id as string);
+    if (!isNaN(channelId)) {
+      const selectedChannel = channelList.find(
+        (channel) => channel.id === channelId
+      );
+      if (selectedChannel) {
+        sendDmOrChannel(selectedChannel);
+        getType(true);
+        setActive(selectedChannel.name);
+      }
+    }
+  }, [channelList, params.id, sendDmOrChannel, getType]);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`)
+      .then((res) => {
+        setChannelList(res.data);
+      });
+  }, []);
 
   const channelCategoriesOrder = [
     {
@@ -53,7 +72,7 @@ const ChannelsSection = ({
     },
   ];
 
-  const groupedChannels = m.reduce(
+  const groupedChannels = channelList.reduce(
     (acc, channel) => {
       if (channel.is_private) {
         acc.private.push(channel);
@@ -119,68 +138,3 @@ const ChannelsSection = ({
 };
 
 export default ChannelsSection;
-const m = [
-  {
-    id: 7,
-    name: "global channel",
-    is_private: false,
-    is_protected: true,
-    password: "$2b$10$EIgZTi.crlB5JPABNpVcrOurlfUqGE/T2kKNbvDIujENf576QcBE2",
-  },
-  {
-    id: 8,
-    name: "testtaazz",
-    is_private: false,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 9,
-    name: "حثيشلقهلثتقهلتثقتلثقلخقثل",
-    is_private: true,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 10,
-    name: "23r23rr",
-    is_private: true,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 11,
-    name: "fes69",
-    is_private: false,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 17,
-    name: "ownerhsip",
-    is_private: false,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 18,
-    name: "memberstest2",
-    is_private: false,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 19,
-    name: "testnagat",
-    is_private: false,
-    is_protected: false,
-    password: "",
-  },
-  {
-    id: 20,
-    name: "yrethjerher",
-    is_private: false,
-    is_protected: false,
-    password: "",
-  },
-];
