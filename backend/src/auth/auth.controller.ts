@@ -18,17 +18,18 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async callback42(@Req() req: any, @Res({ passthrough: true}) res:Response): Promise<any> {
       const token = await this.authService.generateNewToken(req.user);
-      console.log(req.user);
+      console.log("controller");
+      console.log(req.user.email);
       res.cookie('jwt', token);
-      res.redirect(process.env.frontendUrl + '/home');
+      res.redirect(process.env.frontendUrl + 'home');
   }
 
   @Get('/42/logout')
   @UseGuards(FtOauthGuard)
-  async logout42(@Res() res: Response, @Req() req: any) {
-    // const user = this.userService.userProfile(req.user.id);
+  async logout42(@Res() res: Response, @Req() req) {
+    console.log(req.user);
     await this.userService.setStatus(req.user.id, 'offline');
-    res.cookie('jwt', null);
-    res.redirect(process.env.frontendUrl + '/home');
+    res.cookie('jwt', '');
+    res.redirect(process.env.frontendUrl);
   }
 }

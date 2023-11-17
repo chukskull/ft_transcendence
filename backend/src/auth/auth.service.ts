@@ -12,7 +12,9 @@ export class AuthService {
     ){}
 
     async generateNewToken(user:User) {
-      return (this.jwtService.sign({sub: user.id, username:user.intraLogin}));
+      console.log("HERE");
+      console.log(user.id);
+      return (this.jwtService.sign({email: user.email, username:user.intraLogin}));
     }
 
     async verifyToken(token: string) {
@@ -23,12 +25,13 @@ export class AuthService {
       }
     }
  
-    async checkUser(userInfo: User) {
-      console.log(userInfo.email);
-      const user = await this.userService.findOne(userInfo.email);
+    async checkUser(username: string, email: string) {
+      const user = await this.userService.findOne(email);
       if (!user)
-        user = await this.userService.createNewUser();
-      console.log("CHECK");
-      console.log(user);
+      {
+        console.log("fff");
+        return null;
+      }
+      return user;
     }
 }

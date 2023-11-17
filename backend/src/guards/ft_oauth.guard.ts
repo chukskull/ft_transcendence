@@ -11,16 +11,17 @@ export class FtOauthGuard implements CanActivate{
     console.log("kkkk");
     const req: any =  context.switchToHttp().getRequest();
     if (!req.cookies.jwt) {
-      console.log("jjjjj");
       return false;
     }
 
     const decode = await this.authService.verifyToken(req.cookies.jwt);
+    
     if (!decode)
       return false;
     console.log("DECODE");
     console.log(decode);
-    const user = this.userService.userProfile(decode.sub);
+    const user = await this.userService.findOne(decode.email);
+    console.log(user);
     req.user = user;
     return true;
   }
