@@ -11,6 +11,7 @@ export class FtOauthGuard implements CanActivate{
     console.log("kkkk");
     const req: any =  context.switchToHttp().getRequest();
     if (!req.cookies.jwt) {
+      console.log("jjjjj");
       return false;
     }
 
@@ -21,6 +22,6 @@ export class FtOauthGuard implements CanActivate{
     console.log(decode);
     const user = this.userService.userProfile(decode.sub);
     req.user = user;
-    return user ? true : false;
+    return true;
   }
 }

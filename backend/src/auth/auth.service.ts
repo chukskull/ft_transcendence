@@ -8,7 +8,7 @@ export class AuthService {
 
   constructor(
     private readonly jwtService:JwtService,
-    private readonly userService:UserService,
+    private  userService:UserService,
     ){}
 
     async generateNewToken(user:User) {
@@ -21,5 +21,11 @@ export class AuthService {
       } catch (e) {
         return null;
       }
+    }
+ 
+    async checkUser(userInfo: User) {
+      const user = await this.userService.findOne(userInfo.email);
+      console.log("CHECK");
+      console.log(user);
     }
 }
