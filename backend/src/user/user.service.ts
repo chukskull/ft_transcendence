@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { Conversation } from '../conversations/conversation.entity';
+import { NotFoundException } from '@nestjs/common';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(User)
+    @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,
   ) {}
 
@@ -23,7 +24,7 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl });
+    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
     user.level = 0;
     user.experience = 0;
     user.wins = 0;
@@ -42,16 +43,39 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async validate42Callback(code: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: {
+        intraLogin: code,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
   async all(): Promise<User[]> {
     return this.userRepository.find();
   }
 
+  async userProfile(id: string | number): Promise<User> {
+    const user =
+      typeof id === 'string'
+        ? await this.userRepository.findOne({
+            where: { nickName: id },
+            relations: ['matchHistory', 'channels', 'conversations'],
+          })
+        : await this.userRepository.findOne({
+            where: { id },
+            relations: ['matchHistory', 'channels', 'conversations'],
+          });
 
-  async userProfile(id: any): Promise<User> {
-    return this.userRepository.findOne({
-      where: { id },
-      relations: ['matchHistory', 'channels', 'achievements', 'friends'],
-    });
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return user;
   }
 
   async findOne(email: string): Promise<User> {
@@ -75,10 +99,15 @@ export class UserService {
     }
   }
 
-  async findPrivateGame(): Promise<User> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
-    queryBuilder.where('user.pendingInvite = true');
-    return queryBuilder.getOne();
+  async getFriends(): Promise<User[]> {
+    const client = await this.userRepository.findOne({
+      where: { id: 1 },
+      relations: ['friends'],
+    });
+    if (!client) {
+      return null;
+    }
+    return client.friends;
   }
 
   async updateUserInfo(data): Promise<any> {
@@ -101,45 +130,53 @@ export class UserService {
     return this.userRepository.update(clientID, { status: status });
   }
 
-  // return an array of users in descending order of experience use await
   async getLeaderboard(): Promise<User[]> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     queryBuilder.orderBy('user.experience', 'DESC');
     return queryBuilder.getMany();
   }
 
-  async addFriend(friendID: number): Promise<any> {
-    const friend = await this.userRepository.findOne({
-      where: { id: friendID },
-    });
-    if (!friend) {
-      return { message: 'User not found' };
-    }
-    const myUser = 1;
-    const client = await this.userRepository.findOne({
-      where: { id: myUser },
-      relations: ['friends', 'blockedUsers', 'conversations'],
-    });
-    if (!client) {
-      return { message: 'User not found' };
-    }
-    const alreadyFriend = client.friends.find(
-      (friend) => friend.id === friendID,
-    );
-    if (alreadyFriend) {
+  async sendFriendRequest(friendID: number): Promise<any> {
+    const { client, friend } = await this.getClientAndFriend(friendID);
+
+    if (this.isAlreadyFriend(client, friend)) {
       return { message: 'User already in friends' };
     }
-    const blocked = client.blockedUsers.find(
-      (blocked) => blocked.id === friendID,
-    );
-    if (blocked) {
+
+    if (this.isBlocked(client, friend)) {
       return { message: 'User is blocked' };
     }
-    const conversation = client.conversations.find(
-      (conversation) =>
-        conversation.is_group === false &&
-        conversation.members.find((member) => member.id === friendID),
+
+    if (this.isAlreadyPending(client, friend)) {
+      return { message: 'User already in pending' };
+    }
+
+    friend.pendingFriendRequests.push(client);
+    return this.userRepository.save(friend);
+  }
+
+  async acceptFriendRequest(friendID: number): Promise<any> {
+    const { client, friend } = await this.getClientAndFriend(friendID);
+
+    if (this.isAlreadyFriend(client, friend)) {
+      return { message: 'User already in friends' };
+    }
+
+    if (this.isBlocked(client, friend)) {
+      return { message: 'User is blocked' };
+    }
+
+    const pending = this.findPendingRequest(client, friendID);
+    if (!pending) {
+      return { message: 'User is not in pending' };
+    }
+
+    client.pendingFriendRequests = client.pendingFriendRequests.filter(
+      (pending) => pending.id !== friendID,
     );
+
+    const conversation = this.findConversation(client, friendID);
+
     if (conversation) {
       client.friends.push(friend);
     } else {
@@ -148,29 +185,78 @@ export class UserService {
         members: [client, friend],
         chats: [],
       });
+
       client.conversations.push(newConversation);
       friend.conversations.push(newConversation);
       client.friends.push(friend);
     }
+
+    return this.userRepository.save(client);
+  }
+
+  private async getClientAndFriend(
+    friendID: number,
+  ): Promise<{ client: User; friend: User }> {
+    const myUser = 1;
+    const [client, friend] = await Promise.all([
+      this.userRepository.findOne({
+        where: { id: myUser },
+        relations: [
+          'friends',
+          'blockedUsers',
+          'conversations',
+          'pendingFriendRequests',
+        ],
+      }),
+      this.userRepository.findOne({
+        where: { id: friendID },
+        relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+      }),
+    ]);
+
+    if (!client || !friend) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return { client, friend };
+  }
+
+  private isAlreadyFriend(client: User, friend: User): boolean {
+    return client.friends.some((f) => f.id === friend.id);
+  }
+
+  private isBlocked(client: User, friend: User): boolean {
+    return client.blockedUsers.some((b) => b.id === friend.id);
+  }
+
+  private isAlreadyPending(client: User, friend: User): boolean {
+    return friend.pendingFriendRequests.some((p) => p.id === client.id);
+  }
+
+  private findPendingRequest(client: User, friendID: number): User | undefined {
+    return client.pendingFriendRequests.find((p) => p.id === friendID);
+  }
+
+  private findConversation(
+    client: User,
+    friendID: number,
+  ): Conversation | undefined {
+    return client.conversations.find(
+      (conv) =>
+        conv.is_group === false &&
+        conv.members.find((member) => member.id === friendID),
+    );
   }
 
   async blockUser(blockedID: number): Promise<any> {
-    const client = await this.userRepository.findOne({
-      // where: { id: clientID },
-    });
-    const blocked = await this.userRepository.findOne({
-      where: { id: blockedID },
-    });
-    if (!client || !blocked) {
-      return { message: 'User not found' };
-    }
-    const alreadyBlocked = client.blockedUsers.find(
-      (user) => user.id === blockedID,
-    );
+    const { client, blocked } = await this.getClientAndBlockedUser(blockedID);
+
+    const alreadyBlocked = this.isAlreadyBlocked(client, blocked);
     if (alreadyBlocked) {
       return { message: 'User already blocked' };
     }
-    const friend = client.friends.find((user) => user.id === blockedID);
+
+    const friend = this.findFriend(client, blockedID);
     if (friend) {
       client.friends = client.friends.filter((user) => user.id !== blockedID);
     }
@@ -180,33 +266,87 @@ export class UserService {
   }
 
   async unblockUser(blockedID: number): Promise<any> {
-    const client = await this.userRepository.findOne({
-      where: { id: 1 },
-    });
-    const blocked = await this.userRepository.findOne({
-      where: { id: blockedID },
-    });
-    if (!client || !blocked) {
-      return { message: 'User not found' };
-    }
+    const clientID = 1; // Replace with dynamic user ID retrieval logic
+    const { client, blocked } = await this.getClientAndBlockedUser(
+      blockedID,
+      clientID,
+    );
+
     client.blockedUsers = client.blockedUsers.filter(
       (user) => user.id !== blockedID,
     );
+    return this.userRepository.save(client);
+  }
 
+  private async getClientAndBlockedUser(
+    blockedID: number,
+    clientID?: number,
+  ): Promise<{ client: User; blocked: User }> {
+    const [client, blocked] = await Promise.all([
+      this.userRepository.findOne({
+        where: { id: clientID || 1 },
+        relations: ['friends', 'blockedUsers'],
+      }),
+      this.userRepository.findOne({ where: { id: blockedID } }),
+    ]);
+
+    if (!client || !blocked) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return { client, blocked };
+  }
+
+  async enableTwoFactor(clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorAuthEnabled = true;
+    return this.userRepository.save(client);
+  }
+
+  async disableTwoFactor(clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorAuthEnabled = false;
     return this.userRepository.save(client);
   }
 
   async saveTwoFactorSecret(secret: string, clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { twoFactorSecret: secret });
-  }
-
-  async enableTwoFactor(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, { twoFactorAuthEnabled: true });
-  }
-
-  async disableTwoFactor(clientID: number): Promise<any> {
-    return this.userRepository.update(clientID, {
-      twoFactorAuthEnabled: false,
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
     });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorSecret = secret;
+    return this.userRepository.save(client);
+  }
+
+  
+  private isAlreadyBlocked(client: User, blocked: User): boolean {
+    return client.blockedUsers.some((user) => user.id === blocked.id);
+  }
+
+  private findFriend(client: User, friendID: number): User | undefined {
+    return client.friends.find((user) => user.id === friendID);
+  }
+
+  async setOnline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'online' });
+  }
+
+  async setOffline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'offline' });
   }
 }

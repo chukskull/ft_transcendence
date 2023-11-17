@@ -10,7 +10,7 @@ const InviteSection = () => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     try {
-      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/friends`).then((res) => {
+      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`).then((res) => {
         setFriends(res.data);
       });
     } catch (err) {
@@ -148,19 +148,19 @@ const ChannelMenu = ({ channel }: any) => {
         {activeSection === "Invite" && <InviteSection />}
         {activeSection === "Authority Hub" && (
           <AuthoritySection
-            owner={channelData.owner}
-            mods={channelData.Moderators}
+            owner={channelData?.owner}
+            mods={channelData?.Moderators}
           />
         )}
         {activeSection === "Members" && (
-          <MembersSection members={channelData.members} />
+          <MembersSection members={channelData?.members} />
         )}
         {activeSection === "Settings" && (
           <ChannelSettings
-            banned={channelData.banned}
-            muted={channelData.muted}
-            id={channel.id}
-            chPrivate={channelData.is_private}
+            banned={channelData?.banned}
+            muted={channelData?.muted}
+            id={channel?.id}
+            chPrivate={channelData?.is_private}
           />
         )}
       </div>

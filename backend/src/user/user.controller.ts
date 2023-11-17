@@ -1,7 +1,5 @@
 import { Controller, UseGuards, Get, Post, Param, Body } from '@nestjs/common';
 import { UserService } from './user.service';
-// import { AuthService } from './auth/auth.service';
-// import {  } from './auth/strategies/auth.guard';
 import { User } from './user.entity';
 import {
   IsString,
@@ -43,7 +41,7 @@ class updateDto {
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly usersService: UserService, // private readonly authService: AuthService,
+    private readonly usersService: UserService
   ) {}
 
   @Post('create')
@@ -62,11 +60,16 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/profile/:userId')
-  async findUser(@Param('userId') userId: number): Promise<User> {
+  @Get('profile/:userId')
+  async findUser(@Param('userId') userId: any): Promise<User> {
     return this.usersService.userProfile(userId);
   }
 
+  @UseGuards()
+  @Get('/friends')
+  async getFriends(): Promise<User[]> {
+    return this.usersService.getFriends();
+  }
   @UseGuards()
   @Post('/fill')
   async fill(@Body() data: fillDto) {
@@ -92,9 +95,15 @@ export class UserController {
   }
 
   @UseGuards()
-  @Post('/addFriend')
-  async addFriend(@Body('id') id: number) {
-    return this.usersService.addFriend(id);
+  @Post('/sendFriendRequest/:friendId')
+  async addFriend(@Param('friendId') id: number) {
+    return this.usersService.sendFriendRequest(id);
+  }
+
+  @UseGuards()
+  @Post('/acceptFriendRequest/:friendId')
+  async acceptFriendRequest(@Param('friendId') id: number) {
+    return this.usersService.acceptFriendRequest(id);
   }
 
   @UseGuards()

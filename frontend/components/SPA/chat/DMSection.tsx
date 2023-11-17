@@ -3,6 +3,9 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
 import AvatarBubble from "./AvatarBubble";
+import { useParams } from "next/navigation";
+import axios from "axios";
+
 const dmList = [
   {
     name: "John3464 Doe",
@@ -132,13 +135,34 @@ interface DmSectionProps {
 const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   const [findFriendModal, setFindFriendModal] = useState<boolean>(false);
   const [active, setActive] = useState<string>("");
-  const [dm, setDm] = useState<any>([]);
+  const [dmsList, setDmsList] = useState<any>([]);
+  const params = useParams();
   const handleConversationId = (dm: any) => {
     getType(false);
     sendDmOrChannel(dm);
     setActive(dm);
   };
+  useEffect(() => {
+    const nickName = params.id;
+    const selectedUser = dmsList.find((dm: any) => dm.id === nickName);
+    if (selectedUser) {
+      sendDmOrChannel(selectedUser);
+      getType(false);
+      setActive(selectedUser.name);
+    }
+  }, [dmsList, params.id, sendDmOrChannel, getType]);
 
+  useEffect(() => {
+    try {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/myDms`)
+        .then((res) => {
+          setDmsList(res.data);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   return (
     <>
       <Modal

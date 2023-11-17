@@ -62,7 +62,6 @@ export class ConversationService {
     newConversation.is_group = friendId ? false : true;
     newConversation.members = [];
     newConversation.chats = [];
-    console.log(newConversation);
     const me = await this.UserRepository.findOne({ where: { id: 1 } });
     newConversation.members.push(me);
     if (friendId) {

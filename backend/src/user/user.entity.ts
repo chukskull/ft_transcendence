@@ -20,10 +20,10 @@ export class User {
   id: number;
 
   @Column()
-  intraLogin: string;
-
-  @Column({ nullable: true })
   email: string;
+
+  @Column()
+  intraLogin: string;
 
   @Column()
   nickName: string;
@@ -54,9 +54,17 @@ export class User {
   @Column()
   status: string;
 
+  @Column()
+  authenticated: boolean;
+
+  @Column()
+  pendingInvite: boolean;
+
+
   @ManyToMany(() => MatchHistory)
   @JoinTable()
   matchHistory: MatchHistory[];
+
 
   @Column()
   experience: number;
@@ -64,6 +72,10 @@ export class User {
   @ManyToMany(() => Channel)
   @JoinTable()
   channels: Channel[];
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  pendingFriendRequests: User[];
 
   @Column()
   level: number;

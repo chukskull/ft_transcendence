@@ -1,6 +1,18 @@
-// auth.controller.ts
-import { Controller, Get, Req, Res, UseGuards , Request} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+// import { UserService } from '../user/user.service';
 import { AuthGuard } from '@nestjs/passport';
+// import { Response, Request } from 'express';
+import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { FtOauthGuard } from 'src/guards/ft_oauth.guard';

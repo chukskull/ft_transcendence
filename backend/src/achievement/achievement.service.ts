@@ -11,7 +11,6 @@ export class AchievementService {
     private achievementRepository: Repository<Achievement>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    
   ) {}
 
   async findAll(): Promise<Achievement[]> {
@@ -77,6 +76,7 @@ export class AchievementService {
   async giveAchievement(userId: number, achievementId: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
+      relations: ['achievements'],
     });
     const achievement = await this.achievementRepository.findOne({
       where: { id: achievementId },
