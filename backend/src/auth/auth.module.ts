@@ -1,12 +1,24 @@
-// auth.module.ts
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { PassportModule } from '@nestjs/passport';
+import { UserModule } from '../user/user.module';
+import { FortyTwoStrategy } from './strategies/fortytwo.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './models/constants';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: '42' })],
-  providers: [AuthService],
+  imports: [
+    UserModule,
+    PassportModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1h' },
+    }),
+    HttpModule,
+  ],
   controllers: [AuthController],
+  providers: [AuthService, FortyTwoStrategy],
 })
 export class AuthModule {}
