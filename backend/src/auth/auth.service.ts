@@ -1,67 +1,37 @@
-import { Body, Injectable } from '@nestjs/common';
-import { authenticator } from 'otplib';
-import { Request } from 'express';
+// auth.service.ts
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterDto } from './models/register.dto';
-import { UserService } from '../user/user.service';
-import { UpdateDto } from './models/update.dto';
-
+import { UserService } from 'src/user/user.service';
+import { User } from 'src/user/user.entity';
 @Injectable()
 export class AuthService {
+
   constructor(
-    private jwtService: JwtService,
-    private userService: UserService,
-  ) { }
+    private readonly jwtService:JwtService,
+    private  readonly userService:UserService,
+    ){}
 
-  async login(req, user) {
-    const payload = { id: user.id, login: user.login };
-    const token = await this.jwtService.signAsync(payload);
-    await req.res.cookie('jwt', token, { httpOnly: true });
-  }
+    async generateNewToken(user:User) {
+      console.log("HERE");
+      console.log(user.id);
+      return (this.jwtService.sign({email: user.email, username:user.intraLogin}));
+    }
 
-  async validate42Callback(code: any) {
-    const user = await this.userService.validate42Callback(code);
-    return user;
-  }
-  async twoFactorAuthSecret(clientID: number) {
-    const client = await this.userService.userProfile(clientID);
-    const secret = authenticator.generateSecret();
-    await this.userService.saveTwoFactorSecret(secret, clientID);
-
-    return authenticator.keyuri(client.email, 'ft_transcendence', secret); //OtpAuthUrl
-  }
-
-  async twoFactorAuthVerify(code: string, clientID: number) {
-    const client = await this.userService.userProfile(clientID);
-
-    return authenticator.verify({
-      token: code,
-      secret: client.twoFactorSecret,
-    });
-  }
-
-  async clientID(request: Request): Promise<number> {
-    const cookie = request.cookies['clientID'];
-    const data = await this.jwtService.verifyAsync(cookie);
-
-    return data['id'];
-  }
-
-  async newUser(@Body() data: RegisterDto) {
-    const user = await this.userService.createNewUser(data.intraLogin, data.avatar, data.email);
-    return user;
-  }
-
-  async updateUser(@Body() data: UpdateDto) {
-    await this.userService.updateUserInfo(data);
-  }
-
-  async setOnline(clientID: number) {
-    await this.userService.setOnline(clientID);
-  }
-
-  async setOffline(clientID: number) {
-    await this.userService.setOffline(clientID);
-  }
-  
+    async verifyToken(token: string) {
+      try {
+        return this.jwtService.verifyAsync(token);
+      } catch (e) {
+        return null;
+      }
+    }
+ 
+    async checkUser(username: string, email: string) {
+      const user = await this.userService.findOne(email);
+      if (!user)
+      {
+        console.log("fff");
+        return null;
+      }
+      return user;
+    }
 }
