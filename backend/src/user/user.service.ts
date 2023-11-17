@@ -29,6 +29,7 @@ export class UserService {
     user.experience = 0;
     user.wins = 0;
     user.totalGames = 0;
+    user.email = email;
     user.firstName = '';
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
@@ -40,6 +41,18 @@ export class UserService {
     user.nickName = intraLogin;
     user.conversations = [];
     return this.userRepository.save(user);
+  }
+
+  async validate42Callback(code: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: {
+        intraLogin: code,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    return user;
   }
 
   async all(): Promise<User[]> {
@@ -63,6 +76,10 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async findOne(email: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { email } });
   }
 
   async fillData(data: any): Promise<any> {
@@ -280,11 +297,56 @@ export class UserService {
     return { client, blocked };
   }
 
+  async enableTwoFactor(clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorAuthEnabled = true;
+    return this.userRepository.save(client);
+  }
+
+  async disableTwoFactor(clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorAuthEnabled = false;
+    return this.userRepository.save(client);
+  }
+
+  async saveTwoFactorSecret(secret: string, clientID: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    client.twoFactorSecret = secret;
+    return this.userRepository.save(client);
+  }
+
+  
   private isAlreadyBlocked(client: User, blocked: User): boolean {
     return client.blockedUsers.some((user) => user.id === blocked.id);
   }
 
   private findFriend(client: User, friendID: number): User | undefined {
     return client.friends.find((user) => user.id === friendID);
+  }
+
+  async setOnline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'online' });
+  }
+
+  async setOffline(clientID: number): Promise<any> {
+    return this.userRepository.update(clientID, { status: 'offline' });
   }
 }
