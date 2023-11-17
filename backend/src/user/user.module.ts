@@ -13,11 +13,6 @@ import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
-    JwtModule.register({
-      // secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1d' },
-    }),
-    AuthModule,
   ],
   controllers: [UserController],
   providers: [UserService],

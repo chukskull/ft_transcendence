@@ -78,6 +78,10 @@ export class UserService {
     return user;
   }
 
+  async findOne(email: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
   async fillData(data: any): Promise<any> {
     const { nickName, firstName, lastName, id } = data;
     console.log(data);
