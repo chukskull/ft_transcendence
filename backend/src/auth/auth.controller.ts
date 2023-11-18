@@ -1,7 +1,7 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Response , Request} from 'express';
 import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
 import { UserService } from 'src/user/user.service';
 
