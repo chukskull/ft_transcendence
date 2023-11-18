@@ -1,7 +1,5 @@
 import Matter, { Body, Bodies, Engine, World, Common, Events} from 'matter-js';
 import { Socket } from 'socket.io';
-import * as flatbuffers from 'flatbuffers';
-import { PositionState } from './position-state';
 import {
 	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, INIT_BALL_SPEED, PADDLE1_POSITION, PADDLE2_POSITION, BALL_POSITION, DAMPING, MAX_ANGLE, PlayerNumber, Color
 } from './game.service';
@@ -9,13 +7,13 @@ import {
 export class GameInstance {
 		private engine: Matter.Engine;
 		private world: Matter.World;
-		private ball: Matter.Body;
-		private paddle1: Matter.Body;
-		private paddle2: Matter.Body;
+		public ball: Matter.Body;
+		public paddle1: Matter.Body;
+		public paddle2: Matter.Body;
 		private player1ready: boolean = false;
 		private player2ready: boolean = false;
 		public score: { player1: number, player2: number } = { player1: 0, player2: 0 };
-		private speed: number = INIT_BALL_SPEED;
+		public speed: number = INIT_BALL_SPEED;
 		public inactive = false;
 		public toRemove = false;
 		loop: NodeJS.Timeout;
@@ -46,27 +44,26 @@ export class GameInstance {
 
 			World.add(this.world, [this.ball, this.paddle1, this.paddle2]);
 			player1.on('sendPaddleState', (state) => {
-				const buffer = new flatbuffers.ByteBuffer(new Uint8Array(state));
-				const paddleState = PositionState.getRootAsPositionState(buffer);
+				const paddleState = JSON.parse(state);
 
-				const x = paddleState.x();
-				const y = paddleState.y();
+				const x = paddleState.x;
+				const y = paddleState.y;
 
 				Body.setPosition(this.paddle1, { x, y });
 
-				const builder = new flatbuffers.Builder();
-				const offset = PositionState.createPositionState(builder, this.paddle2.position.x, this.paddle2.position.y);
-				builder.finish(offset);
+				const opponentPaddleState = {
+					x: this.paddle2.position.x,
+					y: this.paddle2.position.y
+				};
 
-				player2.emit('updateOpponentPaddleState', builder.asUint8Array());
+				player2.emit('updateOpponentPaddleState', JSON.stringify(opponentPaddleState));
 			});
 
 			player2.on('sendPaddleState', (state) => {
-				const buffer = new flatbuffers.ByteBuffer(new Uint8Array(state));
-				const paddleState = PositionState.getRootAsPositionState(buffer);
+				const paddleState = JSON.parse(state);
 
-				const x = paddleState.x();
-				const y = paddleState.y();
+				const x = paddleState.x;
+				const y = paddleState.y;
 
 				Body.setPosition(this.paddle2, { x, y });
 
@@ -221,19 +218,22 @@ export class GameInstance {
 	 */
 
 	private sendBallState() {
-		const builder = new flatbuffers.Builder();
-		const offset = PositionState.createPositionState(builder, this.ball.position.x, this.ball.position.y);
-		builder.finish(offset);
+		const ballState = {
+			position: {
+				x: this.ball.position.x,
+				y: this.ball.position.y
+			}
+		};
 
-		this.player1.emit('updateBallState', builder.asUint8Array());
-		this.player2.emit('updateBallState', builder.asUint8Array());
+		this.player1.emit('updateBallState', ballState);
+		this.player2.emit('updateBallState', ballState);
 	}
 
 	/*
 	 * This function is called to generate a random start position and velocity for the ball.
 	 */
 
-	private getNewStart(gameWidth: number, gameHeight: number) {
+	public getNewStart(gameWidth: number, gameHeight: number) {
 		this.speed = INIT_BALL_SPEED;
 		const angle = Common.random(-MAX_ANGLE, MAX_ANGLE);
 		const angleRad = angle * Math.PI / 180;

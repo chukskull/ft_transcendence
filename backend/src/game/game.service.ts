@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { Body } from 'matter-js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
-import { Stats } from './stats.entity';
+import { MatchHistory } from 'src/match-history/entities/match-history.entity';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 
 export const GAME_WIDTH = 860;
@@ -41,76 +42,12 @@ export class GameService {
   constructor(
     private matchHistory: MatchHistoryService,
     private jwtService: JwtService,
-    @InjectRepository(Stats)
-    private readonly statsRepository: Repository<Stats>,
+    @InjectRepository(MatchHistory)
+    private readonly statsRepo: Repository<MatchHistory>,
   ) {
     setInterval(() => {
-      Object.entries(this.activeGames).forEach(([key, game]) => {
-        if (game.inactive) {
-          const player1: number = parseInt(key.split(',')[0]);
-          const player2: number = parseInt(key.split(',')[1]);
-          this.currPlayers = this.currPlayers.filter(
-            (player) => player.id !== player1 && player.id !== player2,
-          );
-          this.queue = this.queue.filter(
-            (player) => player.id !== player1 && player.id !== player2,
-          );
-          this.matchHistory.create({
-            player1ID: player1,
-            player2ID: player2,
-            winnerID:
-              game.score.player1 > game.score.player2 ? player1 : player2,
-          });
-          this.statsRepository
-            .findOne({ where: { user: { id: player1 } } })
-            .then((stats) => {
-              stats.total += 1;
-              stats.score += game.score.player1;
-              stats.winner += game.score.player1 > game.score.player2 ? 1 : 0;
-              this.statsRepository.save(stats);
-            });
-
-          this.statsRepository
-            .createQueryBuilder()
-            .update()
-            .set({
-              total: () => 'total + 1',
-              score: () => 'score + ' + game.score.player1,
-              winner: () =>
-                'winner + ' + (game.score.player1 > game.score.player2 ? 1 : 0),
-            })
-            .where('user = :id', { id: player1 })
-            .execute();
-
-          game.toRemove = true;
-        }
-      });
-      this.activeGames = Object.fromEntries(
-        Object.entries(this.activeGames)
-          .filter(([key, game]) => !game.toRemove)
-          .reduce((acc, [key, game]) => {
-            acc.push([key, game]);
-            return acc;
-          }, []),
-      );
-      if (this.queue.length >= 2) {
-        let [player1, player2] = this.queue.splice(0, 2);
-        if (
-          this.onlineUsers.get(player1.id) &&
-          this.onlineUsers.get(player2.id)
-        ) {
-          this.currPlayers.push(player1, player2);
-          this.activeGames[player1.id + ',' + player2.id] = new GameInstance(
-            player1.socket,
-            player2.socket,
-          );
-        } else if (this.onlineUsers.get(player1.id)) {
-          this.queue.unshift(player2);
-        } else if (this.onlineUsers.get(player2.id)) {
-          this.queue.unshift(player1);
-        }
-      }
-    }, 1000);
+      this.update();
+    }, 1000 / 60);
   }
 
   async inviteFriend(client: Socket, payload: any) : Promise<Boolean> {
@@ -147,6 +84,66 @@ export class GameService {
           });
         })
       })
+    }
+  }
+
+  async update() {
+    for (const key in this.activeGames) {
+      const game = this.activeGames[key];
+      if (game.inactive) {
+        delete this.activeGames[key];
+        continue;
+      }
+      const ball = game.ball;
+      const paddle1 = game.paddle1;
+      const paddle2 = game.paddle2;
+      const player1 = game.player1;
+      const player2 = game.player2;
+      const score = game.score;
+      const speed = game.speed;
+
+      Body.setVelocity(ball, {
+        x: ball.velocity.x * DAMPING,
+        y: ball.velocity.y * DAMPING,
+      });
+
+      if (ball.position.x < 0) {
+        score.player2++;
+        Body.setPosition(ball, BALL_POSITION);
+        Body.setVelocity(ball, game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity);
+        game.speed = INIT_BALL_SPEED;
+        player1.emit('updateScore', { score });
+        player2.emit('updateScore', { score });
+        if (score.player2 === 10) {
+          game.inactive = true;
+          player1.emit('changeState', { state: 'gameOver' });
+          player2.emit('changeState', { state: 'gameOver' });
+          const matchHistory = new MatchHistory();
+          matchHistory.player1 = player1.handshake.auth.user;
+          matchHistory.player2 = player2.handshake.auth.user;
+          matchHistory.winner = player2.handshake.auth.user;
+          matchHistory.date = new Date();
+          this.statsRepo.save(matchHistory);
+        }
+      } else if (ball && ball.position.x > GAME_WIDTH) {
+        score.player1++;
+        Body.setPosition(ball, BALL_POSITION);
+        Body.setVelocity(ball, game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity);
+        game.speed = INIT_BALL_SPEED;
+        player1.emit('updateScore', { score });
+        player2.emit('updateScore', { score });
+        if (score.player1 === 10) {
+          game.inactive = true;
+          player1.emit('changeState', { state: 'gameOver' });
+          player2.emit('changeState', { state: 'gameOver' });
+          const matchHistory = new MatchHistory();
+          matchHistory.player1 = player1.handshake.auth.user;
+          matchHistory.player2 = player2.handshake.auth.user;
+          matchHistory.winner = player1.handshake.auth.user;
+          matchHistory.date = new Date();
+          this.statsRepo.save(matchHistory);
+        }
+      }
     }
   }
 

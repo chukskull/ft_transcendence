@@ -8,11 +8,7 @@ import {
 import { Conversation } from 'src/conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
 import { Channel } from '../channel/channel.entity';
-@Entity()
-export class MatchHistory {
-  @PrimaryGeneratedColumn()
-  id: number;
-}
+import { MatchHistory } from '../match-history/entities/match-history.entity';
 
 @Entity()
 export class User {
