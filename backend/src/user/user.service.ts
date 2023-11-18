@@ -36,7 +36,7 @@ export class UserService {
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    user.matchHistory = [];
+    // user.matchHistory = [];
     user.status = 'offline';
     user.nickName = intraLogin;
     user.conversations = [];

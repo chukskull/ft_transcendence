@@ -9,6 +9,7 @@ import {
   IsNumber,
 } from 'class-validator';
 import { AuthGuard } from '@nestjs/passport';
+import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
 
 class fillDto {
   @IsString()
@@ -59,7 +60,7 @@ export class UserController {
   }
 
   @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  @UseGuards(FtOauthGuard)
   @Get('profile/:userId')
   async findUser(@Param('userId') userId: any): Promise<User> {
     return this.usersService.userProfile(userId);
