@@ -19,7 +19,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   @Column()
@@ -54,17 +54,12 @@ export class User {
   @Column()
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   authenticated: boolean;
-
-  @Column()
-  pendingInvite: boolean;
-
 
   @ManyToMany(() => MatchHistory)
   @JoinTable()
   matchHistory: MatchHistory[];
-
 
   @Column()
   experience: number;
