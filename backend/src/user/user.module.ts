@@ -10,9 +10,16 @@ import { Achievement } from '../achievement/achievement.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { FortyTwoStrategy } from 'src/auth/auth.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { MatchHistory } from '../match-history/match-history.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
+    TypeOrmModule.forFeature([
+      User,
+      Channel,
+      Conversation,
+      Achievement,
+      MatchHistory,
+    ]),
     PassportModule.register({ defaultStrategy: '42' }),
     JwtModule.register({
       secret: 'f439843--213+@y4t34u',

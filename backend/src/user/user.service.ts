@@ -36,7 +36,7 @@ export class UserService {
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    // user.matchHistory = [];
+    user.matchHistory = [];
     user.status = 'offline';
     user.nickName = intraLogin;
     user.conversations = [];
@@ -333,7 +333,6 @@ export class UserService {
     return this.userRepository.save(client);
   }
 
-  
   private isAlreadyBlocked(client: User, blocked: User): boolean {
     return client.blockedUsers.some((user) => user.id === blocked.id);
   }
