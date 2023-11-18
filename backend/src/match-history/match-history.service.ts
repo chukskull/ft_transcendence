@@ -93,3 +93,4 @@ export class MatchHistoryService {
     return leaderboard.slice(0, 10);
   }
 }
+

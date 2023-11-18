@@ -7,11 +7,14 @@ import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
-  constructor(private readonly authService:AuthService, private readonly userService:UserService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {
     super({
-      clientID:process.env.INTRA_ID,
-      clientSecret:process.env.INTRA_SECRET,
-      callbackURL:process.env.INTRA_CALLBACK,
+      clientID: process.env.INTRA_ID,
+      clientSecret: process.env.INTRA_SECRET,
+      callbackURL: process.env.INTRA_CALLBACK,
     });
   }
 
@@ -22,10 +25,15 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   ): Promise<any> {
     const userData = profile._json;
 
-    console.log("strategy");
+    console.log('strategy');
     console.log(userData.id);
     let user = await this.authService.checkUser(userData.login, userData.email);
-    if (!user) user = await this.userService.createNewUser(userData.login, userData.image.link, userData.email);
+    if (!user)
+      user = await this.userService.createNewUser(
+        userData.login,
+        userData.image.link,
+        userData.email,
+      );
     if (user) await this.userService.setStatus(userData.id, 'ONLINE');
 
     return userData || null;

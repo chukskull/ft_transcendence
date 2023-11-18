@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsNumber,
 } from 'class-validator';
+import { AuthGuard } from '@nestjs/passport';
 
 class fillDto {
   @IsString()
@@ -40,9 +41,7 @@ class updateDto {
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly usersService: UserService
-  ) {}
+  constructor(private readonly usersService: UserService) {}
 
   @Post('create')
   async create(@Body() data): Promise<User> {
@@ -60,53 +59,62 @@ export class UserController {
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Get('profile/:userId')
   async findUser(@Param('userId') userId: any): Promise<User> {
     return this.usersService.userProfile(userId);
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Get('/friends')
   async getFriends(): Promise<User[]> {
     return this.usersService.getFriends();
   }
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Post('/fill')
   async fill(@Body() data: fillDto) {
     return this.usersService.fillData(data);
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Post('/update')
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Get('/leaderboard')
   async getLeaderboard(): Promise<User[]> {
     return this.usersService.getLeaderboard();
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Post('/sendFriendRequest/:friendId')
   async addFriend(@Param('friendId') id: number) {
     return this.usersService.sendFriendRequest(id);
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Post('/acceptFriendRequest/:friendId')
   async acceptFriendRequest(@Param('friendId') id: number) {
     return this.usersService.acceptFriendRequest(id);
   }
 
   @UseGuards()
+  @UseGuards(AuthGuard('42'))
   @Post('/blockFriend')
   async blockFriend(@Body('id') id: number) {
     return this.usersService.blockUser(id);
