@@ -1,39 +1,32 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Put,
-  Req,
-  Res,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
-// import { UserService } from '../user/user.service';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-// import { Response, Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Response , Request} from 'express';
 import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
 import { UserService } from 'src/user/user.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService:UserService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
-  @Get('/42/login')
+  @Get('/42')
   @UseGuards(AuthGuard('42'))
-  login42(): void{}
+  login42(): void {}
 
-  @Get('/42/callback')
+  @Get('42/callback')
   @UseGuards(AuthGuard('42'))
-  async callback42(@Req() req: any, @Res({ passthrough: true}) res:Response): Promise<any> {
-      const token = await this.authService.generateNewToken(req.user);
-      console.log("controller");
-      console.log(req.user.email);
-      res.cookie('jwt', token);
-      res.redirect(process.env.frontendUrl + 'home');
+  async callback42(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const token = await this.authService.generateNewToken(req.user);
+    console.log('controller');
+    console.log(req.user.email);
+    res.cookie('jwt', token);
+    res.redirect(process.env.frontendUrl + 'home');
   }
 
   @Get('/42/logout')
@@ -42,6 +35,8 @@ export class AuthController {
     console.log(req.user);
     await this.userService.setStatus(req.user.id, 'offline');
     res.cookie('jwt', '');
+    req.logout();
+
     res.redirect(process.env.frontendUrl);
   }
 }

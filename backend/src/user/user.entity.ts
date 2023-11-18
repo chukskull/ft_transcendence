@@ -8,18 +8,14 @@ import {
 import { Conversation } from 'src/conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
 import { Channel } from '../channel/channel.entity';
-@Entity()
-export class MatchHistory {
-  @PrimaryGeneratedColumn()
-  id: number;
-}
+import { MatchHistory } from '../match-history/match-history.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   @Column()
@@ -54,17 +50,12 @@ export class User {
   @Column()
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   authenticated: boolean;
-
-  @Column()
-  pendingInvite: boolean;
-
 
   @ManyToMany(() => MatchHistory)
   @JoinTable()
   matchHistory: MatchHistory[];
-
 
   @Column()
   experience: number;

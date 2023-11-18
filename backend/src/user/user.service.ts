@@ -36,8 +36,8 @@ export class UserService {
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    user.matchHistory = [];
-    user.status = 'online';
+    // user.matchHistory = [];
+    user.status = 'offline';
     user.nickName = intraLogin;
     user.conversations = [];
     return this.userRepository.save(user);
