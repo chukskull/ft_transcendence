@@ -13,7 +13,6 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/user/user.service';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -23,7 +22,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	constructor(private readonly gameService: GameService
 		, private readonly jwtService: JwtService,
-	private readonly userService: UserService) { }
+	private readonly authService: AuthService) { }
 
 	afterInit(server: any) {
 		this.logger.log('Initialized');
@@ -33,7 +32,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	*/
 	async	handleConnection(client: Socket, ...args: any[]) {
 		const id = await this.gameService.checkCookie(client)['id']
-		this.userService.setOnline(id)
+		this.authService.setOnline(id)
 		let connectedSockets = this.gameService.onlineUsers.get(id)
 		if (!connectedSockets)
 			connectedSockets = new Set<Socket>()
@@ -48,7 +47,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (connectedSockets) {
 			connectedSockets.delete(client)
 			if (connectedSockets.size == 0) {
-				this.userService.setOffline(id)
+				this.authService.setOffline(id)
 				this.gameService.onlineUsers.delete(id)
 			}
 		}
