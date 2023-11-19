@@ -14,10 +14,6 @@ import { PassportModule } from '@nestjs/passport';
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
     PassportModule.register({ defaultStrategy: '42' }),
-    JwtModule.register({
-      secret: 'f439843--213+@y4t34u',
-      signOptions: { expiresIn: '30d' },
-    }),
   ],
   controllers: [UserController],
   providers: [UserService, AuthService, FortyTwoStrategy],

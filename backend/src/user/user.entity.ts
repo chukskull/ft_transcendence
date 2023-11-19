@@ -8,7 +8,7 @@ import {
 import { Conversation } from 'src/conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
 import { Channel } from '../channel/channel.entity';
-import { MatchHistory } from '../match-history/match-history.entity';
+// import { MatchHistory } from '../match-history/match-history.entity';
 
 @Entity()
 export class User {
@@ -53,9 +53,9 @@ export class User {
   @Column({ nullable: true })
   authenticated: boolean;
 
-  @ManyToMany(() => MatchHistory)
-  @JoinTable()
-  matchHistory: MatchHistory[];
+  // @ManyToMany(() => MatchHistory)
+  // @JoinTable()
+  // matchHistory: MatchHistory[];
 
   @Column()
   experience: number;

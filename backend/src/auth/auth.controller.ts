@@ -32,11 +32,11 @@ export class AuthController {
   @Get('/42/logout')
   @UseGuards(FtOauthGuard)
   async logout42(@Res() res: Response, @Req() req) {
-    console.log(req.user);
+    // console.log(req);
     await this.userService.setStatus(req.user.id, 'offline');
     res.cookie('jwt', '');
-    req.logout();
-
+    // req.logout();
+    // req.session.destroy();
     res.redirect(process.env.frontendUrl);
   }
 }

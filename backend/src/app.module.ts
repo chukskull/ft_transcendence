@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -9,8 +9,11 @@ import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
+import { JwtModule } from '@nestjs/jwt';
+import { FtOauthGuard } from './guards/ft_oauth.guard';
 config();
 
+@Global()
 @Module({
   imports: [
     AuthModule,
@@ -32,8 +35,12 @@ config();
       entities: ['dist/**/*.entity.js'],
       synchronize: true,
     }),
+    JwtModule.register({
+      secret: 'f439843--213+@y4t34u',
+      signOptions: { expiresIn: '30d' },
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, FtOauthGuard],
 })
 export class AppModule {}
