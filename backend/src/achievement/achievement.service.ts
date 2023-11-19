@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Achievement } from './achievement.entity';
 import { User } from '../user/user.entity';
+import { NotifGateway } from 'src/notifications.gateway';
 
 @Injectable()
 export class AchievementService {
@@ -10,7 +11,7 @@ export class AchievementService {
     @InjectRepository(Achievement)
     private achievementRepository: Repository<Achievement>,
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: Repository<User>, // @Inject(NotifGateway) private notifGateway: NotifGateway,
   ) {}
 
   async findAll(): Promise<Achievement[]> {

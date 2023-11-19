@@ -38,27 +38,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const { conversationId, sender, message } = data;
-    console.log('messageSent', data);
     const chatMessage = new Chat();
     chatMessage.sender = null;
     chatMessage.message = message;
     chatMessage.time = new Date();
-
     try {
-      // await this.conversationService.addMessageToConversation(
-      //   conversationId,
-      //   chatMessage,
-      // );
+      await this.conversationService.addMessageToConversation(
+        conversationId,
+        chatMessage,
+        sender,
+      );
 
       // Get the room name for the conversation
       // const roomName = `conversation_${conversationId}`;
 
       // Broadcast the message to users in the conversation
       // this.server.to(roomName).emit('newMessage', message);
-      this.server.emit('newMessage', {
-        message: message,
-        sender: sender,
-      });
+      this.server.emit('newMessage', data);
+      //   message: message,
+      //   sender: sender,
+      // });
     } catch (error) {
       console.error('Error saving and broadcasting the message:', error);
     }
