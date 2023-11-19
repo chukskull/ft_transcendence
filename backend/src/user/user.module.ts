@@ -10,6 +10,7 @@ import { Achievement } from '../achievement/achievement.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { FortyTwoStrategy } from 'src/auth/auth.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { NotifGateway } from 'src/notifications.gateway';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
@@ -20,7 +21,7 @@ import { PassportModule } from '@nestjs/passport';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, AuthService, FortyTwoStrategy],
+  providers: [UserService, AuthService, FortyTwoStrategy, NotifGateway],
   exports: [UserService],
 })
 export class UserModule {}

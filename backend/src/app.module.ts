@@ -9,6 +9,8 @@ import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
+import { NotifGateway } from './notifications.gateway';
+
 config();
 
 @Module({

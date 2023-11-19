@@ -51,14 +51,14 @@ class updateDto {
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @Post('create')
-  async create(@Body() data): Promise<User> {
-    return this.usersService.createNewUser(
-      data.intraLogin,
-      data.avatarUrl,
-      data.email,
-    );
-  }
+  // @Post('create')
+  // async create(@Body() data): Promise<User> {
+  //   return this.usersService.createNewUser(
+  //     data.intraLogin,
+  //     data.avatarUrl,
+  //     data.email,
+  //   );
+  // }
   @Get()
   async all(): Promise<User[]> {
     return this.usersService.all();
@@ -105,8 +105,9 @@ export class UserController {
 
   // @UseGuards(FtOauthGuard)
   @Post('/sendFriendRequest/:friendId')
-  async addFriend(@Param('friendId') id: number) {
-    return this.usersService.sendFriendRequest(id);
+  async addFriend(@Param('friendId') id: number, @Req() req: any) {
+    const myId = req.user.id;
+    return this.usersService.sendFriendRequest(myId, id);
   }
 
   // @UseGuards(FtOauthGuard)

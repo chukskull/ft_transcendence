@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { FortyTwoStrategy } from 'src/auth/auth.strategy';
 import { UserService } from 'src/user/user.service';
+import { NotifGateway } from '../notifications.gateway';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserService } from 'src/user/user.service';
     AuthService,
     FortyTwoStrategy,
     UserService,
+    NotifGateway,
   ],
 })
 export class ChannelModule {}
