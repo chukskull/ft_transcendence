@@ -157,6 +157,7 @@ export class UserService {
     friend.pendingFriendRequests.push(client);
     const SavedFriend = this.userRepository.save(friend);
 
+    this.notifGateway.newFriendRequest(client, friendID);
     return SavedFriend;
   }
 

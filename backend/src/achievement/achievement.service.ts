@@ -1,4 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Achievement } from './achievement.entity';
@@ -11,7 +16,9 @@ export class AchievementService {
     @InjectRepository(Achievement)
     private achievementRepository: Repository<Achievement>,
     @InjectRepository(User)
-    private userRepository: Repository<User>, // @Inject(NotifGateway) private notifGateway: NotifGateway,
+    private userRepository: Repository<User>,
+    @Inject(NotifGateway)
+    private notifGateway: NotifGateway,
   ) {}
 
   async findAll(): Promise<Achievement[]> {
@@ -19,11 +26,9 @@ export class AchievementService {
   }
 
   async findAc(id: number): Promise<any> {
-    const achievement = await this.achievementRepository.findOne({
-      where: { id },
-    });
+    const achievement = await this.achievementRepository.findOne({where :{ id }});
     if (!achievement) {
-      return null;
+      throw new NotFoundException('Achievement not found');
     }
     const users = await this.userRepository.find({
       where: { achievements: achievement },
@@ -33,60 +38,56 @@ export class AchievementService {
 
   async createAchievement(data: any): Promise<Achievement> {
     const { name, description, icon, addedXp } = data;
-    const alreadyExists = await this.achievementRepository.findOne({
-      where: { name },
-    });
+    const alreadyExists = await this.achievementRepository.findOne({where :{ name }});
     if (alreadyExists) {
-      return null;
-    } else {
-      const achievement = this.achievementRepository.create({
-        name,
-        description,
-        icon,
-        addedXp,
-      });
-      return this.achievementRepository.save(achievement);
+      throw new ConflictException('Achievement with this name already exists');
     }
+    const achievement = this.achievementRepository.create({
+      name,
+      description,
+      icon,
+      addedXp,
+    });
+    return this.achievementRepository.save(achievement);
   }
 
-  async updateAchievement(id: number, data: any): Promise<Achievement> {
-    const { name, description, icon, addedXp } = data;
-    const achievement = await this.achievementRepository.findOne({
-      where: { id },
-    });
+  async updateAchievement(
+    id: number,
+    data: Partial<any>,
+  ): Promise<Achievement> {
+    const achievement = await this.achievementRepository.findOne({where :{ id }});
     if (!achievement) {
-      return null;
+      throw new NotFoundException('Achievement not found');
     }
-    achievement.name = name || achievement.name;
-    achievement.description = description || achievement.description;
-    achievement.icon = icon || achievement.icon;
-    achievement.addedXp = addedXp || achievement.addedXp;
+    Object.assign(achievement, data);
     return this.achievementRepository.save(achievement);
   }
 
   async removeAchievement(id: number): Promise<Achievement> {
-    const achievement = await this.achievementRepository.findOne({
-      where: { id },
-    });
+    const achievement = await this.achievementRepository.findOne({where :{ id }});
     if (!achievement) {
-      return null;
+      throw new NotFoundException('Achievement not found');
     }
     return this.achievementRepository.remove(achievement);
   }
 
   async giveAchievement(userId: number, achievementId: number): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['achievements'],
-    });
-    const achievement = await this.achievementRepository.findOne({
-      where: { id: achievementId },
+    const user = await this.userRepository.findOne({where :
+      { id: userId },
+       relations: ['achievements'] ,
+    }
+    );
+    const achievement = await this.achievementRepository.findOne({where :{
+      id: achievementId,
+    }
     });
     if (!user || !achievement) {
-      return null;
+      throw new NotFoundException('User or Achievement not found');
     }
     user.experience += achievement.addedXp;
     user.achievements.push(achievement);
-    return this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+    this.notifGateway.newAchievement(achievement, user.id);
+    return savedUser;
   }
 }
