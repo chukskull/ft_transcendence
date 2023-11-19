@@ -9,6 +9,8 @@ import {
 } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
+import { User } from './user/user.entity';
+import { Achievement } from './achievement/achievement.entity';
 
 @Injectable()
 @WebSocketGateway({ namespace: 'notifications', cors: true })
@@ -23,12 +25,12 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client with userId ${userId} connected`);
   }
 
-  newFriendRequest(data: any, userId: number) {
-    this.server.to(`user-${userId}`).emit('newFriendRequest', data);
+  newFriendRequest(RequestSender: User, userId: number) {
+    this.server.to(`user-${userId}`).emit('newFriendRequest', RequestSender);
   }
 
-  newAchievement(data: any, userId: number) {
-    this.server.to(`user-${userId}`).emit('newAchievement', data);
+  newAchievement(achievement: Achievement, userId: number) {
+    this.server.to(`user-${userId}`).emit('newAchievement', achievement);
   }
 
   newMessage(data: any, userId: number) {
