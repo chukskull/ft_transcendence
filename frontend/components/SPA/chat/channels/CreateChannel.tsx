@@ -26,7 +26,10 @@ const CreateChannelModal = () => {
       const formData = { name, password, is_private };
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/create`,
-        formData
+        formData,
+        {
+          withCredentials: true,
+        }
       );
       window.location.reload();
       console.log(res.data);

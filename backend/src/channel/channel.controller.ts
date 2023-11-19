@@ -65,7 +65,11 @@ export class ChannelController {
     return this.channelService.leaveChannel(chanId, req.user.id);
   }
   @Post(':chandId/invite/:userId')
-  invite(@Param('chandId') chanId: number, @Param('userId') userId: number, @Req() req) {
+  invite(
+    @Param('chandId') chanId: number,
+    @Param('userId') userId: number,
+    @Req() req,
+  ) {
     return this.channelService.inviteToChannel(chanId, userId, req.user.id);
   }
 
@@ -77,7 +81,12 @@ export class ChannelController {
     @Param('action') action: number,
     @Req() req,
   ) {
-    return this.channelService.banUnbanFromChannel(chanId, userId, action, req.user.id);
+    return this.channelService.banUnbanFromChannel(
+      chanId,
+      userId,
+      action,
+      req.user.id,
+    );
   }
 
   @Post(':chandId/muting/:userId/:action')

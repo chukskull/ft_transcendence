@@ -155,7 +155,9 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   useEffect(() => {
     try {
       axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/myDms`)
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/myDms`, {
+          withCredentials: true,
+        })
         .then((res) => {
           setDmsList(res.data);
         });

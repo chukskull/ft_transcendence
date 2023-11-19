@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
 import { JwtModule } from '@nestjs/jwt';
 import { FtOauthGuard } from './guards/ft_oauth.guard';
+import { NotifGateway } from './notifications.gateway';
+
 config();
 
 @Global()
