@@ -15,18 +15,22 @@ import {
   IsBoolean,
   IsOptional,
   IsNumber,
+  Length,
 } from 'class-validator';
 // import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
 
 class fillDto {
   @IsString()
   @IsNotEmpty()
+  @Length(3, 15)
   nickName: string;
   @IsString()
   @IsNotEmpty()
+  @Length(3, 15)
   firstName: string;
   @IsString()
   @IsNotEmpty()
+  @Length(3, 20)
   lastName: string;
 }
 
@@ -34,8 +38,10 @@ class updateDto {
   @IsNotEmpty()
   @IsNumber()
   id: number;
+
   @IsString()
   @IsOptional()
+  @Length(3, 15)
   nickName: string;
 
   @IsOptional()
@@ -111,9 +117,13 @@ export class UserController {
   }
 
   // @UseGuards(FtOauthGuard)
-  @Post('/acceptFriendRequest/:friendId')
-  async acceptFriendRequest(@Param('friendId') id: number) {
-    return this.usersService.acceptFriendRequest(id);
+  @Post('/FriendRequest/:friendId/:action')
+  async acceptFriendRequest(
+    @Param('friendId') id: number,
+    @Param('action') action: number,
+    @Req() req: any,
+  ) {
+    return this.usersService.handleFriendRequest(id, action, req.user.id);
   }
 
   // @UseGuards(FtOauthGuard)

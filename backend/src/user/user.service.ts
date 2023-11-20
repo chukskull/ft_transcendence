@@ -161,7 +161,11 @@ export class UserService {
     return SavedFriend;
   }
 
-  async acceptFriendRequest(friendID: number): Promise<any> {
+  async handleFriendRequest(
+    friendID: number,
+    action: number,
+    handlerId: number,
+  ): Promise<any> {
     const { client, friend } = await this.getClientAndFriend(friendID);
 
     if (this.isAlreadyFriend(client, friend)) {
@@ -177,24 +181,32 @@ export class UserService {
       return { message: 'User is not in pending' };
     }
 
-    client.pendingFriendRequests = client.pendingFriendRequests.filter(
-      (pending) => pending.id !== friendID,
-    );
+    if (action === 1) {
+      //accept
+      client.pendingFriendRequests = client.pendingFriendRequests.filter(
+        (pending) => pending.id !== friendID,
+      );
 
-    const conversation = this.findConversation(client, friendID);
+      const conversation = this.findConversation(client, friendID);
 
-    if (conversation) {
-      client.friends.push(friend);
+      if (conversation) {
+        client.friends.push(friend);
+      } else {
+        const newConversation = await this.conversationRepository.create({
+          is_group: false,
+          members: [client, friend],
+          chats: [],
+        });
+
+        client.conversations.push(newConversation);
+        friend.conversations.push(newConversation);
+        client.friends.push(friend);
+      }
     } else {
-      const newConversation = await this.conversationRepository.create({
-        is_group: false,
-        members: [client, friend],
-        chats: [],
-      });
-
-      client.conversations.push(newConversation);
-      friend.conversations.push(newConversation);
-      client.friends.push(friend);
+      //decline
+      client.pendingFriendRequests = client.pendingFriendRequests.filter(
+        (pending) => pending.id !== friendID,
+      );
     }
 
     return this.userRepository.save(client);
