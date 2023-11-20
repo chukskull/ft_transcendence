@@ -15,27 +15,29 @@ import {
   IsBoolean,
   IsOptional,
   IsNumber,
+  Length,
 } from 'class-validator';
 // import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
 
 class fillDto {
   @IsString()
   @IsNotEmpty()
+  @Length(3, 15)
   nickName: string;
   @IsString()
   @IsNotEmpty()
+  @Length(3, 15)
   firstName: string;
   @IsString()
   @IsNotEmpty()
+  @Length(3, 20)
   lastName: string;
 }
 
 class updateDto {
-  @IsNotEmpty()
-  @IsNumber()
-  id: number;
   @IsString()
   @IsOptional()
+  @Length(3, 15)
   nickName: string;
 
   @IsOptional()
@@ -78,8 +80,8 @@ export class UserController {
   }
   // @UseGuards(FtOauthGuard)
   @Post('/fill')
-  async fill(@Body() data: fillDto) {
-    return this.usersService.fillData(data);
+  async fill(@Body() data: fillDto, @Req() req: any) {
+    return this.usersService.fillData(data, req.user.id);
   }
 
   // @UseGuards(FtOauthGuard)
@@ -109,16 +111,28 @@ export class UserController {
     const myId = req.user.id;
     return this.usersService.sendFriendRequest(myId, id);
   }
-
   // @UseGuards(FtOauthGuard)
-  @Post('/acceptFriendRequest/:friendId')
-  async acceptFriendRequest(@Param('friendId') id: number) {
-    return this.usersService.acceptFriendRequest(id);
+  @Get('/myFriendRequests')
+  async myFriendRequests(@Req() req: any) {
+    return this.usersService.getMyPendingFriendRequests(req.user.id);
+  }
+  // @UseGuards(FtOauthGuard)
+  @Post('/FriendRequest/:friendId/:action')
+  async FriendRequest(
+    @Param('friendId') id: number,
+    @Param('action') action: number,
+    @Req() req: any,
+  ) {
+    return this.usersService.handleFriendRequest(id, action, req.user.id);
   }
 
   // @UseGuards(FtOauthGuard)
-  @Post('/blockFriend')
-  async blockFriend(@Body('id') id: number) {
-    return this.usersService.blockUser(id);
+  @Post('/handleBlock/:friendId/:action')
+  async blockFriend(
+    @Param('friendId') frId: number,
+    @Req() req: any,
+    @Param('action') action: number,
+  ) {
+    return this.usersService.handleBlock(frId, req.user.id, action);
   }
 }

@@ -47,9 +47,9 @@ const ProfileComp = ({
       >
         {showModal &&
           (type === "Protected" ? (
-            <ProtectedModal /> // Show protected modal for Protected channels
+            <ProtectedModal /> // Show protected modal for Protected chann
           ) : (
-            <UserMenu /> // Show standard user menu for other channel types
+            <UserMenu id={id} channel={false}/>
           ))}
       </Modal>
       <div className="flex items-center  gap-5" onClick={handleModalClick}>

@@ -20,7 +20,7 @@ export class ConversationService {
     MyUser = 1;
     const user = await this.UserRepository.findOne({ where: { id: MyUser } });
     if (!user) throw new NotFoundException('User not found');
-    console.log(user);
+    console.log("rengoerijgeroi + " +MyUser);
     const myConvs = await this.conversationRepository.find({
       where: { members: user, is_group: false },
       relations: ['members', 'chats'],

@@ -152,19 +152,22 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
     }
   }, [dmsList, params.id, sendDmOrChannel, getType]);
 
-  useEffect(() => {
-    try {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/myDms`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setDmsList(res.data);
-        });
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+  // useEffect(() => {
+  //   try {
+  //     axios
+  //       .get(
+  //         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/myContacts`,
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       )
+  //       .then((res) => {
+  //         setDmsList(res.data);
+  //       });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, []);
   return (
     <>
       <Modal

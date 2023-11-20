@@ -6,6 +6,8 @@ import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
 import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface chatHeaderProps {
   isChannel: boolean;
@@ -14,6 +16,22 @@ interface chatHeaderProps {
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
+  const router = useRouter();
+  const leaveGroup = (id: number) => {
+    try {
+      axios
+        .post(`${process.env.NEXT_PUBLIC_API_URL}/api/channels/${id}/leave`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            router.push("/chat/channels/1337");
+          }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <>
       <Modal
@@ -54,7 +72,10 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           </button>
         </div>
         {chatHeaderProps?.isChannel && (
-          <FiLogOut className={style["leave-group"]} />
+          <FiLogOut
+            className={style["leave-group"]}
+            onClick={leaveGroup(chatHeaderProps.dmOrChannel.id)}
+          />
         )}
       </div>
     </>
