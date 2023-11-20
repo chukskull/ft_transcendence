@@ -1,8 +1,15 @@
+"use client";
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
+
 export default function Chat() {
+  const router = useRouter();
+  useEffect(() => {
+    router.push('/chat/channels/1337');
+  }
+  , []);
   return (
-    <div>
-      SOME DESIGN FOR OPENNING A convo or create a channel whatever or pushing
-      fucking the first array in channels decison later
+    <div> 
     </div>
   );
 }
