@@ -11,10 +11,12 @@ export class ConversationController {
     return this.conversationService.getConversation(convId);
   }
 
-  @Get('/myDms')
-  async getMyDms(@Req() req) {
-    if (!req?.user) return [];
+  @Get('/myContacts')
+  async MyDms(@Req() req) {
+    if (req.user) {
+      console.log('no user');
+      return [];
+    }
     return this.conversationService.getMyDms(req?.user.id);
   }
 }
-
