@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
-import { MatchHistory } from 'src/match-history/entities/match-history.entity';
+import { MatchHistory } from 'src/match-history/match-history.entity';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 
 export const GAME_WIDTH = 860;
@@ -50,7 +50,7 @@ export class GameService {
     }, 1000 / 60);
   }
 
-  async inviteFriend(client: Socket, payload: any) : Promise<Boolean> {
+  async inviteFriend(client: Socket, payload: any): Promise<Boolean> {
     const { player1, player2 } = payload;
     if (
       this.currPlayers.find((player) => player.id === player1.id) ||
@@ -82,8 +82,8 @@ export class GameService {
               }
             }
           });
-        })
-      })
+        });
+      });
     }
   }
 
@@ -110,7 +110,10 @@ export class GameService {
       if (ball.position.x < 0) {
         score.player2++;
         Body.setPosition(ball, BALL_POSITION);
-        Body.setVelocity(ball, game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity);
+        Body.setVelocity(
+          ball,
+          game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity,
+        );
         game.speed = INIT_BALL_SPEED;
         player1.emit('updateScore', { score });
         player2.emit('updateScore', { score });
@@ -128,7 +131,10 @@ export class GameService {
       } else if (ball && ball.position.x > GAME_WIDTH) {
         score.player1++;
         Body.setPosition(ball, BALL_POSITION);
-        Body.setVelocity(ball, game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity);
+        Body.setVelocity(
+          ball,
+          game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity,
+        );
         game.speed = INIT_BALL_SPEED;
         player1.emit('updateScore', { score });
         player2.emit('updateScore', { score });
@@ -148,11 +154,14 @@ export class GameService {
   }
 
   /*
-    * checks if the cookie is valid
-  */
-  
+   * checks if the cookie is valid
+   */
+
   async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
-    const cookie = client.handshake.headers?.cookie?.split(';').find(c => c.trim().startsWith(process.env.TOKEN))?.split('=')[1];
+    const cookie = client.handshake.headers?.cookie
+      ?.split(';')
+      .find((c) => c.trim().startsWith("token"))
+      ?.split('=')[1];
     if (!cookie) {
       client.disconnect();
       return;
@@ -164,14 +173,16 @@ export class GameService {
    */
   createGame(socket: Socket, payload: any) {
     const { player1, player2 } = payload;
+    if (!this.onlineUsers.get(player1.id)?.has(socket) || !this.onlineUsers.get(player2.id)?.has(socket))
+      return;
     if (
       this.currPlayers.find((player) => player.id === player1.id) ||
       this.currPlayers.find((player) => player.id === player2.id)
-    ) {
+    )
       return;
-    }
 
-    if (!player2) { // if player2 is not defined, player1 is waiting for an opponent
+    if (!player2) {
+      // if player2 is not defined, player1 is waiting for an opponent
       if (!this.queue.find((player) => player.id === player1.id)) {
         this.queue.push({ id: player1.id, socket });
         socket.emit('changeState', { state: 'waitingForOponent' });
@@ -200,4 +211,3 @@ export class GameService {
     }
   }
 }
-
