@@ -85,21 +85,23 @@ export class UserService {
     return await this.userRepository.findOne({ where: { email } });
   }
 
-  async fillData(data: any): Promise<any> {
-    const { nickName, firstName, lastName, id } = data;
+  async fillData(data: any, id: number): Promise<any> {
+    const { nickName, firstName, lastName } = data;
     console.log(data);
     const alreadyExists = await this.userRepository.findOne({
       where: { id },
     });
-    if (!alreadyExists) {
-      return { message: 'NickName already exists' };
-    } else {
-      return this.userRepository.update(id, {
-        nickName,
-        firstName,
-        lastName,
-      });
-    }
+    if (!alreadyExists) return { message: 'NickName already exists' };
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (user.nickName || user.firstName)
+      return { message: 'data already filled' };
+    return this.userRepository.update(id, {
+      nickName,
+      firstName,
+      lastName,
+    });
   }
 
   async getFriends(): Promise<User[]> {
@@ -212,6 +214,19 @@ export class UserService {
     return this.userRepository.save(client);
   }
 
+  async getMyPendingFriendRequests(clientID: number): Promise<User[]> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+      relations: ['pendingFriendRequests'],
+    });
+
+    if (!client) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return client.pendingFriendRequests;
+  }
+
   private async getClientAndFriend(
     friendID: number,
   ): Promise<{ client: User; friend: User }> {
@@ -266,34 +281,34 @@ export class UserService {
     );
   }
 
-  async blockUser(blockedID: number): Promise<any> {
+  async handleBlock(blockedID: number, handlerId: number, action: number) {
     const { client, blocked } = await this.getClientAndBlockedUser(blockedID);
 
-    const alreadyBlocked = this.isAlreadyBlocked(client, blocked);
-    if (alreadyBlocked) {
-      return { message: 'User already blocked' };
+    // 1 block 0 unblock
+    if (action === 1) {
+      const alreadyBlocked = this.isAlreadyBlocked(client, blocked);
+      if (alreadyBlocked) {
+        return { message: 'User already blocked' };
+      }
+
+      const friend = this.findFriend(client, blockedID);
+      if (friend) {
+        client.friends = client.friends.filter((user) => user.id !== blockedID);
+      }
+
+      client.blockedUsers.push(blocked);
+      return this.userRepository.save(client);
+    } else if (action === 0) {
+      const alreadyBlocked = this.isAlreadyBlocked(client, blocked);
+      if (!alreadyBlocked) {
+        return { message: 'User not blocked' };
+      }
+
+      client.blockedUsers = client.blockedUsers.filter(
+        (user) => user.id !== blockedID,
+      );
+      return this.userRepository.save(client);
     }
-
-    const friend = this.findFriend(client, blockedID);
-    if (friend) {
-      client.friends = client.friends.filter((user) => user.id !== blockedID);
-    }
-
-    client.blockedUsers.push(blocked);
-    return this.userRepository.save(client);
-  }
-
-  async unblockUser(blockedID: number): Promise<any> {
-    const clientID = 1; // Replace with dynamic user ID retrieval logic
-    const { client, blocked } = await this.getClientAndBlockedUser(
-      blockedID,
-      clientID,
-    );
-
-    client.blockedUsers = client.blockedUsers.filter(
-      (user) => user.id !== blockedID,
-    );
-    return this.userRepository.save(client);
   }
 
   private async getClientAndBlockedUser(
