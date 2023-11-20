@@ -160,7 +160,7 @@ export class GameService {
   async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
     const cookie = client.handshake.headers?.cookie
       ?.split(';')
-      .find((c) => c.trim().startsWith(process.env.TOKEN))
+      .find((c) => c.trim().startsWith("token"))
       ?.split('=')[1];
     if (!cookie) {
       client.disconnect();
@@ -173,12 +173,13 @@ export class GameService {
    */
   createGame(socket: Socket, payload: any) {
     const { player1, player2 } = payload;
+    if (!this.onlineUsers.get(player1.id)?.has(socket) || !this.onlineUsers.get(player2.id)?.has(socket))
+      return;
     if (
       this.currPlayers.find((player) => player.id === player1.id) ||
       this.currPlayers.find((player) => player.id === player2.id)
-    ) {
+    )
       return;
-    }
 
     if (!player2) {
       // if player2 is not defined, player1 is waiting for an opponent
