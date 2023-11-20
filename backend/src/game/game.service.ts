@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
+import Matter , { Engine, World, Bodies } from 'matter-js';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
@@ -100,7 +101,6 @@ export class GameService {
       const player1 = game.player1;
       const player2 = game.player2;
       const score = game.score;
-      const speed = game.speed;
 
       Body.setVelocity(ball, {
         x: ball.velocity.x * DAMPING,
@@ -150,6 +150,15 @@ export class GameService {
           this.statsRepo.save(matchHistory);
         }
       }
+
+      // Increase ball speed after each paddle collision
+      if (Matter.collision(ball, paddle1).collided || Matter.collision(ball, paddle2).collided) {
+        game.speed += 0.5;
+        Body.setVelocity(ball, {
+          x: ball.velocity.x * game.speed,
+          y: ball.velocity.y * game.speed,
+        });
+      }
     }
   }
 
@@ -167,6 +176,57 @@ export class GameService {
       return;
     }
     return this.jwtService.verify(cookie);
+  }
+  /*
+  * Join matchmaking queue
+  */
+  async joinQueue(client: Socket): Promise<void> {
+    const user = await this.checkCookie(client);
+    if (!user) {
+      client.disconnect();
+      return;
+    }
+    if (!this.onlineUsers.has(user.id)) {
+      this.onlineUsers.set(user.id, new Set<Socket>());
+    }
+    this.onlineUsers.get(user.id)?.add(client);
+    client.emit('changeState', { state: 'inQueue' });
+    client.removeAllListeners('invite');
+    client.on('invite', (payload) => {
+      this.inviteFriend(client, payload);
+    });
+    client.removeAllListeners('joinQueue');
+    client.on('joinQueue', () => {
+      this.createGame(client, { player1: user });
+    });
+    client.removeAllListeners('leaveQueue');
+    client.on('leaveQueue', () => {
+      this.leaveQueue(client);
+    });
+    client.removeAllListeners('disconnect');
+    client.on('disconnect', () => {
+      this.leaveQueue(client);
+    });
+  }
+  /*
+   * leave matchmaking queue
+   */
+  async leaveQueue(client: Socket) {
+    const user = client.handshake.auth.user;
+    if (!user) {
+      client.disconnect();
+      return;
+    }
+    if (this.onlineUsers.has(user.id)) {
+      this.onlineUsers.get(user.id)?.delete(client);
+      if (this.onlineUsers.get(user.id)?.size === 0) {
+        this.onlineUsers.delete(user.id);
+      }
+    }
+    this.queue = this.queue.filter((player) => {
+      return player.id !== user.id;
+    });
+    client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving queue
   }
   /*
    * creates a game instance and adds it to the activeGames object

@@ -67,7 +67,12 @@ export class GameInstance {
 
 				Body.setPosition(this.paddle2, { x, y });
 
-				player1.emit('updateOpponentPaddleState', state);
+				const opponentPaddleState = {
+					x: this.paddle1.position.x,
+					y: this.paddle1.position.y
+				};
+
+				player1.emit('updateOpponentPaddleState', JSON.stringify(opponentPaddleState));
 			});
 			
 			player1.on('disconnect', () => {
@@ -76,11 +81,26 @@ export class GameInstance {
 				this.score.player2 = 1;
 				this.stopGame();
 			});
+
+			player2.on('disconnect', () => {
+				player1.emit('changeState', JSON.stringify({ gameState: 'finished', isWin: true }));
+				this.score.player1 = 1;
+				this.score.player2 = 0;
+				this.stopGame();
+			});
 			
 			setTimeout(() => {
 				player1.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 1, color: Common.choose(Color.White, Color.Green, Color.teal) }));
 				player2.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 2, color: Common.choose(Color.White, Color.Green, Color.teal) }));
 			}, 1000);
+			player1.on('ready', () => {
+				this.player1ready = true;
+				if (this.player2ready)
+					this.startGame();
+				else
+					player1.emit('waiting');
+			});
+
 			player1.on('ready', () => {
 				this.player1ready = true;
 				if (this.player2ready)
