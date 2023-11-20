@@ -1,4 +1,12 @@
-import { Controller, UseGuards, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Post,
+  Param,
+  Body,
+  Req,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import {
@@ -8,7 +16,7 @@ import {
   IsOptional,
   IsNumber,
 } from 'class-validator';
-import { AuthGuard } from '@nestjs/passport';
+// import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
 
 class fillDto {
   @IsString()
@@ -43,78 +51,72 @@ class updateDto {
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @Post('create')
-  async create(@Body() data): Promise<User> {
-    return this.usersService.createNewUser(
-      data.intraLogin,
-      data.avatarUrl,
-      data.email,
-    );
-  }
-
-  @UseGuards()
+  // @Post('create')
+  // async create(@Body() data): Promise<User> {
+  //   return this.usersService.createNewUser(
+  //     data.intraLogin,
+  //     data.avatarUrl,
+  //     data.email,
+  //   );
+  // }
   @Get()
   async all(): Promise<User[]> {
     return this.usersService.all();
   }
 
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
   @Get('profile/:userId')
-  async findUser(@Param('userId') userId: any): Promise<User> {
+  // @UseGuards(FtOauthGuard)
+  async findUser(@Param('userId') userId: any, @Req() req: any): Promise<User> {
+    console.log(req.user);
     return this.usersService.userProfile(userId);
   }
 
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Get('/friends')
   async getFriends(): Promise<User[]> {
     return this.usersService.getFriends();
   }
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Post('/fill')
   async fill(@Body() data: fillDto) {
     return this.usersService.fillData(data);
   }
 
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Post('/update')
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
   @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
   @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Get('/leaderboard')
-  async getLeaderboard(): Promise<User[]> {
+  async getLeaderboard(@Req() req: any) {
+    console.log(req.user);
     return this.usersService.getLeaderboard();
   }
 
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Post('/sendFriendRequest/:friendId')
-  async addFriend(@Param('friendId') id: number) {
-    return this.usersService.sendFriendRequest(id);
+  async addFriend(@Param('friendId') id: number, @Req() req: any) {
+    const myId = req.user.id;
+    return this.usersService.sendFriendRequest(myId, id);
   }
 
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Post('/acceptFriendRequest/:friendId')
   async acceptFriendRequest(@Param('friendId') id: number) {
     return this.usersService.acceptFriendRequest(id);
   }
 
-  @UseGuards()
-  @UseGuards(AuthGuard('42'))
+  // @UseGuards(FtOauthGuard)
   @Post('/blockFriend')
   async blockFriend(@Body('id') id: number) {
     return this.usersService.blockUser(id);

@@ -160,7 +160,7 @@ export class GameService {
   async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
     const cookie = client.handshake.headers?.cookie
       ?.split(';')
-      .find((c) => c.trim().startsWith("token"))
+      .find((c) => c.trim().startsWith(process.env.TOKEN))
       ?.split('=')[1];
     if (!cookie) {
       client.disconnect();

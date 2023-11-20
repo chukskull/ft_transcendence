@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
-
+import { Inject } from '@nestjs/common';
+import { NotifGateway } from '../notifications.gateway';
 @Injectable()
 export class ConversationService {
   constructor(
@@ -12,49 +13,61 @@ export class ConversationService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(User)
     private UserRepository: Repository<User>,
+    @Inject(NotifGateway) private readonly notifGateway: NotifGateway,
   ) {}
 
-  async getMyDms() {
-    const MyUser = 1;
+  async getMyDms(MyUser: number) {
+    MyUser = 1;
     const user = await this.UserRepository.findOne({ where: { id: MyUser } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    } else {
-      const myConvs = await this.conversationRepository.find({
-        where: { members: user, is_group: false },
-        relations: ['members', 'chats', 'chats.sender'],
-      });
-      myConvs.forEach((conv) => {
-        conv.members = conv.members.filter((member) => member.id !== MyUser);
-      });
-      return myConvs;
-    }
+    if (!user) throw new NotFoundException('User not found');
+    console.log(user);
+    const myConvs = await this.conversationRepository.find({
+      where: { members: user, is_group: false },
+      relations: ['members', 'chats'],
+    });
+    if (!myConvs) throw new NotFoundException('Conversation not found');
+    myConvs.forEach((conv) => {
+      conv.members = conv.members.filter((member) => member.id !== MyUser);
+    });
+    return myConvs;
   }
   async getConversation(convId: number) {
     const conv = await this.conversationRepository.findOne({
       where: { id: convId },
       relations: ['members', 'chats'],
     });
-    if (!conv) {
-      throw new NotFoundException('Conversation not found');
-    } else {
-      const myUser = 1;
-      // check if user is in the conversation
-      const user = conv.members.find((member) => member.id === myUser);
-      if (!user) {
-        throw new NotFoundException('User not found in this conversation');
-      } else {
-        conv.members = conv.members.filter((member) => member.id !== myUser);
-        return conv;
-      }
-    }
+    if (!conv) throw new NotFoundException('Conversation not found');
+
+    const myUser = 1;
+    // check if user is in the conversation
+    const user = conv.members.find((member) => member.id === myUser);
+    if (!user)
+      throw new NotFoundException('User not found in this conversation');
+
+    conv.members = conv.members.filter((member) => member.id !== myUser);
+    return conv;
   }
 
-  async addMessageToConversation(convId: number, message: Chat) {
+  async addMessageToConversation(convId: number, message: Chat, sender: User) {
     const conv = await this.conversationRepository.findOne({
       where: { id: convId },
+      relations: ['members', 'chats'],
     });
-    conv.chats.push(message);
+    const user = conv.members?.find((member) => member.id === sender.id);
+    if (!user)
+      throw new NotFoundException('User not found in this conversation');
+    try {
+      conv.chats.push(message);
+      if (!conv.is_group) {
+        const otherUser = conv.members.find(
+          (member) => member.id !== sender.id,
+        );
+        this.notifGateway.newMessage(message, otherUser.id);
+      }
+      await this.conversationRepository.save(conv);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async createConversation(meId: number, friendId: number) {

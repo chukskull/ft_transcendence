@@ -9,7 +9,7 @@ import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
-    private matchHistory: Repository<MatchHistory>,
+    private matchHistoryRepository: Repository<MatchHistory>,
     private userService: UserService,
   ) {}
 
@@ -17,18 +17,70 @@ export class MatchHistoryService {
    * Creates a new match history entry in the database.
    * @param createMatchHistoryDto - The DTO containing the necessary data to create a new match history entry.
    */
-  async create(MatchHistoryDto: CreateMatchHistoryDto) {
+  async create(createMatchHistoryDto: CreateMatchHistoryDto) {
     const mh = new MatchHistory();
     mh.player1 = await this.userService.userProfile(
-      MatchHistoryDto.player1ID,
+      createMatchHistoryDto.player1ID,
     );
     mh.player2 = await this.userService.userProfile(
-      MatchHistoryDto.player2ID,
+      createMatchHistoryDto.player2ID,
     );
     mh.winner = await this.userService.userProfile(
-      MatchHistoryDto.winnerID,
+      createMatchHistoryDto.winnerID,
     );
     mh.date = new Date();
-    this.matchHistory.save(mh);
+    this.matchHistoryRepository.save(mh);
+  }
+
+  // TODO: rebuild getMatchHistory
+
+  async getMatchHistory(UserID: number) {
+    const mh = await this.matchHistoryRepository
+      .createQueryBuilder('mh')
+      .leftJoinAndSelect('match.player1', 'player1')
+      .leftJoinAndSelect('match.player2', 'player2')
+      .leftJoinAndSelect('match.winner', 'winner')
+      .where('player1.id = :id OR player2.id = :id', { UserID })
+      .orderBy('match.date', 'DESC')
+      .getMany();
+    return mh.map((matchHistory) => {
+      return matchHistory.player1.id === UserID
+        ? {
+            id: matchHistory.id,
+            player1: {
+              id: matchHistory.player1.id,
+              nickName: matchHistory.player1.nickName,
+            },
+            player2: {
+              id: matchHistory.player2.id,
+              nickName: matchHistory.player2.nickName,
+            },
+            winner: matchHistory.winner
+              ? {
+                  id: matchHistory.winner.id,
+                  nickName: matchHistory.winner.nickName,
+                }
+              : null,
+            date: matchHistory.date.toDateString(),
+          }
+        : {
+            id: matchHistory.id,
+            player1: {
+              id: matchHistory.player2.id,
+              nickName: matchHistory.player2.nickName,
+            },
+            player2: {
+              id: matchHistory.player1.id,
+              nickName: matchHistory.player1.nickName,
+            },
+            winner: matchHistory.winner
+              ? {
+                  id: matchHistory.winner.id,
+                  nickName: matchHistory.winner.nickName,
+                }
+              : null,
+            date: matchHistory.date.toDateString(),
+          };
+    });
   }
 }
