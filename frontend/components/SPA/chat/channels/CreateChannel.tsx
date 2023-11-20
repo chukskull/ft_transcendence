@@ -47,8 +47,9 @@ const CreateChannelModal = () => {
           <input
             type="text"
             id="channel-name"
-            placeholder="#NewChannel"
+            placeholder="NewChannel"
             value={name}
+            maxLength={18}
             onChange={(e) => setname(e.target.value)}
           />
         </div>
@@ -61,6 +62,7 @@ const CreateChannelModal = () => {
             placeholder="Set Password"
             value={password}
             onChange={(e) => setpassword(e.target.value)}
+            minLength={5}
           />
         </div>
         <div className={style["prv-btn"]}>

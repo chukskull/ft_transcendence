@@ -11,7 +11,7 @@ import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 
-const UserMenu = (user:any) => {
+const UserMenu = (user: any, channel: boolean) => {
   return (
     <>
       <div className={style["user-info"]}>
@@ -64,33 +64,37 @@ const UserMenu = (user:any) => {
           <FaUserSlash />
           Block
         </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios.post("/api/auth/logout");
-          }}
-        >
-          <FaUserShield />
-          Make A Moderator
-        </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios.post("/api/auth/logout");
-          }}
-        >
-          <FaVolumeMute />
-          Mute
-        </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios.post("/api/auth/logout");
-          }}
-        >
-          <FaBan />
-          Ban From Channel
-        </div>
+        {!channel && (
+          <>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                axios.post("/api/auth/logout");
+              }}
+            >
+              <FaUserShield />
+              Make A Moderator
+            </div>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                axios.post("/api/auth/logout");
+              }}
+            >
+              <FaVolumeMute />
+              Mute
+            </div>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                axios.post("/api/auth/logout");
+              }}
+            >
+              <FaBan />
+              Ban From Channel
+            </div>
+          </>
+        )}
       </div>
     </>
   );

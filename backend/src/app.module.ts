@@ -9,9 +9,6 @@ import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtGuard } from './auth/ft_oauth.guard';
-import { NotifGateway } from './notifications.gateway';
 import { PassportModule } from '@nestjs/passport';
 
 config();
