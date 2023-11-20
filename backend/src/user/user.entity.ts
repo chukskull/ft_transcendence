@@ -77,9 +77,9 @@ export class User {
   @JoinTable()
   achievements: Achievement[];
 
-  @ManyToMany(() => MatchHistory)
-  @JoinTable()
-  matchHistory: MatchHistory[];
+  // @ManyToMany(() => MatchHistory)
+  // @JoinTable()
+  // matchHistory: MatchHistory[];
 
   @ManyToMany(() => Channel)
   @JoinTable()

@@ -10,8 +10,9 @@ import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
 import { JwtModule } from '@nestjs/jwt';
-import { FtOauthGuard } from './guards/ft_oauth.guard';
+import { JwtGuard } from './auth/ft_oauth.guard';
 import { NotifGateway } from './notifications.gateway';
+import { PassportModule } from '@nestjs/passport';
 
 config();
 
@@ -23,6 +24,7 @@ config();
     UserModule,
     ConversationModule,
     AchievementModule,
+    PassportModule.register({ session: true }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env',
@@ -37,12 +39,8 @@ config();
       entities: ['dist/**/*.entity.js'],
       synchronize: true,
     }),
-    JwtModule.register({
-      secret: 'f439843--213+@y4t34u',
-      signOptions: { expiresIn: '30d' },
-    }),
   ],
   controllers: [AppController],
-  providers: [AppService, FtOauthGuard],
+  providers: [AppService],
 })
 export class AppModule {}
