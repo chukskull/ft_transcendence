@@ -92,18 +92,18 @@ const MembersSection = ({ members }: any) => {
         {members?.map((e: any) => (
           <div className={style["member"]}>
             <ProfileComp
-              key={e.id}
-              id={e.id}
-              img={e.avatarUrl}
-              nickName={e.nickName}
-              firstName={e.firstName}
-              lastName={e.lastName}
+              key={e?.id}
+              id={e?.id}
+              img={e?.avatarUrl}
+              nickName={e?.nickName}
+              firstName={e?.firstName}
+              lastName={e?.lastName}
               inChannel={true}
             />
           </div>
         ))}
       </div>
-      <div className={style["total"]}>Total: {members.length}</div>
+      <div className={style["total"]}>Total: {members?.length}</div>
     </div>
   );
 };
