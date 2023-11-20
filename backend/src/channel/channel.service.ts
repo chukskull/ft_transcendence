@@ -297,41 +297,40 @@ export class ChannelService {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
     });
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
-    }
+    if (!channel) throw new NotFoundException('Channel not found');
+
+    if (channel.owner.id === userId)
+      throw new NotFoundException('User is owner');
     const requestMaker = await this.userRepository.findOne({
       where: { id: mod },
     });
-    if (!requestMaker) {
-      throw new NotFoundException('User not found');
-    }
+    if (!requestMaker) throw new NotFoundException('User not found');
+
     const isMod = channel.Moderators.some(
       (member) => member.id === requestMaker.id,
     );
-    if (!isMod) {
-      throw new NotFoundException('User not mod from channel');
-    }
+    if (!isMod) throw new NotFoundException('User not mod from channel');
 
     const conv = await this.conversationRepository.findOne({
       where: {
         id: channel.conversation.id,
       },
     });
-    if (!conv) {
-      throw new NotFoundException('Conversation not found');
-    }
+    if (!conv) throw new NotFoundException('Conversation not found');
+
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['conversations', 'channels'],
     });
+    if (!user) throw new NotFoundException('User not found');
+
     if (action == 1) {
       const isAlreadyBanned = channel.BannedUsers.some(
         (member) => member?.id === userId,
       );
-      if (isAlreadyBanned) {
+      if (isAlreadyBanned)
         throw new NotFoundException('User already banned from channel');
-      } else {
+      else {
         channel.BannedUsers?.push(user);
         conv.BannedUsers?.push(user);
         channel.members = channel.members.filter(

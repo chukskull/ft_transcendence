@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { Get, Param, Post, Body } from '@nestjs/common';
+import { Get, Param, Req } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 
 @Controller('conversations')
@@ -12,7 +12,9 @@ export class ConversationController {
   }
 
   @Get('/myDms')
-  async getMyDms() {
-    return this.conversationService.getMyDms();
+  async getMyDms(@Req() req) {
+    if (!req?.user) return [];
+    return this.conversationService.getMyDms(req?.user.id);
   }
 }
+

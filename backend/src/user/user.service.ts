@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { Conversation } from '../conversations/conversation.entity';
 import { NotFoundException } from '@nestjs/common';
+import { NotifGateway } from 'src/notifications.gateway';
+
 @Injectable()
 export class UserService {
   constructor(
+    private readonly notifGateway: NotifGateway,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,
@@ -136,7 +139,7 @@ export class UserService {
     return queryBuilder.getMany();
   }
 
-  async sendFriendRequest(friendID: number): Promise<any> {
+  async sendFriendRequest(myID: number, friendID: number): Promise<any> {
     const { client, friend } = await this.getClientAndFriend(friendID);
 
     if (this.isAlreadyFriend(client, friend)) {
@@ -152,7 +155,9 @@ export class UserService {
     }
 
     friend.pendingFriendRequests.push(client);
-    return this.userRepository.save(friend);
+    const SavedFriend = this.userRepository.save(friend);
+
+    return SavedFriend;
   }
 
   async acceptFriendRequest(friendID: number): Promise<any> {
@@ -333,7 +338,6 @@ export class UserService {
     return this.userRepository.save(client);
   }
 
-  
   private isAlreadyBlocked(client: User, blocked: User): boolean {
     return client.blockedUsers.some((user) => user.id === blocked.id);
   }

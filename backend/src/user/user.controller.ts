@@ -1,6 +1,15 @@
-import { Controller, UseGuards, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Post,
+  Param,
+  Body,
+  Req,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
+import { JwtGuard } from 'src/auth/ft_oauth.guard';
 import {
   IsString,
   IsNotEmpty,
@@ -8,7 +17,7 @@ import {
   IsOptional,
   IsNumber,
 } from 'class-validator';
-import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
+// import { JwtGuard } from 'src/guards/ft_oauth.guard';
 
 class fillDto {
   @IsString()
@@ -43,78 +52,72 @@ class updateDto {
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @Post('create')
-  async create(@Body() data): Promise<User> {
-    return this.usersService.createNewUser(
-      data.intraLogin,
-      data.avatarUrl,
-      data.email,
-    );
-  }
-
-  @UseGuards()
+  // @Post('create')
+  // async create(@Body() data): Promise<User> {
+  //   return this.usersService.createNewUser(
+  //     data.intraLogin,
+  //     data.avatarUrl,
+  //     data.email,
+  //   );
+  // }
   @Get()
   async all(): Promise<User[]> {
     return this.usersService.all();
   }
 
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
   @Get('profile/:userId')
-  async findUser(@Param('userId') userId: any): Promise<User> {
+  @UseGuards(JwtGuard)
+  async findUser(@Param('userId') userId: any, @Req() req: any): Promise<User> {
+    console.log(req.user);
     return this.usersService.userProfile(userId);
   }
 
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
   @Get('/friends')
+  @UseGuards(JwtGuard)
   async getFriends(): Promise<User[]> {
     return this.usersService.getFriends();
   }
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/fill')
   async fill(@Body() data: fillDto) {
     return this.usersService.fillData(data);
   }
 
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/update')
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
   @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
   @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Get('/leaderboard')
-  async getLeaderboard(): Promise<User[]> {
+  async getLeaderboard(@Req() req: any) {
+    console.log(req.user);
     return this.usersService.getLeaderboard();
   }
 
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/sendFriendRequest/:friendId')
-  async addFriend(@Param('friendId') id: number) {
-    return this.usersService.sendFriendRequest(id);
+  async addFriend(@Param('friendId') id: number, @Req() req: any) {
+    const myId = req.user.id;
+    return this.usersService.sendFriendRequest(myId, id);
   }
 
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/acceptFriendRequest/:friendId')
   async acceptFriendRequest(@Param('friendId') id: number) {
     return this.usersService.acceptFriendRequest(id);
   }
 
-  @UseGuards()
-  @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/blockFriend')
   async blockFriend(@Body('id') id: number) {
     return this.usersService.blockUser(id);
