@@ -22,7 +22,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     return (
       <div className="flex flex-col justify-center">
         <h1 className="text-gray-400 text-3xl font-semibold text-center">
-          No Users {":)"}
+          No Users
         </h1>
       </div>
     );
