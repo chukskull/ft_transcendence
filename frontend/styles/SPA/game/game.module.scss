@@ -1,6 +1,7 @@
 .gamePage {
     width: 100%;
-    height: 93.3vh;
+    height: 74vh;
+    margin-top: 7rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -120,7 +121,6 @@
         margin-top: 30px;
         outline: none;
         .game {
-
             outline: none;
             width: 860px;
             height: 505px;
@@ -212,64 +212,25 @@
             }
         }
 
-        .minecraft {
-            @extend .game;
-            border: 5px solid #00a105;
-            border-radius: 0px;
-            animation: none;
-            background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/00f3ad63-982c-4e4c-aa1c-6db3e982cf3e/dexjjuy-04cec02e-040b-4549-9d79-9c33569d54bb.png/v1/fill/w_1136,h_704,q_70,strp/minecraft_8_bit_2d_background_by_gamecubian_dexjjuy-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzY3IiwicGF0aCI6IlwvZlwvMDBmM2FkNjMtOTgyYy00ZTRjLWFhMWMtNmRiM2U5ODJjZjNlXC9kZXhqanV5LTA0Y2VjMDJlLTA0MGItNDU0OS05ZDc5LTljMzM1NjlkNTRiYi5wbmciLCJ3aWR0aCI6Ijw9MTIzOCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.85bDmsfjGH4r8vt2seWyGwGBkPZpKY4AGRM9MM29XY4");
-            background-size: cover;
-            background-position: center;
-            .player {
-                box-shadow: none;
-                border-radius: 0px;
-                background-image: url("https://static.wikia.nocookie.net/minecraft_gamepedia/images/8/8f/Steve_%28classic%29_JE6.png");
-                transform: scaleX(-1);
-                background-size: cover;
-                background-position: center;
-                width: 50px;
-                background-color: transparent;
-                left: 5px;
-            }
-            .ai {
-                transform: scaleX(1);
-
-                border-radius: 0px;
-                background-image: url("https://static.wikia.nocookie.net/characters/images/7/78/368px-Enderman_normal.png");
-                right: 5px;
-                left: auto;
-            }
-            .ball {
-                box-shadow: none;
-                border-radius: 0px;
-                filter: none;
-                background-image: url("https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/7a/Eye_of_Ender_JE2_BE2.png");
-                background-size: cover;
-                background-position: center;
-                width: 35px;
-                height: 35px;
-                background-color: transparent;
-            }
-        }
         .gym {
             @extend .game;
-            border: 5px solid #000000;
-            border-radius: 0px;
+            border: 5px solid #fff7f7;
+            border-radius: 15px;
             animation: none;
-            background-image: url("https://media.tenor.com/NuHYIZ9z0j4AAAAd/kyriakos-grizzly-kyriakos.gif");
+            background-image: url("https://w7.pngwing.com/pngs/487/704/png-transparent-football-pitch-graphy-american-football-football-field-text-photography-computer-wallpaper.png");
             background-size: cover;
             background-position: center;
             .player {
-                background: black;
+                background: rgb(255, 255, 255);
                 box-shadow: none;
                 border-radius: 0px;
             }
             .ball {
-                background-image: url("https://pngimg.com/uploads/weight_plate/weight_plate_PNG11.png");
+                background-image: url("https://w7.pngwing.com/pngs/248/249/png-transparent-american-football-football-team-football-sport-sports-equipment-football-team.png");
                 background-size: cover;
                 background-position: center;
-                width: 40px;
-                height: 40px;
+                width: 30px;
+                height: 30px;
                 background-color: transparent;
                 box-shadow: 0px 5px 16px rgb(0, 0, 0);
                 filter: none;
@@ -297,6 +258,5 @@
             word-spacing: 5px;
             text-shadow: 0px 0px 9px rgba(255, 255, 255, 0.648);
         }
-
     }
 }
