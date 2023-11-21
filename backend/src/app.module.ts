@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -9,10 +9,11 @@ import { AchievementModule } from './achievement/achievement.module';
 import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
-import { NotifGateway } from './notifications.gateway';
+import { PassportModule } from '@nestjs/passport';
 
 config();
 
+@Global()
 @Module({
   imports: [
     AuthModule,
@@ -20,6 +21,7 @@ config();
     UserModule,
     ConversationModule,
     AchievementModule,
+    PassportModule.register({ session: true }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env',
