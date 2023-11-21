@@ -1,7 +1,7 @@
 import Matter, { Body, Bodies, Engine, World, Common, Events} from 'matter-js';
 import { Socket } from 'socket.io';
 import {
-	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, INIT_BALL_SPEED, PADDLE1_POSITION, PADDLE2_POSITION, BALL_POSITION, DAMPING, MAX_ANGLE, PlayerNumber, Color
+	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, INIT_BALL_SPEED, PADDLE1_POSITION, PADDLE2_POSITION, BALL_POSITION, DAMPING, MAX_ANGLE, PlayerNumber
 } from './game.service';
 
 export class GameInstance {
@@ -90,8 +90,8 @@ export class GameInstance {
 			});
 			
 			setTimeout(() => {
-				player1.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 1, color: Common.choose(Color.White, Color.Green, Color.teal) }));
-				player2.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 2, color: Common.choose(Color.White, Color.Green, Color.teal) }));
+				player1.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 1 }));
+				player2.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 2 }));
 			}, 1000);
 			player1.on('ready', () => {
 				this.player1ready = true;
