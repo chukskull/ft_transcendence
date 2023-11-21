@@ -51,7 +51,6 @@ export default function TheGame({
   const [playerPaddleY, setPlayerPaddleY] = useState(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
 
-
   const keys = useKeyHandler();
 
   useEffect(() => {
@@ -89,15 +88,12 @@ export default function TheGame({
           speedY: 2,
         });
         return;
-
       }
 
       // Ball collisions with top and bottom walls
       if (
-
         ball.y + ball.speedY > canvasHeight - 15 ||
         ball.y + ball.speedY < -3
-
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
@@ -109,8 +105,7 @@ export default function TheGame({
           ball.y >= playerPaddleY &&
           ball.y <= playerPaddleY + 110)
       ) {
-        // Increase ball speed on paddle collision
-        const increasedSpeedX = -ball.speedX * 1.05; // Increase speed by a factor (e.g., 1.2)
+        const increasedSpeedX = -ball.speedX;
         setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
       }
 
@@ -121,11 +116,10 @@ export default function TheGame({
         } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
           setEnemyPaddleY(EnemyPaddleY - 2);
         }
-
       }
     };
 
-    const gameInterval = setInterval(gameLoop, 10);
+    const gameInterval = setInterval(gameLoop, 5);
 
     return () => {
       clearInterval(gameInterval);
