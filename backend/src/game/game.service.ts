@@ -27,11 +27,6 @@ export enum PlayerNumber {
   One,
   Two,
 }
-export enum Color {
-  White = 'white',
-  Green = 'green',
-  teal = 'teal',
-}
 
 @Injectable()
 export class GameService {
@@ -62,7 +57,7 @@ export class GameService {
     const invUser = this.onlineUsers.get(player2.id);
     if (invUser) {
       invUser.forEach((sock) => {
-        sock.emit('invite', { player: player1, color: Color.White });
+        sock.emit('invite', { player: player1});
         sock.removeAllListeners('invResponse');
         sock.once('invResponse', (response) => {
           invUser.forEach((sock_) => {

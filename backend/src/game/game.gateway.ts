@@ -57,8 +57,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	*/
 	@SubscribeMessage('createGame')
 	async createGame(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
-		const id = await this.gameService.checkCookie(client)['id']
-		this.gameService.onlineUsers.get(id).add(client)
 		this.gameService.createGame(client, payload)
 	}
 
@@ -67,7 +65,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	*/
 	@SubscribeMessage('inviteFriend')
 	async inviteFriend(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
-		const id = await this.gameService.checkCookie(client)['id']
 		this.gameService.inviteFriend(client, payload)
 	}
 }
