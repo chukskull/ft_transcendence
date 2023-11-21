@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
+import { JwtGuard } from 'src/auth/ft_oauth.guard';
 import {
   IsString,
   IsNotEmpty,
@@ -17,7 +18,7 @@ import {
   IsNumber,
   Length,
 } from 'class-validator';
-// import { FtOauthGuard } from 'src/guards/ft_oauth.guard';
+// import { JwtGuard } from 'src/guards/ft_oauth.guard';
 
 class fillDto {
   @IsString()
@@ -67,45 +68,45 @@ export class UserController {
   }
 
   @Get('profile/:userId')
-  // @UseGuards(FtOauthGuard)
+  @UseGuards(JwtGuard)
   async findUser(@Param('userId') userId: any, @Req() req: any): Promise<User> {
     console.log(req.user);
     return this.usersService.userProfile(userId);
   }
 
-  // @UseGuards(FtOauthGuard)
   @Get('/friends')
+  @UseGuards(JwtGuard)
   async getFriends(): Promise<User[]> {
     return this.usersService.getFriends();
   }
-  // @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/fill')
   async fill(@Body() data: fillDto, @Req() req: any) {
     return this.usersService.fillData(data, req.user.id);
   }
 
-  // @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/update')
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
   @UseGuards()
-  // @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
   @UseGuards()
-  // @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Get('/leaderboard')
   async getLeaderboard(@Req() req: any) {
     console.log(req.user);
     return this.usersService.getLeaderboard();
   }
 
-  // @UseGuards(FtOauthGuard)
+  // @UseGuards(JwtGuard)
   @Post('/sendFriendRequest/:friendId')
   async addFriend(@Param('friendId') id: number, @Req() req: any) {
     const myId = req.user.id;

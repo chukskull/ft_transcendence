@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
+import { UnauthorizedException } from '@nestjs/common';
 @Injectable()
 export class AuthService {
   constructor(
@@ -19,9 +20,9 @@ export class AuthService {
 
   async verifyToken(token: string) {
     try {
-      return this.jwtService.verifyAsync(token);
+      return this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
     } catch (e) {
-      return null;
+      throw new UnauthorizedException('Invalid token');
     }
   }
 
