@@ -16,14 +16,20 @@ export class UserService {
   ) {}
 
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
+    let alreadyExists;
     if (!intraLogin) {
-      return null;
+      alreadyExists = await this.userRepository.findOne({
+        where: {
+          intraLogin: intraLogin,
+        },
+      });
+    } else {
+      alreadyExists = await this.userRepository.findOne({
+        where: {
+          email: email,
+        },
+      });
     }
-    const alreadyExists = await this.userRepository.findOne({
-      where: {
-        intraLogin: intraLogin,
-      },
-    });
     if (alreadyExists) {
       return null;
     }
@@ -33,15 +39,15 @@ export class UserService {
     user.wins = 0;
     user.totalGames = 0;
     user.email = email;
+    user.nickName = intraLogin ? intraLogin : email;
     user.firstName = '';
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    // user.matchHistory = [];
+    user.matchHistory = [];
     user.status = 'offline';
-    user.nickName = intraLogin;
     user.conversations = [];
     return this.userRepository.save(user);
   }
