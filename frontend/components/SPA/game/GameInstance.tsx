@@ -86,6 +86,29 @@ const GameInstance = () => {
 			socket.emit("createGame");
 		});
 
+		const handleKeyDown = (event: any) => {
+			const speed = 5;
+			let newY = player1PaddleY;
+
+			if (event.key === "ArrowUp") {
+				newY -= speed;
+			} else if (event.key === "ArrowDown") {
+				newY += speed;
+			}
+
+			setPlayer1PaddleY(newY);
+			Body.setPosition(paddle1, { x: 10, y: newY });
+
+			socket.emit("sendPaddleState", { y: newY });
+		}
+
+		document.addEventListener("keydown", handleKeyDown);
+
+		socket.on("updateOpponentPaddleState", (data: any) => {
+			setPlayer2PaddleY(data.y);
+			Body.setPosition(paddle2, { x: 850, y: data.y });
+		});
+
 		socket.on("sendPaddleState", (data: any) => {
 			setPlayer2PaddleY(data.y);
 		});

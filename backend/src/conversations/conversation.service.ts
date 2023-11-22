@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
+import { NotifGateway } from '../notifications.gateway';
 @Injectable()
 export class ConversationService {
   constructor(
@@ -12,14 +13,14 @@ export class ConversationService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(User)
     private UserRepository: Repository<User>,
-
+    @Inject(NotifGateway) private readonly notifGateway: NotifGateway,
   ) {}
 
   async getMyDms(MyUser: number) {
     MyUser = 1;
     const user = await this.UserRepository.findOne({ where: { id: MyUser } });
     if (!user) throw new NotFoundException('User not found');
-    console.log(user);
+    console.log("rengoerijgeroi + " +MyUser);
     const myConvs = await this.conversationRepository.find({
       where: { members: user, is_group: false },
       relations: ['members', 'chats'],
@@ -57,6 +58,12 @@ export class ConversationService {
       throw new NotFoundException('User not found in this conversation');
     try {
       conv.chats.push(message);
+      if (!conv.is_group) {
+        const otherUser = conv.members.find(
+          (member) => member.id !== sender.id,
+        );
+        this.notifGateway.newMessage(message, otherUser.id);
+      }
       await this.conversationRepository.save(conv);
     } catch (e) {
       console.log(e);

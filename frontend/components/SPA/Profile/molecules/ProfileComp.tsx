@@ -14,6 +14,7 @@ interface ProfileCompProps {
   lastName?: string;
   color?: string;
   type?: "Protected" | "Public" | null;
+  inChannel?: boolean;
 }
 
 const ProfileComp = ({
@@ -24,6 +25,7 @@ const ProfileComp = ({
   lastName,
   type,
   color,
+  inChannel,
 }: ProfileCompProps) => {
   const [showModal, setShow] = React.useState(false);
 
@@ -47,9 +49,9 @@ const ProfileComp = ({
       >
         {showModal &&
           (type === "Protected" ? (
-            <ProtectedModal /> // Show protected modal for Protected channels
+            <ProtectedModal /> 
           ) : (
-            <UserMenu /> // Show standard user menu for other channel types
+            <UserMenu id={id} channel={inChannel} />
           ))}
       </Modal>
       <div className="flex items-center  gap-5" onClick={handleModalClick}>

@@ -10,11 +10,13 @@ const InviteSection = () => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     try {
-      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-        withCredentials: true,
-      }).then((res) => {
-        setFriends(res.data);
-      });
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setFriends(res.data);
+        });
     } catch (err) {
       console.log(err);
     }
@@ -62,6 +64,7 @@ const AuthoritySection = ({ owner, mods }: any) => {
         nickName={owner?.nickName}
         firstName={owner?.firstName}
         lastName={owner?.lastName}
+        inChannel={false}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>
@@ -73,6 +76,7 @@ const AuthoritySection = ({ owner, mods }: any) => {
             nickName={e.nickName}
             firstName={e.firstName}
             lastName={e.lastName}
+            inChannel={true}
           />
         ))}
       </div>
@@ -88,17 +92,18 @@ const MembersSection = ({ members }: any) => {
         {members?.map((e: any) => (
           <div className={style["member"]}>
             <ProfileComp
-              key={e.id}
-              id={e.id}
-              img={e.avatarUrl}
-              nickName={e.nickName}
-              firstName={e.firstName}
-              lastName={e.lastName}
+              key={e?.id}
+              id={e?.id}
+              img={e?.avatarUrl}
+              nickName={e?.nickName}
+              firstName={e?.firstName}
+              lastName={e?.lastName}
+              inChannel={true}
             />
           </div>
         ))}
       </div>
-      <div className={style["total"]}>Total: {members.length}</div>
+      <div className={style["total"]}>Total: {members?.length}</div>
     </div>
   );
 };
@@ -107,7 +112,9 @@ const ChannelMenu = ({ channel }: any) => {
   const [activeSection, setActiveSection] = useState<string>("Invite");
   const [active, setActive] = useState(0);
   const [channelData, setChannelData] = useState<any>(null);
-
+  const isMod = channelData?.Moderators?.some(
+    (e: any) => e.id === localStorage.getItem("id")
+  );
   const handleButtonClick = (sectionName: string) => {
     setActiveSection(sectionName);
   };
@@ -117,9 +124,12 @@ const ChannelMenu = ({ channel }: any) => {
   useEffect(() => {
     try {
       axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`, {
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`,
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setChannelData(res.data);
         });
