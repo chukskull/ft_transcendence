@@ -21,7 +21,9 @@ const Game: React.FC = () => {
   const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
   const [online, setOnline] = useState<boolean>(false);
 
-  const joinMatchmaking = () => {};
+  const joinMatchmaking = () => {
+    
+  };
   return (
     <div className={style.gamePage}>
       <GHeader />
