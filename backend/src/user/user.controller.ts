@@ -76,8 +76,8 @@ export class UserController {
 
   @Get('/friends')
   @UseGuards(JwtGuard)
-  async getFriends(): Promise<User[]> {
-    return this.usersService.getFriends();
+  async getFriends(@Req() req: any) {
+    return this.usersService.getFriends(req.user.id);
   }
   // @UseGuards(JwtGuard)
   @Post('/fill')
