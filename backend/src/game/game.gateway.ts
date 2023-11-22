@@ -13,8 +13,9 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { subscribe } from 'diagnostics_channel';
 
-@WebSocketGateway()
+@WebSocketGateway({namespace: "/gameSocket"})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
 	@WebSocketServer() server;
@@ -49,15 +50,46 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (connectedSockets.size == 0) {
 				this.userService.setOffline(id)
 				this.gameService.onlineUsers.delete(id)
+				this.leaveQueue(client)
 			}
 		}
 	}
+
+	/*
+	*	Handle queue
+	*/
+
+	@SubscribeMessage('joinQueue')
+	async joinQueue(@ConnectedSocket() client: Socket) : Promise<boolean> {
+		this.gameService.joinQueue(client)
+		return true
+	}
+
+	@SubscribeMessage('leaveQueue')
+	async leaveQueue(@ConnectedSocket() client: Socket) {
+		this.gameService.leaveQueue(client)
+	}
+
+
 	/*
 	*	create Game
 	*/
+
 	@SubscribeMessage('createGame')
 	async createGame(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
-		this.gameService.createGame(client, payload)
+		const isInQueue = this.joinQueue(client)
+		if (isInQueue)
+			this.gameService.createGame(client, payload);
+	}
+
+	@SubscribeMessage('updateBall')
+	async updateBall(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
+		this.gameService.updateBall(client, payload)
+	}
+
+	@SubscribeMessage('updatePaddle')
+	async updatePaddle(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
+		this.gameService.updatePaddle(client, payload)
 	}
 
 	/*

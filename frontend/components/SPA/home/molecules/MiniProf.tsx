@@ -6,19 +6,25 @@ import React from "react";
 interface MiniProfProps {
   image: string;
   name: string;
+  id: number;
 }
 
-export const MiniProf = ({ image, name }: MiniProfProps) => {
+export const MiniProf = ({ image, name, id }: MiniProfProps) => {
+  const inviteToGame = (friendId: number) => {
+    console.log(friendId);
+  };
   return (
     <>
       <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[132px] bg-friend rounded-xl">
         <Avatar isBordered color="success" src={image} />
         <h1 className="max-w-[8ch] text-white text-base font-semibold">
-          {name}{" "}
+          {name}
         </h1>
-        <Button className="bg-live max-w-6xl h-5 text-white font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80">
-          {" "}
-          Invite{" "}
+        <Button
+          className="bg-live max-w-6xl h-5 text-white font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
+          onClick={() => inviteToGame(id)}
+        >
+          Invite
         </Button>
       </div>
     </>

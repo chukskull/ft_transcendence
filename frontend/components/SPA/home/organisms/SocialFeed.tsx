@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LiveGameRec from "../molecules/LiveGameRec";
 import MiniProf from "../molecules/MiniProf";
 import Leadrboard from "../../Profile/organisms/Leadrboard";
+import axios from "axios";
 
 export const SocialFeed = () => {
+  const [Friends, setFriends] = React.useState<any>([]);
+  useEffect(() => {
+    try {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setFriends(res.data);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   return (
     <div className="flex flex-row max-sm:items-center  gap-16 px-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-[80%]">
       <div className="flex flex-col  flex-grow border-1 border-white  rounded-3xl max-w-xl lg:max-w-5xl max-sm:max-w-xs">
@@ -21,8 +36,13 @@ export const SocialFeed = () => {
         </h1>
         <div className="flex flex-row  justify-center  m-5 flex-wrap gap-6 max-sm:gap-6 max-sm:px-10 overflow-y-auto">
           {Friends.length > 0 ? (
-            Friends.map((friend, index) => (
-              <MiniProf key={index} image={friend.imaeg} name={friend.name} />
+            Friends.map((friend: any) => (
+              <MiniProf
+                key={friend.id}
+                image={friend.avatarUrl}
+                name={friend.nickName}
+                id={friend.id}
+              />
             ))
           ) : (
             <div className="flex flex-col justify-center  ">
@@ -109,91 +129,5 @@ const Friends = [
   {
     imaeg: "https://i.pravatar.cc/300?img=18",
     name: "John Doe",
-  },
-];
-const fakeData = [
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=1",
-    imageRight: "https://i.pravatar.cc/300?img=2",
-    scoreLeft: 0,
-    scoreRight: 0,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=3",
-    imageRight: "https://i.pravatar.cc/300?img=4",
-    scoreLeft: 1,
-    scoreRight: 0,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=5",
-    imageRight: "https://i.pravatar.cc/300?img=6",
-    scoreLeft: 8,
-    scoreRight: 2,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=7",
-    imageRight: "https://i.pravatar.cc/300?img=8",
-    scoreLeft: 4,
-    scoreRight: 0,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=9",
-    imageRight: "https://i.pravatar.cc/300?img=10",
-    scoreLeft: 9,
-    scoreRight: 0,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=11",
-    imageRight: "https://i.pravatar.cc/300?img=12",
-    scoreLeft: 1,
-    scoreRight: 5,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=13",
-    imageRight: "https://i.pravatar.cc/300?img=14",
-    scoreLeft: 3,
-    scoreRight: 4,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=15",
-    imageRight: "https://i.pravatar.cc/300?img=16",
-    scoreLeft: 1,
-    scoreRight: 3,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=13",
-    imageRight: "https://i.pravatar.cc/300?img=14",
-    scoreLeft: 3,
-    scoreRight: 4,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=15",
-    imageRight: "https://i.pravatar.cc/300?img=16",
-    scoreLeft: 1,
-    scoreRight: 3,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=13",
-    imageRight: "https://i.pravatar.cc/300?img=14",
-    scoreLeft: 3,
-    scoreRight: 4,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=15",
-    imageRight: "https://i.pravatar.cc/300?img=16",
-    scoreLeft: 1,
-    scoreRight: 3,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=13",
-    imageRight: "https://i.pravatar.cc/300?img=14",
-    scoreLeft: 3,
-    scoreRight: 4,
-  },
-  {
-    imageLeft: "https://i.pravatar.cc/300?img=15",
-    imageRight: "https://i.pravatar.cc/300?img=16",
-    scoreLeft: 1,
-    scoreRight: 3,
   },
 ];

@@ -110,9 +110,9 @@ export class UserService {
     });
   }
 
-  async getFriends(): Promise<User[]> {
+  async getFriends(userId: number): Promise<User[]> {
     const client = await this.userRepository.findOne({
-      where: { id: 1 },
+      where: { id: userId },
       relations: ['friends'],
     });
     if (!client) {
