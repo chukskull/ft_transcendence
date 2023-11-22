@@ -3,9 +3,16 @@ import React from "react";
 import io from "socket.io-client";
 
 export const MatchButton = () => {
-  const socket = io();
-
   const handleJoinQueue = () => {
+    const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSocket`);
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("connected");
+      });
+      socket.on("disconnect", () => {
+        console.log("disconnected");
+      });
+    }
     socket.emit("joinQueue");
   };
 

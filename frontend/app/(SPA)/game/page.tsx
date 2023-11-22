@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
-import { Button } from "@nextui-org/react";
+import { MatchButton } from "@/components/SPA/home/atoms/MatchButton";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -21,9 +21,6 @@ const Game: React.FC = () => {
   const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
   const [online, setOnline] = useState<boolean>(false);
 
-  const joinMatchmaking = () => {
-    
-  };
   return (
     <div className={style.gamePage}>
       <GHeader />
@@ -37,22 +34,13 @@ const Game: React.FC = () => {
           <img src="https://i0.wp.com/mynintendonews.com/wp-content/uploads/2011/08/nes-controller.jpg" />
         </div>
         <div className={style.map} onClick={() => setMap("gym")}>
-          <p>CampNou</p>
-          <img src="https://www.trollfootball.me/upload/full/2018/12/25/messi-heatmap-vs-roma.jpg" />
+          <p>Grizzly</p>
+          <img src="https://w7.pngwing.com/pngs/276/422/png-transparent-football-field-football-field-green-background-football.png" />
         </div>
       </div>
       <div className="flex flex-col gap-9 justify-center items-center">
         <TheGame map={map} onlinemode={online} />
-        <div>
-          <Button
-            className="bg-live text-white font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
-            data-hover
-            data-focus
-            onClick={() => joinMatchmaking()}
-          >
-            JOIN MATCHMAKING
-          </Button>
-        </div>
+        <MatchButton />
       </div>
     </div>
   );

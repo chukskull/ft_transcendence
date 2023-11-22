@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
-import Matter , { Engine, World, Bodies } from 'matter-js';
+import Matter, { Engine, World, Bodies } from 'matter-js';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
@@ -57,7 +57,7 @@ export class GameService {
     const invUser = this.onlineUsers.get(player2.id);
     if (invUser) {
       invUser.forEach((sock) => {
-        sock.emit('invite', { player: player1});
+        sock.emit('invite', { player: player1 });
         sock.removeAllListeners('invResponse');
         sock.once('invResponse', (response) => {
           invUser.forEach((sock_) => {
@@ -147,7 +147,10 @@ export class GameService {
       }
 
       // Increase ball speed after each paddle collision
-      if (Matter.collision(ball, paddle1).collided || Matter.collision(ball, paddle2).collided) {
+      if (
+        Matter.collision(ball, paddle1).collided ||
+        Matter.collision(ball, paddle2).collided
+      ) {
         game.speed += 0.5;
         Body.setVelocity(ball, {
           x: ball.velocity.x * game.speed,
@@ -164,7 +167,7 @@ export class GameService {
   async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
     const cookie = client.handshake.headers?.cookie
       ?.split(';')
-      .find((c) => c.trim().startsWith("token"))
+      .find((c) => c.trim().startsWith('token'))
       ?.split('=')[1];
     if (!cookie) {
       client.disconnect();
@@ -173,8 +176,8 @@ export class GameService {
     return this.jwtService.verify(cookie);
   }
   /*
-  * Join matchmaking queue
-  */
+   * Join matchmaking queue
+   */
   async joinQueue(client: Socket): Promise<void> {
     const user = await this.checkCookie(client);
     if (!user) {
@@ -228,7 +231,10 @@ export class GameService {
    */
   createGame(socket: Socket, payload: any) {
     const { player1, player2 } = payload;
-    if (!this.onlineUsers.get(player1.id)?.has(socket) || !this.onlineUsers.get(player2.id)?.has(socket))
+    if (
+      !this.onlineUsers.get(player1.id)?.has(socket) ||
+      !this.onlineUsers.get(player2.id)?.has(socket)
+    )
       return;
     if (
       this.currPlayers.find((player) => player.id === player1.id) ||
