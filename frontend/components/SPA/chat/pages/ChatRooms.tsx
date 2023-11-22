@@ -5,17 +5,35 @@ import EmojiPicker from "emoji-picker-react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import io from "socket.io-client";
 import MsgsList from "@/components/SPA/chat/MessagesList";
-
+import axios from "axios";
 interface ChatRoomsProps {
   id: String | String[];
+}
+interface Chat {
+  id: number;
+  sender: any;
+  messahe: string;
+  timestamp: Date;
 }
 
 export default function ChatRooms({ id }: ChatRoomsProps) {
   const [socket, setSocket] = useState<any>(null);
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [msgs, setMsgs] = useState([]);
+  const [msgs, setMsgs] = useState<Chat[]>([]);
 
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/${id}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setMsgs(res.data.chats);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   useEffect(() => {
     const newSocket = io("http://localhost:1337/chatSocket");
     setSocket(newSocket);
@@ -38,7 +56,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
 
     socket.on("newMessage", (newMessage: any) => {
       console.log("newMessage : " + newMessage);
-      setMsgs((prevMsgs): any => [...prevMsgs, newMessage]);
+      setMsgs((prevMsgs: Chat[]) => [...prevMsgs, newMessage]);
     });
 
     return () => {
