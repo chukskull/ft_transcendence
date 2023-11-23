@@ -114,25 +114,10 @@ export class GameService {
   }
 
   /*
-   * checks if the cookie is valid
-   */
-
-  async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
-    const cookie = client.handshake.headers?.cookie
-      ?.split(';')
-      .find((c) => c.trim().startsWith("token"))
-      ?.split('=')[1];
-    if (!cookie) {
-      client.disconnect();
-      return;
-    }
-    return this.jwtService.verify(cookie);
-  }
-  /*
   * Join matchmaking queue
   */
   async joinQueue(client: Socket): Promise<boolean> {
-    const user = await this.checkCookie(client);
+    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
     if (!user) {
       client.disconnect();
       return false;
@@ -163,7 +148,7 @@ export class GameService {
    * leave matchmaking queue
    */
   async leaveQueue(client: Socket) {
-    const user = client.handshake.auth.user;
+    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
     if (!user) {
       client.disconnect();
       return;
