@@ -58,29 +58,29 @@ export class GameInstance {
 	}
 
 	public updateBall(prevBall): void {
-		const ball = this.ball;
+		prevBall = this.ball;
 		const paddle1Position = this.paddle1Position;
 		const paddle2Position = this.paddle2Position;
 
 		// Move ball
-		ball.x += ball.speedX;
-		ball.y += ball.speedY;
+		prevBall.x += prevBall.speedX;
+		prevBall.y += prevBall.speedY;
 
 		// Bounce off top and bottom edges
-		if (ball.y + ball.speedY > GAME_HEIGHT - BALL_RADIUS || ball.y + ball.speedY < BALL_RADIUS)
-			ball.speedY = -ball.speedY;
+		if (prevBall.y + prevBall.speedY > GAME_HEIGHT - BALL_RADIUS || prevBall.y + prevBall.speedY < BALL_RADIUS)
+			prevBall.speedY = -prevBall.speedY;
 
 		// Bounce off paddles
-		else if ((ball.x + ball.speedX > GAME_WIDTH - 13 || (ball.x + ball.speedX < 25 && ball.y >= paddle1Position && ball.y <= paddle1Position + 110)) || (ball.x + ball.speedX < 13 || (ball.x + ball.speedX > 775 && ball.y >= paddle2Position && ball.y <= paddle2Position + 110))) {
-			const increasedSpeed = -ball.speedX;
-			ball.speedX = increasedSpeed;
+		else if ((prevBall.x + prevBall.speedX > GAME_WIDTH - 13 || (prevBall.x + prevBall.speedX < 25 && prevBall.y >= paddle1Position && prevBall.y <= paddle1Position + 110)) || (prevBall.x + prevBall.speedX < 13 || (prevBall.x + prevBall.speedX > 775 && prevBall.y >= paddle2Position && prevBall.y <= paddle2Position + 110))) {
+			const increasedSpeed = -prevBall.speedX;
+			prevBall.speedX = increasedSpeed;
 		}
 
 		// Score
-		if (ball.x < 0) {
+		if (prevBall.x < 0) {
 			this.player2Score++;
 			this.resetBall();
-		} else if (ball.x > GAME_WIDTH) {
+		} else if (prevBall.x > GAME_WIDTH) {
 			this.player1Score++;
 			this.resetBall();
 		}
