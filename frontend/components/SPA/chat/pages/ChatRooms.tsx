@@ -8,6 +8,7 @@ import MsgsList from "@/components/SPA/chat/MessagesList";
 import axios from "axios";
 interface ChatRoomsProps {
   id: String | String[];
+  isGroup: boolean;
 }
 interface Chat {
   id: number;
@@ -16,15 +17,18 @@ interface Chat {
   timestamp: Date;
 }
 
-export default function ChatRooms({ id }: ChatRoomsProps) {
+export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const [socket, setSocket] = useState<any>(null);
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [msgs, setMsgs] = useState<Chat[]>([]);
 
   useEffect(() => {
+    const endPoints = isGroup
+      ? `/api/channels/${id}/chat`
+      : `/api/users/friends/${id}/chat`;
     axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/${id}`, {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endPoints}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -35,7 +39,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
       });
   }, []);
   useEffect(() => {
-    const newSocket = io("http://localhost:1337/chatSocket");
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`);
     setSocket(newSocket);
 
     return () => {
@@ -74,7 +78,7 @@ export default function ChatRooms({ id }: ChatRoomsProps) {
     if (socket) {
       socket.emit("messageSent", {
         conversationId: 432423,
-        sender: "me",
+        sender: 2,
         message: message,
       });
 

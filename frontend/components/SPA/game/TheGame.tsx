@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
-
+import io from "socket.io-client";
 type Score = {
   player: number;
   ai: number;
@@ -37,6 +37,7 @@ export default function TheGame({
   map: string;
   onlinemode: boolean;
 }) {
+  const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSocket`);
   const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
