@@ -50,23 +50,26 @@ export class ConversationService {
     return conv;
   }
 
-  async addMessageToConversation(convId: number, message: Chat, sender: User) {
+  async addMessageToConversation(
+    convId: number,
+    message: Chat,
+    senderId: number,
+  ) {
     const conv = await this.conversationRepository.findOne({
       where: { id: convId },
       relations: ['members', 'chats'],
     });
-    const user = conv.members?.find((member) => member.id === sender.id);
+    const user = conv.members?.find((member) => member.id === senderId);
     if (!user)
       throw new NotFoundException('User not found in this conversation');
     try {
       conv.chats.push(message);
       if (!conv.is_group) {
-        const otherUser = conv.members.find(
-          (member) => member.id !== sender.id,
-        );
+        const otherUser = conv.members.find((member) => member.id !== senderId);
         this.notifGateway.newMessage(message, otherUser.id);
       }
       await this.conversationRepository.save(conv);
+      console.log(conv);
     } catch (e) {
       console.log(e);
     }

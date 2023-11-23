@@ -11,9 +11,7 @@ import { User } from '../user/user.entity';
 
 @Entity()
 export class Chat {
-  @PrimaryGeneratedColumn({
-    comment: 'Unique identifier for a chat',
-  })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => User)
