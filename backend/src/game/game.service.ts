@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
-import Matter, { Engine, World, Bodies } from 'matter-js';
+import Matter , { Engine, World, Bodies } from 'matter-js';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
@@ -17,10 +17,8 @@ export const PADDLE_WIDTH = 13;
 export const PADDLE_HEIGHT = 110;
 export const PADDLE_SPEED = 10;
 export const INIT_BALL_SPEED = 10;
-export const PADDLE1_POSITION = { x: 10, y: GAME_HEIGHT / 2 };
-export const PADDLE2_POSITION = { x: GAME_WIDTH - 10, y: GAME_HEIGHT / 2 };
-export const BALL_POSITION = { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 };
-export const DAMPING = 0.999;
+export const PADDLE1_POSITION = GAME_HEIGHT / 2
+export const PADDLE2_POSITION = GAME_HEIGHT / 2
 export const MAX_ANGLE = (5 * Math.PI) / 12;
 
 export enum PlayerNumber {
@@ -57,7 +55,7 @@ export class GameService {
     const invUser = this.onlineUsers.get(player2.id);
     if (invUser) {
       invUser.forEach((sock) => {
-        sock.emit('invite', { player: player1 });
+        sock.emit('invite', { player: player1});
         sock.removeAllListeners('invResponse');
         sock.once('invResponse', (response) => {
           invUser.forEach((sock_) => {
@@ -83,81 +81,36 @@ export class GameService {
     }
   }
 
-  async update() {
-    for (const key in this.activeGames) {
-      const game = this.activeGames[key];
-      if (game.inactive) {
-        delete this.activeGames[key];
-        continue;
-      }
-      const ball = game.ball;
-      const paddle1 = game.paddle1;
-      const paddle2 = game.paddle2;
-      const player1 = game.player1;
-      const player2 = game.player2;
-      const score = game.score;
-
-      Body.setVelocity(ball, {
-        x: ball.velocity.x * DAMPING,
-        y: ball.velocity.y * DAMPING,
-      });
-
-      if (ball.position.x < 0) {
-        score.player2++;
-        Body.setPosition(ball, BALL_POSITION);
-        Body.setVelocity(
-          ball,
-          game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity,
-        );
-        game.speed = INIT_BALL_SPEED;
-        player1.emit('updateScore', { score });
-        player2.emit('updateScore', { score });
-        if (score.player2 === 10) {
-          game.inactive = true;
-          player1.emit('changeState', { state: 'gameOver' });
-          player2.emit('changeState', { state: 'gameOver' });
-          const matchHistory = new MatchHistory();
-          matchHistory.player1 = player1.handshake.auth.user;
-          matchHistory.player2 = player2.handshake.auth.user;
-          matchHistory.winner = player2.handshake.auth.user;
-          matchHistory.date = new Date();
-          this.statsRepo.save(matchHistory);
-        }
-      } else if (ball && ball.position.x > GAME_WIDTH) {
-        score.player1++;
-        Body.setPosition(ball, BALL_POSITION);
-        Body.setVelocity(
-          ball,
-          game.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity,
-        );
-        game.speed = INIT_BALL_SPEED;
-        player1.emit('updateScore', { score });
-        player2.emit('updateScore', { score });
-        if (score.player1 === 10) {
-          game.inactive = true;
-          player1.emit('changeState', { state: 'gameOver' });
-          player2.emit('changeState', { state: 'gameOver' });
-          const matchHistory = new MatchHistory();
-          matchHistory.player1 = player1.handshake.auth.user;
-          matchHistory.player2 = player2.handshake.auth.user;
-          matchHistory.winner = player1.handshake.auth.user;
-          matchHistory.date = new Date();
-          this.statsRepo.save(matchHistory);
-        }
-      }
-
-      // Increase ball speed after each paddle collision
-      if (
-        Matter.collision(ball, paddle1).collided ||
-        Matter.collision(ball, paddle2).collided
-      ) {
-        game.speed += 0.5;
-        Body.setVelocity(ball, {
-          x: ball.velocity.x * game.speed,
-          y: ball.velocity.y * game.speed,
-        });
+  /*
+   * updates the game state
+   */
+  update(): void {
+    for (const game of Object.values(this.activeGames)) {
+      if (game.gameRunning) {
+        const prevBall = { ...game.ball };
+        game.updateBall(prevBall);
+        game.updatePaddle();
       }
     }
+  }
+
+
+
+  async updateBall(client: Socket, payload: any): Promise<void> {
+    const { player1, player2} = payload;
+    const game = this.activeGames[player1.id + ',' + player2.id];
+    if (!game) return;
+    else {
+      const prevBall = { ...game.ball };
+      game.updateBall(prevBall);
+    }
+  }
+
+  async updatePaddle(client: Socket, payload: any): Promise<void> {
+    const { player1, player2} = payload;
+    const game = this.activeGames[player1.id + ',' + player2.id];
+    if (!game) return;
+      game.updatePaddle();
   }
 
   /*
@@ -167,7 +120,7 @@ export class GameService {
   async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
     const cookie = client.handshake.headers?.cookie
       ?.split(';')
-      .find((c) => c.trim().startsWith('token'))
+      .find((c) => c.trim().startsWith("token"))
       ?.split('=')[1];
     if (!cookie) {
       client.disconnect();
@@ -176,13 +129,13 @@ export class GameService {
     return this.jwtService.verify(cookie);
   }
   /*
-   * Join matchmaking queue
-   */
-  async joinQueue(client: Socket): Promise<void> {
+  * Join matchmaking queue
+  */
+  async joinQueue(client: Socket): Promise<boolean> {
     const user = await this.checkCookie(client);
     if (!user) {
       client.disconnect();
-      return;
+      return false;
     }
     if (!this.onlineUsers.has(user.id)) {
       this.onlineUsers.set(user.id, new Set<Socket>());
@@ -195,7 +148,7 @@ export class GameService {
     });
     client.removeAllListeners('joinQueue');
     client.on('joinQueue', () => {
-      this.createGame(client, { player1: user });
+      this.queue.push({ id: user.id, socket: client });
     });
     client.removeAllListeners('leaveQueue');
     client.on('leaveQueue', () => {
@@ -231,10 +184,7 @@ export class GameService {
    */
   createGame(socket: Socket, payload: any) {
     const { player1, player2 } = payload;
-    if (
-      !this.onlineUsers.get(player1.id)?.has(socket) ||
-      !this.onlineUsers.get(player2.id)?.has(socket)
-    )
+    if (!this.onlineUsers.get(player1.id)?.has(socket) || !this.onlineUsers.get(player2.id)?.has(socket))
       return;
     if (
       this.currPlayers.find((player) => player.id === player1.id) ||
@@ -245,7 +195,7 @@ export class GameService {
     if (!player2) {
       // if player2 is not defined, player1 is waiting for an opponent
       if (!this.queue.find((player) => player.id === player1.id)) {
-        this.queue.push({ id: player1.id, socket });
+        
         socket.emit('changeState', { state: 'waitingForOponent' });
       } else {
         this.queue = this.queue.filter((player) => {
