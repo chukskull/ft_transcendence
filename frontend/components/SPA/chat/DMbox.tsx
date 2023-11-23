@@ -1,41 +1,18 @@
 import style from "@/styles/SPA/chat/chat.module.scss";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
-import { useState } from "react";
-import { Badge } from "@nextui-org/react";
 
-interface DMboxProps {
-  name: string;
-  online: boolean;
-  lastMsg: string;
-  lastMsgTime: string;
-  avatar: string;
-}
 interface DMSectionProps {
-  dm: DMboxProps;
-  SendConversationId: (id: string) => void;
+  dm: any;
   className?: string;
   badge?: any;
 }
 
-const DMbox = ({
-  dm,
-  SendConversationId,
-  className,
-  badge,
-}: DMSectionProps) => {
-  const sendConversationId = () => {
-    SendConversationId(dm.name);
-  };
+const DMbox = ({ dm, className, badge }: DMSectionProps) => {
   return (
-    <div
-      className={`${style["dm-item"]} ${className} `}
-      key={dm.name}
-      onClick={sendConversationId}
-    >
-      {" "}
-      <AvatarBubble badge={badge} avatar={dm.avatar} online={dm.online} />
+    <div className={`${style["dm-item"]} ${className} `} key={dm.id}>
+      <AvatarBubble badge={badge} avatar={dm.members[0].avatarUrl} online={dm?.online} />
       <div className={style["dm-info"]}>
-        <div className={style["dm-name"]}>{dm.name}</div>
+        <div className={style["dm-name"]}>{dm.members[0].nickName}</div>
         <div className={style["dm-last-msg"]}>{dm.lastMsg}</div>
       </div>
       <div className={style["dm-time"]}>{dm.lastMsgTime}</div>

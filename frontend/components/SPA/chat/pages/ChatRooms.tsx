@@ -91,7 +91,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   return (
     <div className={style["chat"]}>
       <div className={style["msgs"]}>
-        <MsgsList msgs={msgs} />
+        <MsgsList chats={msgs} />
       </div>
       <div className={style["msg-input"]}>
         <button

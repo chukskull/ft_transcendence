@@ -5,6 +5,6 @@ import React from "react";
 
 export default function UsersPage() {
   const params = useParams();
-  console.log(params);
+  console.log("PARAMS", params);
   return <ChatRooms id={params.id} isGroup={false}/>;
 }

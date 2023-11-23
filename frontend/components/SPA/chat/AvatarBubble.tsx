@@ -10,7 +10,6 @@ interface AvatarBubbleProps {
   badge?: any;
 }
 const AvatarBubble = ({ avatar, online, badge }: AvatarBubbleProps) => {
-  avatar = "https://i.pravatar.cc/300?img=1";
   return (
     <>
       <Badge isInvisible={badge ? false : true} content={badge} shape="circle">
