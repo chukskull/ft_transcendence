@@ -6,6 +6,7 @@ import {
   Param,
   Body,
   Req,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
@@ -75,54 +76,53 @@ export class UserController {
   }
 
   @Get('/friends')
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   async getFriends(@Req() req: any) {
     return this.usersService.getFriends(req.user.id);
   }
   @Get('/friends/:friendId/chat')
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   async getChat(@Req() req: any, @Param('friendId') friendId: number) {
     return this.usersService.getChatWithFriend(1, friendId);
   }
   // @UseGuards(JwtGuard)
   @Post('/fill')
   async fill(@Body() data: fillDto, @Req() req: any) {
+    console.log(req);
     return this.usersService.fillData(data, req.user.id);
   }
 
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Post('/update')
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
-  @UseGuards()
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
-  @UseGuards()
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Get('/leaderboard')
   async getLeaderboard(@Req() req: any) {
     console.log(req.user);
     return this.usersService.getLeaderboard();
   }
 
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Post('/sendFriendRequest/:friendId')
   async addFriend(@Param('friendId') id: number, @Req() req: any) {
     const myId = req.user.id;
     return this.usersService.sendFriendRequest(myId, id);
   }
-  // @UseGuards(FtOauthGuard)
+  @UseGuards(JwtGuard)
   @Get('/myFriendRequests')
   async myFriendRequests(@Req() req: any) {
     return this.usersService.getMyPendingFriendRequests(req.user.id);
   }
-  // @UseGuards(FtOauthGuard)
+  @UseGuards(JwtGuard)
   @Post('/FriendRequest/:friendId/:action')
   async FriendRequest(
     @Param('friendId') id: number,
@@ -132,7 +132,7 @@ export class UserController {
     return this.usersService.handleFriendRequest(id, action, req.user.id);
   }
 
-  // @UseGuards(FtOauthGuard)
+  @UseGuards(JwtGuard)
   @Post('/handleBlock/:friendId/:action')
   async blockFriend(
     @Param('friendId') frId: number,
