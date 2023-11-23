@@ -47,10 +47,11 @@ export class UserService {
     user.blockedUsers = [];
     user.matchHistory = [];
     user.status = 'offline';
+    user.nickName = intraLogin;
+    user.firstTimeLogiIn = true;
     user.conversations = [];
     return this.userRepository.save(user);
   }
-
   async validate42Callback(code: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: {
@@ -161,6 +162,10 @@ export class UserService {
 
   async setStatus(clientID: number, status: string): Promise<any> {
     return this.userRepository.update(clientID, { status: status });
+  }
+
+  async setStatusByNick(nickName: string, status: string): Promise<any> {
+    return this.userRepository.update(nickName, {status: status});
   }
 
   async getLeaderboard(): Promise<User[]> {
