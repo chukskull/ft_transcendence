@@ -11,21 +11,6 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async generateNewToken(user: User) {
-    return this.jwtService.sign({
-      email: user.email,
-      username: user.intraLogin,
-    });
-  }
-
-  async verifyToken(token: string) {
-    try {
-      return this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
-    } catch (e) {
-      throw new UnauthorizedException('Invalid token');
-    }
-  }
-
   async checkUser(username: string, email: string) {
     const user = await this.userService.findOne(email);
     if (!user) {
@@ -33,4 +18,19 @@ export class AuthService {
     }
     return user;
   }
+
+  async generateNewToken(user: User) {
+    return this.jwtService.sign({
+      email: user.email,
+    });
+  }
+
+  async verifyToken(token: string) {
+    try {
+      return this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+    } catch {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
 }

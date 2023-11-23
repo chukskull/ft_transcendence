@@ -5,12 +5,14 @@ import { FortyTwoStrategy } from './auth.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
-import { AppModule } from 'src/app.module';
 import { GoogleStrategy } from './google.strategy';
+import { User } from 'src/user/user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
     UserModule,
     PassportModule.register({ defaultStrategy: '42' }),
     JwtModule.register({

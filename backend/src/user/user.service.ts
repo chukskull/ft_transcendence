@@ -16,14 +16,20 @@ export class UserService {
   ) {}
 
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
+    let alreadyExists;
     if (!intraLogin) {
-      return null;
+      alreadyExists = await this.userRepository.findOne({
+        where: {
+          intraLogin: intraLogin,
+        },
+      });
+    } else {
+      alreadyExists = await this.userRepository.findOne({
+        where: {
+          email: email,
+        },
+      });
     }
-    const alreadyExists = await this.userRepository.findOne({
-      where: {
-        intraLogin: intraLogin,
-      },
-    });
     if (alreadyExists) {
       return null;
     }
@@ -42,10 +48,10 @@ export class UserService {
     // user.matchHistory = [];
     user.status = 'offline';
     user.nickName = intraLogin;
+    user.firstTimeLogiIn = true;
     user.conversations = [];
     return this.userRepository.save(user);
   }
-
   async validate42Callback(code: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: {
@@ -133,6 +139,10 @@ export class UserService {
 
   async setStatus(clientID: number, status: string): Promise<any> {
     return this.userRepository.update(clientID, { status: status });
+  }
+
+  async setStatusByNick(nickName: string, status: string): Promise<any> {
+    return this.userRepository.update(nickName, {status: status});
   }
 
   async getLeaderboard(): Promise<User[]> {
