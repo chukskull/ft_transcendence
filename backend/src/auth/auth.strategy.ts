@@ -24,7 +24,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     profile: any,
   ): Promise<any> {
     const userData = profile._json;
-
     let user = await this.authService.checkUser(userData.login, userData.email);
     if (!user)
       user = await this.userService.createNewUser(
@@ -33,7 +32,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         userData.email,
       );
     if (user) await this.userService.setStatus(userData.id, 'ONLINE');
-
-    return userData || null;
+    return user || null;
   }
 }
