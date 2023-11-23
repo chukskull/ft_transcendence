@@ -12,17 +12,18 @@ import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 
 const UserMenu = (user: any, channel: boolean) => {
+  const { id, nickName, avatarUrl, online } = user;
   return (
     <>
       <div className={style["user-info"]}>
-        <AvatarBubble avatar="/assets/components/Profile.svg" online />
-        <h2>John Doe</h2>
+        <AvatarBubble avatar={avatarUrl} online={online} />
+        <h2>{nickName}</h2>
       </div>
       <div className={style["menu"]}>
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios.post(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${id}`);
           }}
         >
           <FaUser />
@@ -31,7 +32,9 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios.post(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
+            );
           }}
         >
           <BsController />
@@ -40,7 +43,9 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios.post(
+              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/${nickName}`
+            );
           }}
         >
           <BsChatLeftText />
@@ -49,7 +54,9 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios.post(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addfriend/${id}`
+            );
           }}
         >
           <FaUserPlus />
@@ -58,7 +65,9 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios.post(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
+            );
           }}
         >
           <FaUserSlash />
@@ -69,7 +78,9 @@ const UserMenu = (user: any, channel: boolean) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post("/api/auth/logout");
+                axios.post(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/mod/${id}/1`
+                );
               }}
             >
               <FaUserShield />
@@ -78,7 +89,9 @@ const UserMenu = (user: any, channel: boolean) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post("/api/auth/logout");
+                axios.post(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/mute/${id}/1`
+                );
               }}
             >
               <FaVolumeMute />
@@ -87,7 +100,9 @@ const UserMenu = (user: any, channel: boolean) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post("/api/auth/logout");
+                axios.post(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/ban/${id}/1`
+                );
               }}
             >
               <FaBan />

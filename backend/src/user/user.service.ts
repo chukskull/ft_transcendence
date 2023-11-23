@@ -2,10 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { Conversation } from '../conversations/conversation.entity';
+import { Conversation, Chat } from '../conversations/conversation.entity';
 import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
-
 @Injectable()
 export class UserService {
   constructor(
@@ -48,10 +47,11 @@ export class UserService {
     user.blockedUsers = [];
     user.matchHistory = [];
     user.status = 'offline';
+    user.nickName = intraLogin;
+    user.firstTimeLogiIn = true;
     user.conversations = [];
     return this.userRepository.save(user);
   }
-
   async validate42Callback(code: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: {
@@ -120,6 +120,29 @@ export class UserService {
     }
     return client.friends;
   }
+  async getChatWithFriend(userId: number, friendId: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: [
+        'conversations',
+        'conversations.chats',
+        'conversations.members',
+        'conversations.chats.sender',
+      ],
+    });
+    if (!client) {
+      return null;
+    }
+    const conversation = client.conversations.find(
+      (conv) => (conv.is_group === false &&
+      conv.members.find((member) => member.id == friendId)),
+    );
+
+    if (!conversation) {
+      return null;
+    }
+    return conversation;
+  }
 
   async updateUserInfo(data): Promise<any> {
     const { nickName, profilePicture, twoFa, id } = data;
@@ -139,6 +162,10 @@ export class UserService {
 
   async setStatus(clientID: number, status: string): Promise<any> {
     return this.userRepository.update(clientID, { status: status });
+  }
+
+  async setStatusByNick(nickName: string, status: string): Promise<any> {
+    return this.userRepository.update(nickName, {status: status});
   }
 
   async getLeaderboard(): Promise<User[]> {

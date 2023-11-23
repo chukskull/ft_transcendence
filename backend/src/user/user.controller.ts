@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { JwtGuard } from 'src/auth/ft_oauth.guard';
+import { JwtGuard } from 'src/auth/Jwt.guard';
 import {
   IsString,
   IsNotEmpty,
@@ -75,9 +75,14 @@ export class UserController {
   }
 
   @Get('/friends')
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   async getFriends(@Req() req: any) {
     return this.usersService.getFriends(req.user.id);
+  }
+  @Get('/friends/:friendId/chat')
+  // @UseGuards(JwtGuard)
+  async getChat(@Req() req: any, @Param('friendId') friendId: number) {
+    return this.usersService.getChatWithFriend(1, friendId);
   }
   // @UseGuards(JwtGuard)
   @Post('/fill')

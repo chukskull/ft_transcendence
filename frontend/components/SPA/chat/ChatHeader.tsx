@@ -18,19 +18,17 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
   const router = useRouter();
   const leaveGroup = (id: number) => {
-    try {
-      axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/api/channels/${id}/leave`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            router.push("/chat/channels/1337");
-          }
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    console.log("hola " + id);
+    axios
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.status === 201) {
+          router.push("/chat/channels/1337");
+        }
+      });
   };
   return (
     <>
@@ -74,7 +72,9 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         {chatHeaderProps?.isChannel && (
           <FiLogOut
             className={style["leave-group"]}
-            onClick={leaveGroup(chatHeaderProps.dmOrChannel.id)}
+            onClick={() => {
+              leaveGroup(chatHeaderProps?.dmOrChannel?.id);
+            }}
           />
         )}
       </div>

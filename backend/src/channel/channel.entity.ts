@@ -29,7 +29,7 @@ export class Channel {
   @Column()
   is_protected: boolean;
 
-  @ManyToOne(() => Conversation, { nullable: true })
+  @ManyToOne(() => Conversation)
   conversation: Conversation;
 
   @ManyToMany(() => User)
