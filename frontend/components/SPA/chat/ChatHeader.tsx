@@ -18,7 +18,6 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
   const router = useRouter();
   const leaveGroup = (id: number) => {
-    console.log("hola " + id);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
         withCredentials: true,
@@ -55,7 +54,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           <div className={style["name"]}>
             {chatHeaderProps?.isChannel
               ? chatHeaderProps?.dmOrChannel?.name
-              : chatHeaderProps?.dmOrChannel}
+              : chatHeaderProps?.dmOrChannel.members[0].nickName}
           </div>
           <button
             onClick={() => {

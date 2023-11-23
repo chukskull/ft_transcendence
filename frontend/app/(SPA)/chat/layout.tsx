@@ -16,7 +16,7 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
     if (Type && DmOrChannel) {
       router.push(`/chat/channels/${DmOrChannel?.id}`);
     } else if (DmOrChannel) {
-      router.push(`/chat/users/${DmOrChannel?.nickName}`);
+      router.push(`/chat/users/${DmOrChannel?.members[0]?.nickName}`);
     }
   }, [Type, DmOrChannel, router]);
 

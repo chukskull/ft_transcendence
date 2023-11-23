@@ -13,9 +13,9 @@ export class ConversationController {
 
   @Get()
   async MyDms(@Req() req) {
-    if (!req.user) {
-      return [];
-    }
-    return this.conversationService.getMyDms(req.user.id);
+    // if (!req.user) {
+    //   return [];
+    // }
+    return this.conversationService.getMyDms(1);
   }
 }
