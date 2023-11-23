@@ -8,12 +8,13 @@ import {
 	MessageBody,
 	ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import { subscribe } from 'diagnostics_channel';
+import { WsGuard } from './ws.guard';
+
 
 @WebSocketGateway({namespace: "/gameSocket"})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -32,7 +33,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	*	Handle connection and disconnection
 	*/
 	async	handleConnection(client: Socket, ...args: any[]) {
-		const id = await this.gameService.checkCookie(client)['id']
+		const id = await this.jwtService.verify(client.handshake.headers.cookie.split('=')[1])['id']
 		this.userService.setOnline(id)
 		let connectedSockets = this.gameService.onlineUsers.get(id)
 		if (!connectedSockets)
@@ -43,7 +44,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	async handleDisconnect(client: Socket) {
-		const id = await this.gameService.checkCookie(client)['id']
+		const id = await this.jwtService.verify(client.handshake.headers.cookie.split('=')[1])['id']
 		let connectedSockets = this.gameService.onlineUsers.get(id)
 		if (connectedSockets) {
 			connectedSockets.delete(client)
@@ -58,13 +59,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/*
 	*	Handle queue
 	*/
-
+	@UseGuards(WsGuard)
 	@SubscribeMessage('joinQueue')
 	async joinQueue(@ConnectedSocket() client: Socket) : Promise<boolean> {
 		this.gameService.joinQueue(client)
 		return true
 	}
 
+	@UseGuards(WsGuard)
 	@SubscribeMessage('leaveQueue')
 	async leaveQueue(@ConnectedSocket() client: Socket) {
 		this.gameService.leaveQueue(client)
@@ -75,6 +77,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	*	create Game
 	*/
 
+	@UseGuards(WsGuard)
 	@SubscribeMessage('createGame')
 	async createGame(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		const isInQueue = this.joinQueue(client)
@@ -82,11 +85,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			this.gameService.createGame(client, payload);
 	}
 
+	@UseGuards(WsGuard)
 	@SubscribeMessage('updateBall')
 	async updateBall(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.updateBall(client, payload)
 	}
 
+	@UseGuards(WsGuard)
 	@SubscribeMessage('updatePaddle')
 	async updatePaddle(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.updatePaddle(client, payload)
@@ -95,6 +100,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/*
 	* handling invite friends
 	*/
+	@UseGuards(WsGuard)
 	@SubscribeMessage('inviteFriend')
 	async inviteFriend(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.inviteFriend(client, payload)
