@@ -38,3 +38,6 @@ next-env.d.ts
 
 .vscode
 
+./backend/src/game
+./backend/src/match-history
+
