@@ -7,7 +7,7 @@ export async function getLeadProfiles() {
       {
         withCredentials: true,
       }
-    ); // Replace with your API endpoint
+    );
     const userData = await response.data;
     return userData;
   } catch (error) {

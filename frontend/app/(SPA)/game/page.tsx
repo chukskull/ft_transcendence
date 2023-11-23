@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
-import { MatchMaking } from "@/components/SPA/home/molecules/MatchMaking";
+import { MatchButton } from "@/components/SPA/home/atoms/MatchButton";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -33,18 +33,14 @@ const Game: React.FC = () => {
           <p>Retro</p>
           <img src="https://i0.wp.com/mynintendonews.com/wp-content/uploads/2011/08/nes-controller.jpg" />
         </div>
-        <div className={style.map} onClick={() => setMap("minecraft")}>
-          <p>Minecraft</p>
-          <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/news/minecraft-with-rtx/minecraft-with-rtx-of-temples-and-totems-001-rtx-on-logos.jpg" />
-        </div>
         <div className={style.map} onClick={() => setMap("gym")}>
           <p>Grizzly</p>
-          <img src="https://greekreporter.com/wp-content/uploads/2023/01/kyriakos-grizzly-credit-kyriakos-kapakoulak-youtube.jpg.webp" />
+          <img src="https://w7.pngwing.com/pngs/276/422/png-transparent-football-field-football-field-green-background-football.png" />
         </div>
       </div>
       <div className="flex flex-col gap-9 justify-center items-center">
         <TheGame map={map} onlinemode={online} />
-        <MatchMaking />
+        <MatchButton />
       </div>
     </div>
   );

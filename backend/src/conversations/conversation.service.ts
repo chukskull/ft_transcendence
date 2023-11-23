@@ -18,18 +18,21 @@ export class ConversationService {
 
   async getMyDms(MyUser: number) {
     MyUser = 1;
-    const user = await this.UserRepository.findOne({ where: { id: MyUser } });
-    if (!user) throw new NotFoundException('User not found');
-    console.log("rengoerijgeroi + " +MyUser);
-    const myConvs = await this.conversationRepository.find({
-      where: { members: user, is_group: false },
-      relations: ['members', 'chats'],
+    const user = await this.UserRepository.findOne({
+      where: { id: MyUser },
+      relations: [
+        'conversations',
+        'conversations.members',
+        'conversations.chats',
+      ],
     });
-    if (!myConvs) throw new NotFoundException('Conversation not found');
-    myConvs.forEach((conv) => {
+    if (!user) throw new NotFoundException('User not found');
+    user.conversations.filter((conv) => conv.is_group === false);
+    // remove user from members
+    user.conversations.forEach((conv) => {
       conv.members = conv.members.filter((member) => member.id !== MyUser);
     });
-    return myConvs;
+    return user.conversations;
   }
   async getConversation(convId: number) {
     const conv = await this.conversationRepository.findOne({
@@ -39,7 +42,6 @@ export class ConversationService {
     if (!conv) throw new NotFoundException('Conversation not found');
 
     const myUser = 1;
-    // check if user is in the conversation
     const user = conv.members.find((member) => member.id === myUser);
     if (!user)
       throw new NotFoundException('User not found in this conversation');

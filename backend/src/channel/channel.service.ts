@@ -101,6 +101,31 @@ export class ChannelService {
       throw new NotFoundException('User not in channel');
     }
   }
+  async getChannelChat(userId: number, chanId: number): Promise<Conversation> {
+    const channel = await this.chanRepository.findOne({
+      where: { id: chanId },
+      relations: [
+        'conversation',
+        'conversation.chats',
+        'conversation.members',
+        'conversation.chats.sender',
+        'members',
+      ],
+    });
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+   
+    const isAlreadyMember = channel.members?.some(
+      (member) => member.id === userId,
+    );
+    if (isAlreadyMember) {
+      channel.password = undefined;
+      return channel.conversation;
+    } else {
+      throw new NotFoundException('User not in channel');
+    }
+  }
   async getMyChannels(userId: number): Promise<Channel[]> {
     return this.chanRepository.find({
       where: { members: { id: userId } },

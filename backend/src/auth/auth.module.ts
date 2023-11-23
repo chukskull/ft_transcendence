@@ -18,6 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     JwtModule.register({
       secret: "f439843--213+@y4t34u",
       signOptions: { expiresIn: '30d' },
+      
     }),
   ],
   providers: [AuthService, FortyTwoStrategy, GoogleStrategy],
