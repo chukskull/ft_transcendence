@@ -13,7 +13,7 @@ interface ChatRoomsProps {
 interface Chat {
   id: number;
   sender: any;
-  messahe: string;
+  message: string;
   timestamp: Date;
 }
 
@@ -22,6 +22,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [msgs, setMsgs] = useState<Chat[]>([]);
+  const [conv, setConv] = useState<any>(null);
 
   useEffect(() => {
     const endPoints = isGroup
@@ -32,6 +33,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
         withCredentials: true,
       })
       .then((res) => {
+        setConv(res.data);
         setMsgs(res.data.chats);
       })
       .catch((err) => {
@@ -77,8 +79,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const handleSend = () => {
     if (socket) {
       socket.emit("messageSent", {
-        conversationId: 432423,
-        sender: 2,
+        conversationId: conv.id,
         message: message,
       });
 

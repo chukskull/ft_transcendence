@@ -8,6 +8,8 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
 import { Chat } from './conversation.entity';
@@ -16,7 +18,13 @@ import { User } from '../user/user.entity';
 @Injectable()
 @WebSocketGateway({ namespace: 'chatSocket', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private conversationService: ConversationService) {}
+  constructor(
+    private conversationService: ConversationService,
+    @InjectRepository(User)
+    private UserRepository: Repository<User>,
+    @InjectRepository(Chat)
+    private ChatRepository: Repository<Chat>,
+  ) {}
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket) {
@@ -32,21 +40,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     data: {
       conversationId: number;
-      sender: User;
       message: string;
     },
     @ConnectedSocket() client: Socket,
   ) {
-    const { conversationId, sender, message } = data;
-    const chatMessage = new Chat();
-    chatMessage.sender = null;
+    const { conversationId, message } = data;
+    const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;
     chatMessage.time = new Date();
+    const senderId = 2;
+    const sender = await this.UserRepository.findOne({
+      where: { id: senderId },
+    });
+    chatMessage.sender = sender;
+    await this.ChatRepository.save(chatMessage);
     try {
       await this.conversationService.addMessageToConversation(
         conversationId,
         chatMessage,
-        sender,
+        senderId,
       );
 
       // Get the room name for the conversation
@@ -54,7 +66,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       // Broadcast the message to users in the conversation
       // this.server.to(roomName).emit('newMessage', message);
-      this.server.emit('newMessage', data);
+      this.server.emit('newMessage', chatMessage);
       //   message: message,
       //   sender: sender,
       // });
