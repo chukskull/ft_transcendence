@@ -1,10 +1,18 @@
-import { Controller, Get, HttpStatus, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import { UserService } from 'src/user/user.service';
-import { GoogleGuard  } from './google.guard';
+import { GoogleGuard } from './google.guard';
 import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -20,15 +28,13 @@ export class AuthController {
   ) {}
 
   @Get('/42')
-  @UseGuards(AuthGuard('42'))
   login42(): void {}
 
   @Get('42/callback')
-  @UseGuards(AuthGuard('42'))
   async callback42(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
-    ): Promise<any> {
+  ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
     console.log(req.user.firstTimeLogiIn);
@@ -41,7 +47,7 @@ export class AuthController {
   @Get('/logout')
   @UseGuards(JwtGuard)
   async logout42(@Res() res: Response, @Req() req) {
-    await this.userRepository.update(req.user.id, {firstTimeLogiIn: false});
+    await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     await this.userService.setStatus(req.user.id, 'offline');
     res.clearCookie('token');
     res.redirect(process.env.frontendUrl);

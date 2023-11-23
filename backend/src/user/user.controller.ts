@@ -88,9 +88,8 @@ export class UserController {
   // @UseGuards(JwtGuard)
   @Post('/fill')
   async fill(@Body() data: fillDto, @Req() req: any) {
-    console.log(data);
+    console.log(req);
     return this.usersService.fillData(data, req.user.id);
-
   }
 
   @UseGuards(JwtGuard)
