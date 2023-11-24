@@ -61,10 +61,10 @@ const ProfileComp = ({
             />
           ))}
       </Modal>
-      <div className="flex items-center  gap-5" onClick={handleModalClick}>
+      <div className="flex items-start justify-center gap-5" onClick={handleModalClick}>
         <Avatar isBordered color="success" src={img} />
         <div className="m-0 p-0">
-          <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0">
+          <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0 ">
             {firstName} {lastName}
           </h4>
           <h6 className="text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0">
