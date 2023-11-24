@@ -85,19 +85,20 @@ export class UserController {
   async getChat(@Req() req: any, @Param('friendId') friendId: number) {
     return this.usersService.getChatWithFriend(1, friendId);
   }
-  // @UseGuards(JwtGuard)
   @Post('/fill')
+  @UseGuards(JwtGuard)
   async fill(@Body() data: fillDto, @Req() req: any) {
     console.log(req);
     return this.usersService.fillData(data, req.user.id);
   }
 
-  @UseGuards(JwtGuard)
   @Post('/update')
+  @UseGuards(JwtGuard)
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
+  @UseGuards()
   @UseGuards(JwtGuard)
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
@@ -112,7 +113,8 @@ export class UserController {
   }
 
   @UseGuards(JwtGuard)
-  @Post('/sendFriendRequest/:friendId')
+  @Post('/sendFriendRequest/:friendId')    await this.userRepository.update(req.user.id, {authenticated: true});
+
   async addFriend(@Param('friendId') id: number, @Req() req: any) {
     const myId = req.user.id;
     return this.usersService.sendFriendRequest(myId, id);
