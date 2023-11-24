@@ -35,7 +35,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     <div className="flex flex-col items-center justify-center gap-4 flex-grow ">
       {data?.map((user: any, index: any) => (
         <div
-          key={user.id} // Use a unique identifier for each user
+          key={user.id}
           className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-center p-4`}
         >
           <span className="text-center text-white font-ClashGrotesk-Semibold text-lg flex items-center pr-12 ">
@@ -43,7 +43,6 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
           </span>
 
           <ProfileComp
-            // key={index} // Remove redundant key prop for ProfileComp
             img={user.avatarUrl}
             nickName={user.nickName}
             firstName={user.firstName}

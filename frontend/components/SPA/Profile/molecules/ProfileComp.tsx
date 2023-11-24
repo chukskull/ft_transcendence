@@ -51,7 +51,7 @@ const ProfileComp = ({
           (type === "Protected" ? (
             <ProtectedModal /> 
           ) : (
-            <UserMenu id={id} channel={inChannel} />
+            <UserMenu id={id} channel={inChannel} avatarUrl={img} nickName={nickName} />
           ))}
       </Modal>
       <div className="flex items-center  gap-5" onClick={handleModalClick}>
