@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 
 const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
   const router = useRouter();
+  console.log("UserMenu", id);
 
   return (
     <>
@@ -45,8 +46,8 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/${nickName}`
+            router.push(
+              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/users/${nickName}`
             );
           }}
         >
@@ -56,9 +57,16 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addfriend/${id}`
-            );
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`
+              )
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <FaUserPlus />
@@ -67,9 +75,16 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
-            );
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
+              )
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <FaUserSlash />
@@ -80,9 +95,16 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/mod/${id}/1`
-                );
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${channel}/channels/modding/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <FaUserShield />
@@ -91,9 +113,16 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/mute/${id}/1`
-                );
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel}/muting/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <FaVolumeMute />
@@ -102,9 +131,16 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/ban/${id}/1`
-                );
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel}/banning/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <FaBan />

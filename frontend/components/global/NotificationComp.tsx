@@ -85,6 +85,7 @@ export const NotificationComp = ({}) => {
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex gap-2 " key={index}>
                       <ProfileComp
+                        id={user.id}
                         key={index}
                         img={user.img}
                         firstName={user.firstName}

@@ -117,6 +117,7 @@ export class UserController {
   @Post('/sendFriendRequest/:friendId')
   @UseGuards(JwtGuard)
   async sendFriendRequest(@Param('friendId') id: number, @Req() req: any) {
+    console.log('sendFriendRequest', id);
     return this.usersService.sendFriendRequest(req.user.id, id);
   }
 

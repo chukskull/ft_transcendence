@@ -14,7 +14,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
 
     try {
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/channel/update/`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/update`,
         formData,
         {
           withCredentials: true,
