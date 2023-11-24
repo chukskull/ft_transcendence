@@ -29,19 +29,26 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
     ): Promise<any> {
+      if (req.user.authenticated) {
+        throw new UnauthorizedException('You are already Authenticated');
+      }
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
     console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
-      return res.redirect(process.env.frontendUrl + 'fill');
+      res.redirect(process.env.frontendUrl + 'fill');
+      await this.userRepository.update(req.user.id, {firstTimeLogiIn: false});
     }
-    res.redirect(process.env.frontendUrl + 'home');
+    else
+      res.redirect(process.env.frontendUrl + 'home');
+    await this.userRepository.update(req.user.id, {authenticated: true});
   }
 
   @Get('/logout')
   @UseGuards(JwtGuard)
   async logout42(@Res() res: Response, @Req() req) {
-    await this.userRepository.update(req.user.id, {firstTimeLogiIn: false});
+    // await this.userRepository.update(req.user.id, {firstTimeLogiIn: false});
+    await this.userRepository.update(req.user.id, {authenticated: false});
     await this.userService.setStatus(req.user.id, 'offline');
     res.clearCookie('token');
     res.redirect(process.env.frontendUrl);
@@ -57,14 +64,20 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    console.log(req.user);
+    console.log(req.user.authenticated);
+    if (req.user.authenticated) {
+      throw new UnauthorizedException('You are already Authenticated');
+    }
     const token = await this.authService.generateNewToken(req.user);
     console.log(token);
     res.cookie('token', token);
     if (req.user.firstTimeLogiIn) {
+      console.log("GG");
       res.redirect(process.env.frontendUrl + 'fill');
     }
-    res.redirect(process.env.frontendUrl);
+    else 
+      res.redirect(process.env.frontendUrl);
+    await this.userRepository.update(req.user.id, {authenticated: true});
   }
 
   // @Get('google/logout')

@@ -45,10 +45,11 @@ export class UserService {
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    user.matchHistory = [];
+    // user.matchHistory = [];
     user.status = 'offline';
     user.nickName = intraLogin;
     user.firstTimeLogiIn = true;
+    user.authenticated = false;
     user.conversations = [];
     return this.userRepository.save(user);
   }

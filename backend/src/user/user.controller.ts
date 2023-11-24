@@ -75,7 +75,7 @@ export class UserController {
   }
 
   @Get('/friends')
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   async getFriends(@Req() req: any) {
     return this.usersService.getFriends(req.user.id);
   }
@@ -84,20 +84,20 @@ export class UserController {
   async getChat(@Req() req: any, @Param('friendId') friendId: number) {
     return this.usersService.getChatWithFriend(1, friendId);
   }
-  // @UseGuards(JwtGuard)
   @Post('/fill')
+  @UseGuards(JwtGuard)
   async fill(@Body() data: fillDto, @Req() req: any) {
     return this.usersService.fillData(data, req.user.id);
   }
 
-  // @UseGuards(JwtGuard)
   @Post('/update')
+  @UseGuards(JwtGuard)
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
   @UseGuards()
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Post('/status')
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
