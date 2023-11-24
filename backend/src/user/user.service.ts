@@ -69,19 +69,33 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async userProfile(nickName: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { nickName },
-      relations: [
-        'matchHistory',
-        'channels',
-        'conversations',
-        'friends',
-        'matchHistory.winner',
-        'matchHistory.player1',
-        'matchHistory.player2',
-      ],
-    });
+  async userProfile(id: string | number): Promise<User> {
+    const user =
+      typeof id === 'string'
+        ? await this.userRepository.findOne({
+            where: { nickName: id },
+            relations: [
+              'matchHistory',
+              'channels',
+              'conversations',
+              'friends',
+              'matchHistory.winner',
+              'matchHistory.player1',
+              'matchHistory.player2',
+            ],
+          })
+        : await this.userRepository.findOne({
+            where: { id },
+            relations: [
+              'matchHistory',
+              'channels',
+              'conversations',
+              'friends',
+              'matchHistory.winner',
+              'matchHistory.player1',
+              'matchHistory.player2',
+            ],
+          });
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -179,7 +193,15 @@ export class UserService {
   }
 
   async sendFriendRequest(myID: number, friendID: number): Promise<any> {
-    const { client, friend } = await this.getClientAndFriend(friendID);
+    const client = await this.userRepository.findOne({
+      where: { id: myID },
+      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+    });
+
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+    });
 
     if (this.isAlreadyFriend(client, friend)) {
       return { message: 'User already in friends' };
@@ -205,7 +227,15 @@ export class UserService {
     action: number,
     handlerId: number,
   ): Promise<any> {
-    const { client, friend } = await this.getClientAndFriend(friendID);
+    const client = await this.userRepository.findOne({
+      where: { id: handlerId },
+      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+    });
+
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+    });
 
     if (this.isAlreadyFriend(client, friend)) {
       return { message: 'User already in friends' };
@@ -236,19 +266,23 @@ export class UserService {
           members: [client, friend],
           chats: [],
         });
+        await this.conversationRepository.save(newConversation);
 
         client.conversations.push(newConversation);
         friend.conversations.push(newConversation);
         client.friends.push(friend);
+        friend.friends.push(client);
       }
     } else {
-      //decline
+      //decline 0
       client.pendingFriendRequests = client.pendingFriendRequests.filter(
         (pending) => pending.id !== friendID,
       );
     }
 
-    return this.userRepository.save(client);
+    await this.userRepository.save(client);
+    await this.userRepository.save(friend);
+    return { message: 'Friend request handled' };
   }
 
   async getMyPendingFriendRequests(clientID: number): Promise<User[]> {
@@ -262,33 +296,6 @@ export class UserService {
     }
 
     return client.pendingFriendRequests;
-  }
-
-  private async getClientAndFriend(
-    friendID: number,
-  ): Promise<{ client: User; friend: User }> {
-    const myUser = 1;
-    const [client, friend] = await Promise.all([
-      this.userRepository.findOne({
-        where: { id: myUser },
-        relations: [
-          'friends',
-          'blockedUsers',
-          'conversations',
-          'pendingFriendRequests',
-        ],
-      }),
-      this.userRepository.findOne({
-        where: { id: friendID },
-        relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
-      }),
-    ]);
-
-    if (!client || !friend) {
-      throw new NotFoundException('User not found.');
-    }
-
-    return { client, friend };
   }
 
   private isAlreadyFriend(client: User, friend: User): boolean {

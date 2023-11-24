@@ -28,9 +28,11 @@ export class AuthController {
   ) {}
 
   @Get('/42')
+  @UseGuards(AuthGuard('42'))
   login42(): void {}
 
   @Get('42/callback')
+  @UseGuards(AuthGuard('42'))
   async callback42(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,

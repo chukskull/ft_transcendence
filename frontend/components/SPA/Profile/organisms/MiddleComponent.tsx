@@ -18,13 +18,6 @@ export const MiddleComponent = ({
   data,
   isLoading,
 }: MiddleComponentProps) => {
-  const [error, setError] = useState("");
-  // const { isLoading, data } = useQuery("data", async () => {
-  //   return getDataProfile().catch((err) => {
-  //     setError(err.message);
-  //   });
-  // });
-
   const getChannelStatus = (channel: any) => {
     if (channel.isPrivate) {
       return "Private";
@@ -43,6 +36,7 @@ export const MiddleComponent = ({
   const friends = data?.friends;
   const matches = data?.matchHistory;
   const Channels = data?.channels;
+  console.log("this is channel", Channels);
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
       {index === 0 &&
@@ -57,6 +51,7 @@ export const MiddleComponent = ({
               nickName={user.nickName}
               firstName={user.firstName}
               lastName={user.lastName}
+              channelId={user.id}
             />
           </div>
         ))}
@@ -76,7 +71,7 @@ export const MiddleComponent = ({
 
       {index === 2 &&
         data &&
-        data?.Channels?.map((channel: any) => (
+        Channels?.map((channel: any) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
@@ -85,6 +80,7 @@ export const MiddleComponent = ({
               img={""}
               nickName={getChannelStatus(channel)}
               firstName={channel.name}
+              channelId={channel.id}
               type={
                 getChannelStatus(channel) === "Public"
                   ? "Public"

@@ -75,7 +75,7 @@ export class ChannelService {
     });
     return channels;
   }
-  async getChannel(id: number): Promise<Channel> {
+  async getChannel(id: number, userId: number): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id },
       relations: [
@@ -90,7 +90,6 @@ export class ChannelService {
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
-    const userId = 1;
     const isAlreadyMember = channel.members?.some(
       (member) => member.id === userId,
     );
@@ -115,7 +114,7 @@ export class ChannelService {
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
-   
+
     const isAlreadyMember = channel.members?.some(
       (member) => member.id === userId,
     );
@@ -178,11 +177,9 @@ export class ChannelService {
     if (!requestMaker) {
       throw new NotFoundException('User not found');
     }
-    const isMod = channel.Moderators.some(
-      (member) => member.id === requestMaker.id,
-    );
-    if (!isMod) {
-      throw new NotFoundException('User not mod from channel');
+    const isOwner = channel.owner.id === requestMaker.id;
+    if (!isOwner) {
+      throw new NotFoundException('User not owner of the channel');
     }
     await this.chanRepository.remove(channel);
   }
@@ -192,7 +189,6 @@ export class ChannelService {
     password: string,
     userId: number,
   ): Promise<Channel> {
-    // Check if the channel exists
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
     });
@@ -232,13 +228,12 @@ export class ChannelService {
     channel.members.push(user);
     user.conversations.push(channel.conversation);
     user.channels.push(channel);
-
+    this.userRepository.save(user);
     // Save the updated channel
     return this.chanRepository.save(channel);
   }
 
   async leaveChannel(chanId: number, userId: number): Promise<Channel> {
-    // Check if the channel exists
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
     });
@@ -246,9 +241,6 @@ export class ChannelService {
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
-
-    // Remove user from the channel's members
-    channel.members = channel.members?.filter((member) => member.id !== userId);
 
     // Check if the user exists
     const user = await this.userRepository.findOne({
@@ -259,6 +251,8 @@ export class ChannelService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+    // Remove user from the channel's members
+    channel.members = channel.members?.filter((member) => member.id !== userId);
 
     // Remove the channel from user's conversations and channels
     user.conversations = user.conversations.filter(
@@ -266,7 +260,6 @@ export class ChannelService {
     );
     user.channels = user.channels.filter((chan) => chan.id !== channel.id);
 
-    // Save the updated user and channel
     await this.userRepository.save(user);
     return this.chanRepository.save(channel);
   }
