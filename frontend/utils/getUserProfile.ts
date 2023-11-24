@@ -8,7 +8,8 @@ export async function getUserProfile(id: string) {
         withCredentials: true,
       }
     );
-    const userData = await response.data;
+    // const response = await axios.get("http://localhost:4000/me");
+    const userData =  response.data;
     console.log(userData);
     return userData;
   } catch (error) {

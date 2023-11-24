@@ -31,6 +31,7 @@ const config: Config = {
         modalBackground: "#1D0229",
         buttonbg: "#3E0756",
         bghover: "#fefcfc33",
+        stats: "#851487",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
