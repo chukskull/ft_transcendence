@@ -38,7 +38,7 @@ config();
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       entities: ['dist/**/*.entity.js'],
-      synchronize: true,
+      // synchronize: true,
     }),
   ],
   controllers: [AppController],
