@@ -94,7 +94,6 @@ export class UserService {
 
   async fillData(data: any, id: number): Promise<any> {
     const { nickName, firstName, lastName } = data;
-    console.log(data);
     const alreadyExists = await this.userRepository.findOne({
       where: { id },
     });
@@ -135,8 +134,9 @@ export class UserService {
       return null;
     }
     const conversation = client.conversations.find(
-      (conv) => (conv.is_group === false &&
-      conv.members.find((member) => member.id == friendId)),
+      (conv) =>
+        conv.is_group === false &&
+        conv.members.find((member) => member.id == friendId),
     );
 
     if (!conversation) {
@@ -166,7 +166,7 @@ export class UserService {
   }
 
   async setStatusByNick(nickName: string, status: string): Promise<any> {
-    return this.userRepository.update(nickName, {status: status});
+    return this.userRepository.update(nickName, { status: status });
   }
 
   async getLeaderboard(): Promise<User[]> {

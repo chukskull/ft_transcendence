@@ -6,58 +6,10 @@ import AvatarBubble from "./AvatarBubble";
 import { useParams } from "next/navigation";
 import axios from "axios";
 
-const friendsList = [
-  {
-    nicknae: "John32523646 Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "John D23523oe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "John 343434523Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "John 34Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "Joh1n Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "Joh3n Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "John4 Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "Jo6hn Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-  {
-    nicknae: "Jo9hn Doe",
-    online: true,
-    avatar: "/assets/components/Profile.svg",
-  },
-];
-
 const FindFriendModal = () => {
   return (
     <>
-      <h1>Select Friend</h1>
+      {/* <h1>Select Friend</h1>
       <input type="text" id="username" placeholder="username of your friend" />
       <div className={style["friendsList"]}>
         {friendsList.map((friend) => (
@@ -70,7 +22,7 @@ const FindFriendModal = () => {
             <h3>{friend.nicknae}</h3>
           </div>
         ))}
-      </div>
+      </div> */}
     </>
   );
 };
@@ -88,7 +40,7 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   const handleConversationId = (dm: any) => {
     getType(false);
     sendDmOrChannel(dm);
-    setActive(dm);
+    setActive(dm.members[0].nickName);
   };
   useEffect(() => {
     const nickName = params.id;
@@ -135,16 +87,18 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
           </button>
         </div>
         {dmsList.map((dm: any) => (
-          <div key={dm.id} className={style["dm-list"]}>
+          <div
+            key={dm.id}
+            className={style["dm-list"]}
+            onClick={() => handleConversationId(dm)}
+          >
             <DMbox
               className={
-                active === dm.name && !CompType
+                (active === dm.members[0].nickName && !CompType)
                   ? "bg-gray-500 rounded-md"
                   : "bg-bghover rounded-md"
               }
               dm={dm}
-              key={dm.name}
-              SendConversationId={() => handleConversationId(dm.name)}
               badge={0}
             />
           </div>

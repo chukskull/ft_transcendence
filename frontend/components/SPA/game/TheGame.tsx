@@ -171,7 +171,7 @@ export default function TheGame({
         
         // Ball collisions with paddles
         else if (
-          ball.x + ball.speedX > canvasWidth - 53 ||
+          ball.x + ball.speedX > canvasWidth - 13 ||
           (ball.x + ball.speedX < 25 &&
             ball.y >= playerPaddleY &&
             ball.y <= playerPaddleY + 110)

@@ -1,9 +1,8 @@
 "use client";
 import { Button, Input } from "@nextui-org/react";
-import { useState } from "react";
 import "@/styles/globals.scss";
-import { useAddUser } from "@/utils/addUser";
-
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 interface Styles {
   label: string;
@@ -37,10 +36,20 @@ const styles: Styles = {
 };
 
 export default function Fill() {
-  const { mutate } = useAddUser();
-
+  const router = useRouter();
   const addNewUser = async (user: any) => {
-    mutate(user);
+    axios
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/fill`, user, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          router.push("/home");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const {
@@ -49,7 +58,7 @@ export default function Fill() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: "",
+      firstName: "",
       lastName: "",
       nickName: "",
     },
@@ -62,16 +71,16 @@ export default function Fill() {
           <form action="" className="w-[80%]">
             <div className=" flex flex-col items-center justify-center gap-12">
               <Input
-                {...register("name", {
+                {...register("firstName", {
                   required: "This field is required",
-                  maxLength: 20,
+                  maxLength: 15,
                   minLength: 3,
                 })}
-                type="name"
-                label="Name"
+                type="firstName"
+                label="First Name"
                 variant="bordered"
-                isInvalid={errors.name ? true : false}
-                errorMessage={errors.name && "This field is required"}
+                isInvalid={errors.firstName ? true : false}
+                errorMessage={errors.firstName && "This field is required"}
                 classNames={{
                   ...styles,
                 }}
@@ -100,7 +109,7 @@ export default function Fill() {
               <Input
                 {...register("nickName", {
                   required: "This field is required",
-                  maxLength: 20,
+                  maxLength: 15,
                   minLength: 3,
                 })}
                 type="nickname"

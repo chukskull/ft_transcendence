@@ -1,10 +1,18 @@
-import { Controller, Get, HttpStatus, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import { UserService } from 'src/user/user.service';
-import { GoogleGuard  } from './google.guard';
+import { GoogleGuard } from './google.guard';
 import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -20,11 +28,9 @@ export class AuthController {
   ) {}
 
   @Get('/42')
-  @UseGuards(AuthGuard('42'))
   login42(): void {}
 
   @Get('42/callback')
-  @UseGuards(AuthGuard('42'))
   async callback42(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,

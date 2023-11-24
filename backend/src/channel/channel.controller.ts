@@ -11,7 +11,6 @@ import {
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dtos/create-channel.dto';
 import { UpdateChannelDto } from './dtos/update-channel.dto';
-import { UseGuards } from '@nestjs/common';
 // import { JwtGuard } from 'src/auth/ft_oauth.guard';
 
 @Controller('channels')
@@ -56,7 +55,6 @@ export class ChannelController {
   }
 
   @Delete('/delete/:id')
-  // @UseGuards(JwtGuard)
   delete(@Param('id') id: number, @Req() req) {
     return this.channelService.deleteChannel(id, req.user.id);
   }
