@@ -5,10 +5,8 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
-import Matter , { Engine, World, Bodies } from 'matter-js';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
@@ -111,6 +109,41 @@ export class GameService {
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
       game.updatePaddle();
+  }
+
+  async updateScore(client: Socket, payload: any): Promise<void> {
+    const { player1, player2} = payload;
+    const game = this.activeGames[player1.id + ',' + player2.id];
+    if (!game) return;
+    else {
+      game.updateScore();
+      if (game.player1Score === 5 || game.player2Score === 5) {
+        game.endGame();
+        const winner = game.player1Score === 5 ? game.player1 : game.player2;
+        const loser = game.player1Score === 5 ? game.player2 : game.player1;
+        const match = new MatchHistory();
+        match.winner = winner;
+        match.loser = loser;
+        match.date = new Date();
+        await this.statsRepo.save(match);
+        const winnerSocket = this.onlineUsers.get(parseInt(winner.id));
+        const loserSocket = this.onlineUsers.get(parseInt(loser.id));
+        if (winnerSocket) {
+          winnerSocket.forEach((sock) => {
+            sock.emit('changeState', { state: 'home' });
+          });
+        }
+
+        if (loserSocket) {
+          loserSocket.forEach((sock) => {
+            sock.emit('changeState', { state: 'home' });
+          });
+        }
+        this.currPlayers = this.currPlayers.filter((player) => {
+          return player.id !== parseInt(winner.id) && player.id !== parseInt(loser.id);
+        });
+      }
+    }
   }
 
   /*

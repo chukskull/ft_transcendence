@@ -86,15 +86,21 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@UseGuards(WsGuard)
-	@SubscribeMessage('updateBall')
+	@SubscribeMessage('sendBallState')
 	async updateBall(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.updateBall(client, payload)
 	}
 
 	@UseGuards(WsGuard)
-	@SubscribeMessage('updatePaddle')
+	@SubscribeMessage('sendPaddleState')
 	async updatePaddle(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.updatePaddle(client, payload)
+	}
+
+	@UseGuards(WsGuard)
+	@SubscribeMessage('updateScore')
+	async updateScore(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
+		this.gameService.updateScore(client, payload)
 	}
 
 	/*
