@@ -1,6 +1,5 @@
-
-import { Socket } from 'socket.io';
 import { User } from 'src/user/user.entity';
+import { Socket } from 'socket.io';
 import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from 'typeorm';
 
   @Entity('match_history')
@@ -8,17 +7,17 @@ import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from 'typeorm';
     @PrimaryGeneratedColumn()
     id: number;
     
-    @ManyToOne(() => Socket, (socket) => socket.id)
-    player1: Socket;
+    @Column()
+    player1: number;
 
-    @ManyToOne(() => Socket, (socket) => socket.id)
-    player2: Socket;
+    @Column()
+    player2: number;
 
-    @ManyToOne(() => Socket, (socket) => socket.id)
-    winner: Socket;
+    @Column()
+    winner: number;
 
-    @ManyToOne(() => Socket, (socket) => socket.id)
-    loser: Socket;
+    @Column()
+    loser: number;
 
 
     @Column()

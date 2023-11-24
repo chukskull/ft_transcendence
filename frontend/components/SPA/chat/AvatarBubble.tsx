@@ -1,6 +1,4 @@
 "use client";
-import Image from "next/image";
-import style from "@/styles/SPA/chat/chat.module.scss";
 import { Avatar, Badge } from "@nextui-org/react";
 import { color, motion } from "framer-motion";
 
@@ -10,7 +8,6 @@ interface AvatarBubbleProps {
   badge?: any;
 }
 const AvatarBubble = ({ avatar, online, badge }: AvatarBubbleProps) => {
-  avatar = "https://i.pravatar.cc/300?img=1";
   return (
     <>
       <Badge isInvisible={badge ? false : true} content={badge} shape="circle">

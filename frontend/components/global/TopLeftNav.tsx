@@ -12,6 +12,7 @@ import SearchComp from "./SearchComp";
 import { NotificationIcon } from "./NotificationIcon";
 import { notification } from "antd";
 import { NotificationComp } from "./NotificationComp";
+import axios from "axios";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -70,7 +71,20 @@ export default function TopLeftNav() {
           />
           <img
             src="/assets/main/Navbar/Logout.svg"
-            onClick={() => handleClick("Logout")}
+            onClick={() => {
+              axios
+                .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  console.log(res.data);
+                  window.location.href = "/";
+                })
+                .catch((err) => {
+                  console.log(err);
+                  window.location.href = "/";
+                });
+            }}
           />
         </div>
       </div>

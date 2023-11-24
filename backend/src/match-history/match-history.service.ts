@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
+import { match } from 'assert';
 
 @Injectable()
 export class MatchHistoryService {
@@ -20,22 +21,16 @@ export class MatchHistoryService {
   async create(MatchHistoryDto: CreateMatchHistoryDto) {
     const mh = new MatchHistory();
 
-    mh.player1 = await this.userService.userProfile(
-      MatchHistoryDto.player1ID,
-    );
+    mh.player1 = MatchHistoryDto.player1ID;
 
-    mh.player2 = await this.userService.userProfile(
-      MatchHistoryDto.player2ID,
-    );
+    mh.player2 = MatchHistoryDto.player2ID;
 
-    mh.winner = await this.userService.userProfile(
-      MatchHistoryDto.winnerID,
-    );
+    mh.winner = MatchHistoryDto.winnerID;
 
     mh.date = new Date();
-    
+
     mh.player1Score = MatchHistoryDto.player1score;
-    
+
     mh.player2Score = MatchHistoryDto.player2score;
 
     this.matchHistory.save(mh);

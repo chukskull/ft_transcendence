@@ -17,9 +17,12 @@ export class User {
 
   @Column({ nullable: true })
   email: string;
-  
+
   @Column()
   nickName: string;
+
+  @Column({ nullable: true })
+  authenticated: boolean;
 
   @Column({ nullable: true })
   intraLogin: string;
@@ -52,6 +55,7 @@ export class User {
 
   @Column({ nullable: true })
   firstTimeLogiIn: boolean;
+
 
   @Column()
   experience: number;

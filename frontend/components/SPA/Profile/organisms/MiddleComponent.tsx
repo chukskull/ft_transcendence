@@ -18,13 +18,6 @@ export const MiddleComponent = ({
   data,
   isLoading,
 }: MiddleComponentProps) => {
-  const [error, setError] = useState("");
-  // const { isLoading, data } = useQuery("data", async () => {
-  //   return getDataProfile().catch((err) => {
-  //     setError(err.message);
-  //   });
-  // });
-
   const getChannelStatus = (channel: any) => {
     if (channel.isPrivate) {
       return "Private";
@@ -41,13 +34,14 @@ export const MiddleComponent = ({
       </div>
     );
   const friends = data?.friends;
-  const matches = data?.userLastScore;
-  const Channels = data?.Channels;
+  const matches = data?.matchHistory;
+  const Channels = data?.channels;
+  console.log("this is channel", Channels);
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
       {index === 0 &&
         data &&
-        data?.friends?.map((user: any) => (
+        friends?.map((user: any) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
@@ -57,26 +51,27 @@ export const MiddleComponent = ({
               nickName={user.nickName}
               firstName={user.firstName}
               lastName={user.lastName}
+              channelId={user.id}
             />
           </div>
         ))}
 
       {index === 1 &&
         data &&
-        data?.userLastScore?.map((data: any) => (
+        matches?.map((match: any) => (
           <LiveGameRec
             key={index}
-            LeftProf={data.imageLeft}
-            RightProf={data.imageRight}
-            scoreLeft={data.scoreLeft}
-            scoreRight={data.scoreRight}
+            LeftProf={match.player1.avatarUrl}
+            RightProf={match.player2.avatarUrl}
+            scoreLeft={1}
+            scoreRight={2}
             boolBut={false}
           />
         ))}
 
       {index === 2 &&
         data &&
-        data?.Channels?.map((channel: any) => (
+        Channels?.map((channel: any) => (
           <div
             key={index}
             className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
@@ -85,6 +80,7 @@ export const MiddleComponent = ({
               img={""}
               nickName={getChannelStatus(channel)}
               firstName={channel.name}
+              channelId={channel.id}
               type={
                 getChannelStatus(channel) === "Public"
                   ? "Public"

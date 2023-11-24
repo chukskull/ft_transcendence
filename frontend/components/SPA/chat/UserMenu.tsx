@@ -10,9 +10,11 @@ import {
 import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
-const UserMenu = (user: any, channel: boolean) => {
-  const { id, nickName, avatarUrl, online } = user;
+const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
+  const router = useRouter();
+
   return (
     <>
       <div className={style["user-info"]}>
@@ -23,7 +25,7 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${id}`);
+            router.push(`/profile/${nickName}`);
           }}
         >
           <FaUser />
@@ -73,7 +75,7 @@ const UserMenu = (user: any, channel: boolean) => {
           <FaUserSlash />
           Block
         </div>
-        {!channel && (
+        {channel && (
           <>
             <div
               className={style["menu-item"]}

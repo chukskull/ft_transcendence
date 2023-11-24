@@ -15,6 +15,7 @@ interface ProfileCompProps {
   color?: string;
   type?: "Protected" | "Public" | null;
   inChannel?: boolean;
+  channelId: number;
 }
 
 const ProfileComp = ({
@@ -26,6 +27,7 @@ const ProfileComp = ({
   type,
   color,
   inChannel,
+  channelId,
 }: ProfileCompProps) => {
   const [showModal, setShow] = React.useState(false);
 
@@ -49,9 +51,14 @@ const ProfileComp = ({
       >
         {showModal &&
           (type === "Protected" ? (
-            <ProtectedModal /> 
+            <ProtectedModal channelId={channelId} />
           ) : (
-            <UserMenu id={id} channel={inChannel} />
+            <UserMenu
+              id={id}
+              channel={inChannel}
+              avatarUrl={img}
+              nickName={nickName}
+            />
           ))}
       </Modal>
       <div className="flex items-center  gap-5" onClick={handleModalClick}>
