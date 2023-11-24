@@ -46,7 +46,13 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         {chatHeaderProps?.isChannel ? (
           <ChannelMenu channel={chatHeaderProps?.dmOrChannel} />
         ) : (
-          <UserMenu user={chatHeaderProps?.dmOrChannel} />
+          <UserMenu
+            id={chatHeaderProps?.dmOrChannel?.members[0].id}
+            avatarUrl={chatHeaderProps?.dmOrChannel?.members[0].avatarUrl}
+            nickName={chatHeaderProps?.dmOrChannel?.members[0].nickName}
+            online={chatHeaderProps?.dmOrChannel?.members[0].online}
+            channel={false}
+          />
         )}
       </Modal>
       <div className={style["chat-header"]}>

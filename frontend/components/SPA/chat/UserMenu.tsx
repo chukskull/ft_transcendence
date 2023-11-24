@@ -11,13 +11,10 @@ import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Console } from "console";
 
-
-const UserMenu = (user: any, channel: boolean) => {
+const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
   const router = useRouter();
-  const { id, nickName, avatarUrl, online } = user;
-  console.log("inside user menu", user);
+
   return (
     <>
       <div className={style["user-info"]}>
@@ -78,7 +75,7 @@ const UserMenu = (user: any, channel: boolean) => {
           <FaUserSlash />
           Block
         </div>
-        {!channel && (
+        {channel && (
           <>
             <div
               className={style["menu-item"]}
