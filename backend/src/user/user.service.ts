@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Conversation, Chat } from '../conversations/conversation.entity';
 import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
+import { authenticator } from 'otplib';
 @Injectable()
 export class UserService {
   constructor(

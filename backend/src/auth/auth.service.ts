@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
+import { authenticator } from 'otplib';
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,5 +34,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
+  async isTwoFactorAuthenticationCodeValid(twoFactorAuthCode: string, user: User) {
+    return authenticator.verify({
+      token: twoFactorAuthCode,
+      secret: user.twoFactorSecret,
+    })
+  }
+  
 
 }

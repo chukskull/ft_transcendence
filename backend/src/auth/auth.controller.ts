@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   HttpStatus,
+  Post,
   Req,
   Res,
   UnauthorizedException,
@@ -17,7 +19,8 @@ import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Console } from 'console';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @Controller('auth')
 export class AuthController {
@@ -28,13 +31,16 @@ export class AuthController {
   ) {}
 
   @Get('/42')
+  @UseGuards(AuthGuard('42'))
   login42(): void {}
 
   @Get('42/callback')
+  @UseGuards(AuthGuard('42'))
   async callback42(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
     ): Promise<any> {
+      console.log("kkk");
       if (req.user.authenticated) {
         throw new UnauthorizedException('You are already Authenticated');
       }
@@ -84,6 +90,34 @@ export class AuthController {
     else 
       res.redirect(process.env.frontendUrl);
     await this.userRepository.update(req.user.id, {authenticated: true});
+  }
+
+  @Get('/2fa')
+  @UseGuards(JwtGuard)
+  async TwoFactorHandler(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    const secret = authenticator.generateSecret();
+
+    const otpUri = authenticator.keyuri(req.user.email, 'google', secret);
+
+    return (toDataURL(otpUri));
+    await this.userService.saveTwoFactorSecret(secret, req.user.id);
+
+  } 
+
+  @Post('/2fa/turn-on')
+  @UseGuards(JwtGuard)
+  async turnOn2fa(@Req() req,@Body() body) {
+    const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(
+      body.pin,
+      req.user,
+    );
+
+      if (!isCodeValid) {
+        throw new UnauthorizedException('Wrong code');
+      }
+    await this.userService.enableTwoFactor(req.user.id);
+
+    console.log(isCodeValid);
   }
 
   // @Get('google/logout')

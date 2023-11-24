@@ -112,35 +112,35 @@ export class UserController {
     return this.usersService.getLeaderboard();
   }
 
-  @UseGuards(JwtGuard)
-  @Post('/sendFriendRequest/:friendId')    await this.userRepository.update(req.user.id, {authenticated: true});
+//   @UseGuards(JwtGuard)
+//   @Post('/sendFriendRequest/:friendId')    await this.userRepository.update(req.user.id, {authenticated: true});
 
-  async addFriend(@Param('friendId') id: number, @Req() req: any) {
-    const myId = req.user.id;
-    return this.usersService.sendFriendRequest(myId, id);
-  }
-  @UseGuards(JwtGuard)
-  @Get('/myFriendRequests')
-  async myFriendRequests(@Req() req: any) {
-    return this.usersService.getMyPendingFriendRequests(req.user.id);
-  }
-  @UseGuards(JwtGuard)
-  @Post('/FriendRequest/:friendId/:action')
-  async FriendRequest(
-    @Param('friendId') id: number,
-    @Param('action') action: number,
-    @Req() req: any,
-  ) {
-    return this.usersService.handleFriendRequest(id, action, req.user.id);
-  }
+//   async addFriend(@Param('friendId') id: number, @Req() req: any) {
+//     const myId = req.user.id;
+//     return this.usersService.sendFriendRequest(myId, id);
+//   }
+//   @UseGuards(JwtGuard)
+//   @Get('/myFriendRequests')
+//   async myFriendRequests(@Req() req: any) {
+//     return this.usersService.getMyPendingFriendRequests(req.user.id);
+//   }
+//   @UseGuards(JwtGuard)
+//   @Post('/FriendRequest/:friendId/:action')
+//   async FriendRequest(
+//     @Param('friendId') id: number,
+//     @Param('action') action: number,
+//     @Req() req: any,
+//   ) {
+//     return this.usersService.handleFriendRequest(id, action, req.user.id);
+//   }
 
-  @UseGuards(JwtGuard)
-  @Post('/handleBlock/:friendId/:action')
-  async blockFriend(
-    @Param('friendId') frId: number,
-    @Req() req: any,
-    @Param('action') action: number,
-  ) {
-    return this.usersService.handleBlock(frId, req.user.id, action);
-  }
+//   @UseGuards(JwtGuard)
+//   @Post('/handleBlock/:friendId/:action')
+//   async blockFriend(
+//     @Param('friendId') frId: number,
+//     @Req() req: any,
+//     @Param('action') action: number,
+//   ) {
+//     return this.usersService.handleBlock(frId, req.user.id, action);
+//   }
 }

@@ -10,8 +10,8 @@ import { ConversationModule } from './conversations/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from 'dotenv';
 import { PassportModule } from '@nestjs/passport';
-import { GameModule } from './game/game.module';
-import { MatchHistoryModule } from './match-history/match-history.module';
+// import { GameModule } from './game/game.module';
+// import { MatchHistoryModule } from './match-history/match-history.module';
 
 config();
 
@@ -22,8 +22,8 @@ config();
     ChannelModule,
     UserModule,
     ConversationModule,
-    GameModule,
-    MatchHistoryModule,
+    // GameModule,
+    // MatchHistoryModule,
     AchievementModule,
     PassportModule.register({ session: true }),
     ConfigModule.forRoot({
