@@ -19,16 +19,37 @@ export class MatchHistoryService {
    */
   async create(MatchHistoryDto: CreateMatchHistoryDto) {
     const mh = new MatchHistory();
+
     mh.player1 = await this.userService.userProfile(
       MatchHistoryDto.player1ID,
     );
+
     mh.player2 = await this.userService.userProfile(
       MatchHistoryDto.player2ID,
     );
+
     mh.winner = await this.userService.userProfile(
       MatchHistoryDto.winnerID,
     );
+
     mh.date = new Date();
+    
+    mh.player1Score = MatchHistoryDto.player1score;
+    
+    mh.player2Score = MatchHistoryDto.player2score;
+
     this.matchHistory.save(mh);
+    
+    return mh;
   }
+
+  /*
+    * Returns all match history entries from the database.
+    */
+  
+  async findAll(): Promise<MatchHistory[]> {
+    return this.matchHistory.find();
+  }
+
+
 }

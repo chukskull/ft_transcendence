@@ -4,6 +4,7 @@ import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
 import { MatchButton } from "@/components/SPA/home/atoms/MatchButton";
+import io from "socket.io-client";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -20,6 +21,16 @@ const Game: React.FC = () => {
   });
   const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
   const [online, setOnline] = useState<boolean>(false);
+  const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSocket`);
+  if (socket) {
+    socket.on("connect", () => {
+      setOnline(true);
+      console.log("connected");
+    });
+    socket.on("disconnect", () => {
+      console.log("disconnected");
+    });
+  }
 
   return (
     <div className={style.gamePage}>

@@ -9,4 +9,10 @@ export class CreateMatchHistoryDto {
 
 	@IsNumber()
 	winnerID: number;
+
+	@IsNumber()
+	player1score: number;
+
+	@IsNumber()
+	player2score: number;
 }
