@@ -22,6 +22,9 @@ export class User {
   nickName: string;
 
   @Column({ nullable: true })
+  authenticated: boolean;
+
+  @Column({ nullable: true })
   intraLogin: string;
 
   @Column()
