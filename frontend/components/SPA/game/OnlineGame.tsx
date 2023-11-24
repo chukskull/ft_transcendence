@@ -31,7 +31,7 @@ const useKeyHandler = () => {
   return keys;
 };
 
-export default function TheGame({
+export default function OnlineGame({
   map,
   onlinemode,
 }: {
