@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Conversation, Chat } from '../conversations/conversation.entity';
 import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
+import { Channel } from '../channel/channel.entity';
+import { ChannelService } from '../channel/channel.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -12,6 +14,9 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,
+    private channelService: ChannelService,
+    @InjectRepository(Channel)
+    private channelRepository: Repository<Channel>,
   ) {}
 
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
@@ -49,8 +54,29 @@ export class UserService {
     user.status = 'offline';
     user.nickName = intraLogin;
     user.firstTimeLogiIn = true;
-    user.authenticated = false;
     user.conversations = [];
+    // check if the global channel exists
+    this.userRepository.save(user);
+    let globalChannel;
+    globalChannel = await this.channelRepository.findOne({
+      where: {
+        name: 'Welcome/Global channel',
+      },
+    });
+    if (!globalChannel) {
+      globalChannel = await this.channelService.createChannel(
+        {
+          name: 'Welcome/Global channel',
+          is_private: false,
+          password: '',
+        },
+        user.id,
+      );
+    } else {
+      this.channelService.joinChannel(globalChannel.id, '', user.id);
+    }
+
+    this.channelRepository.save(globalChannel);
     return this.userRepository.save(user);
   }
   async validate42Callback(code: string): Promise<any> {

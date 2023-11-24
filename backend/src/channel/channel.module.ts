@@ -16,8 +16,6 @@ import { UserService } from 'src/user/user.service';
 import { NotifGateway } from '../notifications.gateway';
 import { JwtService } from '@nestjs/jwt';
 
-
-
 @Module({
   imports: [
     ConversationModule,
@@ -38,5 +36,6 @@ import { JwtService } from '@nestjs/jwt';
     NotifGateway,
     JwtService,
   ],
+  exports: [ChannelService],
 })
 export class ChannelModule {}

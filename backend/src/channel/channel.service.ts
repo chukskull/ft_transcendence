@@ -41,7 +41,12 @@ export class ChannelService {
       creator,
       null,
     );
-
+    const channelAlreadyExists = await this.chanRepository.findOne({
+      where: { name },
+    });
+    if (channelAlreadyExists) {
+      throw new NotFoundException('Channel already exists');
+    }
     const channel = this.chanRepository.create({
       name,
       is_private,
@@ -61,6 +66,7 @@ export class ChannelService {
 
     const savedChannel = await this.chanRepository.save(channel);
     owner.channels.push(savedChannel);
+    this.userRepository.save(owner);
 
     return savedChannel;
   }
@@ -136,7 +142,12 @@ export class ChannelService {
     updater: number,
   ): Promise<Channel> {
     const { id, name, is_private, password } = updateChannelDto;
-
+    const channelAlreadyExists = await this.chanRepository.findOne({
+      where: { name },
+    });
+    if (channelAlreadyExists) {
+      throw new NotFoundException('Channel already exists');
+    }
     const channel = await this.chanRepository.findOne({ where: { id } });
     if (!channel) {
       throw new NotFoundException('Channel not found');
@@ -240,6 +251,9 @@ export class ChannelService {
 
     if (!channel) {
       throw new NotFoundException('Channel not found');
+    }
+    if (channel.name === 'Welcome/Global channel') {
+      throw new NotFoundException("You can't leave this channel");
     }
 
     // Check if the user exists
