@@ -23,10 +23,16 @@ export class ChannelController {
   ) {}
 
   @Post('create')
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   create(@Body() createChannelDto: CreateChannelDto, @Req() req) {
     console.log(req.user.id);
     return this.channelService.createChannel(createChannelDto, req.user.id);
+  }
+
+  @Patch('/update')
+  @UseGuards(JwtGuard)
+  update(@Body() updateChannelDto: UpdateChannelDto, @Req() req) {
+    return this.channelService.updateChannel(updateChannelDto, req.user.id);
   }
 
   @Get()
@@ -54,12 +60,6 @@ export class ChannelController {
     return this.channelService.getChannelChat(userId, id);
   }
 
-  @Patch('/update')
-  @UseGuards(JwtGuard)
-  update(@Body() updateChannelDto: UpdateChannelDto, @Req() req) {
-    return this.channelService.updateChannel(updateChannelDto, req.user.id);
-  }
-
   @Delete('/delete/:id')
   @UseGuards(JwtGuard)
   delete(@Param('id') id: number, @Req() req) {
@@ -76,10 +76,6 @@ export class ChannelController {
   @Post(':chanId/leave')
   @UseGuards(JwtGuard)
   leave(@Param('chanId') chanId: number, @Req() req) {
-    if (chanId == 1337) {
-      return { message: 'Cannot leave general channel' };
-    }
-
     return this.channelService.leaveChannel(chanId, req.user.id);
   }
 

@@ -53,8 +53,6 @@ export class User {
   @Column({ nullable: true })
   firstTimeLogiIn: boolean;
 
-  @Column({ nullable: true })
-  authenticated: boolean;
 
   @Column()
   experience: number;
