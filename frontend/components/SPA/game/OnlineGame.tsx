@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
+import io from "socket.io-client";
 
 type Score = {
-  player: number;
-  ai: number;
+  player1: number;
+  player2: number;
 };
 
 const useKeyHandler = () => {
@@ -30,27 +31,27 @@ const useKeyHandler = () => {
   return keys;
 };
 
-export default function TheGame({
+export default function OnlineGame({
   map,
+  onlinemode,
 }: {
   map: string;
+  onlinemode: boolean;
 }) {
   const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
-  const [score, setScore] = useState<Score>({ player: 0, ai: 0 });
+  const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
   const [ball, setBall] = useState({
     x: 417,
     y: 240,
-
     speedX: 2,
     speedY: 2,
   });
-  const [playerPaddleY, setPlayerPaddleY] = useState(210);
+  const [player1PaddleY, setplayer1PaddleY] = useState(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
-
-
   const keys = useKeyHandler();
+  const socket = io(`${process.env.NEXT_PUBLIC_API_URL}/gameSocket`);
 
   useEffect(() => {
     if (!gameStarted) {
@@ -59,11 +60,13 @@ export default function TheGame({
 
     const gameLoop = () => {
       // Update paddle position
-      if (keys["ArrowUp"] && playerPaddleY > 0) {
-        setPlayerPaddleY(playerPaddleY - 5);
+      if (keys["ArrowUp"] && player1PaddleY > 0) {
+        setplayer1PaddleY(player1PaddleY - 5);
+        socket.emit("sendPaddleState", { y: player1PaddleY - 5 });
       }
-      if (keys["ArrowDown"] && playerPaddleY + 110 < canvasHeight) {
-        setPlayerPaddleY(playerPaddleY + 5);
+      if (keys["ArrowDown"] && player1PaddleY + 110 < canvasHeight) {
+        setplayer1PaddleY(player1PaddleY + 5);
+        socket.emit("sendPaddleState", { y: player1PaddleY + 5 });
       }
 
       // Ball movement
@@ -76,9 +79,9 @@ export default function TheGame({
       // Check for ball going out of horizontal walls
       if (ball.x + ball.speedX > canvasWidth || ball.x + ball.speedX < 15) {
         if (ball.x + ball.speedX > canvasWidth) {
-          setScore((prev) => ({ ...prev, player: prev.player + 1 }));
+          setScore((prev) => ({ ...prev, player1: prev.player1 + 1 }));
         } else if (ball.x + ball.speedX < 15) {
-          setScore((prev) => ({ ...prev, ai: prev.ai + 1 }));
+          setScore((prev) => ({ ...prev, player2: prev.player2 + 1 }));
         }
         setBall({
           x: 417,
@@ -87,16 +90,10 @@ export default function TheGame({
           speedY: 2,
         });
         return;
-
       }
 
       // Ball collisions with top and bottom walls
-      if (
-
-        ball.y + ball.speedY > canvasHeight - 15 ||
-        ball.y + ball.speedY < -3
-
-      ) {
+      if (ball.y + ball.speedY > canvasHeight - 15 || ball.y + ball.speedY < -3) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
 
@@ -104,20 +101,25 @@ export default function TheGame({
       if (
         ball.x + ball.speedX > canvasWidth - 53 ||
         (ball.x + ball.speedX < 25 &&
-          ball.y >= playerPaddleY &&
-          ball.y <= playerPaddleY + 110)
+          ball.y >= player1PaddleY &&
+          ball.y <= player1PaddleY + 110)
       ) {
         // Increase ball speed on paddle collision
         const increasedSpeedX = -ball.speedX * 1.05; // Increase speed by a factor (e.g., 1.2)
         setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
       }
 
-      // Update AI paddle position based on ball's y-coordinate
-      if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + 110 < canvasHeight) {
+      // Update player2 paddle position based on ball's y-coordinate
+      if (!onlinemode) {
+        if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + 110 < canvasHeight) {
           setEnemyPaddleY(EnemyPaddleY + 2);
         } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
           setEnemyPaddleY(EnemyPaddleY - 2);
+        }
       }
+
+      // Send ball state
+      socket.emit("sendBallState", { x: ball.x, y: ball.y });
     };
 
     const gameInterval = setInterval(gameLoop, 10);
@@ -125,16 +127,27 @@ export default function TheGame({
     return () => {
       clearInterval(gameInterval);
     };
-  }, [ball, playerPaddleY, EnemyPaddleY, keys, gameStarted]);
+  }, [ball, player1PaddleY, EnemyPaddleY, keys, gameStarted, onlinemode]);
+
+  useEffect(() => {
+    socket.on("sendPaddleState", (data: { y: number }) => {
+      setEnemyPaddleY(data.y);
+    });
+
+    return () => {
+      socket.off("sendPaddleState");
+    };
+  }, [socket]);
 
   const handleStartGame = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === " ") {
       setGameStarted(!gameStarted);
     }
   };
+
   return (
     <div className={style.gameBody} onKeyDown={handleStartGame} tabIndex={0}>
-      <p>{score.player}</p>
+      <p>{score.player1}</p>
       {!gameStarted && (
         <h3>
           Press SPACE <br />
@@ -143,8 +156,8 @@ export default function TheGame({
       )}
       <div className={style[`${map}`]} tabIndex={0}>
         <div className={style.middleLine} />
-        <div className={style.player} style={{ top: playerPaddleY }}></div>
-        <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
+        <div className={style.player1} style={{ top: player1PaddleY }}></div>
+        <div className={style.player2} style={{ top: EnemyPaddleY }}></div>
         <div
           className={style.ball}
           style={{
@@ -153,7 +166,7 @@ export default function TheGame({
           }}
         ></div>
       </div>
-      <p>{score.ai}</p>
+      <p>{score.player2}</p>
     </div>
   );
 }

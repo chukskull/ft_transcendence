@@ -5,10 +5,8 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
-import Matter , { Engine, World, Bodies } from 'matter-js';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
 
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
@@ -111,6 +109,13 @@ export class GameService {
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
       game.updatePaddle();
+  }
+
+  async updateScore(client: Socket, payload: any): Promise<void> {
+    const { player1, player2} = payload;
+    const game = this.activeGames[player1.id + ',' + player2.id];
+    if (!game) return;
+    game.updateScore();
   }
 
   /*

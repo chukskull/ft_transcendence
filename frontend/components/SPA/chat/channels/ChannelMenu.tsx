@@ -42,6 +42,7 @@ const InviteSection = () => {
               nickName={e.nickName}
               firstName={e.firstName}
               lastName={e.lastName}
+              channelId={e.id}
             />
             <button>
               <AiOutlineUserAdd />
@@ -65,6 +66,7 @@ const AuthoritySection = ({ owner, mods }: any) => {
         firstName={owner?.firstName}
         lastName={owner?.lastName}
         inChannel={false}
+        channelId={owner?.id}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>
@@ -77,6 +79,7 @@ const AuthoritySection = ({ owner, mods }: any) => {
             firstName={e.firstName}
             lastName={e.lastName}
             inChannel={true}
+            channelId={e.id}
           />
         ))}
       </div>
@@ -90,7 +93,7 @@ const MembersSection = ({ members }: any) => {
       <h2>Members</h2>
       <div className={style["members-list"]}>
         {members?.map((e: any) => (
-          <div className={style["member"]}>
+          <div className={style["member"]} key={e?.id}>
             <ProfileComp
               key={e?.id}
               id={e?.id}
@@ -99,6 +102,7 @@ const MembersSection = ({ members }: any) => {
               firstName={e?.firstName}
               lastName={e?.lastName}
               inChannel={true}
+              channelId={e?.id}
             />
           </div>
         ))}

@@ -53,6 +53,7 @@ const SearchComp = () => {
                 firstName={user.firstName}
                 lastName={user.lastName}
                 nickName={user.nickName}
+                id={user.id}
               />
             </span>
           ))}

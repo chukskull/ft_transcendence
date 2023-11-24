@@ -33,7 +33,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	*	Handle connection and disconnection
 	*/
 	async	handleConnection(client: Socket, ...args: any[]) {
-		const id = await this.jwtService.verify(client.handshake.headers.cookie.split('=')[1])['id']
+		const id = this.jwtService.verifyAsync(client.handshake.auth.token)['id']
 		this.userService.setOnline(id)
 		let connectedSockets = this.gameService.onlineUsers.get(id)
 		if (!connectedSockets)
@@ -44,14 +44,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	async handleDisconnect(client: Socket) {
-		const id = await this.jwtService.verify(client.handshake.headers.cookie.split('=')[1])['id']
-		let connectedSockets = this.gameService.onlineUsers.get(id)
+		const id = this.jwtService.decode(client.handshake.auth.token)['id']
+		let connectedSockets = this.gameService.onlineUsers.get(id);
 		if (connectedSockets) {
-			connectedSockets.delete(client)
-			if (connectedSockets.size == 0) {
-				this.userService.setOffline(id)
-				this.gameService.onlineUsers.delete(id)
-				this.leaveQueue(client)
+			connectedSockets.delete(client);
+			if (connectedSockets.size === 0) {
+				this.userService.setOffline(id);
+				this.gameService.onlineUsers.delete(id);
+				this.leaveQueue(client);
 			}
 		}
 	}
@@ -86,15 +86,21 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@UseGuards(WsGuard)
-	@SubscribeMessage('updateBall')
+	@SubscribeMessage('sendBallState')
 	async updateBall(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.updateBall(client, payload)
 	}
 
 	@UseGuards(WsGuard)
-	@SubscribeMessage('updatePaddle')
+	@SubscribeMessage('sendPaddleState')
 	async updatePaddle(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
 		this.gameService.updatePaddle(client, payload)
+	}
+
+	@UseGuards(WsGuard)
+	@SubscribeMessage('updateScore')
+	async updateScore(@ConnectedSocket() client: Socket, @MessageBody() payload: any) {
+		this.gameService.updateScore(client, payload)
 	}
 
 	/*

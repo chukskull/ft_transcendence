@@ -5,10 +5,10 @@ import {
 
 
 export class GameInstance {
-	private player1: Socket;
-	private player2: Socket;
-	private player1Score: number;
-	private player2Score: number;
+	public	player1: Socket;
+	public	player2: Socket;
+	public	player1Score: number;
+	public	player2Score: number;
 	public	ball: {x: number, y: number, speedX: number, speedY: number};
 	private paddle1Position : number
 	private paddle2Position: number
@@ -87,11 +87,19 @@ export class GameInstance {
 	}
 
 	public resetBall(): void {
-		this.player1.emit('updateScore', this.player1Score);
-		this.player2.emit('updateScore', this.player2Score);
+		this.updateScore();
 		this.player1.emit('sendBallState', this.ball);
 		this.player2.emit('sendBallState', this.ball);
 		this.ball = {x: 417, y: 240, speedX: 2, speedY: 2};
+	}
+
+	public updateScore(): void {
+		this.player1.on('updateScore', (score) => {
+			this.player1Score = score;
+		});
+		this.player2.on('updateScore', (score) => {
+			this.player2Score = score;
+		});
 	}
 
 	public updatePaddle(): void {

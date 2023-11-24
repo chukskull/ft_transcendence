@@ -35,7 +35,19 @@ const ProfileComp = ({
     if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
-      axios.post("/api/auth/join");
+      axios
+        .post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
       setShow(true);
     }

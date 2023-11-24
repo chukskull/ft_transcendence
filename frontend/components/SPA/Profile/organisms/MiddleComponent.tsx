@@ -44,6 +44,7 @@ export const MiddleComponent = ({
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
       {index === 0 &&
+
         !data?.friends?.length && (
           <div className=" text-gray-500 text-center text-lg font-medium ">
             No friends found.

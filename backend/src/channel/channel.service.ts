@@ -142,13 +142,10 @@ export class ChannelService {
     updater: number,
   ): Promise<Channel> {
     const { id, name, is_private, password } = updateChannelDto;
-    const channelAlreadyExists = await this.chanRepository.findOne({
-      where: { name },
+    const channel = await this.chanRepository.findOne({
+      where: { id },
+      relations: ['Moderators', 'owner'],
     });
-    if (channelAlreadyExists) {
-      throw new NotFoundException('Channel already exists');
-    }
-    const channel = await this.chanRepository.findOne({ where: { id } });
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
@@ -158,29 +155,32 @@ export class ChannelService {
     if (!requestMaker) {
       throw new NotFoundException('User not found');
     }
-    const isMod = channel.Moderators.some(
-      (member) => member.id === requestMaker.id,
-    );
-    if (!isMod) {
+    const isMod = channel.Moderators.some((member) => member.id === updater);
+    const isOwner = channel.owner.id === requestMaker.id;
+    if (!isMod && !isOwner) {
       throw new NotFoundException('User not mod from channel');
     }
     if (password && password.length > 5) {
-      channel.password = password;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      channel.password = hashedPassword;
       channel.is_protected = true;
     } else channel.is_protected = false;
 
-    if (name) {
-      channel.name = name;
-    }
     channel.is_private = is_private;
 
     return this.chanRepository.save(channel);
   }
 
   async deleteChannel(id: number, mod: number): Promise<void> {
-    const channel = await this.chanRepository.findOne({ where: { id } });
+    const channel = await this.chanRepository.findOne({
+      where: { id },
+      relations: ['owner'],
+    });
     if (!channel) {
       throw new NotFoundException('Channel not found');
+    }
+    if (channel.name === 'Welcome/Global channel') {
+      throw new NotFoundException("You can't delete this channel");
     }
     const requestMaker = await this.userRepository.findOne({
       where: { id: mod },

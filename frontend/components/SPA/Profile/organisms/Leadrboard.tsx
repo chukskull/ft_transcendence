@@ -55,6 +55,8 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
             firstName={user.firstName}
             lastName={user.lastName}
             color={colors[index]}
+            id={user.id}
+            channelId={user.id}
           />
         </div>
       ))}
