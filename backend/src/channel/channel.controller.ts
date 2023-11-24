@@ -13,14 +13,19 @@ import { CreateChannelDto } from './dtos/create-channel.dto';
 import { UpdateChannelDto } from './dtos/update-channel.dto';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import { UseGuards } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('channels')
 export class ChannelController {
-  constructor(private readonly channelService: ChannelService) {}
+  constructor(
+    private readonly channelService: ChannelService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('create')
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   create(@Body() createChannelDto: CreateChannelDto, @Req() req) {
+    console.log(req.user.id);
     return this.channelService.createChannel(createChannelDto, req.user.id);
   }
 

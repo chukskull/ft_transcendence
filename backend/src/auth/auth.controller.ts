@@ -37,8 +37,8 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    if (req.user.authenticated) {
-      throw new UnauthorizedException('You are already Authenticated');
+    if (req.user) {
+      res.redirect(process.env.frontendUrl);
     }
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
