@@ -15,6 +15,7 @@ interface ProfileCompProps {
   color?: string;
   type?: "Protected" | "Public" | null;
   inChannel?: boolean;
+  channelId: number;
 }
 
 const ProfileComp = ({
@@ -26,6 +27,7 @@ const ProfileComp = ({
   type,
   color,
   inChannel,
+  channelId,
 }: ProfileCompProps) => {
   const [showModal, setShow] = React.useState(false);
 
@@ -33,7 +35,19 @@ const ProfileComp = ({
     if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
-      axios.post("/api/auth/join");
+      axios
+        .post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
       setShow(true);
     }
@@ -49,9 +63,14 @@ const ProfileComp = ({
       >
         {showModal &&
           (type === "Protected" ? (
-            <ProtectedModal /> 
+            <ProtectedModal channelId={channelId} />
           ) : (
-            <UserMenu id={id} channel={inChannel} />
+            <UserMenu
+              id={id}
+              channel={inChannel}
+              avatarUrl={img}
+              nickName={nickName}
+            />
           ))}
       </Modal>
       <div className="flex items-center  gap-5" onClick={handleModalClick}>

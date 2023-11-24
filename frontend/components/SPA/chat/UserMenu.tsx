@@ -11,13 +11,11 @@ import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Console } from "console";
 
-
-const UserMenu = (user: any, channel: boolean) => {
+const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
   const router = useRouter();
-  const { id, nickName, avatarUrl, online } = user;
-  console.log("inside user menu", user);
+  console.log("UserMenu", id);
+
   return (
     <>
       <div className={style["user-info"]}>
@@ -48,8 +46,8 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/${nickName}`
+            router.push(
+              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/users/${nickName}`
             );
           }}
         >
@@ -59,9 +57,16 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addfriend/${id}`
-            );
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`
+              )
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <FaUserPlus />
@@ -70,22 +75,36 @@ const UserMenu = (user: any, channel: boolean) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
-            );
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
+              )
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <FaUserSlash />
           Block
         </div>
-        {!channel && (
+        {channel && (
           <>
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/mod/${id}/1`
-                );
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${channel}/channels/modding/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <FaUserShield />
@@ -94,9 +113,16 @@ const UserMenu = (user: any, channel: boolean) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/mute/${id}/1`
-                );
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel}/muting/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <FaVolumeMute />
@@ -105,9 +131,16 @@ const UserMenu = (user: any, channel: boolean) => {
             <div
               className={style["menu-item"]}
               onClick={() => {
-                axios.post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/ban/${id}/1`
-                );
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel}/banning/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <FaBan />

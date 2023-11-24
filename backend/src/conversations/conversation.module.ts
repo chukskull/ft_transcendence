@@ -10,5 +10,6 @@ import { NotifGateway } from '../notifications.gateway';
   controllers: [ConversationController],
   imports: [TypeOrmModule.forFeature([User, Conversation, Chat])],
   providers: [ConversationService, ChatGateway, NotifGateway],
+  exports: [ConversationService],
 })
 export class ConversationModule {}

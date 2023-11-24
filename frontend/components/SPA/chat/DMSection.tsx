@@ -1,28 +1,46 @@
+"use client";
 import DMbox from "@/components/SPA/chat/DMbox";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
 import AvatarBubble from "./AvatarBubble";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 
 const FindFriendModal = () => {
+  const router = useRouter();
+  const [friendsList, setFriendsList] = useState<any>([]);
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setFriendsList(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+  const startConversation = (userName: string) => {
+    console.log("start conversation", userName);
+    router.push(`/chat/users/${userName}`);
+  };
+
   return (
     <>
-      {/* <h1>Select Friend</h1>
+      <h1>Select Friend</h1>
       <input type="text" id="username" placeholder="username of your friend" />
       <div className={style["friendsList"]}>
-        {friendsList.map((friend) => (
-          <div className={style["friend"]} key={friend.avatar}>
-            <AvatarBubble
-              avatar={friend.avatar}
-              online={friend.online}
-              key={friend.nicknae}
-            />
-            <h3>{friend.nicknae}</h3>
+        {friendsList.map((friend: any) => (
+          <div
+            className={style["friend"]}
+            key={friend.id}
+            onClick={() => startConversation(friend.nickName)}
+          >
+            <AvatarBubble avatar={friend.avatarUrl} online={friend.online} />
+            <h3>{friend.nickName}</h3>
           </div>
         ))}
-      </div> */}
+      </div>
     </>
   );
 };
@@ -44,13 +62,16 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   };
   useEffect(() => {
     const nickName = params.id;
-    const selectedUser = dmsList.find((dm: any) => dm.id === nickName);
+    const selectedUser = dmsList.find(
+      (dm: any) => dm.members[0].nickName === nickName
+    );
+    console.log("this is the selected user", selectedUser);
     if (selectedUser) {
       sendDmOrChannel(selectedUser);
       getType(false);
-      setActive(selectedUser.name);
+      setActive(selectedUser.nickName);
     }
-  }, [dmsList, params.id, sendDmOrChannel, getType]);
+  }, [dmsList, params, sendDmOrChannel, getType]);
 
   useEffect(() => {
     try {
@@ -94,7 +115,7 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
           >
             <DMbox
               className={
-                (active === dm.members[0].nickName && !CompType)
+                active === dm.members[0].nickName && !CompType
                   ? "bg-gray-500 rounded-md"
                   : "bg-bghover rounded-md"
               }
