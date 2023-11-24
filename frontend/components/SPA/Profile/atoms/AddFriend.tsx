@@ -15,21 +15,21 @@ export const AddFriend = ({
     return null;
   }
   return (
-    <div className="flex items-center justify-center mt-4 gap-3">
+    <div className="flex items-center justify-center mt-6 gap-3">
       <button className="group flex items-center" onClick={whenClicked}>
         <div
           className="flex h-12 w-12 rounded-[24px] 
-        group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background dark:bg-neutral-700 
-        group-hover:bg-emerald-500"
+        group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background bg-transparent border-3 border-green-500	
+        "
         >
           {!clicked ? (
             <Plus
-              className="group-hover:text-white transition text-emerald-500"
+              className="group-hover:text-white transition text-white"
               size={25}
             />
           ) : (
             <Check
-              className="group-hover:text-white transition text-emerald-500"
+              className="group-hover:text-white transition text-white"
               size={25}
             />
           )}

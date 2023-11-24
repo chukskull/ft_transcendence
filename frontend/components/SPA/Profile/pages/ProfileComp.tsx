@@ -28,18 +28,24 @@ export default function Profile({ id }: any) {
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
         <span style={{ display: "flex", alignItems: "center" }}>
           <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
-          {`${data.firstName} + ${data.lastName}`}
+          {
+            data.firstName && data.lastName ? (
+              `${data.firstName} ${data.lastName}`
+
+            ) :
+              ``
+          }
         </span>
       </h1>
       <div className="item-1  relative ">
         <LeftProfile
-          image={data?.avatarUrl}
-          name={`${data.firstName} + ${data.lastName}`}
+          image={data?.avatarUrl ? data?.avatarUrl : "https://i.pravatar.cc/300?img=9"}
+          name={data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : `No One`}
           nickName={data?.nickName}
         />
         <div className="min-w-[80px] h-0"></div>
         <ProgressBar
-          prec={data?.expersience / 12798}
+          prec={data?.experience / 12798}
           lvl={data?.level}
           exp={data?.expersience}
           maxExp={12798}
@@ -89,3 +95,5 @@ export default function Profile({ id }: any) {
     </div>
   );
 }
+
+

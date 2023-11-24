@@ -8,6 +8,7 @@ export async function getLeadProfiles() {
         withCredentials: true,
       }
     );
+    // const response = await axios.get("  http://localhost:4000/Leadrboard");
     const userData = await response.data;
     return userData;
   } catch (error) {

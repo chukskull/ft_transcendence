@@ -32,14 +32,21 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     MonStyle === "Profile" ? "bg-purpleProfile" : "bg-friend";
   let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
   return (
-    <div className="flex flex-col items-center justify-center gap-4 flex-grow ">
+    <div className="flex flex-col items-center justify-center gap-4 w-full py-2">
       {data?.map((user: any, index: any) => (
         <div
           key={user.id}
-          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-center p-4`}
+          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-start items-center p-10 gap-6`}
         >
-          <span className="text-center text-white font-ClashGrotesk-Semibold text-lg flex items-center pr-12 ">
-            #{index + 1}
+          <span className="text-white font-ClashGrotesk-Semibold text-lg flex items-center">
+            {index < 9 ? (
+              `#0${index + 1}`
+            ):
+            (
+              `#${index + 1}`
+
+            )}
+
           </span>
 
           <ProfileComp
