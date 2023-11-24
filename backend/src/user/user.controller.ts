@@ -92,7 +92,6 @@ export class UserController {
   @Post('/fill')
   @UseGuards(JwtGuard)
   async fill(@Body() data: fillDto, @Req() req: any) {
-    console.log('this is fill ', req.user.id);
     return this.usersService.fillData(data, req.user.id);
   }
 
@@ -118,8 +117,7 @@ export class UserController {
   @Post('/sendFriendRequest/:friendId')
   @UseGuards(JwtGuard)
   async sendFriendRequest(@Param('friendId') id: number, @Req() req: any) {
-    const myId = req.user.id;
-    return this.usersService.sendFriendRequest(myId, id);
+    return this.usersService.sendFriendRequest(req.user.id, id);
   }
 
   async addFriend(@Param('friendId') id: number, @Req() req: any) {

@@ -21,10 +21,9 @@ const FindFriendModal = () => {
       .catch((err) => console.log(err));
   }, []);
   const startConversation = (userName: string) => {
+    console.log("start conversation", userName);
     router.push(`/chat/users/${userName}`);
-    router.refresh();
   };
-  console.log("this is the friendslist", friendsList);
 
   return (
     <>
@@ -63,13 +62,16 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   };
   useEffect(() => {
     const nickName = params.id;
-    const selectedUser = dmsList.find((dm: any) => dm.id === nickName);
+    const selectedUser = dmsList.find(
+      (dm: any) => dm.members[0].nickName === nickName
+    );
+    console.log("this is the selected user", selectedUser);
     if (selectedUser) {
       sendDmOrChannel(selectedUser);
       getType(false);
-      setActive(selectedUser.name);
+      setActive(selectedUser.nickName);
     }
-  }, [dmsList, params.id, sendDmOrChannel, getType]);
+  }, [dmsList, params, sendDmOrChannel, getType]);
 
   useEffect(() => {
     try {

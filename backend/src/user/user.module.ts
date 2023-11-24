@@ -10,7 +10,7 @@ import { Achievement } from '../achievement/achievement.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { NotifGateway } from 'src/notifications.gateway';
-import { JwtModule } from '@nestjs/jwt';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),

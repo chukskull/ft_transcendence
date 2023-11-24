@@ -28,15 +28,17 @@ export class AuthController {
   ) {}
 
   @Get('/42')
+  @UseGuards(AuthGuard('42'))
   login42(): void {}
 
   @Get('42/callback')
+  @UseGuards(AuthGuard('42'))
   async callback42(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    if (req.user.authenticated) {
-      throw new UnauthorizedException('You are already Authenticated');
+    if (req.user) {
+      res.redirect(process.env.frontendUrl);
     }
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
