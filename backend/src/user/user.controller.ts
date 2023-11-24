@@ -19,7 +19,7 @@ import {
   IsNumber,
   Length,
 } from 'class-validator';
-// import { JwtGuard } from 'src/guards/ft_oauth.guard';
+import { AuthService } from 'src/auth/auth.service';
 
 class fillDto {
   @IsString()
@@ -53,7 +53,10 @@ class updateDto {
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly usersService: UserService) {}
+  constructor(
+    private readonly usersService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   // @Post('create')
   // async create(@Body() data): Promise<User> {
@@ -64,6 +67,7 @@ export class UserController {
   //   );
   // }
   @Get()
+  @UseGuards(JwtGuard)
   async all(): Promise<User[]> {
     return this.usersService.all();
   }
@@ -71,7 +75,7 @@ export class UserController {
   @Get('profile/:userId')
   @UseGuards(JwtGuard)
   async findUser(@Param('userId') userId: any, @Req() req: any): Promise<User> {
-    console.log(req.user);
+    if (userId == 'me') userId = req.user.nickname;
     return this.usersService.userProfile(userId);
   }
 
@@ -88,7 +92,7 @@ export class UserController {
   @Post('/fill')
   @UseGuards(JwtGuard)
   async fill(@Body() data: fillDto, @Req() req: any) {
-    console.log(req);
+    console.log('this is fill ', req.user.id);
     return this.usersService.fillData(data, req.user.id);
   }
 
@@ -98,34 +102,38 @@ export class UserController {
     return this.usersService.updateUserInfo(data);
   }
 
-  @UseGuards()
-  @UseGuards(JwtGuard)
   @Post('/status')
+  @UseGuards(JwtGuard)
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
-  @UseGuards(JwtGuard)
   @Get('/leaderboard')
+  @UseGuards(JwtGuard)
   async getLeaderboard(@Req() req: any) {
     console.log(req.user);
     return this.usersService.getLeaderboard();
   }
 
+  @Post('/sendFriendRequest/:friendId')
   @UseGuards(JwtGuard)
-  @Post('/sendFriendRequest/:friendId')    await this.userRepository.update(req.user.id, {authenticated: true});
+  async sendFriendRequest(@Param('friendId') id: number, @Req() req: any) {
+    const myId = req.user.id;
+    return this.usersService.sendFriendRequest(myId, id);
+  }
 
   async addFriend(@Param('friendId') id: number, @Req() req: any) {
     const myId = req.user.id;
     return this.usersService.sendFriendRequest(myId, id);
   }
-  @UseGuards(JwtGuard)
+
   @Get('/myFriendRequests')
+  @UseGuards(JwtGuard)
   async myFriendRequests(@Req() req: any) {
     return this.usersService.getMyPendingFriendRequests(req.user.id);
   }
-  @UseGuards(JwtGuard)
   @Post('/FriendRequest/:friendId/:action')
+  @UseGuards(JwtGuard)
   async FriendRequest(
     @Param('friendId') id: number,
     @Param('action') action: number,
@@ -134,8 +142,8 @@ export class UserController {
     return this.usersService.handleFriendRequest(id, action, req.user.id);
   }
 
-  @UseGuards(JwtGuard)
   @Post('/handleBlock/:friendId/:action')
+  @UseGuards(JwtGuard)
   async blockFriend(
     @Param('friendId') frId: number,
     @Req() req: any,

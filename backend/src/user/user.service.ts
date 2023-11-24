@@ -45,7 +45,7 @@ export class UserService {
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    // user.matchHistory = [];
+    user.matchHistory = [];
     user.status = 'offline';
     user.nickName = intraLogin;
     user.firstTimeLogiIn = true;
@@ -69,17 +69,19 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async userProfile(id: string | number): Promise<User> {
-    const user =
-      typeof id === 'string'
-        ? await this.userRepository.findOne({
-            where: { nickName: id },
-            relations: ['matchHistory', 'channels', 'conversations'],
-          })
-        : await this.userRepository.findOne({
-            where: { id },
-            relations: ['matchHistory', 'channels', 'conversations'],
-          });
+  async userProfile(nickName: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { nickName },
+      relations: [
+        'matchHistory',
+        'channels',
+        'conversations',
+        'friends',
+        'matchHistory.winner',
+        'matchHistory.player1',
+        'matchHistory.player2',
+      ],
+    });
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -94,20 +96,21 @@ export class UserService {
 
   async fillData(data: any, id: number): Promise<any> {
     const { nickName, firstName, lastName } = data;
-    const alreadyExists = await this.userRepository.findOne({
-      where: { id },
+    const nickNameEx = await this.userRepository.findOne({
+      where: { nickName },
     });
-    if (!alreadyExists) return { message: 'NickName already exists' };
+    if (nickNameEx) return { message: 'NickName already exists' };
     const user = await this.userRepository.findOne({
       where: { id },
     });
-    if (user.nickName || user.firstName)
-      return { message: 'data already filled' };
-    return this.userRepository.update(id, {
+    if (user.firstName) return { message: 'data already filled' };
+    const useeer = this.userRepository.update(id, {
       nickName,
       firstName,
       lastName,
     });
+
+    console.log('this is user ', useeer);
   }
 
   async getFriends(userId: number): Promise<User[]> {
