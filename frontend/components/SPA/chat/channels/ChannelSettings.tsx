@@ -11,7 +11,8 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   const [formData, setFormData] = useState({ is_private, password, id: id });
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
-
+    formData.is_private = is_private;
+    console.log(formData.is_private, "mountassir just die already");
     try {
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/update`,
@@ -76,7 +77,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
                 <Switch
                   color="success"
                   onValueChange={() => setPrivate(!is_private)}
-                  isSelected={is_private}
+                  isSelected={!is_private}
                 />
                 Public
               </div>
@@ -84,7 +85,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
                 <Switch
                   color="danger"
                   onValueChange={() => setPrivate(!is_private)}
-                  isSelected={!is_private}
+                  isSelected={is_private}
                 />
                 Private
               </div>

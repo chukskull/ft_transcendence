@@ -36,7 +36,7 @@ export const MiddleComponent = ({
         <SkeletonComp large={10} />
       </div>
     );
-
+      // data = dwita;
   // const friends = data?.friends;
   // const matches = data?.matches;
   // const Channels = data?.channels;
