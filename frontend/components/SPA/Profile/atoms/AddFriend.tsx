@@ -29,6 +29,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
 
   let icon = null;
   let buttonText = null;
+  let borderColor = "border-green-500";
   switch (isFriend) {
     case 1:
       icon = <Plus {...commonIconProps} />;
@@ -41,15 +42,15 @@ export const AddFriend: React.FC<AddFriendProps> = ({
     default:
       icon = <Minus {...commonIconProps} color="red" />;
       buttonText = "Remove Friend";
+      borderColor = "border-red-500";
   }
-
 
   return (
     <div className="flex items-center justify-center mt-6 gap-3">
       <button className="group flex items-center" onClick={whenClicked}>
         <div
           className={`flex h-${buttonSize} w-${buttonSize} rounded-[24px] 
-            group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background bg-transparent border-3 border-green-500
+            group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background bg-transparent border-3 ${borderColor}
           `}
         >
           {icon}
