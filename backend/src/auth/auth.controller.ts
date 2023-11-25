@@ -47,7 +47,7 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     } else res.redirect(process.env.frontendUrl + 'home');
-      await this.userRepository.update(req.user.id, { authenticated: true });
+    await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
   @Get('/logout')
@@ -83,27 +83,29 @@ export class AuthController {
 
   @Get('/2fa')
   @UseGuards(JwtGuard)
-  async TwoFactorHandler(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+  async TwoFactorHandler(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const secret = authenticator.generateSecret();
 
     const otpUri = authenticator.keyuri(req.user.email, 'google', secret);
 
-    return (toDataURL(otpUri));
+    return toDataURL(otpUri);
     await this.userService.saveTwoFactorSecret(secret, req.user.id);
-
-  } 
+  }
 
   @Post('/2fa/turn-on')
   @UseGuards(JwtGuard)
-  async turnOn2fa(@Req() req,@Body() body) {
+  async turnOn2fa(@Req() req, @Body() body) {
     const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(
       body.pin,
       req.user,
     );
 
-      if (!isCodeValid) {
-        throw new UnauthorizedException('Wrong code');
-      }
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong code');
+    }
     await this.userService.enableTwoFactor(req.user.id);
 
     console.log(isCodeValid);

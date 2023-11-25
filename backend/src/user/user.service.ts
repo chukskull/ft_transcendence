@@ -108,6 +108,7 @@ export class UserService {
               'matchHistory.winner',
               'matchHistory.player1',
               'matchHistory.player2',
+              'achievements',
             ],
           })
         : await this.userRepository.findOne({
@@ -120,6 +121,7 @@ export class UserService {
               'matchHistory.winner',
               'matchHistory.player1',
               'matchHistory.player2',
+              'achievements',
             ],
           });
 
@@ -156,7 +158,7 @@ export class UserService {
   async getFriends(userId: number): Promise<User[]> {
     const client = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['friends','pendingFriendRequests'],
+      relations: ['friends', 'pendingFriendRequests'],
     });
     if (!client) {
       return null;
