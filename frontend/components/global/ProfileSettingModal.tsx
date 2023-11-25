@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Input, Skeleton } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
-
+import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
-
 import { useUpdate } from "@/utils/UpdaTeUser";
 import { SkeletonComp } from "./Skeleton";
 
@@ -59,6 +58,20 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     }, 1000);
   };
 
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setName(res.data.nickName);
+        setChecked(res.data.enableTwoFa);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   if (isLoading) {
     <SkeletonComp />;
   }
@@ -89,12 +102,10 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           </div>
 
           <h1 className="font-ClashGrotesk-Semibold text-white text-2xl text-center">
-            {" "}
             Hamza Koranbi
           </h1>
           <div className="flex flex-col gap-2">
             <h1 className="font-ClashGrotesk-Regular text-white text-lg">
-              {" "}
               Change UserName
             </h1>
             <Input

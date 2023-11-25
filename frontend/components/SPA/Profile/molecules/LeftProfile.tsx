@@ -8,6 +8,9 @@ interface LeftProfileProps {
   image: string;
   name: string;
   nickName: string;
+  userId: number;
+  me: boolean;
+  isFriend: number;
 }
 
 export const LeftProfile = ({
@@ -15,6 +18,9 @@ export const LeftProfile = ({
   name,
   nickName,
   isLoading,
+  userId,
+  me,
+  isFriend,
 }: LeftProfileProps) => {
   const [add, setAdd] = useState(false);
   function handleClick() {
@@ -36,10 +42,11 @@ export const LeftProfile = ({
           #{nickName}
         </h1>
         <AddFriend
-          //depends its my profile or not
-          display={true}
+          display={me}
           whenClicked={handleClick}
           clicked={add}
+          userId={userId}
+          isFriend={isFriend}
         />
       </div>
     </div>
