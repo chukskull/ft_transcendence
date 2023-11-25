@@ -40,9 +40,6 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    if (req.user) {
-      res.redirect(process.env.frontendUrl);
-    }
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
     console.log(req.user.firstTimeLogiIn);
@@ -50,7 +47,7 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     } else res.redirect(process.env.frontendUrl + 'home');
-    await this.userRepository.update(req.user.id, { authenticated: true });
+      await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
   @Get('/logout')
@@ -75,9 +72,12 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
+    console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
+      console.log(req.user.id);
       res.redirect(process.env.frontendUrl + 'fill');
-    } else res.redirect(process.env.frontendUrl);
+      await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
+    } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
