@@ -25,7 +25,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
       .then((res) => {
         console.log(res);
         if (res.status === 201) {
-          router.push("/chat/channels/1337");
+          router.push("/chat");
         }
       });
   };
