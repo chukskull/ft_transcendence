@@ -45,7 +45,7 @@ const ChannelsSection = ({
 
   useEffect(() => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`, {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/mychannels`, {
         withCredentials: true,
       })
       .then((res) => {

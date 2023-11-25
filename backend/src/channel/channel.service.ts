@@ -27,8 +27,7 @@ export class ChannelService {
     creator: number,
   ): Promise<Channel> {
     const { name, is_private, password } = createChannelDto;
-
-    const owner: User | undefined = await this.userRepository.findOne({
+    const owner = await this.userRepository.findOne({
       where: { id: creator },
       relations: ['channels'],
     });
@@ -131,11 +130,6 @@ export class ChannelService {
       throw new NotFoundException('User not in channel');
     }
   }
-  async getMyChannels(userId: number): Promise<Channel[]> {
-    return this.chanRepository.find({
-      where: { members: { id: userId } },
-    });
-  }
 
   async updateChannel(
     updateChannelDto: UpdateChannelDto,
@@ -210,7 +204,10 @@ export class ChannelService {
     }
 
     // Check if the user exists
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['conversations', 'channels'],
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }

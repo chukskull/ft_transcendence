@@ -37,7 +37,7 @@ export class ChannelController {
     return this.channelService.updateChannel(updateChannelDto, req.user.id);
   }
 
-  @Get()
+  @Get('all')
   @UseGuards(JwtGuard)
   findAll() {
     return this.channelService.getChannels();
@@ -47,12 +47,6 @@ export class ChannelController {
   @UseGuards(JwtGuard)
   findOne(@Param('id') id: number, @Req() req) {
     return this.channelService.getChannel(id, req.user.id);
-  }
-
-  @Get('myChannels')
-  @UseGuards(JwtGuard)
-  findMyChannels(@Req() req) {
-    return this.channelService.getMyChannels(req.user.id);
   }
 
   @Get(':id/chat')

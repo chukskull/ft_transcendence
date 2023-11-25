@@ -72,6 +72,8 @@ export class UserController {
     return this.usersService.all();
   }
 
+
+
   @Get('profile/:userId')
   @UseGuards(JwtGuard)
   async findUser(@Param('userId') userId: any, @Req() req: any): Promise<User> {
@@ -89,6 +91,13 @@ export class UserController {
   async getChat(@Req() req: any, @Param('friendId') friendId: number) {
     return this.usersService.getChatWithFriend(1, friendId);
   }
+
+  @Get('/mychannels')
+  @UseGuards(JwtGuard)
+  getMyChannels(@Req() req) {
+    return this.usersService.getMyChannels(req.user.id);
+  }
+
   @Post('/fill')
   @UseGuards(JwtGuard)
   async fill(@Body() data: fillDto, @Req() req: any) {
