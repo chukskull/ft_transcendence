@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   HttpStatus,
+  Post,
   Req,
   Res,
   UnauthorizedException,
@@ -17,7 +19,8 @@ import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Console } from 'console';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @Controller('auth')
 export class AuthController {
@@ -37,9 +40,6 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    if (req.user) {
-      res.redirect(process.env.frontendUrl);
-    }
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
     console.log(req.user.firstTimeLogiIn);
@@ -47,7 +47,7 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     } else res.redirect(process.env.frontendUrl + 'home');
-    await this.userRepository.update(req.user.id, { authenticated: true });
+      await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
   @Get('/logout')
@@ -72,10 +72,41 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
+    console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
+      console.log(req.user.id);
       res.redirect(process.env.frontendUrl + 'fill');
-    } else res.redirect(process.env.frontendUrl);
+      await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
+    } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
+  }
+
+  @Get('/2fa')
+  @UseGuards(JwtGuard)
+  async TwoFactorHandler(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    const secret = authenticator.generateSecret();
+
+    const otpUri = authenticator.keyuri(req.user.email, 'google', secret);
+
+    return (toDataURL(otpUri));
+    await this.userService.saveTwoFactorSecret(secret, req.user.id);
+
+  } 
+
+  @Post('/2fa/turn-on')
+  @UseGuards(JwtGuard)
+  async turnOn2fa(@Req() req,@Body() body) {
+    const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(
+      body.pin,
+      req.user,
+    );
+
+      if (!isCodeValid) {
+        throw new UnauthorizedException('Wrong code');
+      }
+    await this.userService.enableTwoFactor(req.user.id);
+
+    console.log(isCodeValid);
   }
 
   // @Get('google/logout')
