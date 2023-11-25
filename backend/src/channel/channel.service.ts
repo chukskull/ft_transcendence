@@ -285,6 +285,7 @@ export class ChannelService {
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
+      relations: ['members', 'conversation'],
     });
     if (!channel) {
       throw new NotFoundException('Channel not found');
@@ -296,7 +297,7 @@ export class ChannelService {
       throw new NotFoundException('User not found');
     }
     const inviterisinChannel = channel.members.some(
-      (member) => member.id === requestMaker.id,
+      (member) => member.id === inviter,
     );
     if (!inviterisinChannel) {
       throw new NotFoundException('User not in channel');
@@ -312,11 +313,11 @@ export class ChannelService {
         where: { id: userId },
         relations: ['conversations', 'channels'],
       });
-      channel.members?.push(friend);
+      channel?.members?.push(friend);
       friend?.channels.push(channel);
       friend?.conversations.push(channel.conversation);
+      this.userRepository.save(friend);
     }
-
     return this.chanRepository.save(channel);
   }
 

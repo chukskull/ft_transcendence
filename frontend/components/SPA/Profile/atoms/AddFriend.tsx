@@ -1,49 +1,63 @@
 import React from "react";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, Minus } from "lucide-react";
 
 interface AddFriendProps {
   display: boolean;
   whenClicked: () => void;
   clicked: boolean;
+  userId: number;
+  isFriend: number;
 }
-export const AddFriend = ({
+
+export const AddFriend: React.FC<AddFriendProps> = ({
   display,
   whenClicked,
   clicked,
-}: AddFriendProps) => {
-  if (!display) {
+  userId,
+  isFriend,
+}) => {
+  if (display) {
     return null;
   }
+
+  const buttonSize = "12";
+
+  const commonIconProps = {
+    className: "group-hover:text-white transition text-white",
+    size: 25,
+  };
+
+  let icon = null;
+  let buttonText = null;
+  switch (isFriend) {
+    case 1:
+      icon = <Plus {...commonIconProps} />;
+      buttonText = "Add Friend";
+      break;
+    case 2:
+      icon = <Check {...commonIconProps} />;
+      buttonText = "Friend Request Sent";
+      break;
+    default:
+      icon = <Minus {...commonIconProps} color="red" />;
+      buttonText = "Remove Friend";
+  }
+
+
   return (
     <div className="flex items-center justify-center mt-6 gap-3">
       <button className="group flex items-center" onClick={whenClicked}>
         <div
-          className="flex h-12 w-12 rounded-[24px] 
-        group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background bg-transparent border-3 border-green-500	
-        "
+          className={`flex h-${buttonSize} w-${buttonSize} rounded-[24px] 
+            group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background bg-transparent border-3 border-green-500
+          `}
         >
-          {!clicked ? (
-            <Plus
-              className="group-hover:text-white transition text-white"
-              size={25}
-            />
-          ) : (
-            <Check
-              className="group-hover:text-white transition text-white"
-              size={25}
-            />
-          )}
+          {icon}
         </div>
       </button>
-      {!clicked ? (
-        <h1 className="text-white font-ClashGrotesk-Regular text-base group-hover:text-white transitio opacity-80">
-          Add Friend
-        </h1>
-      ) : (
-        <h1 className="text-white font-ClashGrotesk-Regular text-base group-hover:text-white transitio opacity-80">
-          Friend Request Sent
-        </h1>
-      )}
+      <h1 className="text-white font-ClashGrotesk-Regular text-base group-hover:text-white transition opacity-80">
+        {buttonText}
+      </h1>
     </div>
   );
 };
