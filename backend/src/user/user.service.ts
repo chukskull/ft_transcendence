@@ -156,7 +156,7 @@ export class UserService {
   async getFriends(userId: number): Promise<User[]> {
     const client = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['friends'],
+      relations: ['friends','pendingFriendRequests'],
     });
     if (!client) {
       return null;
