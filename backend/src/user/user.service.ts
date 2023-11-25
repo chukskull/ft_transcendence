@@ -21,18 +21,22 @@ export class UserService {
 
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
     let alreadyExists;
-    if (!intraLogin) {
-      alreadyExists = await this.userRepository.findOne({
-        where: {
-          intraLogin: intraLogin,
-        },
-      });
-    } else {
-      alreadyExists = await this.userRepository.findOne({
-        where: {
-          email: email,
-        },
-      });
+    try {
+      if (!intraLogin) {
+        alreadyExists = await this.userRepository.findOne({
+          where: {
+            intraLogin: intraLogin,
+          },
+        });
+      } else {
+        alreadyExists = await this.userRepository.findOne({
+          where: {
+            email: email,
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e);
     }
     if (alreadyExists) {
       return null;
@@ -50,34 +54,38 @@ export class UserService {
     user.twoFactorSecret = '';
     user.friends = [];
     user.blockedUsers = [];
-    // user.matchHistory = [];
+    user.matchHistory = [];
     user.status = 'offline';
     user.nickName = intraLogin;
     user.firstTimeLogiIn = true;
     user.conversations = [];
+
     // check if the global channel exists
-    this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
     let globalChannel;
     globalChannel = await this.channelRepository.findOne({
       where: {
         name: 'Welcome/Global channel',
       },
     });
+    console.log('user created', savedUser);
     if (!globalChannel) {
+      console.log('creating global channel');
       globalChannel = await this.channelService.createChannel(
         {
           name: 'Welcome/Global channel',
           is_private: false,
           password: '',
         },
-        user.id,
+        savedUser.id,
       );
+      console.log('global channel created', globalChannel);
     } else {
-      this.channelService.joinChannel(globalChannel.id, '', user.id);
+      this.channelService.joinChannel(globalChannel.id, '', savedUser.id);
     }
 
     this.channelRepository.save(globalChannel);
-    return this.userRepository.save(user);
+    return this.userRepository.save(savedUser);
   }
   async validate42Callback(code: string): Promise<any> {
     const user = await this.userRepository.findOne({
@@ -108,6 +116,7 @@ export class UserService {
               'matchHistory.winner',
               'matchHistory.player1',
               'matchHistory.player2',
+              'achievements',
             ],
           })
         : await this.userRepository.findOne({
@@ -120,6 +129,7 @@ export class UserService {
               'matchHistory.winner',
               'matchHistory.player1',
               'matchHistory.player2',
+              'achievements',
             ],
           });
 
@@ -156,7 +166,7 @@ export class UserService {
   async getFriends(userId: number): Promise<User[]> {
     const client = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['friends','pendingFriendRequests'],
+      relations: ['friends', 'pendingFriendRequests'],
     });
     if (!client) {
       return null;
@@ -379,6 +389,29 @@ export class UserService {
       );
       return this.userRepository.save(client);
     }
+  }
+  async getMyChannels(userId: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: [
+        'channels',
+        'channels.members',
+        'channels.owner',
+        'channels.Moderators',
+        'channels.BannedUsers',
+        'channels.MutedUsers',
+        'channels.conversation',
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    console.log(user.channels);
+    const channels = user.channels.map((channel) => {
+      channel.password = '';
+      return channel;
+    });
+    return channels;
   }
 
   private async getClientAndBlockedUser(
