@@ -4,6 +4,7 @@ import LeftProfile from "@/components/SPA/Profile/molecules/LeftProfile";
 import { ProgressBar } from "@/components/SPA/Profile/molecules/ProgressBar";
 import Stats from "@/components/SPA/Profile/molecules/Stats";
 import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
+import Achievement from "@/components/SPA/Profile/organisms/Achievement";
 import React, { useState, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
@@ -121,15 +122,14 @@ export default function Profile({ id }: any) {
 
           <MiddleComponent index={active} data={data} isLoading={isLoading} />
         </div>
-        <div className="C-3">
-          <div className="flex items-center justify-center">
-            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2">
+        <div className="C-3 overflow-y-auto w-[100%] ">
+            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white text-center p-2 ">
               Archivements
             </h1>
-            {/* LOCALHOST: */}
+            <Achievement data={data.Achievement}/>
           </div>
         </div>
       </div>
-    </div>
+    
   );
 }
