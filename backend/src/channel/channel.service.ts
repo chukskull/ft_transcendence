@@ -202,6 +202,7 @@ export class ChannelService {
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
+      relations: ['members', 'conversation'],
     });
 
     if (!channel) {
@@ -229,7 +230,7 @@ export class ChannelService {
 
     // Check if the user is already a member of the channel
     const isAlreadyMember = channel.members.some(
-      (member) => member.id === user.id,
+      (member) => member.id === userId,
     );
     if (isAlreadyMember) {
       throw new NotFoundException('User already in channel');
