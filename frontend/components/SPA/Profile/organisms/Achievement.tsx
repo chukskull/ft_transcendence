@@ -30,6 +30,7 @@ export const Achievement = ({data}:AchievementProps) => {
             firstName={achiv.description}
             id={achiv.id}
             channelId={achiv.id}
+            type={"achiv"}
           />
         </div>
       ))}

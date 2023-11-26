@@ -50,6 +50,26 @@
       "id": 6
     }
   ],
+  "Channels": [
+    {
+      "img": "",
+      "nickName": "private",
+      "name": "1337",
+      "type": "Protected"
+    },
+    {
+      "img": "",
+      "nickName": "private",
+      "name": "salehostora",
+      "type": "Public"
+    },
+    {
+      "img": "s",
+      "nickName": "protected",
+      "name": "great",
+      "type": "Protected"
+    }
+  ],
   "Leadrboard": [
     
       {
@@ -206,7 +226,7 @@
         "type": "Public"
       },
       {
-        "img": "",
+        "img": "s",
         "nickName": "private",
         "name": "Pedago",
         "type": "Protected"
