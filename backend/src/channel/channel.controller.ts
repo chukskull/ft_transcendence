@@ -25,15 +25,12 @@ export class ChannelController {
   @Post('create')
   @UseGuards(JwtGuard)
   create(@Body() createChannelDto: CreateChannelDto, @Req() req) {
-    console.log(req.user.id);
     return this.channelService.createChannel(createChannelDto, req.user.id);
   }
 
   @Patch('update')
   @UseGuards(JwtGuard)
   update(@Body() updateChannelDto: UpdateChannelDto, @Req() req) {
-    console.log(req.user.id);
-    console.log(updateChannelDto);
     return this.channelService.updateChannel(updateChannelDto, req.user.id);
   }
 

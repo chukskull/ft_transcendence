@@ -40,8 +40,12 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
         console.log(err);
       });
   }, []);
+
   useEffect(() => {
-    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`);
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`, {
+      query: { conversationId: conv?.id },
+    });
+
     setSocket(newSocket);
 
     return () => {
@@ -61,7 +65,6 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
     });
 
     socket.on("newMessage", (newMessage: any) => {
-      console.log("newMessage : " + newMessage);
       setMsgs((prevMsgs: Chat[]) => [...prevMsgs, newMessage]);
     });
 

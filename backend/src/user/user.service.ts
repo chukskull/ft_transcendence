@@ -7,7 +7,9 @@ import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
+import { ConversationService } from 'src/conversations/conversation.service';
 import { Achievement } from 'src/achievement/achievement.entity';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -15,9 +17,11 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,
-    private channelService: ChannelService,
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
+
+    private channelService: ChannelService,
+    private readonly conversationService: ConversationService,
   ) {}
 
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
@@ -288,6 +292,13 @@ export class UserService {
       relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
     });
 
+    if (!client || !friend) {
+      throw new NotFoundException('User not found.');
+    }
+    const pending = this.findPendingRequest(client, friendID);
+    if (!pending) {
+      return { message: 'User is not in pending' };
+    }
     if (this.isAlreadyFriend(client, friend)) {
       return { message: 'User already in friends' };
     }
@@ -296,31 +307,22 @@ export class UserService {
       return { message: 'User is blocked' };
     }
 
-    const pending = this.findPendingRequest(client, friendID);
-    if (!pending) {
-      return { message: 'User is not in pending' };
-    }
-
     if (action === 1) {
       //accept
       client.pendingFriendRequests = client.pendingFriendRequests.filter(
         (pending) => pending.id !== friendID,
+      );
+      friend.pendingFriendRequests = friend.pendingFriendRequests.filter(
+        (pending) => pending.id !== handlerId,
       );
 
       const conversation = this.findConversation(client, friendID);
 
       if (conversation) {
         client.friends.push(friend);
+        friend.friends.push(client);
       } else {
-        const newConversation = await this.conversationRepository.create({
-          is_group: false,
-          members: [client, friend],
-          chats: [],
-        });
-        await this.conversationRepository.save(newConversation);
-
-        client.conversations.push(newConversation);
-        friend.conversations.push(newConversation);
+        await this.conversationService.createConversation(client.id, friendID); //here error maybe
         client.friends.push(friend);
         friend.friends.push(client);
       }
@@ -329,11 +331,14 @@ export class UserService {
       client.pendingFriendRequests = client.pendingFriendRequests.filter(
         (pending) => pending.id !== friendID,
       );
+      friend.pendingFriendRequests = friend.pendingFriendRequests.filter(
+        (pending) => pending.id !== handlerId,
+      );
     }
 
     await this.userRepository.save(client);
     await this.userRepository.save(friend);
-    return { message: 'Friend request handled' };
+    return { message: 'Friend request accepted' };
   }
 
   async removeFriend(clientID: number, friendID: number): Promise<any> {

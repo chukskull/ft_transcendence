@@ -37,14 +37,14 @@ export class MatchHistoryService {
     mh.player2Score = Number(MatchHistoryDto.player2score);
 
     await this.matchHistory.save(mh);
-    
+
     return mh;
   }
 
   /*
-    * Returns all match history entries from the database.
-    */
-  
+   * Returns all match history entries from the database.
+   */
+
   async findAll(): Promise<MatchHistory[]> {
     return this.matchHistory.find();
   }

@@ -10,7 +10,7 @@ export class JwtGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly jwtService:  JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

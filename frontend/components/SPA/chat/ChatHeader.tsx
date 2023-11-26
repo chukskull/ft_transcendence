@@ -25,7 +25,6 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         withCredentials: true,
       })
       .then((res) => {
-        console.log(res);
         if (res.data.success) {
           router.push("/chat");
         }
@@ -61,7 +60,10 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         overlayClassName={style["modal-overlay"]}
       >
         {chatHeaderProps?.isChannel ? (
-          <ChannelMenu channel={chatHeaderProps?.dmOrChannel} currentUser={user} />
+          <ChannelMenu
+            channel={chatHeaderProps?.dmOrChannel}
+            currentUser={user}
+          />
         ) : (
           <UserMenu
             id={chatHeaderProps?.dmOrChannel?.members[0].id}

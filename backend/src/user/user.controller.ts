@@ -58,14 +58,6 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  // @Post('create')
-  // async create(@Body() data): Promise<User> {
-  //   return this.usersService.createNewUser(
-  //     data.intraLogin,
-  //     data.avatarUrl,
-  //     data.email,
-  //   );
-  // }
   @Get()
   @UseGuards(JwtGuard)
   async all(): Promise<User[]> {
@@ -105,7 +97,6 @@ export class UserController {
   @Get('/leaderboard')
   @UseGuards(JwtGuard)
   async getLeaderboard(@Req() req: any) {
-    console.log(req.user);
     return this.usersService.getLeaderboard();
   }
   @Get('/friends')
@@ -136,7 +127,7 @@ export class UserController {
   //   return this.usersService.sendFriendRequest(myId, id);
   // }
 
-  @Post('/FriendRequest/:friendId/:action')
+  @Post('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
   @UseGuards(JwtGuard)
   async FriendRequest(
     @Param('friendId') id: number,
