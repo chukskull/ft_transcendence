@@ -48,9 +48,8 @@ export class ChannelController {
 
   @Get(':id/chat')
   @UseGuards(JwtGuard)
-  findChat(@Param('id') id: number, @Req() req) {
-    const userId = req.user.id;
-    return this.channelService.getChannelChat(userId, id);
+  findChat(@Param('id') ChannId: number, @Req() req) {
+    return this.channelService.getChannelChat(ChannId, req.user.id);
   }
 
   @Delete('/delete/:id')

@@ -57,8 +57,8 @@ const StudentsInfos = [
     name: "Ahmed El Mountassir",
     title: "Full Stack Developer",
 
-    img: "https://cdn.intra.42.fr/users/4c64d229a66a2142250bb8ab0ffacbd7/mountassir.jpg",
-    parag: "There is no such thing as enough femboys",
+    img: "https://avatars.githubusercontent.com/u/49590486?s=400&u=62f724f6350cb04749e80f7b33ab4575bfd8890d",
+    parag: "E leetinitiative for everyone",
   },
 ];
 

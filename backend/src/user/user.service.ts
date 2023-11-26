@@ -439,7 +439,6 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    console.log(user.channels);
     const channels = user.channels.map((channel) => {
       channel.password = '';
       return channel;
