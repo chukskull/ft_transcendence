@@ -111,4 +111,28 @@ export class ConversationService {
       ],
     });
   }
+
+  async joinConversation(convId: number, userId: number) {
+    const conv = await this.conversationRepository.findOne({
+      where: { id: convId },
+      relations: ['members', 'chats'],
+    });
+    if (!conv) throw new NotFoundException('Conversation not found');
+    const user = await this.UserRepository.findOne({
+      where: { id: userId },
+      relations: ['conversations', 'conversations.members'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const isMember = conv.members.find((member) => member.id === userId);
+    if (isMember) throw new Error('User is already in the conversation');
+
+    conv.members.push(user);
+    user.conversations.push(conv);
+    await Promise.all([
+      this.conversationRepository.save(conv),
+      this.UserRepository.save(user),
+    ]);
+    return conv;
+  }
 }

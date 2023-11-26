@@ -47,8 +47,7 @@ export class UserService {
       return null;
     }
     const user = this.userRepository.create({ intraLogin, avatarUrl, email });
-    user.email = email;
-    user.nickName = intraLogin ? intraLogin : email;
+    user.nickName = '';
     user.firstName = '';
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
@@ -68,9 +67,7 @@ export class UserService {
         name: 'Welcome/Global channel',
       },
     });
-    console.log('user created', savedUser);
     if (!globalChannel) {
-      console.log('creating global channel');
       globalChannel = await this.channelService.createChannel(
         {
           name: 'Welcome/Global channel',
@@ -153,7 +150,7 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { id },
     });
-    if (user.firstName) return { message: 'data already filled' };
+    if (user.firstName.length > 2) return { message: 'data already filled' };
     const useeer = this.userRepository.update(id, {
       nickName,
       firstName,
@@ -161,6 +158,7 @@ export class UserService {
     });
 
     console.log('this is user ', useeer);
+    return useeer;
   }
 
   async getFriends(userId: number): Promise<User> {
@@ -523,7 +521,7 @@ export class UserService {
       throw new NotFoundException('User not found.');
     }
 
-    const level = Math.floor(xp / (1098 + (user.level * 100)));
+    const level = Math.floor(xp / (1098 + user.level * 100));
     user.level = level;
     return this.userRepository.save(user);
   }
