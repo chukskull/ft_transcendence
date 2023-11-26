@@ -42,10 +42,6 @@ export class UserService {
       return null;
     }
     const user = this.userRepository.create({ intraLogin, avatarUrl, email });
-    user.level = 0;
-    user.experience = 0;
-    user.wins = 0;
-    user.totalGames = 0;
     user.email = email;
     user.nickName = intraLogin ? intraLogin : email;
     user.firstName = '';
@@ -55,7 +51,6 @@ export class UserService {
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
-    user.status = 'offline';
     user.nickName = intraLogin;
     user.firstTimeLogiIn = true;
     user.conversations = [];
@@ -163,15 +158,15 @@ export class UserService {
     console.log('this is user ', useeer);
   }
 
-  async getFriends(userId: number): Promise<User[]> {
+  async getFriends(userId: number): Promise<User> {
     const client = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['friends', 'pendingFriendRequests'],
+      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
     });
     if (!client) {
       return null;
     }
-    return client.friends;
+    return client;
   }
   async getChatWithFriend(userId: number, friendId: number): Promise<any> {
     const client = await this.userRepository.findOne({
@@ -229,6 +224,9 @@ export class UserService {
   }
 
   async sendFriendRequest(myID: number, friendID: number): Promise<any> {
+    if (myID === friendID) {
+      return { message: 'Cannot send friend request to yourself' };
+    }
     const client = await this.userRepository.findOne({
       where: { id: myID },
       relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
@@ -238,6 +236,10 @@ export class UserService {
       where: { id: friendID },
       relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
     });
+
+    if (!client || !friend) {
+      throw new NotFoundException('User not found.');
+    }
 
     if (this.isAlreadyFriend(client, friend)) {
       return { message: 'User already in friends' };
@@ -251,11 +253,23 @@ export class UserService {
       return { message: 'User already in pending' };
     }
 
+    // Update pendingFriendRequests without saving immediately
     friend.pendingFriendRequests.push(client);
-    const SavedFriend = this.userRepository.save(friend);
+    client.pendingFriendRequests.push(friend);
 
-    this.notifGateway.newFriendRequest(client, friendID);
-    return SavedFriend;
+    // Save the changes asynchronously
+    await this.saveFriendRequests([client, friend]);
+
+    await this.notifGateway.newFriendRequest(client, friendID);
+
+    return { message: 'Friend request sent' };
+  }
+
+  // New asynchronous method to save changes
+  private async saveFriendRequests(users: User[]): Promise<void> {
+    for (const user of users) {
+      await this.userRepository.save(user);
+    }
   }
 
   async handleFriendRequest(
@@ -321,17 +335,27 @@ export class UserService {
     return { message: 'Friend request handled' };
   }
 
-  async getMyPendingFriendRequests(clientID: number): Promise<User[]> {
+  async removeFriend(clientID: number, friendID: number): Promise<any> {
     const client = await this.userRepository.findOne({
       where: { id: clientID },
-      relations: ['pendingFriendRequests'],
+      relations: ['friends'],
     });
 
-    if (!client) {
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+      relations: ['friends'],
+    });
+
+    if (!client || !friend) {
       throw new NotFoundException('User not found.');
     }
 
-    return client.pendingFriendRequests;
+    client.friends = client.friends.filter((f) => f.id !== friendID);
+    friend.friends = friend.friends.filter((f) => f.id !== clientID);
+
+    await this.userRepository.save(client);
+    await this.userRepository.save(friend);
+    return { message: 'Friend removed' };
   }
 
   private isAlreadyFriend(client: User, friend: User): boolean {

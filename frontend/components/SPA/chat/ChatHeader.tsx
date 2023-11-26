@@ -1,6 +1,6 @@
 "use client";
 import { FiLogOut } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
@@ -16,6 +16,8 @@ interface chatHeaderProps {
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
   const router = useRouter();
   const leaveGroup = (id: number) => {
     axios
@@ -32,6 +34,18 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         console.log(err);
       });
   };
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <>
       <Modal
@@ -47,7 +61,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         overlayClassName={style["modal-overlay"]}
       >
         {chatHeaderProps?.isChannel ? (
-          <ChannelMenu channel={chatHeaderProps?.dmOrChannel} />
+          <ChannelMenu channel={chatHeaderProps?.dmOrChannel} currentUser={user} />
         ) : (
           <UserMenu
             id={chatHeaderProps?.dmOrChannel?.members[0].id}

@@ -65,7 +65,6 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
     const selectedUser = dmsList.find(
       (dm: any) => dm.members[0].nickName === nickName
     );
-    console.log("this is the selected user", selectedUser);
     if (selectedUser) {
       sendDmOrChannel(selectedUser);
       getType(false);
