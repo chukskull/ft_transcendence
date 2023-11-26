@@ -20,8 +20,8 @@ export const PADDLE_WIDTH = 13;
 export const PADDLE_HEIGHT = 110;
 export const PADDLE_SPEED = 10;
 export const INIT_BALL_SPEED = 10;
-export const PADDLE1_POSITION = GAME_HEIGHT / 2
-export const PADDLE2_POSITION = GAME_HEIGHT / 2
+export const PADDLE1_POSITION = GAME_HEIGHT / 2;
+export const PADDLE2_POSITION = GAME_HEIGHT / 2;
 export const MAX_ANGLE = (5 * Math.PI) / 12;
 
 export enum PlayerNumber {
@@ -60,7 +60,7 @@ export class GameService {
     const invUser = this.onlineUsers.get(player2.id);
     if (invUser) {
       invUser.forEach((sock) => {
-        sock.emit('invite', { player: player1});
+        sock.emit('invite', { player: player1 });
         sock.removeAllListeners('invResponse');
         sock.once('invResponse', (response) => {
           invUser.forEach((sock_) => {
@@ -99,10 +99,8 @@ export class GameService {
     }
   }
 
-
-
   async updateBall(client: Socket, payload: any): Promise<void> {
-    const { player1, player2} = payload;
+    const { player1, player2 } = payload;
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
     else {
@@ -112,14 +110,14 @@ export class GameService {
   }
 
   async updatePaddle(client: Socket, payload: any): Promise<void> {
-    const { player1, player2} = payload;
+    const { player1, player2 } = payload;
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
-      game.updatePaddle();
+    game.updatePaddle();
   }
 
   async updateScore(client: Socket, payload: any): Promise<void> {
-    const { player1, player2} = payload;
+    const { player1, player2 } = payload;
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
     game.updateScore();
@@ -135,7 +133,8 @@ export class GameService {
       match.player2ID = player2.id;
       match.player1score = game.player1Score;
       match.player2score = game.player2Score;
-      match.winnerID = game.player1Score > game.player2Score ? player1.id : player2.id;
+      match.winnerID =
+        game.player1Score > game.player2Score ? player1.id : player2.id;
       if (match.winnerID === player1.id) {
         match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
         match.losesInARow = 0;
@@ -152,34 +151,46 @@ export class GameService {
       }
 
       if (match.winsInARow === 3) {
-        const achievement = await this.achievementRepo.findOne({where :{ name: '3 in a row' }});
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '3 in a row' },
+        });
         if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id); 
+          this.achievementService.giveAchievement(player1.id, achievement.id);
         }
       }
       if (match.winsInARow === 5) {
-        const achievement = await this.achievementRepo.findOne({where :{ name: '5 in a row' }});
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '5 in a row' },
+        });
         if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id); 
+          this.achievementService.giveAchievement(player1.id, achievement.id);
         }
       }
 
       if (match.winsInARow === 10) {
-        const achievement = await this.achievementRepo.findOne({where :{ name: '10 in a row' }});
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '10 in a row' },
+        });
         if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id); 
+          this.achievementService.giveAchievement(player1.id, achievement.id);
         }
       }
-      const achievement = game.player2Score === 0 ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' }}) : null;
+      const achievement =
+        game.player2Score === 0
+          ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
+          : null;
       if (achievement) {
-        this.achievementService.giveAchievement(game.player2Score === 0 ? player1.id : player2.id, achievement.id);
+        this.achievementService.giveAchievement(
+          game.player2Score === 0 ? player1.id : player2.id,
+          achievement.id,
+        );
       }
     }
   }
 
   /*
-  * Join matchmaking queue
-  */
+   * Join matchmaking queue
+   */
   async joinQueue(client: Socket): Promise<boolean> {
     const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
     if (!user) {
@@ -233,7 +244,10 @@ export class GameService {
    */
   createGame(socket: Socket, payload: any) {
     const { player1, player2 } = payload;
-    if (!this.onlineUsers.get(player1.id)?.has(socket) || !this.onlineUsers.get(player2.id)?.has(socket))
+    if (
+      !this.onlineUsers.get(player1.id)?.has(socket) ||
+      !this.onlineUsers.get(player2.id)?.has(socket)
+    )
       return;
     if (
       this.currPlayers.find((player) => player.id === player1.id) ||
@@ -244,7 +258,6 @@ export class GameService {
     if (!player2) {
       // if player2 is not defined, player1 is waiting for an opponent
       if (!this.queue.find((player) => player.id === player1.id)) {
-        
         socket.emit('changeState', { state: 'waitingForOponent' });
       } else {
         this.queue = this.queue.filter((player) => {
