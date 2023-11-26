@@ -58,7 +58,8 @@ export class ConversationService {
       where: { id: convId },
       relations: ['members', 'chats'],
     });
-    const user = conv.members?.find((member) => member.id === senderId);
+    if (!conv) throw new NotFoundException('Conversation not found');
+    const user = conv.members.map((member) => member.id === senderId);
     if (!user)
       throw new NotFoundException('User not found in this conversation');
     try {
@@ -68,7 +69,6 @@ export class ConversationService {
         this.notifGateway.newMessage(message, otherUser.id);
       }
       await this.conversationRepository.save(conv);
-      console.log(conv);
     } catch (e) {
       console.log(e);
     }

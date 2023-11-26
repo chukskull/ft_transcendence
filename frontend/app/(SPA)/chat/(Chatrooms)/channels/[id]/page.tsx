@@ -5,8 +5,6 @@ import React from "react";
 
 export default function ChannelsPage() {
   const params = useParams();
-  console.log(params);
- 
 
   return <ChatRooms id={params.id} isGroup={true} />;
 }

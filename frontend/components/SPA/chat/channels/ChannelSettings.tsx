@@ -12,19 +12,20 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
     formData.is_private = is_private;
-    console.log(formData.is_private, "mountassir just die already");
-    try {
-      const response = await axios.patch(
+    axios
+      .patch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/update`,
         formData,
         {
           withCredentials: true,
         }
-      );
-      console.log("Update successful", response.data);
-    } catch (error) {
-      console.error("Error updating channel", error);
-    }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const unban = (userId: number) => {
@@ -36,7 +37,6 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       ) //0 to unban 1 to ban
       .then((res) => {
-        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };
@@ -49,7 +49,6 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       ) //0 to unmute 1 to mute
       .then((res) => {
-        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };

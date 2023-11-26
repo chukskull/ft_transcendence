@@ -21,7 +21,6 @@ const FindFriendModal = () => {
       .catch((err) => console.log(err));
   }, []);
   const startConversation = (userName: string) => {
-    console.log("start conversation", userName);
     router.push(`/chat/users/${userName}`);
   };
 
@@ -79,7 +78,6 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
       })
       .then((res) => {
         setDmsList(res.data);
-        console.log(res.data);
       })
       .catch((err) => console.log(err));
   }, []);

@@ -92,7 +92,6 @@ export default function VerifyPage() {
     reducer,
     initialState
   );
-  // console.log(focusedIndex);
 
   function handleInput(index: number, value: string) {
     dispatch({ type: "INPUT", payload: { index, value } });

@@ -5,7 +5,7 @@ import {
   ExecutionContext,
 } from '@nestjs/common';
 import { GameService } from './game.service';
-import { UserService } from 'src/user/UserService';
+import { UserService } from 'src/user/user.service';
 import { Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 

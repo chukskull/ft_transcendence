@@ -12,7 +12,7 @@ import { Logger, UseGuards } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/UserService';
+import { UserService } from 'src/user/user.service';
 import { WsGuard } from './ws.guard';
 
 @WebSocketGateway({ namespace: '/gameSocket' })

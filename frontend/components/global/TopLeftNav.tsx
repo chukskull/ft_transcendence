@@ -77,7 +77,6 @@ export default function TopLeftNav() {
                   withCredentials: true,
                 })
                 .then((res) => {
-                  console.log(res.data);
                   window.location.href = "/";
                 })
                 .catch((err) => {

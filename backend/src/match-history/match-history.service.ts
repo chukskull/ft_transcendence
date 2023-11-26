@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
-import { UserService } from 'src/user/UserService';
+import { UserService } from 'src/user/user.service';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 import { match } from 'assert';
 

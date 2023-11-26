@@ -8,7 +8,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { UserService } from './UserService';
+import { UserService } from './user.service';
 import { User } from './user.entity';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import {
@@ -58,14 +58,6 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  // @Post('create')
-  // async create(@Body() data): Promise<User> {
-  //   return this.usersService.createNewUser(
-  //     data.intraLogin,
-  //     data.avatarUrl,
-  //     data.email,
-  //   );
-  // }
   @Get()
   @UseGuards(JwtGuard)
   async all(): Promise<User[]> {
@@ -105,7 +97,6 @@ export class UserController {
   @Get('/leaderboard')
   @UseGuards(JwtGuard)
   async getLeaderboard(@Req() req: any) {
-    console.log(req.user);
     return this.usersService.getLeaderboard();
   }
   @Get('/friends')
