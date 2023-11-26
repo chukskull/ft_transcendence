@@ -8,8 +8,6 @@ import { Conversation } from '../conversations/conversation.entity';
 import { ConversationService } from '../conversations/conversation.service';
 import { ConversationModule } from 'src/conversations/conversation.module';
 import { User } from '../user/user.entity';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { FortyTwoStrategy } from 'src/auth/auth.strategy';
 import { UserService } from 'src/user/user.service';
