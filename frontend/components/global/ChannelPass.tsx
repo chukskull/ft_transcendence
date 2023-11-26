@@ -3,6 +3,7 @@ import axios from "axios";
 import { LockIcon } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 export const ProtectedModal = ({ channelId }: { channelId: number }) => {
   const {
@@ -11,12 +12,22 @@ export const ProtectedModal = ({ channelId }: { channelId: number }) => {
     formState: { errors },
   } = useForm();
   const onSubmit = (data: any) => {
+    const router = useRouter();
     const { password } = data;
-    axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
-      { password },
-      { withCredentials: true }
-    );
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
+        { password },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        if (res.data.success) {
+          router.push(`/chat/channels/${channelId}`);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (

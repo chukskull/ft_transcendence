@@ -82,7 +82,6 @@ export default function TopLeftNav() {
                 })
                 .catch((err) => {
                   console.log(err);
-                  window.location.href = "/";
                 });
             }}
           />

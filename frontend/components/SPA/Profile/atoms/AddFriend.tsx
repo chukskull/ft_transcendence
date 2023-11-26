@@ -1,18 +1,15 @@
 import React from "react";
 import { Plus, Check, Minus } from "lucide-react";
+import axios from "axios";
 
 interface AddFriendProps {
   display: boolean;
-  whenClicked: () => void;
-  clicked: boolean;
   userId: number;
   isFriend: number;
 }
 
 export const AddFriend: React.FC<AddFriendProps> = ({
   display,
-  whenClicked,
-  clicked,
   userId,
   isFriend,
 }) => {
@@ -31,7 +28,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
   let buttonText = null;
   let borderColor = "border-green-500";
   switch (isFriend) {
-    case 1:
+    case 0:
       icon = <Plus {...commonIconProps} />;
       buttonText = "Add Friend";
       break;
@@ -39,15 +36,40 @@ export const AddFriend: React.FC<AddFriendProps> = ({
       icon = <Check {...commonIconProps} />;
       buttonText = "Friend Request Sent";
       break;
-    default:
+    case 1:
       icon = <Minus {...commonIconProps} color="red" />;
       buttonText = "Remove Friend";
       borderColor = "border-red-500";
   }
 
+  const handleRequest = () => {
+    if (isFriend === 0) {
+      //add friend
+      axios
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addFriend/${userId}`,
+          { withCredentials: true }
+        )
+        .then((res) => {
+          console.log(res);
+          // window.location.reload();
+        })
+        .catch((err) => console.log(err));
+    } else if (isFriend === 1) {
+      //remove friend
+      axios
+        .delete(`/api/friend-request/${userId}`)
+        .then((res) => {
+          console.log(res);
+          window.location.reload();
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   return (
     <div className="flex items-center justify-center mt-6 gap-3">
-      <button className="group flex items-center" onClick={whenClicked}>
+      <button className="group flex items-center" onClick={handleRequest}>
         <div
           className={`flex h-${buttonSize} w-${buttonSize} rounded-[24px] 
             group-hover:rounded-[16px] transition-all overflow-hidden items-center justify-center bg-background bg-transparent border-3 ${borderColor}

@@ -7,17 +7,14 @@ import axios from "axios";
 export const SocialFeed = () => {
   const [Friends, setFriends] = React.useState<any>([]);
   useEffect(() => {
-    try {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setFriends(res.data);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setFriends(res.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
   return (
     <div className="flex flex-row max-sm:items-center  gap-16 px-20 max-lg:flex-col max-sm:ml-14 max-sm:p-10 max-md:p-10 md:h-[80%]">
