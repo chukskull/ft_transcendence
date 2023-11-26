@@ -51,27 +51,32 @@ export class User {
   @JoinTable()
   blockedUsers: User[];
 
-  @Column({ type: 'enum', enum: ['online', 'offline', 'inGame'] })
+  @Column({
+    type: 'enum',
+    enum: ['online', 'offline', 'ingame'],
+    default: 'offline',
+    nullable: true,
+  })
   status: string;
 
   @Column({ nullable: true })
   firstTimeLogiIn: boolean;
 
-  @Column()
+  @Column({ default: 0 })
   experience: number;
+
+  @Column({ default: 0 })
+  level: number;
+
+  @Column({ default: 0 })
+  wins: number;
+
+  @Column({ default: 0 })
+  totalGames: number;
 
   @ManyToMany(() => User)
   @JoinTable()
   pendingFriendRequests: User[];
-
-  @Column()
-  level: number;
-
-  @Column()
-  wins: number;
-
-  @Column()
-  totalGames: number;
 
   @ManyToMany(() => Conversation)
   @JoinTable()
@@ -80,6 +85,14 @@ export class User {
   @ManyToMany(() => Achievement)
   @JoinTable()
   achievements: Achievement[];
+
+  @Column({
+    type: 'enum',
+    enum: ['Iron', 'Bronze', 'Silver', 'Gold'],
+    nullable: true,
+    default: 'Iron',
+  })
+  rank: string;
 
   @ManyToMany(() => MatchHistory)
   @JoinTable()

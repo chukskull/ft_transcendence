@@ -9,17 +9,14 @@ import axios from "axios";
 const InviteSection = () => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
-    try {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setFriends(res.data);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setFriends(res.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
   return (
     <div className={style["invite-section"]}>
@@ -112,13 +109,21 @@ const MembersSection = ({ members }: any) => {
   );
 };
 
-const ChannelMenu = ({ channel }: any) => {
+const ChannelMenu = ({ channel, currentUser }: any) => {
   const [activeSection, setActiveSection] = useState<string>("Invite");
   const [active, setActive] = useState(0);
   const [channelData, setChannelData] = useState<any>(null);
-  const isMod = channelData?.Moderators?.some(
-    (e: any) => e.id === localStorage.getItem("id")
-  );
+
+  const isModOrOwner = () => {
+    if (currentUser.id === channel.owner.id) return true;
+    if (channel.Moderators) {
+      for (let i = 0; i < channel.Moderators.length; i++) {
+        if (currentUser.id === channel.Moderators[i].id) return true;
+      }
+    }
+    return false;
+  };
+  const isMod = isModOrOwner();
   const handleButtonClick = (sectionName: string) => {
     setActiveSection(sectionName);
   };
@@ -126,40 +131,37 @@ const ChannelMenu = ({ channel }: any) => {
     setActive(index);
   }
   useEffect(() => {
-    try {
-      axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((res) => {
-          setChannelData(res.data);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        setChannelData(res.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
   return (
     <>
       <div className={style["menu-header"]}>
         <h1>{channel.name}</h1>
         <div className={style["menu-list"]}>
-          {OptionsSections.map((e, i) => (
-            <InFosPlayer
-              key={i}
-              text={e.name}
-              active={active === i}
-              whenClick={() =>
-                (function () {
+          {OptionsSections.map((e, i) =>
+            !isMod && e.name == "Settings" ? null : (
+              <InFosPlayer
+                key={i}
+                text={e.name}
+                active={active === i}
+                whenClick={() => {
                   handleActive(i);
                   handleButtonClick(e.name);
-                })()
-              }
-              isItprofile={false}
-            />
-          ))}
+                }}
+                isItprofile={false}
+              />
+            )
+          )}
         </div>
       </div>
       <div className={style["menu-body"]}>
@@ -173,7 +175,7 @@ const ChannelMenu = ({ channel }: any) => {
         {activeSection === "Members" && (
           <MembersSection members={channelData?.members} />
         )}
-        {activeSection === "Settings" && (
+        {activeSection === "Settings" && isMod && (
           <ChannelSettings
             banned={channelData?.banned}
             muted={channelData?.muted}

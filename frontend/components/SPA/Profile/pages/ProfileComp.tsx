@@ -33,6 +33,7 @@ export default function Profile({ id }: any) {
   function handleActive(index: number) {
     setActive(index);
   }
+
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
@@ -45,11 +46,11 @@ export default function Profile({ id }: any) {
         console.log(err);
       });
   }, []);
+
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
-  console.log(data);
-  
+
   if (error) return "An error has occurred: " + error;
   if (isLoading) return "Loading...";
   return (
@@ -124,13 +125,12 @@ export default function Profile({ id }: any) {
           <MiddleComponent index={active} data={data} isLoading={isLoading} />
         </div>
         <div className="C-3 overflow-y-auto w-[100%] ">
-            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white text-center p-2 ">
-              Archivements
-            </h1>
-            <Achievement data={data.Achievement}/>
-          </div>
+          <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white text-center p-2 ">
+            Archivements
+          </h1>
+          <Achievement data={data.Achievement} />
         </div>
       </div>
-    
+    </div>
   );
 }
