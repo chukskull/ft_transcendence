@@ -19,7 +19,6 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
     }
   }, [Type, DmOrChannel, router]);
 
-
   return (
     <div className={style["chat-container"]}>
       <div className={style["menu-sections"]}>
