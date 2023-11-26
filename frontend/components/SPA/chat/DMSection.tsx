@@ -74,18 +74,15 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   }, [dmsList, params, sendDmOrChannel, getType]);
 
   useEffect(() => {
-    try {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setDmsList(res.data);
-          console.log(res.data);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setDmsList(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
   return (
     <>

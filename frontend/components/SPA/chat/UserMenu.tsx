@@ -35,9 +35,16 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
-            );
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
+              )
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <BsController />
