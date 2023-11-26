@@ -22,10 +22,7 @@ export const LeftProfile = ({
   me,
   isFriend,
 }: LeftProfileProps) => {
-  const [add, setAdd] = useState(false);
-  function handleClick() {
-    setAdd(!add);
-  }
+
   if (isLoading) return <SkeletonComp large={9} />;
   return (
     <div className="profile-user  ">
@@ -43,8 +40,6 @@ export const LeftProfile = ({
         </h1>
         <AddFriend
           display={me}
-          whenClicked={handleClick}
-          clicked={add}
           userId={userId}
           isFriend={isFriend}
         />

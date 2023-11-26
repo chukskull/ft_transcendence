@@ -245,6 +245,7 @@ export class ChannelService {
   async leaveChannel(chanId: number, userId: number): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
+      relations: ['members', 'conversation'],
     });
 
     if (!channel) {

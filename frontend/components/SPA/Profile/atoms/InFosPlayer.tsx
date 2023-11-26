@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@nextui-org/react";
-import React, { useState } from "react";
+import React from "react";
 
 interface InFosPlayerProps {
   text: string;
@@ -24,7 +24,6 @@ export const InFosPlayer = ({
           active ? string : "border-b-0"
         }`}
       >
-        {" "}
         {text}
       </Button>
     </div>
