@@ -15,27 +15,35 @@ import Profile from "@/app/(SPA)/profile/page";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
 
-export const NotificationComp = ({}) => {
-  const [notifCount, setNotifCount] = React.useState(data.length);
+interface NotificationCompProps {
+  content?: string;
+  isAchie?: boolean;
+  count?: any;
+}
+
+export const NotificationComp = ({
+  content,
+  isAchie,
+  count,
+}: NotificationCompProps) => {
+  count = 5;
+  const [showBadge, setShowBadge] = React.useState(false);
+  if (!count) setShowBadge(true);
 
   const handleClick = () => {
-    setNotifCount(0);
+    setShowBadge(true);
   };
   return (
     <>
       <Dropdown
         showArrow
         classNames={{
-          base: "bg-black", // change arrow background
+          content: "bg-black", // change arrow background
         }}
       >
         <DropdownTrigger onClick={handleClick}>
           <div>
-            <Badge
-              content={notifCount}
-              isInvisible={notifCount === 0 ? true : false}
-              color="danger"
-            >
+            <Badge content={count} isInvisible={showBadge} color="danger">
               <NotificationIcon width={25} height={25} />
             </Badge>
           </div>
@@ -85,7 +93,6 @@ export const NotificationComp = ({}) => {
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex gap-2 " key={index}>
                       <ProfileComp
-                        id={user.id}
                         key={index}
                         img={user.img}
                         firstName={user.firstName}
