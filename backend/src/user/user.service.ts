@@ -320,9 +320,14 @@ export class UserService {
         client.friends.push(friend);
         friend.friends.push(client);
       } else {
-        await this.conversationService.createConversation(client.id, friendID); //here error maybe
+        const newconv = await this.conversationService.createConversation(
+          client.id,
+          friendID,
+        );
         client.friends.push(friend);
         friend.friends.push(client);
+        client.conversations.push(newconv);
+        friend.conversations.push(newconv);
       }
     } else {
       //decline 0

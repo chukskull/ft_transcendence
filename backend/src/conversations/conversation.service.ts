@@ -74,11 +74,16 @@ export class ConversationService {
     }
   }
 
-  async createConversation(meId: number, friendId: number) {
-    const me = await this.fetchUserWithConversations(meId);
-    const friend = friendId
-      ? await this.fetchUserWithConversations(friendId)
-      : null;
+  async createConversation(
+    meId: number,
+    friendId?: number,
+  ): Promise<Conversation> {
+    const [me, friend] = await Promise.all([
+      this.fetchUserWithConversations(meId),
+      friendId
+        ? this.fetchUserWithConversations(friendId)
+        : Promise.resolve(null),
+    ]);
 
     const newConversation = this.conversationRepository.create({
       is_group: !friendId,
@@ -88,16 +93,7 @@ export class ConversationService {
 
     if (friend) {
       newConversation.members.push(friend);
-      friend.conversations.push(newConversation);
-      await Promise.all([
-        this.UserRepository.save(friend),
-        this.UserRepository.save(me),
-      ]);
     }
-
-    me.conversations.push(newConversation);
-    await this.UserRepository.save(me);
-
     return this.conversationRepository.save(newConversation);
   }
 

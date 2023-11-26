@@ -32,17 +32,15 @@ export class ChannelService {
       relations: ['channels', 'conversations'],
     });
 
-    if (!owner) {
+    if (!owner)
       throw new NotFoundException(`User with ID ${creator} not found`);
-    }
 
     const newConversation = await this.conversationService.createConversation(
       creator,
       null,
     );
-    if (!newConversation) {
+    if (!newConversation)
       throw new NotFoundException('Conversation not created');
-    }
     const channelAlreadyExists = await this.chanRepository.findOne({
       where: { name },
     });
@@ -68,7 +66,7 @@ export class ChannelService {
 
     const savedChannel = await this.chanRepository.save(channel);
     owner.channels.push(savedChannel);
-    owner.conversations.push(savedChannel.conversation);
+    owner.conversations.push(newConversation);
     this.userRepository.save(owner);
 
     return savedChannel;
