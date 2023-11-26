@@ -12,7 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { FortyTwoStrategy } from 'src/auth/auth.strategy';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/UserService';
 import { NotifGateway } from '../notifications.gateway';
 import { JwtService } from '@nestjs/jwt';
 

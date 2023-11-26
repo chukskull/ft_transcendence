@@ -8,7 +8,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from './UserService';
 import { User } from './user.entity';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import {
@@ -136,7 +136,7 @@ export class UserController {
   //   return this.usersService.sendFriendRequest(myId, id);
   // }
 
-  @Post('/FriendRequest/:friendId/:action')
+  @Post('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
   @UseGuards(JwtGuard)
   async FriendRequest(
     @Param('friendId') id: number,

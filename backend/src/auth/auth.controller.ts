@@ -13,7 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { JwtGuard } from 'src/auth/Jwt.guard';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/UserService';
 import { GoogleGuard } from './google.guard';
 import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';

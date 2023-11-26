@@ -1,7 +1,7 @@
 // auth.service.ts
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/UserService';
 import { User } from 'src/user/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { authenticator } from 'otplib';
@@ -29,18 +29,21 @@ export class AuthService {
 
   async verifyToken(token: string) {
     try {
-      return this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+      return this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
     } catch {
       throw new UnauthorizedException('Invalid token');
     }
   }
 
-  async isTwoFactorAuthenticationCodeValid(twoFactorAuthCode: string, user: User) {
+  async isTwoFactorAuthenticationCodeValid(
+    twoFactorAuthCode: string,
+    user: User,
+  ) {
     return authenticator.verify({
       token: twoFactorAuthCode,
       secret: user.twoFactorSecret,
-    })
+    });
   }
-  
-
 }

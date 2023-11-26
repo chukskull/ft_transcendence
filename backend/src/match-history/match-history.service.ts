@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/UserService';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 import { match } from 'assert';
 
@@ -34,17 +34,15 @@ export class MatchHistoryService {
     mh.player2Score = Number(MatchHistoryDto.player2score);
 
     await this.matchHistory.save(mh);
-    
+
     return mh;
   }
 
   /*
-    * Returns all match history entries from the database.
-    */
-  
+   * Returns all match history entries from the database.
+   */
+
   async findAll(): Promise<MatchHistory[]> {
     return this.matchHistory.find();
   }
-
-
 }

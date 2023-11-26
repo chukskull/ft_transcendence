@@ -44,11 +44,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     @ConnectedSocket() client: Socket,
   ) {
+    const senderId: any = client.handshake.query.userId;
     const { conversationId, message } = data;
     const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;
     chatMessage.time = new Date();
-    const senderId = 2;
     const sender = await this.UserRepository.findOne({
       where: { id: senderId },
     });

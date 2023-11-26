@@ -17,7 +17,6 @@ export class ConversationService {
   ) {}
 
   async getMyDms(MyUser: number) {
-    MyUser = 1;
     const user = await this.UserRepository.findOne({
       where: { id: MyUser },
       relations: [
@@ -27,15 +26,12 @@ export class ConversationService {
       ],
     });
     if (!user) throw new NotFoundException('User not found');
-    // remove the ones with is_group = true
     user.conversations = user.conversations.filter(
       (conv) => conv.is_group === false,
     );
-    // remove user from members
     user.conversations.forEach((conv) => {
       conv.members = conv.members.filter((member) => member.id !== MyUser);
     });
-    console.log(user.conversations);
     return user.conversations;
   }
   async getConversation(convId: number, myUser: number) {

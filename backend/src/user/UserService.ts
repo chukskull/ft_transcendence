@@ -1,13 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { Conversation, Chat } from '../conversations/conversation.entity';
+import { Conversation } from '../conversations/conversation.entity';
 import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { ConversationService } from 'src/conversations/conversation.service';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -320,7 +321,7 @@ export class UserService {
         client.friends.push(friend);
         friend.friends.push(client);
       } else {
-        await this.conversationService.createConversation(client.id, friendID); //here error maybe
+        await this.conversationService.createConversation(client.id, friendID);
         client.friends.push(friend);
         friend.friends.push(client);
       }
