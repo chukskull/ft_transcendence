@@ -7,6 +7,7 @@ import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
+import { Achievement } from 'src/achievement/achievement.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -168,9 +169,9 @@ export class UserService {
     }
     return client;
   }
-  async getChatWithFriend(userId: number, friendId: number): Promise<any> {
+  async getChatWithFriend(clientID: number, friendId: number): Promise<any> {
     const client = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { id: clientID },
       relations: [
         'conversations',
         'conversations.chats',
@@ -414,9 +415,9 @@ export class UserService {
       return this.userRepository.save(client);
     }
   }
-  async getMyChannels(userId: number): Promise<any> {
+  async getMyChannels(clientID: number): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { id: clientID },
       relations: [
         'channels',
         'channels.members',
@@ -507,5 +508,18 @@ export class UserService {
 
   async setOffline(clientID: number): Promise<any> {
     return this.userRepository.update(clientID, { status: 'offline' });
+  }
+
+  async updateLevel(xp: number, clientID: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    const level = Math.floor(xp / (1098 + (user.level * 100)));
+    user.level = level;
+    return this.userRepository.save(user);
   }
 }
