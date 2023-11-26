@@ -7,7 +7,7 @@ const MsgsList = ({ chats }: { chats: any }) => {
       {chats?.map((msg: any) => (
         <div className={style["msg-item"]} key={msg?.id}>
           <AvatarBubble
-            avatar={msg.sender.avatarUrl}
+            avatar={msg.sender?.avatarUrl}
             online={msg.sender?.status}
           />
           <div className={style["msg-info"]}>
