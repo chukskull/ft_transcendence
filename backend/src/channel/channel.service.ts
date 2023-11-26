@@ -40,6 +40,9 @@ export class ChannelService {
       creator,
       null,
     );
+    if (!newConversation) {
+      throw new NotFoundException('Conversation not created');
+    }
     const channelAlreadyExists = await this.chanRepository.findOne({
       where: { name },
     });

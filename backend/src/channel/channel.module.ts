@@ -20,11 +20,6 @@ import { JwtService } from '@nestjs/jwt';
   imports: [
     ConversationModule,
     TypeOrmModule.forFeature([Channel, Conversation, User]),
-    PassportModule.register({ defaultStrategy: '42' }),
-    JwtModule.register({
-      secret: 'f439843--213+@y4t34u',
-      signOptions: { expiresIn: '30d' },
-    }),
   ],
   controllers: [ChannelController],
   providers: [

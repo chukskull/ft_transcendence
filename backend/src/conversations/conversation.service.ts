@@ -38,14 +38,13 @@ export class ConversationService {
     console.log(user.conversations);
     return user.conversations;
   }
-  async getConversation(convId: number) {
+  async getConversation(convId: number, myUser: number) {
     const conv = await this.conversationRepository.findOne({
       where: { id: convId },
       relations: ['members', 'chats'],
     });
     if (!conv) throw new NotFoundException('Conversation not found');
 
-    const myUser = 1;
     const user = conv.members.find((member) => member.id === myUser);
     if (!user)
       throw new NotFoundException('User not found in this conversation');
@@ -80,18 +79,40 @@ export class ConversationService {
   }
 
   async createConversation(meId: number, friendId: number) {
-    const newConversation = await this.conversationRepository.create();
-    newConversation.is_group = friendId ? false : true;
-    newConversation.members = [];
-    newConversation.chats = [];
-    const me = await this.UserRepository.findOne({ where: { id: meId } });
-    newConversation.members.push(me);
-    if (friendId) {
-      const friend = await this.UserRepository.findOne({
-        where: { id: friendId },
-      });
+    const me = await this.fetchUserWithConversations(meId);
+    const friend = friendId
+      ? await this.fetchUserWithConversations(friendId)
+      : null;
+
+    const newConversation = this.conversationRepository.create({
+      is_group: !friendId,
+      members: [me],
+      chats: [],
+    });
+
+    if (friend) {
       newConversation.members.push(friend);
+      friend.conversations.push(newConversation);
+      await Promise.all([
+        this.UserRepository.save(friend),
+        this.UserRepository.save(me),
+      ]);
     }
+
+    me.conversations.push(newConversation);
+    await this.UserRepository.save(me);
+
     return this.conversationRepository.save(newConversation);
+  }
+
+  private async fetchUserWithConversations(userId: number) {
+    return this.UserRepository.findOne({
+      where: { id: userId },
+      relations: [
+        'conversations',
+        'conversations.members',
+        'conversations.chats',
+      ],
+    });
   }
 }
