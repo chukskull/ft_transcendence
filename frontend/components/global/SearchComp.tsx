@@ -55,9 +55,7 @@ const SearchComp = () => {
   
     fetchChannels();
   }, []);
-  if (!Mount) {
-    return null;
-  }
+ 
     const debouncedSearch = debounce((search) => {
     const searchValue = search.toLowerCase();
     const searchTerms = searchValue.split(" ");
