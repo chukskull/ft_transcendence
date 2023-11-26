@@ -24,9 +24,12 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
       })
       .then((res) => {
         console.log(res);
-        if (res.status === 201) {
+        if (res.data.success) {
           router.push("/chat");
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
   return (
