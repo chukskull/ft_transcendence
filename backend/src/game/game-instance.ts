@@ -54,6 +54,8 @@ export class GameInstance {
 	public endGame(): void {
 		this.gameEnded = true;
 		this.gameRunning = false;
+		this.player1.disconnect();
+		this.player2.disconnect();
 		clearInterval(this.gameLoop);
 	}
 

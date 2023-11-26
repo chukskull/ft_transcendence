@@ -51,7 +51,7 @@ export class User {
   @JoinTable()
   blockedUsers: User[];
 
-  @Column()
+  @Column({ type: 'enum', enum: ['online', 'offline', 'inGame'] })
   status: string;
 
   @Column({ nullable: true })

@@ -20,6 +20,12 @@ import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from 'typeorm';
     
     @Column()
     player2Score: number;
+
+    @Column()
+    winsInARow: number;
+
+    @Column()
+    losesInARow: number;
     
     @Column()
     date: Date;
