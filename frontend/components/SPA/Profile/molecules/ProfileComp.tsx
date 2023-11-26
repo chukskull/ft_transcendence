@@ -15,7 +15,7 @@ interface ProfileCompProps {
   color?: string;
   type?: "Protected" | "Public" | "achiv" | null;
   inChannel?: boolean;
-  channelId?: number;
+  channelId: number;
 }
 
 const ProfileComp = ({
