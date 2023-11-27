@@ -63,7 +63,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       setMsgs((prevMsgs) => [...prevMsgs, receivedData]);
     }
   }, [receivedData]);
-  useEffect(() => {
+  // useEffect(() => {
     if (!socket) return;
 
     socket.on("messageReceived", (data: any) => setReceivedData(data));
@@ -73,12 +73,12 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
     });
     socket.on("disconnect", setReceivedData);
 
-    return () => {
-      socket.off("connect_error", setReceivedData);
-      socket.off("disconnect", setReceivedData);
-      socket.off("messageReceived", setReceivedData);
-    };
-  }, []);
+    // return () => {
+    //   socket.off("connect_error", setReceivedData);
+    //   socket.off("disconnect", setReceivedData);
+    //   socket.off("messageReceived", setReceivedData);
+    // };
+  // }, []);
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
