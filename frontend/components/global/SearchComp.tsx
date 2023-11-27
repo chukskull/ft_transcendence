@@ -16,8 +16,8 @@ const SearchComp = () => {
       return "Public";
     }
   };
-  const [activeSearch, setActiveSearch] = useState([]);
-  const [res, setRes] = useState([]);
+  const [activeSearch, setActiveSearch] = useState<any>([]);
+  const [res, setRes] = useState<(any | any)[]>([]);
   const [Mount, setMount] = useState(false);
   // const [isLoading, data, error] = useQuery("channels", async () => {
   //   const channelsRes = await axios.get(`http://localhost:4000/Channels`, {
@@ -43,21 +43,21 @@ const SearchComp = () => {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const channelsRes = await axios.get(
+        const channelsRes: { data: any } = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`,
           {
             withCredentials: true,
           }
         );
-
+  
         const channels = channelsRes.data?.map((channel: any) => ({
           ...channel,
           isChannel: true,
         }));
-
+  
         const fetchProfiles = async () => {
           try {
-            const profileres = await axios.get(
+            const profileres: { data: any } = await axios.get(
               `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`,
               {
                 withCredentials: true,
@@ -67,22 +67,23 @@ const SearchComp = () => {
               ...profile,
               isChannel: false,
             }));
-
+  
             setRes([...channels, ...profiles]);
             setMount(true);
           } catch (error) {
             console.error("Error fetching profiles", error);
           }
         };
-
+  
         fetchProfiles();
       } catch (error) {
         console.error("Error fetching channels", error);
       }
     };
-
+  
     fetchChannels();
   }, []);
+  
 
   const debouncedSearch = debounce((search) => {
     const searchValue = search.toLowerCase();
@@ -131,7 +132,7 @@ const SearchComp = () => {
       </div>
       {activeSearch.length > 0 && (
         <div className="absolute top-20 p-4 bg-black text-white w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
-          {activeSearch.map((data: any, index) => (
+          {activeSearch.map((data: any, index:number) => (
             <ProfileComp
               key={index}
               img={data?.isChannel ? "" : data?.avatarUrl}
