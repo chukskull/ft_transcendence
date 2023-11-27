@@ -21,6 +21,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { TwoFactorAuthenticationCodeDto } from './TwoFactorDto';
 
 @Controller('auth')
 export class AuthController {
@@ -87,39 +88,31 @@ export class AuthController {
     const secret = authenticator.generateSecret();
 
     const otpUri = authenticator.keyuri(req.user.email, 'google', secret);
+    console.log(secret);
+    await this.userService.saveTwoFactorSecret(secret, req.user.id);
 
     return (toDataURL(otpUri));
-    await this.userService.saveTwoFactorSecret(secret, req.user.id);
 
   } 
 
-  @Post('/2fa/turn-on')
+  @Post('/2fa/authenticate')
   @UseGuards(JwtGuard)
-  async turnOn2fa(@Req() req,@Body() body) {
+  async turnOn2fa(@Req() req,@Body() { pin } : TwoFactorAuthenticationCodeDto, @Res() res) {
     const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(
-      body.pin,
+      pin,
       req.user,
     );
 
-      if (!isCodeValid) {
-        throw new UnauthorizedException('Wrong code');
-      }
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong code');
+    } else {
+      res.redirect(process.env.frontendUrl + '/home')
+    }
     await this.userService.enableTwoFactor(req.user.id);
 
     console.log(isCodeValid);
   }
 
-  // @Get('google/logout')
-  // @UseGuards(GoogleGuard)
-  // async logoutGoogle(
-  //   @Res() res: Response,
-  //   @Req() req,
-  // ) {
-  //   await this.userService.setStatus(req.user.id, 'offline');
-  //   console.log("HERE");
-  //   res.cookie('googleJwt', '');
-  //   res.redirect(process.env.frontendUrl);
-  // }
   @Get('verifyUser')
   @UseGuards(JwtGuard)
   async verifyUser(@Req() req: any, @Res() res: Response): Promise<any> {

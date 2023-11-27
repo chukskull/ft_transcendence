@@ -7,6 +7,7 @@ import { NotFoundException } from '@nestjs/common';
 import { NotifGateway } from 'src/notifications.gateway';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
+import { authenticator } from 'otplib';
 @Injectable()
 export class UserService {
   constructor(
@@ -434,6 +435,13 @@ export class UserService {
 
     client.twoFactorSecret = secret;
     return this.userRepository.save(client);
+  }
+
+  async isTwoFactorCodeValid(TwoFactorCode: string, user: User) {
+    return authenticator.verify({
+      token: TwoFactorCode,
+      secret: user.twoFactorSecret,
+    });
   }
 
   private isAlreadyBlocked(client: User, blocked: User): boolean {
