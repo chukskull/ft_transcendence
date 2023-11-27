@@ -14,6 +14,12 @@ import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
 import { Chat } from './conversation.entity';
 import { User } from '../user/user.entity';
+const jwt = require('jsonwebtoken');
+
+function getUserProfile(token: string) {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  return decoded;
+}
 
 @Injectable()
 @WebSocketGateway({ namespace: 'chatSocket', cors: true })
@@ -25,20 +31,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @InjectRepository(Chat)
     private ChatRepository: Repository<Chat>,
   ) {}
+  handleDisconnect(client: Socket) {}
+
   @WebSocketServer() server: Server;
-
   handleConnection(client: Socket) {
-    console.log('new connection');
-    const conversationId = client.handshake.query.conversationId;
-    const userId = client.handshake.query.userId;
-    console.log('conversationId', conversationId);
-    console.log('userId', userId);
-    
-    client.join(`conversation_${conversationId}`);
-  }
-
-  handleDisconnect(client: Socket) {
-    console.log('disconnected');
+    console.log('connected');
+    const conversationId: any = client.handshake.query.conversationId;
+    const roomName = `conversation_${conversationId}_chatRoom`;
+    client.join(roomName);
   }
 
   @SubscribeMessage('messageSent')
@@ -47,29 +47,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       conversationId: number;
       message: string;
+      token: string;
     },
     @ConnectedSocket() client: Socket,
   ) {
-    const senderId: any = client.handshake.query.userId;
+    const { conversationId, message, token } = data;
+    const userId = getUserProfile(token)?.sub;
+    if (!userId) {
+      return;
+    }
 
-    const { conversationId, message } = data;
     const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;
     chatMessage.time = new Date();
     chatMessage.sender = await this.UserRepository.findOne({
-      where: { id: senderId },
+      where: { id: userId },
     });
-    await this.ChatRepository.save(chatMessage);
+
     try {
+      await this.ChatRepository.save(chatMessage);
       await this.conversationService.addMessageToConversation(
         conversationId,
         chatMessage,
-        senderId,
+        userId,
       );
-      const roomName = `conversation_${conversationId}`;
 
-      this.server.to(roomName).emit('newMessage', message);
+      const roomName = `conversation_${conversationId}_chatRoom`;
+      this.server.emit('messageReceived', chatMessage);
     } catch (error) {
+      this.server.emit('connect_error', error.message || 'Unknown error');
       console.error('Error saving and broadcasting the message:', error);
     }
   }
