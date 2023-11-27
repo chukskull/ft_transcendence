@@ -9,7 +9,6 @@ import ChatHeader from "@/components/SPA/chat/ChatHeader";
 export default function ChatLayout({ children }: { children: ReactNode }) {
   const [Type, setType] = useState(false);
   const [DmOrChannel, setDmOrChannel] = useState<any>(null);
-
   const router = useRouter();
 
   useEffect(() => {

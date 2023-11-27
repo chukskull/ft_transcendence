@@ -11,19 +11,21 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   const [formData, setFormData] = useState({ is_private, password, id: id });
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.patch(
+    formData.is_private = is_private;
+    axios
+      .patch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/update`,
         formData,
         {
           withCredentials: true,
         }
-      );
-      console.log("Update successful", response.data);
-    } catch (error) {
-      console.error("Error updating channel", error);
-    }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const unban = (userId: number) => {
@@ -35,7 +37,6 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       ) //0 to unban 1 to ban
       .then((res) => {
-        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };
@@ -48,7 +49,6 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       ) //0 to unmute 1 to mute
       .then((res) => {
-        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };
@@ -76,7 +76,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
                 <Switch
                   color="success"
                   onValueChange={() => setPrivate(!is_private)}
-                  isSelected={is_private}
+                  isSelected={!is_private}
                 />
                 Public
               </div>
@@ -84,7 +84,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
                 <Switch
                   color="danger"
                   onValueChange={() => setPrivate(!is_private)}
-                  isSelected={!is_private}
+                  isSelected={is_private}
                 />
                 Private
               </div>

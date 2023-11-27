@@ -25,19 +25,16 @@ export class ChannelController {
   @Post('create')
   @UseGuards(JwtGuard)
   create(@Body() createChannelDto: CreateChannelDto, @Req() req) {
-    console.log(req.user.id);
     return this.channelService.createChannel(createChannelDto, req.user.id);
   }
 
   @Patch('update')
   @UseGuards(JwtGuard)
   update(@Body() updateChannelDto: UpdateChannelDto, @Req() req) {
-    console.log(req.user.id);
-    console.log(updateChannelDto);
     return this.channelService.updateChannel(updateChannelDto, req.user.id);
   }
 
-  @Get()
+  @Get('all')
   @UseGuards(JwtGuard)
   findAll() {
     return this.channelService.getChannels();
@@ -49,17 +46,10 @@ export class ChannelController {
     return this.channelService.getChannel(id, req.user.id);
   }
 
-  @Get('myChannels')
-  @UseGuards(JwtGuard)
-  findMyChannels(@Req() req) {
-    return this.channelService.getMyChannels(req.user.id);
-  }
-
   @Get(':id/chat')
   @UseGuards(JwtGuard)
-  findChat(@Param('id') id: number, @Req() req) {
-    const userId = req.user.id;
-    return this.channelService.getChannelChat(userId, id);
+  findChat(@Param('id') ChannId: number, @Req() req) {
+    return this.channelService.getChannelChat(ChannId, req.user.id);
   }
 
   @Delete('/delete/:id')

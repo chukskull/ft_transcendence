@@ -77,21 +77,19 @@ export default function TopLeftNav() {
                   withCredentials: true,
                 })
                 .then((res) => {
-                  console.log(res.data);
                   window.location.href = "/";
                 })
                 .catch((err) => {
                   console.log(err);
-                  window.location.href = "/";
                 });
             }}
           />
         </div>
       </div>
-      <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
+      <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose} classNames={{ backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20" }}>
         <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem]">
           {string === "setting" ? (
-            <ProfileSettingModal onClose={onClose} />
+            <ProfileSettingModal onClose={onClose}  />
           ) : (
             <GlobalModalComp onClose={onClose} action={string} />
           )}

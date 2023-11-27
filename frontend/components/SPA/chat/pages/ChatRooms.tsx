@@ -24,6 +24,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const [msgs, setMsgs] = useState<Chat[]>([]);
   const [conv, setConv] = useState<any>(null);
 
+  console.log("charoom conv", conv);
   useEffect(() => {
     const endPoints = isGroup
       ? `/api/channels/${id}/chat`
@@ -40,8 +41,12 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
         console.log(err);
       });
   }, []);
+
   useEffect(() => {
-    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`);
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`, {
+      query: { conversationId: conv?.id },
+    });
+    newSocket.connect();
     setSocket(newSocket);
 
     return () => {
@@ -61,7 +66,6 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
     });
 
     socket.on("newMessage", (newMessage: any) => {
-      console.log("newMessage : " + newMessage);
       setMsgs((prevMsgs: Chat[]) => [...prevMsgs, newMessage]);
     });
 

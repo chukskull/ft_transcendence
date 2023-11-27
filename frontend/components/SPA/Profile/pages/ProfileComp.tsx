@@ -4,6 +4,7 @@ import LeftProfile from "@/components/SPA/Profile/molecules/LeftProfile";
 import { ProgressBar } from "@/components/SPA/Profile/molecules/ProgressBar";
 import Stats from "@/components/SPA/Profile/molecules/Stats";
 import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
+import Achievement from "@/components/SPA/Profile/organisms/Achievement";
 import React, { useState, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
 import { useQuery } from "react-query";
@@ -32,6 +33,7 @@ export default function Profile({ id }: any) {
   function handleActive(index: number) {
     setActive(index);
   }
+
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
@@ -44,6 +46,7 @@ export default function Profile({ id }: any) {
         console.log(err);
       });
   }, []);
+
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
@@ -83,13 +86,14 @@ export default function Profile({ id }: any) {
         />
         <div className="min-w-[80px] h-0"></div>
         <ProgressBar
-          prec={data?.experience / 1098 + data?.level * 100}
+
+
           lvl={data?.level}
           exp={data?.expersience}
           maxExp={1098}
         />
         <Stats
-          perc={data?.wins / data?.totalGames}
+          perc={data?.totalGames === 0 ? 0 : (data?.wins / data?.totalGames) * 100}
           matches={data?.totalGames}
         />
       </div>
@@ -121,13 +125,11 @@ export default function Profile({ id }: any) {
 
           <MiddleComponent index={active} data={data} isLoading={isLoading} />
         </div>
-        <div className="C-3">
-          <div className="flex items-center justify-center">
-            <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white  p-2">
-              Archivements
-            </h1>
-            {/* LOCALHOST: */}
-          </div>
+        <div className="C-3 overflow-y-auto w-[100%] ">
+          <h1 className="opacity-90 font-ClashGrotesk-Medium text-lg text-white text-center p-2 ">
+            Archivements
+          </h1>
+          <Achievement data={data.Achievement} />
         </div>
       </div>
     </div>

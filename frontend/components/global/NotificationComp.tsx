@@ -26,7 +26,7 @@ export const NotificationComp = ({}) => {
       <Dropdown
         showArrow
         classNames={{
-          base: "bg-black", // change arrow background
+          content: "bg-black", // change arrow background
         }}
       >
         <DropdownTrigger onClick={handleClick}>

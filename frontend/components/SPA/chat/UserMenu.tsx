@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 
 const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
   const router = useRouter();
-  console.log("UserMenu", id);
 
   return (
     <>
@@ -35,9 +34,14 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
-            );
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
+              )
+              .then((res) => {})
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <BsController />
@@ -61,9 +65,7 @@ const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
               .post(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`
               )
-              .then((res) => {
-                console.log(res);
-              })
+              .then((res) => {})
               .catch((err) => {
                 console.log(err);
               });

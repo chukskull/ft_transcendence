@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
-import { match } from 'assert';
 
 @Injectable()
 export class MatchHistoryService {
@@ -21,30 +20,46 @@ export class MatchHistoryService {
   async create(MatchHistoryDto: CreateMatchHistoryDto) {
     const mh = new MatchHistory();
 
-    mh.player1 = MatchHistoryDto.player1ID;
+    mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
 
-    mh.player2 = MatchHistoryDto.player2ID;
+    mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
 
-    mh.winner = MatchHistoryDto.winnerID;
+    mh.winner = await this.userService.userProfile(MatchHistoryDto.winnerID);
+
+    mh.winsInARow = Number(MatchHistoryDto.winsInARow);
+
+    mh.losesInARow = Number(MatchHistoryDto.losesInARow);
 
     mh.date = new Date();
 
-    mh.player1Score = MatchHistoryDto.player1score;
+    mh.player1Score = Number(MatchHistoryDto.player1score);
 
-    mh.player2Score = MatchHistoryDto.player2score;
+    mh.player2Score = Number(MatchHistoryDto.player2score);
 
-    this.matchHistory.save(mh);
-    
+    await this.matchHistory.save(mh);
+
     return mh;
   }
 
   /*
-    * Returns all match history entries from the database.
-    */
-  
+   * Returns all match history entries from the database.
+   */
+
   async findAll(): Promise<MatchHistory[]> {
     return this.matchHistory.find();
   }
 
-
+  async trackWinsInARow(playerID: number): Promise<number> {
+    const matchHistory = await this.matchHistory.find({
+      where: { winner: { id: playerID } },
+      order: { date: 'DESC' },
+    });
+    let winsInARow = 0;
+    let i = 0;
+    while (matchHistory[i] && matchHistory[i].winner.id === playerID) {
+      winsInARow++;
+      i++;
+    }
+    return winsInARow;
+  }
 }

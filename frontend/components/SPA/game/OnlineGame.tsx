@@ -34,9 +34,11 @@ const useKeyHandler = () => {
 export default function OnlineGame({
   map,
   onlinemode,
+  index
 }: {
   map: string;
   onlinemode: boolean;
+  index:number;
 }) {
   const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;

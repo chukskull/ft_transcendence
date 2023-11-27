@@ -13,7 +13,7 @@ interface ProfileCompProps {
   firstName: string;
   lastName?: string;
   color?: string;
-  type?: "Protected" | "Public" | null;
+  type?: "Protected" | "Public" | "achiv" | null;
   inChannel?: boolean;
   channelId: number;
 }
@@ -42,12 +42,13 @@ const ProfileComp = ({
             withCredentials: true,
           }
         )
-        .then((res) => {
-          console.log(res);
-        })
+        .then((res) => {})
         .catch((err) => {
           console.log(err);
         });
+    }
+    else if (type === "achiv") {
+      setShow(false);
     } else {
       setShow(true);
     }
@@ -73,7 +74,10 @@ const ProfileComp = ({
             />
           ))}
       </Modal>
-      <div className="flex items-start justify-center gap-5" onClick={handleModalClick}>
+
+
+      <div className="flex items-start justify-start gap-5" onClick={handleModalClick}>
+
         <Avatar isBordered color="success" src={img} />
         <div className="m-0 p-0">
           <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0 ">

@@ -30,10 +30,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket) {
     console.log('new connection');
     const conversationId = client.handshake.query.conversationId;
+    const userId = client.handshake.query.userId;
+    console.log('conversationId', conversationId);
+    console.log('userId', userId);
+    
     client.join(`conversation_${conversationId}`);
   }
 
-  handleDisconnect(client: Socket) {}
+  handleDisconnect(client: Socket) {
+    console.log('disconnected');
+  }
 
   @SubscribeMessage('messageSent')
   async handleMessage(
@@ -44,15 +50,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     @ConnectedSocket() client: Socket,
   ) {
+    const senderId: any = client.handshake.query.userId;
+
     const { conversationId, message } = data;
     const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;
     chatMessage.time = new Date();
-    const senderId = 2;
-    const sender = await this.UserRepository.findOne({
+    chatMessage.sender = await this.UserRepository.findOne({
       where: { id: senderId },
     });
-    chatMessage.sender = sender;
     await this.ChatRepository.save(chatMessage);
     try {
       await this.conversationService.addMessageToConversation(
@@ -60,16 +66,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         chatMessage,
         senderId,
       );
+      const roomName = `conversation_${conversationId}`;
 
-      // Get the room name for the conversation
-      // const roomName = `conversation_${conversationId}`;
-
-      // Broadcast the message to users in the conversation
-      // this.server.to(roomName).emit('newMessage', message);
-      this.server.emit('newMessage', chatMessage);
-      //   message: message,
-      //   sender: sender,
-      // });
+      this.server.to(roomName).emit('newMessage', message);
     } catch (error) {
       console.error('Error saving and broadcasting the message:', error);
     }

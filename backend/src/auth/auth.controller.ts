@@ -48,7 +48,7 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     } else res.redirect(process.env.frontendUrl + 'home');
-      await this.userRepository.update(req.user.id, { authenticated: true });
+    await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
   @Get('/logout')
@@ -84,7 +84,10 @@ export class AuthController {
 
   @Get('/2fa')
   @UseGuards(JwtGuard)
-  async TwoFactorHandler(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+  async TwoFactorHandler(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const secret = authenticator.generateSecret();
 
     const otpUri = authenticator.keyuri(req.user.email, 'google', secret);
