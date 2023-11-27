@@ -86,14 +86,14 @@ export default function Profile({ id }: any) {
         />
         <div className="min-w-[80px] h-0"></div>
         <ProgressBar
-       
-        
+
+
           lvl={data?.level}
           exp={data?.expersience}
           maxExp={1098}
         />
         <Stats
-          perc={(data?.wins / data?.totalGames) * 100}
+          perc={data?.totalGames === 0 ? 0 : (data?.wins / data?.totalGames) * 100}
           matches={data?.totalGames}
         />
       </div>

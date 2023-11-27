@@ -52,22 +52,22 @@
   ],
   "Channels": [
     {
-      "img": "",
-      "nickName": "private",
-      "name": "1337",
-      "type": "Protected"
+      "id": 1,
+      "name": "Jebril",
+      "is_private": true,
+      "is_protected": true
     },
     {
-      "img": "",
-      "nickName": "private",
-      "name": "salehostora",
-      "type": "Public"
+      "id": 2,
+      "name": "Ilove My Ex",
+      "is_private": false,
+      "is_protected": false
     },
     {
-      "img": "s",
-      "nickName": "protected",
-      "name": "great",
-      "type": "Protected"
+      "id": 3,
+      "name": "fes",
+      "is_private": false,
+      "is_protected": true
     }
   ],
   "Leadrboard": [
@@ -211,26 +211,7 @@
         "scoreLeft": 8,
         "scoreRight": 2
       }
-    ],
-    "Channels": [
-      {
-        "img": "",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Protected"
-      },
-      {
-        "img": "",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Public"
-      },
-      {
-        "img": "s",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Protected"
-      }
     ]
+   
   }
 }
