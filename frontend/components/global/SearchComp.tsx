@@ -66,7 +66,7 @@ const SearchComp = () => {
     const searchValue = search.toLowerCase();
     const searchTerms = searchValue.split(" ");
 
-    const filteredUsers = res.filter((user:any) => {
+    const filteredUsers = res.filter((user: any) => {
       let fullName = "";
       if (user.isChannel) {
         fullName = user.name.toLowerCase();
@@ -87,7 +87,7 @@ const SearchComp = () => {
     setActiveSearch(filteredUsers.slice(0, 8));
   }, 300); // Debounce for 300 milliseconds
 
-  const handleSearch = (e:any) => {
+  const handleSearch = (e: any) => {
     if (e.target.value === "") {
       setActiveSearch([]);
       return false;
@@ -116,15 +116,15 @@ const SearchComp = () => {
                 data?.isChannel ? getChannelStatus(data) : data?.nickName
               }
               firstName={data?.isChannel ? data?.name : data?.firstName}
-              lastName={data?.isChannel ? null : data?.lastName}
+              lastName={data?.isChannel ? "" : data?.lastName}
               channelId={data?.id}
               type={
                 data?.isChannel
                   ? getChannelStatus(data) === "Public"
                     ? "Public"
                     : getChannelStatus(data) === "Protected"
-                    ? "Protected"
-                    : null
+                      ? "Protected"
+                      : null
                   : null
               }
             />
