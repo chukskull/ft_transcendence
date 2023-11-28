@@ -121,7 +121,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           </h1>
           <div className="relative h-24 w-24 mt-2">
             <Avatar
-              src={file ? URL.createObjectURL(file) : myData?.image}
+              src={file ? URL.createObjectURL(file) : myData?.avatarUrl}
               size={100}
               className="relative"
               alt="Avatar"
