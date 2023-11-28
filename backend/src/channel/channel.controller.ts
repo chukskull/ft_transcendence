@@ -65,13 +65,13 @@ export class ChannelController {
     return this.channelService.joinChannel(chanId, password, req.user.id);
   }
 
-  @Post(':chanId/leave')
+  @Get(':chanId/leave')
   @UseGuards(JwtGuard)
   leave(@Param('chanId') chanId: number, @Req() req) {
     return this.channelService.leaveChannel(chanId, req.user.id);
   }
 
-  @Post(':chandId/invite/:userId')
+  @Get(':chandId/invite/:userId')
   @UseGuards(JwtGuard)
   invite(
     @Param('chandId') chanId: number,

@@ -20,7 +20,7 @@ export class ChannelService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly conversationService: ConversationService,
+    private conversationService: ConversationService,
   ) {}
   async createChannel(
     createChannelDto: CreateChannelDto,
@@ -44,9 +44,9 @@ export class ChannelService {
     const channelAlreadyExists = await this.chanRepository.findOne({
       where: { name },
     });
-    if (channelAlreadyExists) {
+    if (channelAlreadyExists)
       throw new NotFoundException('Channel already exists');
-    }
+
     const channel = this.chanRepository.create({
       name,
       is_private,
@@ -236,9 +236,9 @@ export class ChannelService {
       relations: ['members', 'conversation'],
     });
 
-    if (!channel) {
+    if (!channel) 
       throw new NotFoundException('Channel not found');
-    }
+    
     if (channel.name === 'Welcome/Global channel') {
       throw new NotFoundException("You can't leave this channel");
     }
@@ -254,11 +254,6 @@ export class ChannelService {
     }
     // Remove user from the channel's members
     channel.members = channel.members?.filter((member) => member.id !== userId);
-
-    // Remove the channel from user's conversations and channels
-    user.conversations = user.conversations.filter(
-      (conv) => conv.id !== channel.conversation.id,
-    );
     user.channels = user.channels.filter((chan) => chan.id !== channel.id);
 
     await this.userRepository.save(user);
@@ -269,43 +264,41 @@ export class ChannelService {
     chanId: number,
     userId: number,
     inviter: number,
-  ): Promise<Channel> {
+  ) {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
       relations: ['members', 'conversation'],
     });
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
-    }
+    if (!channel) throw new NotFoundException('Channel not found');
+
     const requestMaker = await this.userRepository.findOne({
       where: { id: inviter },
     });
-    if (!requestMaker) {
-      throw new NotFoundException('User not found');
-    }
+    if (!requestMaker) throw new NotFoundException('User not found');
+
     const inviterisinChannel = channel.members.some(
       (member) => member.id === inviter,
     );
-    if (!inviterisinChannel) {
-      throw new NotFoundException('User not in channel');
-    }
+    if (!inviterisinChannel) throw new NotFoundException('User not in channel');
 
     const isAlreadyMember = channel.members.some(
       (member) => member?.id === userId,
     );
-    if (isAlreadyMember) {
-      throw new NotFoundException('User already in channel');
-    } else {
-      const friend = await this.userRepository.findOne({
-        where: { id: userId },
-        relations: ['conversations', 'channels'],
-      });
-      channel?.members?.push(friend);
-      friend?.channels.push(channel);
-      friend?.conversations.push(channel.conversation);
-      this.userRepository.save(friend);
-    }
-    return this.chanRepository.save(channel);
+    if (isAlreadyMember) throw new NotFoundException('User already in channel');
+
+    const friend = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['conversations', 'channels'],
+    });
+    if (!friend) throw new NotFoundException('User not found');
+
+    channel?.members?.push(friend);
+    friend?.channels?.push(channel);
+    this.conversationService.joinConversation(channel.conversation.id, userId);
+    this.userRepository.save(friend);
+
+    this.chanRepository.save(channel);
+
   }
 
   async banUnbanFromChannel(

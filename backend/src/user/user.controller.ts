@@ -127,7 +127,7 @@ export class UserController {
   //   return this.usersService.sendFriendRequest(myId, id);
   // }
 
-  @Post('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
+  @Get('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
   @UseGuards(JwtGuard)
   async FriendRequest(
     @Param('friendId') id: number,

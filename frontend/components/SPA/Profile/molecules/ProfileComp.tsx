@@ -15,7 +15,7 @@ interface ProfileCompProps {
   color?: string;
   type?: "Protected" | "Public" | "achiv" | null;
   inChannel?: boolean;
-  channelId: number;
+  channelId?: number;
 }
 
 const ProfileComp = ({
@@ -46,8 +46,7 @@ const ProfileComp = ({
         .catch((err) => {
           console.log(err);
         });
-    }
-    else if (type === "achiv") {
+    } else if (type === "achiv") {
       setShow(false);
     } else {
       setShow(true);
@@ -75,9 +74,10 @@ const ProfileComp = ({
           ))}
       </Modal>
 
-
-      <div className="flex items-start justify-start gap-5" onClick={handleModalClick}>
-
+      <div
+        className="flex items-start justify-start gap-5"
+        onClick={handleModalClick}
+      >
         <Avatar isBordered color="success" src={img} />
         <div className="m-0 p-0">
           <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0 ">
