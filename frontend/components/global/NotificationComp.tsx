@@ -24,7 +24,7 @@ export const NotificationComp = ({}) => {
   return (
     <>
       <Dropdown
-        showArrow
+        
         classNames={{
           content: "bg-black", // change arrow background
         }}
@@ -90,7 +90,7 @@ export const NotificationComp = ({}) => {
                         img={user.img}
                         firstName={user.firstName}
                         lastName={user.lastName}
-                        nickName="has invited you to play a game"
+                        nickName={user.description}
                       />
                     </div>
                     <div className="flex flex-row gap-1 justify-end">
@@ -129,6 +129,7 @@ const data = [
     nickName: "blonde",
     firstName: "Hajar",
     lastName: "blondy",
+    description: "has invited you to play a game",
   },
   {
     id: 2,
@@ -136,6 +137,7 @@ const data = [
     nickName: "lemntsr",
     firstName: "mountassir",
     lastName: "fat",
+    description : "has sent you a friend request",
   },
   {
     id: 3,

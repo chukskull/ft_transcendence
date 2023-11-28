@@ -4,6 +4,7 @@ import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
 import { MatchButton } from "@/components/SPA/home/atoms/MatchButton";
+import Result from "@/components/SPA/game/Result";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -20,6 +21,53 @@ const Game: React.FC = () => {
   });
   const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
   const [online, setOnline] = useState<boolean>(false);
+  const [showRec, setRec] = useState<boolean>(false);
+  const [value, setValue] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setValue((v) => (v >= 100 ? 0 : v + 10));
+    }, 500);
+    if (value === 100) {
+      setRec(false);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [value]);
+
+  const renderRectangle = () => {
+    if (showRec) {
+      return (
+        <div className={style.centeredContent}>
+          <div
+            className={""}
+            style={{
+              opacity: 0.6,
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "black",
+              zIndex: 1,
+            }}
+          ></div>
+          <div className="" style={{ position: "relative", zIndex: 2 }}>
+            <Result
+              name={"hamze kornabi"}
+              img={"https://i.pravatar.cc/300?img=1"}
+              scoreleft={0}
+              scoreright={3}
+              result="You Lost"
+              value={value}
+            />
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className={style.gamePage}>
@@ -42,6 +90,7 @@ const Game: React.FC = () => {
         <TheGame map={map} onlinemode={online} />
         <MatchButton />
       </div>
+      {renderRectangle()}
     </div>
   );
 };
