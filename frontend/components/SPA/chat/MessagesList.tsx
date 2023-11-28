@@ -1,8 +1,16 @@
+import { useEffect, useRef } from "react";
 import AvatarBubble from "./AvatarBubble";
 import style from "@/styles/SPA/chat/chat.module.scss";
 
 const MsgsList = ({ chats }: { chats: any }) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  },[chats]);
   return (
+    
     <div className={style["msgs-list"]}>
       {chats?.map((msg: any) => (
         <div className={style["msg-item"]} key={msg?.id}>
@@ -17,6 +25,7 @@ const MsgsList = ({ chats }: { chats: any }) => {
           <div className={style["msg-time"]}>{msg?.time}</div>
         </div>
       ))}
+      <div ref={bottomRef} />
     </div>
   );
 };

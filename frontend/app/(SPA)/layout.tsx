@@ -13,6 +13,7 @@ export default function RootLayout({
   return (
     <main
       style={{
+        height: "100vh",
         padding: "60px",
         background: "none",
       }}
