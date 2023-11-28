@@ -25,16 +25,9 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client with userId ${userId} connected`);
   }
 
-  newFriendRequest(RequestSender: User, userId: number) {
-    this.server.to(`user-${userId}`).emit('newFriendRequest', RequestSender);
-  }
-
   newAchievement(achievement: Achievement, userId: number) {
     this.server.to(`user-${userId}`).emit('newAchievement', achievement);
   }
 
-  newMessage(data: any, userId: number) {
-    this.server.to(`user-${userId}`).emit('msgNotif', data);
-  }
   handleDisconnect(client: Socket) {}
 }

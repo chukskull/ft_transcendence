@@ -6,7 +6,8 @@ import InFosPlayer from "../../Profile/atoms/InFosPlayer";
 import ChannelSettings from "./ChannelSettings";
 import axios from "axios";
 
-const InviteSection = () => {
+const InviteSection = ({chandId}:any) => {
+  console.log(chandId);
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     axios
@@ -18,6 +19,19 @@ const InviteSection = () => {
       })
       .catch((err) => console.log(err));
   }, []);
+  const inviteFriendToChannel = (id: number) => {
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chandId}/invite/${id}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
   return (
     <div className={style["invite-section"]}>
       <h1>
@@ -41,7 +55,11 @@ const InviteSection = () => {
               lastName={e.lastName}
               channelId={e.id}
             />
-            <button>
+            <button
+              onClick={() => {
+                inviteFriendToChannel(e.id);
+              }}
+            >
               <AiOutlineUserAdd />
               Invite
             </button>
@@ -165,7 +183,7 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
         </div>
       </div>
       <div className={style["menu-body"]}>
-        {activeSection === "Invite" && <InviteSection />}
+        {activeSection === "Invite" && <InviteSection chandId={channel?.id} />}
         {activeSection === "Authority Hub" && (
           <AuthoritySection
             owner={channelData?.owner}

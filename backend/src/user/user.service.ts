@@ -56,7 +56,6 @@ export class UserService {
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
-    user.nickName = intraLogin;
     user.firstTimeLogiIn = true;
     user.conversations = [];
 
@@ -158,7 +157,6 @@ export class UserService {
       lastName,
     });
 
-    console.log('this is user ', useeer);
     return useeer;
   }
 
@@ -259,12 +257,9 @@ export class UserService {
 
     // Update pendingFriendRequests without saving immediately
     friend.pendingFriendRequests.push(client);
-    client.pendingFriendRequests.push(friend);
 
     // Save the changes asynchronously
     await this.saveFriendRequests([client, friend]);
-
-    await this.notifGateway.newFriendRequest(client, friendID);
 
     return { message: 'Friend request sent' };
   }
@@ -283,20 +278,32 @@ export class UserService {
   ): Promise<any> {
     const client = await this.userRepository.findOne({
       where: { id: handlerId },
-      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+      relations: [
+        'friends',
+        'blockedUsers',
+        'pendingFriendRequests',
+        'conversations',
+        'conversations.members',
+      ],
     });
+    console.log('client', client);
 
     const friend = await this.userRepository.findOne({
       where: { id: friendID },
-      relations: ['friends', 'blockedUsers', 'pendingFriendRequests'],
+      relations: [
+        'friends',
+        'blockedUsers',
+        'pendingFriendRequests',
+        'conversations',
+        'conversations.members',
+      ],
     });
 
     if (!client || !friend) {
       throw new NotFoundException('User not found.');
     }
-    const pending = this.findPendingRequest(client, friendID);
-    if (!pending) {
-      return { message: 'User is not in pending' };
+    if (!this.isAlreadyPending(friend, client)) {
+      return { message: 'User isnt in pending' };
     }
     if (this.isAlreadyFriend(client, friend)) {
       return { message: 'User already in friends' };
@@ -306,18 +313,22 @@ export class UserService {
       return { message: 'User is blocked' };
     }
 
-    if (action === 1) {
-      //accept
-      client.pendingFriendRequests = client.pendingFriendRequests.filter(
-        (pending) => pending.id !== friendID,
-      );
-      friend.pendingFriendRequests = friend.pendingFriendRequests.filter(
-        (pending) => pending.id !== handlerId,
-      );
+    // remove friend from my pending requests
+    client.pendingFriendRequests = client.pendingFriendRequests.filter(
+      (user) => user.id != friendID,
+    );
 
-      const conversation = this.findConversation(client, friendID);
+    if (action == 1) {
+      //accept
+
+      const conversation = client.conversations.find(
+        (conv) =>
+          conv.is_group === false &&
+          conv.members.find((member) => member.id == friendID),
+      );
 
       if (conversation) {
+        console.log('conversation found');
         client.friends.push(friend);
         friend.friends.push(client);
       } else {
@@ -330,19 +341,11 @@ export class UserService {
         client.conversations.push(newconv);
         friend.conversations.push(newconv);
       }
-    } else {
-      //decline 0
-      client.pendingFriendRequests = client.pendingFriendRequests.filter(
-        (pending) => pending.id !== friendID,
-      );
-      friend.pendingFriendRequests = friend.pendingFriendRequests.filter(
-        (pending) => pending.id !== handlerId,
-      );
     }
 
     await this.userRepository.save(client);
     await this.userRepository.save(friend);
-    return { message: 'Friend request accepted' };
+    return { message: 'Friend request handeled' };
   }
 
   async removeFriend(clientID: number, friendID: number): Promise<any> {
@@ -378,21 +381,6 @@ export class UserService {
 
   private isAlreadyPending(client: User, friend: User): boolean {
     return friend.pendingFriendRequests.some((p) => p.id === client.id);
-  }
-
-  private findPendingRequest(client: User, friendID: number): User | undefined {
-    return client.pendingFriendRequests.find((p) => p.id === friendID);
-  }
-
-  private findConversation(
-    client: User,
-    friendID: number,
-  ): Conversation | undefined {
-    return client.conversations.find(
-      (conv) =>
-        conv.is_group === false &&
-        conv.members.find((member) => member.id === friendID),
-    );
   }
 
   async handleBlock(blockedID: number, handlerId: number, action: number) {

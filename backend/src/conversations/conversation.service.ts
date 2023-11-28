@@ -64,10 +64,6 @@ export class ConversationService {
       throw new NotFoundException('User not found in this conversation');
     try {
       conv.chats.push(message);
-      if (!conv.is_group) {
-        const otherUser = conv.members.find((member) => member.id !== senderId);
-        this.notifGateway.newMessage(message, otherUser.id);
-      }
       await this.conversationRepository.save(conv);
     } catch (e) {
       console.log(e);

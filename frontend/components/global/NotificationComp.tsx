@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge, DropdownSection, badge } from "@nextui-org/react";
-import React, { use, useEffect } from "react";
+import React, { use, useEffect, useState } from "react";
 import { NotificationIcon } from "./NotificationIcon";
 import {
   Dropdown,
@@ -11,20 +11,68 @@ import {
   Button,
   cn,
 } from "@nextui-org/react";
-import Profile from "@/app/(SPA)/profile/page";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
+import axios from "axios";
 
 export const NotificationComp = ({}) => {
-  const [notifCount, setNotifCount] = React.useState(data.length);
-
+  const [notifCount, setNotifCount] = useState<number>(0);
+  const [notifData, setNotifData] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
+  };
+  console.log("notifdata", notifData);
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setNotifData(res.data.pendingFriendRequests);
+        setNotifCount(res.data.pendingFriendRequests.length);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+  const handleAcceptReq = (friendId: number, type: number) => {
+    // 1 friendRequest 2 gameRequest
+    if (type === 1) {
+      console.log("friendId", friendId);
+      axios
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/FriendRequest/${friendId}/1`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  const handleDeclineReq = (friendId: number, type: number) => {
+    // 1 friendRequest 2 gameRequest
+    if (type === 1) {
+      axios
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/FriendRequest/${friendId}/0`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   return (
     <>
       <Dropdown
-        
         classNames={{
           content: "bg-black", // change arrow background
         }}
@@ -65,42 +113,53 @@ export const NotificationComp = ({}) => {
             }}
             title="Actions"
           >
-            {data.map((user, index) =>
-              user.type === "Achievement" ? (
-                <DropdownItem key={index}>
+            {notifData?.map((notif: any) =>
+              notif.icon ? (
+                <DropdownItem key={notif.id}>
                   <div className="flex flex-col  gap-1 p-1">
-                    <div
-                      className="flex flex-row gap-4 items-center "
-                      key={index}
-                    >
-                      <Avatar src={user.img} size={"large"} />
+                    <div className="flex flex-row gap-4 items-center ">
+                      <Avatar src={notif?.icon} size={"large"} />
                       <h6 className="text-base font-ClashGrotesk-Regular text-white py-1">
-                        {`Congratulations ! ${user.description}`}
+                        {`Congratulations ! ${notif?.description}`}
                       </h6>
                     </div>
                   </div>
                 </DropdownItem>
               ) : (
-                <DropdownItem key={index}>
+                <DropdownItem key={notif.id}>
                   <div className="flex flex-col  gap-1 p-1">
-                    <div className="flex gap-2 " key={index}>
+                    <div className="flex gap-2 " key={notif?.id}>
                       <ProfileComp
-                        id={user.id}
-                        key={index}
-                        img={user.img}
-                        firstName={user.firstName}
-                        lastName={user.lastName}
-                        nickName={user.description}
+                        key={notif?.id}
+                        id={notif?.id}
+                        img={notif?.avatarUrl}
+                        firstName={notif?.firstName}
+                        lastName={notif?.lastName}
+                        nickName={notif?.nickName}
                       />
                     </div>
-                    <div className="flex flex-row gap-1 justify-end">
-                      <Button size="sm" color="success">
-                        {" "}
+                    <div
+                      className="flex flex-row gap-1 justify-end"
+                      key={notif?.id}
+                    >
+                      <Button
+                        size="sm"
+                        color="success"
+                        onPress={() => {
+                          console.log("notif", notif);
+                          handleAcceptReq(notif?.id, 1);
+                        }}
+                      >
                         Accept
                       </Button>
-                      <Button size="sm" color="danger">
-                        {" "}
-                        Decline{" "}
+                      <Button
+                        size="sm"
+                        color="danger"
+                        onPress={() => {
+                          handleDeclineReq(notif?.id, 1);
+                        }}
+                      >
+                        Decline
                       </Button>
                     </div>
                   </div>
@@ -113,86 +172,3 @@ export const NotificationComp = ({}) => {
     </>
   );
 };
-
-const data = [
-  {
-    id: 0,
-    img: "https://i.pravatar.cc/300?img=0",
-    firstName: "Gold Level",
-    description: "You have reached the gold level",
-    type: "Achievement",
-  },
-
-  {
-    id: 1,
-    img: "https://i.pravatar.cc/300?img=1",
-    nickName: "blonde",
-    firstName: "Hajar",
-    lastName: "blondy",
-    description: "has invited you to play a game",
-  },
-  {
-    id: 2,
-    img: "https://i.pravatar.cc/300?img=2",
-    nickName: "lemntsr",
-    firstName: "mountassir",
-    lastName: "fat",
-    description : "has sent you a friend request",
-  },
-  {
-    id: 3,
-    img: "https://i.pravatar.cc/300?img=3",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    id: 4,
-    img: "https://i.pravatar.cc/300?img=4",
-    nickName: "CuriousCheetah",
-    firstName: "William",
-    lastName: "Davis",
-  },
-  {
-    id: 5,
-    img: "https://i.pravatar.cc/300?img=5",
-    nickName: "TechTitan",
-    firstName: "Emily",
-    lastName: "Johnson",
-  },
-  {
-    id: 6,
-    img: "https://i.pravatar.cc/300?img=6",
-    nickName: "CodingQueen",
-    firstName: "Hannah",
-    lastName: "Miller",
-  },
-  {
-    id: 7,
-    img: "https://i.pravatar.cc/300?img=7",
-    nickName: "PixelMaster",
-    firstName: "Jacob",
-    lastName: "Taylor",
-  },
-  {
-    id: 8,
-    img: "https://i.pravatar.cc/300?img=8",
-    nickName: "DesignDiva",
-    firstName: "Olivia",
-    lastName: "Moore",
-  },
-  {
-    id: 9,
-    img: "https://i.pravatar.cc/300?img=9",
-    nickName: "GadgetGuru",
-    firstName: "Mason",
-    lastName: "Smith",
-  },
-  {
-    id: 10,
-    img: "https://i.pravatar.cc/300?img=0",
-    firstName: "Gold Level",
-    description: "You have reached the gold level",
-    type: "Achievement",
-  },
-];

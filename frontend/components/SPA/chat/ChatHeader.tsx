@@ -21,7 +21,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const router = useRouter();
   const leaveGroup = (id: number) => {
     axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
         withCredentials: true,
       })
       .then((res) => {
