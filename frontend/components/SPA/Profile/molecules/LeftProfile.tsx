@@ -8,6 +8,9 @@ interface LeftProfileProps {
   image: string;
   name: string;
   nickName: string;
+  userId: number;
+  me: boolean;
+  isFriend: number;
 }
 
 export const LeftProfile = ({
@@ -15,11 +18,11 @@ export const LeftProfile = ({
   name,
   nickName,
   isLoading,
+  userId,
+  me,
+  isFriend,
 }: LeftProfileProps) => {
-  const [add, setAdd] = useState(false);
-  function handleClick() {
-    setAdd(!add);
-  }
+
   if (isLoading) return <SkeletonComp large={9} />;
   return (
     <div className="profile-user  ">
@@ -36,10 +39,9 @@ export const LeftProfile = ({
           #{nickName}
         </h1>
         <AddFriend
-          //depends its my profile or not
-          display={true}
-          whenClicked={handleClick}
-          clicked={add}
+          display={me}
+          userId={userId}
+          isFriend={isFriend}
         />
       </div>
     </div>

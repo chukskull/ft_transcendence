@@ -10,19 +10,22 @@ import {
 import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
-const UserMenu = (user:any) => {
+const UserMenu = ({ id, nickName, avatarUrl, channel, online }: any) => {
+  const router = useRouter();
+
   return (
     <>
       <div className={style["user-info"]}>
-        <AvatarBubble avatar="/assets/components/Profile.svg" online />
-        <h2>John Doe</h2>
+        <AvatarBubble avatar={avatarUrl} online={online} />
+        <h2>{nickName}</h2>
       </div>
       <div className={style["menu"]}>
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            router.push(`/profile/${nickName}`);
           }}
         >
           <FaUser />
@@ -31,7 +34,14 @@ const UserMenu = (user:any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
+              )
+              .then((res) => {})
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <BsController />
@@ -40,7 +50,9 @@ const UserMenu = (user:any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            router.push(
+              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/users/${nickName}`
+            );
           }}
         >
           <BsChatLeftText />
@@ -49,7 +61,14 @@ const UserMenu = (user:any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`
+              )
+              .then((res) => {})
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <FaUserPlus />
@@ -58,39 +77,79 @@ const UserMenu = (user:any) => {
         <div
           className={style["menu-item"]}
           onClick={() => {
-            axios.post("/api/auth/logout");
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
+              )
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           }}
         >
           <FaUserSlash />
           Block
         </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios.post("/api/auth/logout");
-          }}
-        >
-          <FaUserShield />
-          Make A Moderator
-        </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios.post("/api/auth/logout");
-          }}
-        >
-          <FaVolumeMute />
-          Mute
-        </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios.post("/api/auth/logout");
-          }}
-        >
-          <FaBan />
-          Ban From Channel
-        </div>
+        {channel && (
+          <>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${channel}/channels/modding/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }}
+            >
+              <FaUserShield />
+              Make A Moderator
+            </div>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel}/muting/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }}
+            >
+              <FaVolumeMute />
+              Mute
+            </div>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                axios
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel}/banning/${id}/1`
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }}
+            >
+              <FaBan />
+              Ban From Channel
+            </div>
+          </>
+        )}
       </div>
     </>
   );

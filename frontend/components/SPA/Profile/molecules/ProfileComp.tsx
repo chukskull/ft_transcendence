@@ -7,31 +7,48 @@ import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
 
 interface ProfileCompProps {
-  key?: number;
+  id?: number;
   img: string;
   nickName?: string;
   firstName: string;
   lastName?: string;
   color?: string;
-  type?: "Private" | "Public" | null;
+  type?: "Protected" | "Public" | "achiv" | null;
+  inChannel?: boolean;
+  channelId: number;
 }
 
 const ProfileComp = ({
-  key,
+  id,
   img,
   nickName,
   firstName,
   lastName,
   type,
   color,
+  inChannel,
+  channelId,
 }: ProfileCompProps) => {
   const [showModal, setShow] = React.useState(false);
 
   const handleModalClick = () => {
-    if (type === "Private") {
+    if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
-      axios.post("/api/auth/join");
+      axios
+        .post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    else if (type === "achiv") {
+      setShow(false);
     } else {
       setShow(true);
     }
@@ -46,33 +63,24 @@ const ProfileComp = ({
         className={style["user-menu-modal"]}
       >
         {showModal &&
-          (type === "Private" ? (
-            <ProtectedModal /> // Show protected modal for private channels
+          (type === "Protected" ? (
+            <ProtectedModal channelId={channelId} />
           ) : (
-            <UserMenu /> // Show standard user menu for other channel types
+            <UserMenu
+              id={id}
+              channel={inChannel}
+              avatarUrl={img}
+              nickName={nickName}
+            />
           ))}
       </Modal>
-      <div className="flex items-center  gap-5" onClick={handleModalClick}>
+
+
+      <div className="flex items-start justify-start gap-5" onClick={handleModalClick}>
+
         <Avatar isBordered color="success" src={img} />
-        {/* {color ? (
-          <svg
-            className="absolute z-12 top-[-16%] right-[68%] w-12"
-            id="crown"
-            fill={color}
-            data-name="Layer 1"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 100 50"
-          >
-            <polygon
-              className="cls-1"
-              points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
-            />
-          </svg>
-        ) : (
-          <span> </span>
-        )} */}
         <div className="m-0 p-0">
-          <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0">
+          <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0 ">
             {firstName} {lastName}
           </h4>
           <h6 className="text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0">

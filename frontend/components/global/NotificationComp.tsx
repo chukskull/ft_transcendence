@@ -15,19 +15,8 @@ import Profile from "@/app/(SPA)/profile/page";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
 
-interface NotificationCompProps {
-  content?: string;
-  isAchie?: boolean;
-  count?: any;
-}
-
-export const NotificationComp = ({
-  content,
-  isAchie,
-  count,
-}: NotificationCompProps) => {
-  count = 5;
-  const [NotifCount, setNotifCount] = React.useState(count);
+export const NotificationComp = ({}) => {
+  const [notifCount, setNotifCount] = React.useState(data.length);
 
   const handleClick = () => {
     setNotifCount(0);
@@ -35,16 +24,16 @@ export const NotificationComp = ({
   return (
     <>
       <Dropdown
-        showArrow
+        
         classNames={{
-          base: "bg-black", // change arrow background
+          content: "bg-black", // change arrow background
         }}
       >
         <DropdownTrigger onClick={handleClick}>
           <div>
             <Badge
-              content={count}
-              isInvisible={NotifCount === 0 ? true : false}
+              content={notifCount}
+              isInvisible={notifCount === 0 ? true : false}
               color="danger"
             >
               <NotificationIcon width={25} height={25} />
@@ -96,11 +85,12 @@ export const NotificationComp = ({
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex gap-2 " key={index}>
                       <ProfileComp
+                        id={user.id}
                         key={index}
                         img={user.img}
                         firstName={user.firstName}
                         lastName={user.lastName}
-                        nickName="has invited you to play a game"
+                        nickName={user.description}
                       />
                     </div>
                     <div className="flex flex-row gap-1 justify-end">
@@ -139,6 +129,7 @@ const data = [
     nickName: "blonde",
     firstName: "Hajar",
     lastName: "blondy",
+    description: "has invited you to play a game",
   },
   {
     id: 2,
@@ -146,6 +137,7 @@ const data = [
     nickName: "lemntsr",
     firstName: "mountassir",
     lastName: "fat",
+    description : "has sent you a friend request",
   },
   {
     id: 3,

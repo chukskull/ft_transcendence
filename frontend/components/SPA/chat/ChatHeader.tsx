@@ -1,11 +1,13 @@
-'use client';
+"use client";
 import { FiLogOut } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
 import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface chatHeaderProps {
   isChannel: boolean;
@@ -14,6 +16,35 @@ interface chatHeaderProps {
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  const router = useRouter();
+  const leaveGroup = (id: number) => {
+    axios
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data.success) {
+          router.push("/chat");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <>
       <Modal
@@ -29,18 +60,26 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         overlayClassName={style["modal-overlay"]}
       >
         {chatHeaderProps?.isChannel ? (
-          <ChannelMenu channel={chatHeaderProps?.dmOrChannel} />
+          <ChannelMenu
+            channel={chatHeaderProps?.dmOrChannel}
+            currentUser={user}
+          />
         ) : (
-          <UserMenu user={chatHeaderProps?.dmOrChannel} />
+          <UserMenu
+            id={chatHeaderProps?.dmOrChannel?.members[0].id}
+            avatarUrl={chatHeaderProps?.dmOrChannel?.members[0].avatarUrl}
+            nickName={chatHeaderProps?.dmOrChannel?.members[0].nickName}
+            online={chatHeaderProps?.dmOrChannel?.members[0].online}
+            channel={false}
+          />
         )}
       </Modal>
       <div className={style["chat-header"]}>
         <div className={style["chat-user-group"]}>
-          {/* {!chatHeaderProps?.isChannel && (
-            <AvatarBubble avatar="/assets/components/Profile.svg" online />
-          )} */}
           <div className={style["name"]}>
-            {chatHeaderProps?.dmOrChannel?.name}
+            {chatHeaderProps?.isChannel
+              ? chatHeaderProps?.dmOrChannel?.name
+              : chatHeaderProps?.dmOrChannel.members[0].nickName}
           </div>
           <button
             onClick={() => {
@@ -55,7 +94,12 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           </button>
         </div>
         {chatHeaderProps?.isChannel && (
-          <FiLogOut className={style["leave-group"]} />
+          <FiLogOut
+            className={style["leave-group"]}
+            onClick={() => {
+              leaveGroup(chatHeaderProps?.dmOrChannel?.id);
+            }}
+          />
         )}
       </div>
     </>

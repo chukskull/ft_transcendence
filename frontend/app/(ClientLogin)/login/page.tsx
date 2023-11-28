@@ -21,6 +21,7 @@ export default function Login() {
               image={button.image}
               text={button.text}
               altr={button.altr}
+              url={button.url}
             />
           ))}
         </div>
@@ -35,11 +36,13 @@ const LogButtos = [
     image: "/assets/Login/google.svg",
     text: "Sign in with Google",
     altr: "google",
+    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`,
   },
   {
     isGoogle: false,
     image: "/assets/Login/intra.svg",
     text: "Sign in with Intranet",
     altr: "intra",
+    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/42`,
   },
 ];

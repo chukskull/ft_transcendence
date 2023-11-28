@@ -13,8 +13,8 @@ export default function RootLayout({
   return (
     <main
       style={{
-        marginTop: "60px",
-        marginLeft: "60px",
+        height: "100vh",
+        padding: "60px",
         background: "none",
       }}
     >

@@ -1,12 +1,24 @@
-import { isNumber } from "class-validator";
+import { IsNumber } from "class-validator";
 
 export class CreateMatchHistoryDto {
-	@isNumber()
+	@IsNumber()
 	player1ID: number;
 
-	@isNumber()
+	@IsNumber()
 	player2ID: number;
 
-	@isNumber()
+	@IsNumber()
 	winnerID: number;
+
+	@IsNumber()
+	winsInARow: number;
+
+	@IsNumber()
+	losesInARow: number;
+
+	@IsNumber()
+	player1score: number;
+
+	@IsNumber()
+	player2score: number;
 }

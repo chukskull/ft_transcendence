@@ -3,6 +3,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import CreateChannelModal from "./CreateChannel";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 interface Channel {
   type: string;
@@ -17,6 +18,7 @@ interface ChannelProps {
   getType: (type: boolean) => void;
   CompType: boolean;
 }
+
 const ChannelsSection = ({
   sendDmOrChannel,
   getType,
@@ -25,30 +27,68 @@ const ChannelsSection = ({
   const [addChModal, setAddChModal] = useState<boolean>(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [active, setActive] = useState<string>("");
+  const params = useParams();
 
   useEffect(() => {
-    axios.get("http://localhost:1337/api/channels").then((res) => {
-      setChannelList(res.data);
-    });
-  }, []);
-  const groupedChannels = channelList.reduce((acc, channel) => {
-    if (!acc[channel.type]) {
-      acc[channel.type] = [];
+    const channelId = parseInt(params.id as string);
+    if (!isNaN(channelId)) {
+      const selectedChannel = channelList.find(
+        (channel) => channel.id === channelId
+      );
+      if (selectedChannel) {
+        sendDmOrChannel(selectedChannel);
+        getType(true);
+        setActive(selectedChannel.name);
+      }
     }
-    acc[channel.type].push(channel);
-    return acc;
-  }, {} as Record<string, Channel[]>);
+  }, [channelList, params.id, sendDmOrChannel, getType]);
 
-  const getCategoryTitle = (category: string) => {
-    switch (category) {
-      case "public":
-        return "Public Channels";
-      case "private":
-        return "Private Channels";
-      default:
-        return "Protected Channels";
-    }
-  };
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/mychannels`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setChannelList(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const channelCategoriesOrder = [
+    {
+      category: "public",
+      property: "is_private",
+      value: false,
+      label: "Public Channels",
+    },
+    {
+      category: "private",
+      property: "is_private",
+      value: true,
+      label: "Private Channels",
+    },
+    {
+      category: "protected",
+      property: "is_protected",
+      value: true,
+      label: "Protected Channels",
+    },
+  ];
+
+  const groupedChannels = channelList.reduce(
+    (acc, channel) => {
+      if (channel.is_private) {
+        acc.private.push(channel);
+      } else if (channel.is_protected) {
+        acc.protected.push(channel);
+      } else {
+        acc.public.push(channel);
+      }
+      return acc;
+    },
+    { public: [], private: [], protected: [] } as Record<string, Channel[]>
+  );
+
   function handleClick(channel: Channel) {
     sendDmOrChannel(channel);
     getType(true);
@@ -75,9 +115,9 @@ const ChannelsSection = ({
           </button>
         </div>
         <div className={style["channel-categories"]}>
-          {Object.keys(groupedChannels).map((category) => (
+          {channelCategoriesOrder.map(({ category, label }) => (
             <div className="flex flex-col gap-1" key={category}>
-              <h3>{getCategoryTitle(category)}</h3>
+              <h3>{label}</h3>
               {groupedChannels[category].map((channel) => (
                 <div
                   className={`${style["channel-item"]} ${
@@ -88,6 +128,7 @@ const ChannelsSection = ({
                   key={channel.name}
                   onClick={() => handleClick(channel)}
                 >
+                  {"#"}
                   {channel.name}
                 </div>
               ))}

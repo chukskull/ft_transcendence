@@ -1,29 +1,107 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from "@/styles/components/TopLeftNav.module.scss";
 import { BiSearchAlt } from "react-icons/bi";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
+import axios from "axios";
+import debounce from "lodash/debounce";
+import { useQuery } from "react-query";
 
 const SearchComp = () => {
-  const [activeSearch, setActiveSearch] = useState([]);
-  const handleSearch = (e) => {
-    if (e.target.value === "") {
-      setActiveSearch([]);
-      return false;
+  const getChannelStatus = (channel: any) => {
+    if (channel.isPrivate) {
+      return "Private";
+    } else if (channel.is_protected) {
+      return "Protected";
+    } else {
+      return "Public";
     }
+  };
+  const [activeSearch, setActiveSearch] = useState<any>([]);
+  const [res, setRes] = useState<(any | any)[]>([]);
+  const [Mount, setMount] = useState(false);
+  // const [isLoading, data, error] = useQuery("channels", async () => {
+  //   const channelsRes = await axios.get(`http://localhost:4000/Channels`, {
+  //     withCredentials: true,
+  //   });
 
-    const searchValue = e.target.value.toLowerCase();
+  //   const channels:any = channelsRes.data?.map((channel: any) => ({
+  //     ...channel,
+  //     isChannel: true,
+  //   }));
+
+  //   const profileres:any = await axios.get(` http://localhost:4000/Leadrboard`, {
+  //     withCredentials: true,
+  //   });
+  //   const profiles = profileres.data?.map((profile: any) => ({
+  //     ...profile,
+  //     isChannel: false,
+  //   }));
+
+  //   setRes([...channels, ...profiles]);
+  //   setMount(true);
+  // });
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const channelsRes: { data: any } = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`,
+          {
+            withCredentials: true,
+          }
+        );
+  
+        const channels = channelsRes.data?.map((channel: any) => ({
+          ...channel,
+          isChannel: true,
+        }));
+  
+        const fetchProfiles = async () => {
+          try {
+            const profileres: { data: any } = await axios.get(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`,
+              {
+                withCredentials: true,
+              }
+            );
+            const profiles = profileres.data?.map((profile: any) => ({
+              ...profile,
+              isChannel: false,
+            }));
+  
+            setRes([...channels, ...profiles]);
+            setMount(true);
+          } catch (error) {
+            console.error("Error fetching profiles", error);
+          }
+        };
+  
+        fetchProfiles();
+      } catch (error) {
+        console.error("Error fetching channels", error);
+      }
+    };
+  
+    fetchChannels();
+  }, []);
+  
+
+  const debouncedSearch = debounce((search) => {
+    const searchValue = search.toLowerCase();
     const searchTerms = searchValue.split(" ");
 
-    const filteredUsers = users.filter((user) => {
-      const userName = user.firstName.toLowerCase();
-      const userLastName = user.lastName.toLowerCase();
-      const userFullName = `${userName} ${userLastName}`.toLowerCase();
+    const filteredUsers = res.filter((user: any) => {
+      let fullName = "";
+      if (user.isChannel) {
+        fullName = user.name.toLowerCase();
+      } else {
+        fullName = `${user.firstName} ${user.lastName} ${user.nickName}`.toLowerCase();
+      }
+      const userFullName = fullName;
 
       return (
+        user.isChannel ? user.name.toLowerCase().includes(searchValue) :
         user.nickName.includes(searchValue) ||
-        (searchTerms.length === 1 &&
-          (userName.includes(searchValue) ||
-            userLastName.includes(searchValue))) ||
+        (searchTerms.length === 1 && fullName.includes(searchValue)) ||
         (searchTerms.length === 2 &&
           userFullName.includes(searchTerms[0]) &&
           userFullName.includes(searchTerms[1]))
@@ -31,6 +109,15 @@ const SearchComp = () => {
     });
 
     setActiveSearch(filteredUsers.slice(0, 8));
+  }, 300); // Debounce for 300 milliseconds
+
+  const handleSearch = (e: any) => {
+    if (e.target.value === "") {
+      setActiveSearch([]);
+      return false;
+    }
+
+    debouncedSearch(e.target.value);
   };
 
   return (
@@ -45,16 +132,26 @@ const SearchComp = () => {
       </div>
       {activeSearch.length > 0 && (
         <div className="absolute top-20 p-4 bg-black text-white w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
-          {activeSearch.map((user, index) => (
-            <span key={index}>
-              <ProfileComp
-                key={index}
-                img={user.img}
-                firstName={user.firstName}
-                lastName={user.lastName}
-                nickName={user.nickName}
-              />
-            </span>
+          {activeSearch.map((data: any, index:number) => (
+            <ProfileComp
+              key={index}
+              img={data?.isChannel ? "" : data?.avatarUrl}
+              nickName={
+                data?.isChannel ? getChannelStatus(data) : data?.nickName
+              }
+              firstName={data?.isChannel ? data?.name : data?.firstName}
+              lastName={data?.isChannel ? "" : data?.lastName}
+              channelId={data?.id}
+              type={
+                data?.isChannel
+                  ? getChannelStatus(data) === "Public"
+                    ? "Public"
+                    : getChannelStatus(data) === "Protected"
+                      ? "Protected"
+                      : null
+                  : null
+              }
+            />
           ))}
         </div>
       )}
@@ -62,69 +159,4 @@ const SearchComp = () => {
   );
 };
 
-const users = [
-  {
-    id: 1,
-    img: "https://i.pravatar.cc/300?img=1",
-    nickName: "blonde",
-    firstName: "Hajar",
-    lastName: "blondy",
-  },
-  {
-    id: 2,
-    img: "https://i.pravatar.cc/300?img=2",
-    nickName: "lemntsr",
-    firstName: "mountassir",
-    lastName: "fat",
-  },
-  {
-    id: 3,
-    img: "https://i.pravatar.cc/300?img=3",
-    nickName: "hamza_lkr",
-    firstName: "Saleh",
-    lastName: "Nagat",
-  },
-  {
-    id: 4,
-    img: "https://i.pravatar.cc/300?img=4",
-    nickName: "CuriousCheetah",
-    firstName: "William",
-    lastName: "Davis",
-  },
-  {
-    id: 5,
-    img: "https://i.pravatar.cc/300?img=5",
-    nickName: "TechTitan",
-    firstName: "Emily",
-    lastName: "Johnson",
-  },
-  {
-    id: 6,
-    img: "https://i.pravatar.cc/300?img=6",
-    nickName: "CodingQueen",
-    firstName: "Hannah",
-    lastName: "Miller",
-  },
-  {
-    id: 7,
-    img: "https://i.pravatar.cc/300?img=7",
-    nickName: "PixelMaster",
-    firstName: "Jacob",
-    lastName: "Taylor",
-  },
-  {
-    id: 8,
-    img: "https://i.pravatar.cc/300?img=8",
-    nickName: "DesignDiva",
-    firstName: "Olivia",
-    lastName: "Moore",
-  },
-  {
-    id: 9,
-    img: "https://i.pravatar.cc/300?img=9",
-    nickName: "GadgetGuru",
-    firstName: "Mason",
-    lastName: "Smith",
-  },
-];
 export default SearchComp;

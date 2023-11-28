@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
-import { MatchMaking } from "@/components/SPA/home/molecules/MatchMaking";
+import { MatchButton } from "@/components/SPA/home/atoms/MatchButton";
+import Result from "@/components/SPA/game/Result";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -20,6 +21,53 @@ const Game: React.FC = () => {
   });
   const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
   const [online, setOnline] = useState<boolean>(false);
+  const [showRec, setRec] = useState<boolean>(false);
+  const [value, setValue] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setValue((v) => (v >= 100 ? 0 : v + 10));
+    }, 500);
+    if (value === 100) {
+      setRec(false);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [value]);
+
+  const renderRectangle = () => {
+    if (showRec) {
+      return (
+        <div className={style.centeredContent}>
+          <div
+            className={""}
+            style={{
+              opacity: 0.6,
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "black",
+              zIndex: 1,
+            }}
+          ></div>
+          <div className="" style={{ position: "relative", zIndex: 2 }}>
+            <Result
+              name={"hamze kornabi"}
+              img={"https://i.pravatar.cc/300?img=1"}
+              scoreleft={0}
+              scoreright={3}
+              result="You Lost"
+              value={value}
+            />
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className={style.gamePage}>
@@ -33,19 +81,16 @@ const Game: React.FC = () => {
           <p>Retro</p>
           <img src="https://i0.wp.com/mynintendonews.com/wp-content/uploads/2011/08/nes-controller.jpg" />
         </div>
-        <div className={style.map} onClick={() => setMap("minecraft")}>
-          <p>Minecraft</p>
-          <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/news/minecraft-with-rtx/minecraft-with-rtx-of-temples-and-totems-001-rtx-on-logos.jpg" />
-        </div>
         <div className={style.map} onClick={() => setMap("gym")}>
           <p>Grizzly</p>
-          <img src="https://greekreporter.com/wp-content/uploads/2023/01/kyriakos-grizzly-credit-kyriakos-kapakoulak-youtube.jpg.webp" />
+          <img src="https://w7.pngwing.com/pngs/276/422/png-transparent-football-field-football-field-green-background-football.png" />
         </div>
       </div>
       <div className="flex flex-col gap-9 justify-center items-center">
         <TheGame map={map} onlinemode={online} />
-        <MatchMaking />
+        <MatchButton />
       </div>
+      {renderRectangle()}
     </div>
   );
 };

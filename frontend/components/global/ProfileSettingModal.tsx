@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Input, Skeleton } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
-
+import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
-
-import { useUpdate } from "@/utils/UpdaTeUser";
 import { SkeletonComp } from "./Skeleton";
 
 interface ProfileSettingModalProps {
@@ -15,15 +13,9 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   onClose,
 }) => {
   const [checked, setChecked] = useState(false);
-  const [name, setName] = useState("");
+  const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
-  const { mutate, isLoading } = useUpdate();
-
-  const Update = async (data: any) => {
-    if (data) {
-      mutate(data);
-    }
-  };
+  const [name, setName] = useState("");
 
   const handleClick = () => {
     const fileInput = document.createElement("input");
@@ -39,44 +31,44 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     });
   };
 
-  const sendUpdate = async () => {
-    const s = {} as any;
-    if (file !== null) {
-      s.image = file;
-    }
-    s.enableTwoFa = !checked;
-    s.name = name;
-
-    return Update(s);
+  const updateUser = async () => {
+    const formData = {
+      nickName: name,
+      avatarUrl: file,
+      twoFactorAuthEnabled: checked,
+    };
+    axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   };
 
-  const handleOnClose = () => {
-    onClose();
-    setTimeout(() => {
-      setChecked(false);
-      setName("");
-      setFile(null);
-    }, 1000);
-  };
-
-  if (isLoading) {
-    <SkeletonComp />;
-  }
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setMyData(res.data);
+        setChecked(res.data.twoFactorAuthEnabled);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <>
-      <form className="flex flex-col  gap-3" onSubmit={sendUpdate}>
+      <form className="flex flex-col  gap-3">
         <div className="flex flex-col gap-4 items-center">
           <h1 className="text-white font-ClashGrotesk-Semibold text-2xl">
             Settings
           </h1>
           <div className="relative h-24 w-24 mt-2">
             <Avatar
-              src={
-                file
-                  ? URL.createObjectURL(file)
-                  : "https://i.pravatar.cc/300?img=1"
-              }
+              src={file ? URL.createObjectURL(file) : myData?.avatarUrl}
               size={100}
               className="relative"
             />
@@ -89,12 +81,10 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           </div>
 
           <h1 className="font-ClashGrotesk-Semibold text-white text-2xl text-center">
-            {" "}
-            Hamza Koranbi
+            {myData?.nickName}
           </h1>
           <div className="flex flex-col gap-2">
             <h1 className="font-ClashGrotesk-Regular text-white text-lg">
-              {" "}
               Change UserName
             </h1>
             <Input
@@ -113,7 +103,8 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           </h1>
 
           <Switch
-            defaultSelected
+            color="danger"
+            isSelected={checked}
             aria-label="Automatic updates"
             onChange={() => setChecked(!checked)}
           />
@@ -122,15 +113,14 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         <div className="flex items-center justify-between gap-8">
           <Button
             className="bg-inherit text-white font-ClashGrotesk-Medium text-base text-center"
-            onClick={handleOnClose}
+            onClick={onClose}
           >
             Cancel
           </Button>
           <Button
-            type="submit"
+            // type="submit"
+            onClick={updateUser}
             className="bg-buttonbg text-white font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
-            disabled={isLoading}
-            onClick={handleOnClose}
           >
             Save
           </Button>

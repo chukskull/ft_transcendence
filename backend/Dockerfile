@@ -1,20 +1,12 @@
-# Use an official Node.js runtime as a parent image
-FROM node:14
+# Use the official Node.js 18.18.2 image as the base image
+FROM node:18.18.2
 
-# Set the working directory to /app
-WORKDIR /backend
+WORKDIR /trans
 
-# Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code to the container
 COPY . .
 
-# Expose the port that the application will listen on
-EXPOSE 1337
-
-# Start the application
-CMD [ "npm", "start" ]
+CMD ["npm", "run", "start:dev"]

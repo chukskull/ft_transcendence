@@ -23,8 +23,16 @@ const CreateChannelModal = () => {
     setError(null);
 
     try {
-      const formData = { name, password, is_private };
-      const res = await axios.post("http://localhost:1337/api/channels/create", formData);
+      const formData = password
+        ? { name, password, is_private }
+        : { name, is_private };
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/create`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
       window.location.reload();
     } catch (error) {
       console.error("Error creating channel:", error);
@@ -40,8 +48,9 @@ const CreateChannelModal = () => {
           <input
             type="text"
             id="channel-name"
-            placeholder="#NewChannel"
+            placeholder="NewChannel"
             value={name}
+            maxLength={18}
             onChange={(e) => setname(e.target.value)}
           />
         </div>
@@ -54,6 +63,7 @@ const CreateChannelModal = () => {
             placeholder="Set Password"
             value={password}
             onChange={(e) => setpassword(e.target.value)}
+            minLength={5}
           />
         </div>
         <div className={style["prv-btn"]}>

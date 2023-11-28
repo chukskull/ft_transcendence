@@ -9,21 +9,21 @@ export const ButtonNav = () => {
   const handleHover = () => {
     setIsHovered(!isHovered);
   };
-  // const router = useRouter();
-  // const handleClick = () => {
-  //   router.push("/login");
-  // };
+  const router = useRouter();
+  const handleClick = () => {
+    router.push("/login");
+  };
 
   return (
     <>
       <Button
         type="button"
         className={`flex items-center z-10 justify-between border-1 border-purple-600 
-      rounded-xl bg-inherit font-[ClashGrotesk-Medium] text-[15px]
+      rounded-xl bg-inherit font-ClashGrotesk-Medium 
       py-[14px] px-[16px] text-sm font-medium text-gray-500 transition group 
       ${isHovered ? "text-white" : ""}
       `}
-        // onClick={handleClick}
+        onClick={handleClick}
         onMouseEnter={handleHover}
         onMouseLeave={handleHover}
       >

@@ -12,6 +12,7 @@ import SearchComp from "./SearchComp";
 import { NotificationIcon } from "./NotificationIcon";
 import { notification } from "antd";
 import { NotificationComp } from "./NotificationComp";
+import axios from "axios";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -40,7 +41,7 @@ export default function TopLeftNav() {
         </div>
         <SearchComp />
         <div className={`${style["top_notif"]} + cursor-pointer`}>
-          <NotificationComp />
+          <NotificationComp count={5} />
         </div>
       </div>
       <div className={style["left-bar"]}>
@@ -62,9 +63,6 @@ export default function TopLeftNav() {
           <Link href="/profile">
             <img src="/assets/main/Navbar/Profile.svg" />
           </Link>
-          <Link href="/shop">
-            <img src="/assets/main/Navbar/Shop.svg" />
-          </Link>
         </div>
         <div className={style["left_bottom_menu"]}>
           <img
@@ -73,14 +71,25 @@ export default function TopLeftNav() {
           />
           <img
             src="/assets/main/Navbar/Logout.svg"
-            onClick={() => handleClick("Logout")}
+            onClick={() => {
+              axios
+                .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  window.location.href = "/";
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }}
           />
         </div>
       </div>
-      <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
+      <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose} classNames={{ backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20" }}>
         <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem]">
           {string === "setting" ? (
-            <ProfileSettingModal onClose={onClose} />
+            <ProfileSettingModal onClose={onClose}  />
           ) : (
             <GlobalModalComp onClose={onClose} action={string} />
           )}

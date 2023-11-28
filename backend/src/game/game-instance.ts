@@ -1,257 +1,115 @@
-import Matter, { Body, Bodies, Engine, World, Common, Vector, Events, Runner } from 'matter-js';
 import { Socket } from 'socket.io';
-import * as flatbuffers from 'flatbuffers';
-import { PositionState } from './position-state';
 import {
-	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, INIT_BALL_SPEED, PADDLE1_POSITION, PADDLE2_POSITION, BALL_POSITION, DAMPING, MAX_ANGLE, PlayerNumber, Color
+	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, INIT_BALL_SPEED, PADDLE1_POSITION, PADDLE2_POSITION, PlayerNumber
 } from './game.service';
 
+
 export class GameInstance {
-		private engine: Matter.Engine;
-		private world: Matter.World;
-		private ball: Matter.Body;
-		private paddle1: Matter.Body;
-		private paddle2: Matter.Body;
-		private player1ready: boolean = false;
-		private player2ready: boolean = false;
-		public score: { player1: number, player2: number } = { player1: 0, player2: 0 };
-		private speed: number = INIT_BALL_SPEED;
-		public inactive = false;
-		public toRemove = false;
-		loop: NodeJS.Timeout;
+	public	player1: Socket;
+	public	player2: Socket;
+	public	player1Score: number;
+	public	player2Score: number;
+	public	ball: {x: number, y: number, speedX: number, speedY: number};
+	private paddle1Position : number
+	private paddle2Position: number
+	private gameLoop: NodeJS.Timeout;
+	public	gameRunning: boolean;
+	private gamePaused: boolean;
+	private gameEnded: boolean;
 
-		constructor(public player1: Socket, public player2: Socket) {
-			this.engine = Engine.create();
-			this.world = this.engine.world;
-			this.world.gravity.y = 0;
-			this.world.gravity.x = 0;
-
-			this.ball = Bodies.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, BALL_RADIUS * 2, BALL_RADIUS * 2, {
-				frictionAir: 0,
-				restitution: 1,
-			});
-			this.paddle1 = Bodies.rectangle(PADDLE1_POSITION.x, PADDLE1_POSITION.y, PADDLE_WIDTH, PADDLE_HEIGHT, {
-				isStatic: true,
-				frictionAir: 0,
-				restitution: 1,
-			});
-
-			this.paddle2 = Bodies.rectangle(PADDLE2_POSITION.x, PADDLE2_POSITION.y, PADDLE_WIDTH, PADDLE_HEIGHT, {
-				isStatic: true,
-				frictionAir: 0,
-				restitution: 1,
-			});
-
-			Body.setVelocity(this.ball, this.getNewStart(GAME_WIDTH, GAME_HEIGHT).velocity);
-
-			World.add(this.world, [this.ball, this.paddle1, this.paddle2]);
-			player1.on('sendPaddleState', (state) => {
-				const buffer = new flatbuffers.ByteBuffer(new Uint8Array(state));
-				const paddleState = PositionState.getRootAsPositionState(buffer);
-
-				const x = paddleState.x();
-				const y = paddleState.y();
-
-				Body.setPosition(this.paddle1, { x, y });
-
-				const builder = new flatbuffers.Builder();
-				const offset = PositionState.createPositionState(builder, this.paddle2.position.x, this.paddle2.position.y);
-				builder.finish(offset);
-
-				player2.emit('updateOpponentPaddleState', builder.asUint8Array());
-			});
-
-			player2.on('sendPaddleState', (state) => {
-				const buffer = new flatbuffers.ByteBuffer(new Uint8Array(state));
-				const paddleState = PositionState.getRootAsPositionState(buffer);
-
-				const x = paddleState.x();
-				const y = paddleState.y();
-
-				Body.setPosition(this.paddle2, { x, y });
-
-				player1.emit('updateOpponentPaddleState', state);
-			});
-			
-			player1.on('disconnect', () => {
-				player2.emit('changeState', JSON.stringify({ gameState: 'finished', isWin: true }));
-				this.score.player1 = 0;
-				this.score.player2 = 1;
-				this.stopGame();
-			});
-			
-			setTimeout(() => {
-				player1.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 1, color: Common.choose(Color.White, Color.Green, Color.teal) }));
-				player2.emit('changeState', JSON.stringify({ gameState: 'playing', playerNumber: 2, color: Common.choose(Color.White, Color.Green, Color.teal) }));
-			}, 1000);
-			player1.on('ready', () => {
-				this.player1ready = true;
-				if (this.player2ready)
-					this.startGame();
-				else
-					player1.emit('waiting');
-			});
-			
-			player2.on('ready', () => {
-				this.player2ready = true;
-				if (this.player1ready)
-					this.startGame();
-				else
-					player2.emit('waiting');
-			});
-	}
-	/*
-	 * This function is called when a collision between the ball and a paddle is detected.
-	 * It calculates the new velocity of the ball based on the angle of the collision.
-	 */
-	private handleBallPaddleCollision(paddle: Matter.Body) {
-		const angle = Math.min(Math.max(this.ball.position.y - paddle.position.y, -70), 70);
-		const sign = (this.ball.position.x - paddle.position.x) > 0 ? 1 : -1;
-		const velocity = {
-			x: sign * this.speed * Math.cos(angle * Math.PI / 180),
-			y: this.speed * Math.sin(angle * Math.PI / 180),
-		};
-		Body.setVelocity(this.ball, velocity);
-		if (this.speed < 20)
-		this.speed += 0.5;
-	}
-	/*
-	 * This function is called when a player wins the game.
-	 * It sends a message to the players to notify them of the win.
-	 */
-	private setPlayerWin(player: PlayerNumber) {
-		if (player === PlayerNumber.One) {
-			this.player1.emit('changeState', JSON.stringify({ gameState: 'finished', isWin: true }));
-			this.player2.emit('changeState', JSON.stringify({ gameState: 'finished', isWin: false }));
-		}
-		else {
-			this.player1.emit('changeState', JSON.stringify({ gameState: 'finished', isWin: false }));
-			this.player2.emit('changeState', JSON.stringify({ gameState: 'finished', isWin: true }));
-		}
+	constructor(socket1: Socket, socket2: Socket) {
+		this.player1 = socket1;
+		this.player2 = socket2;
+		this.player1Score = 0;
+		this.player2Score = 0;
+		this.ball = {x: 417, y: 240, speedX: 2, speedY: 2}
+		this.paddle1Position = PADDLE1_POSITION;
+		this.paddle2Position = PADDLE2_POSITION;
+		this.gameRunning = false;
+		this.gamePaused = false;
+		this.gameEnded = false;
 	}
 
-	/*
-	 * This function is called when a player scores a point
-	 */
-
-	private	updateScore() {
-		this.player1.emit('updateScore', JSON.stringify(this.score));
-		this.player2.emit('updateScore', JSON.stringify(this.score));
-	}
-	/*
-	 * This function is called when a player leaves the game.
-	 * It stops the game and removes the players from the game.
-	 */
-
-	private stopGame() {
-		World.remove(this.world, [this.ball, this.paddle1, this.paddle2]);
-		World.clear(this.world, false);
-		Engine.clear(this.engine);
-		clearInterval(this.loop);
-		this.player1.removeAllListeners();
-		this.player2.removeAllListeners();
-		this.inactive = true;
-	}
-
-	/*
-	 * This function is called when both players are ready to play.
-	 * It starts the game and sets up the event listeners.
-	 */
-
-	private startGame() {
-		this.engine.velocityIterations = 10;
-		this.engine.positionIterations = 10;
-
-		this.loop = setInterval(() => {
-			Engine.update(this.engine, 1000 / 60);
+	public startGame(): void {
+		this.gameRunning = true;
+		this.gameLoop = setInterval(() => {
+			if (this.gameRunning && !this.gamePaused && !this.gameEnded) {
+				const prevBall = { ...this.ball };
+				this.updateBall(prevBall);
+				this.updatePaddle();
+				this.player1.emit('sendBallState', this.ball);
+				this.player2.emit('sendBallState', this.ball);
+			}
 		}, 1000 / 60);
+	}
 
-		Events.on(this.engine, 'collisionStart', (event) => {
-			const pairs = event.pairs[0]
-			if (pairs.bodyA === this.ball)
-				this.handleBallPaddleCollision(pairs.bodyB);
-			else
-				this.handleBallPaddleCollision(pairs.bodyA);
-		})
+	public pauseGame(): void {
+		this.gamePaused = true;
+	}
 
-		Events.on(this.engine, 'afterUpdate', () => {
-			if (this.ball.position.x < -50) {
-				this.score.player2++;
-				this.updateScore();
-				if (this.score.player2 == 5) {
-					this.setPlayerWin(PlayerNumber.Two);
-					this.stopGame();
-				}
-				else
-					this.resetBall();
-			}
-			else if (this.ball.position.x > GAME_WIDTH + 50) {
-				this.score.player1++;
-				this.updateScore();
-				if (this.score.player1 == 5) {
-					this.setPlayerWin(PlayerNumber.One);
-					this.stopGame();
-				}
-				else
-					this.resetBall();
-			}
-			if ((this.ball.velocity.y > 0 && this.ball.position.y + BALL_RADIUS >= GAME_HEIGHT - 10) ||
-				(this.ball.velocity.y < 0 && this.ball.position.y - BALL_RADIUS <= 10)) {
-				const velocity = this.ball.velocity;
-				velocity.y = -velocity.y;
-				Body.setVelocity(this.ball, velocity);
-			}
-			this.sendBallState();
+	public resumeGame(): void {
+		this.gamePaused = false;
+	}
+
+	public endGame(): void {
+		this.gameEnded = true;
+		this.gameRunning = false;
+		this.player1.disconnect();
+		this.player2.disconnect();
+		clearInterval(this.gameLoop);
+	}
+
+	public updateBall(prevBall): void {
+		prevBall = this.ball;
+		const paddle1Position = this.paddle1Position;
+		const paddle2Position = this.paddle2Position;
+
+		// Move ball
+		prevBall.x += prevBall.speedX;
+		prevBall.y += prevBall.speedY;
+
+		// Bounce off top and bottom edges
+		if (prevBall.y + prevBall.speedY > GAME_HEIGHT - BALL_RADIUS || prevBall.y + prevBall.speedY < BALL_RADIUS)
+			prevBall.speedY = -prevBall.speedY;
+
+		// Bounce off paddles
+		else if ((prevBall.x + prevBall.speedX > GAME_WIDTH - 13 || (prevBall.x + prevBall.speedX < 25 && prevBall.y >= paddle1Position && prevBall.y <= paddle1Position + 110)) || (prevBall.x + prevBall.speedX < 13 || (prevBall.x + prevBall.speedX > 775 && prevBall.y >= paddle2Position && prevBall.y <= paddle2Position + 110))) {
+			const increasedSpeed = -prevBall.speedX;
+			prevBall.speedX = increasedSpeed;
+		}
+
+		// Score
+		if (prevBall.x < 0) {
+			this.player2Score++;
+			this.resetBall();
+		} else if (prevBall.x > GAME_WIDTH) {
+			this.player1Score++;
+			this.resetBall();
+		}
+	}
+
+	public resetBall(): void {
+		this.updateScore();
+		this.player1.emit('sendBallState', this.ball);
+		this.player2.emit('sendBallState', this.ball);
+		this.ball = {x: 417, y: 240, speedX: 2, speedY: 2};
+	}
+
+	public updateScore(): void {
+		this.player1.on('updateScore', (score) => {
+			this.player1Score = score;
+		});
+		this.player2.on('updateScore', (score) => {
+			this.player2Score = score;
 		});
 	}
 
-	/*
-	 This function is called to reset the ball position and velocity.
-	 */
-
-	private resetBall() {
-		Body.setPosition(this.ball, BALL_POSITION);
-		Body.setVelocity(this.ball, { x: INIT_BALL_SPEED, y: INIT_BALL_SPEED });
-		this.speed = INIT_BALL_SPEED;
-	}
-
-	/*
-	 * This function is called to send the ball position to the players.
-	 * This function keeps running for every ball movement
-	 */
-
-	private sendBallState() {
-		const builder = new flatbuffers.Builder();
-		const offset = PositionState.createPositionState(builder, this.ball.position.x, this.ball.position.y);
-		builder.finish(offset);
-
-		this.player1.emit('updateBallState', builder.asUint8Array());
-		this.player2.emit('updateBallState', builder.asUint8Array());
-	}
-
-	/*
-	 * This function is called to generate a random start position and velocity for the ball.
-	 */
-
-	private getNewStart(gameWidth: number, gameHeight: number) {
-		this.speed = INIT_BALL_SPEED;
-		const angle = Common.random(-MAX_ANGLE, MAX_ANGLE);
-		const angleRad = angle * Math.PI / 180;
-
-		const directionX = Common.choose([1, -1]) * Math.cos(angleRad);
-		const directionY = Common.choose([1, -1]) * Math.sin(angleRad);
-
-		const velocity = {
-			x: directionX * this.speed,
-			y: directionY * this.speed,
-		};
-
-		const position = {
-			x: gameWidth / 2,
-			y: gameHeight / 2,
-		};
-
-		return { velocity, position };
+	public updatePaddle(): void {
+		this.player1.on('sendPaddleState', (paddleState) => {
+			this.paddle1Position = paddleState;
+		});
+		this.player2.on('sendPaddleState', (paddleState) => {
+			this.paddle2Position = paddleState;
+		});
 	}
 }
-

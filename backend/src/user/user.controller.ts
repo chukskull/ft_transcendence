@@ -1,39 +1,50 @@
-import { Controller, UseGuards, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Post,
+  Param,
+  Body,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-// import { AuthService } from './auth/auth.service';
-// import {  } from './auth/strategies/auth.guard';
 import { User } from './user.entity';
+import { JwtGuard } from 'src/auth/Jwt.guard';
 import {
   IsString,
   IsNotEmpty,
   IsBoolean,
   IsOptional,
   IsNumber,
+  Length,
 } from 'class-validator';
+import { AuthService } from 'src/auth/auth.service';
 
 class fillDto {
   @IsString()
   @IsNotEmpty()
+  @Length(3, 15)
   nickName: string;
   @IsString()
   @IsNotEmpty()
+  @Length(3, 15)
   firstName: string;
   @IsString()
   @IsNotEmpty()
+  @Length(3, 20)
   lastName: string;
 }
 
 class updateDto {
-  @IsNotEmpty()
-  @IsNumber()
-  id: number;
   @IsString()
   @IsOptional()
+  @Length(3, 15)
   nickName: string;
 
   @IsOptional()
   @IsString()
-  profilePicture: string;
+  avatarUrl: string;
 
   @IsNotEmpty()
   @IsBoolean()
@@ -43,60 +54,96 @@ class updateDto {
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly usersService: UserService, // private readonly authService: AuthService,
+    private readonly usersService: UserService,
+    private readonly authService: AuthService,
   ) {}
 
-  @Post('create')
-  async create(@Body() data): Promise<User> {
-    return this.usersService.createNewUser(data.intraLogin, data.avatarUrl);
-  }
-
-  @UseGuards()
   @Get()
+  @UseGuards(JwtGuard)
   async all(): Promise<User[]> {
     return this.usersService.all();
   }
-
-  @UseGuards()
-  @Post('/find')
-  async findUser(@Body() id): Promise<User> {
-    console.log('findUser', id);
-    return this.usersService.findUser(id);
-  }
-
-  @UseGuards()
-  @Post('/fill')
-  async fill(@Body() data: fillDto) {
-    return this.usersService.fillData(data);
-  }
-
-  @UseGuards()
   @Post('/update')
+  @UseGuards(JwtGuard)
   async update(@Body() data: updateDto) {
     return this.usersService.updateUserInfo(data);
   }
 
-  @UseGuards()
+  @Get('profile/:userId')
+  @UseGuards(JwtGuard)
+  async findUser(@Param('userId') userId: any, @Req() req: any): Promise<User> {
+    if (userId == 'me') userId = req.user.id;
+    return this.usersService.userProfile(userId);
+  }
+
+  @Get('/mychannels')
+  @UseGuards(JwtGuard)
+  getMyChannels(@Req() req) {
+    return this.usersService.getMyChannels(req.user.id);
+  }
+
+  @Post('/fill')
+  @UseGuards(JwtGuard)
+  async fill(@Body() data: fillDto, @Req() req: any) {
+    return this.usersService.fillData(data, req.user.id);
+  }
+
   @Post('/status')
+  @UseGuards(JwtGuard)
   async setStatus(@Body('userId') id: number, @Body('status') status: string) {
     return this.usersService.setStatus(id, status);
   }
 
-  @UseGuards()
   @Get('/leaderboard')
-  async getLeaderboard(): Promise<User[]> {
+  @UseGuards(JwtGuard)
+  async getLeaderboard(@Req() req: any) {
     return this.usersService.getLeaderboard();
   }
-
-  @UseGuards()
-  @Post('/addFriend')
-  async addFriend(@Body('id') id: number) {
-    return this.usersService.addFriend(id);
+  @Get('/friends')
+  @UseGuards(JwtGuard)
+  async getFriends(@Req() req: any) {
+    return this.usersService.getFriends(req.user.id);
   }
 
-  @UseGuards()
-  @Post('/blockFriend')
-  async blockFriend(@Body('id') id: number) {
-    return this.usersService.blockUser(id);
+  @Get('/friends/:friendId/chat')
+  @UseGuards(JwtGuard)
+  async getChat(@Req() req: any, @Param('friendId') friendId: number) {
+    return this.usersService.getChatWithFriend(1, friendId);
+  }
+
+  @Get('/addFriend/:friendId')
+  @UseGuards(JwtGuard)
+  async sendFriendRequest(@Param('friendId') frid: number, @Req() req: any) {
+    return this.usersService.sendFriendRequest(req.user.id, frid);
+  }
+
+  // @Post('/removeFriend/:friendId')
+  // @UseGuards(JwtGuard)
+  // async removeFriend(@Param('friendId') id: number, @Req() req: any) {
+  //   return this.usersService.removeFriend(req.user.id, id);
+  // }
+  // async addFriend(@Param('friendId') id: number, @Req() req: any) {
+  //   const myId = req.user.id;
+  //   return this.usersService.sendFriendRequest(myId, id);
+  // }
+
+  @Post('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
+  @UseGuards(JwtGuard)
+  async FriendRequest(
+    @Param('friendId') id: number,
+    @Param('action') action: number,
+    @Req() req: any,
+  ) {
+    return this.usersService.handleFriendRequest(id, action, req.user.id);
+  }
+
+  @Post('/handleBlock/:friendId/:action')
+  @UseGuards(JwtGuard)
+  async blockFriend(
+    @Param('friendId') frId: number,
+    @Req() req: any,
+    @Param('action') action: number,
+  ) {
+    return this.usersService.handleBlock(frId, req.user.id, action);
   }
 }

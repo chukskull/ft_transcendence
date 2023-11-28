@@ -32,10 +32,8 @@ const useKeyHandler = () => {
 
 export default function TheGame({
   map,
-  onlinemode,
 }: {
   map: string;
-  onlinemode: boolean;
 }) {
   const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;
@@ -115,13 +113,10 @@ export default function TheGame({
       }
 
       // Update AI paddle position based on ball's y-coordinate
-      if (!onlinemode) {
-        if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + 110 < canvasHeight) {
+      if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + 110 < canvasHeight) {
           setEnemyPaddleY(EnemyPaddleY + 2);
         } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
           setEnemyPaddleY(EnemyPaddleY - 2);
-        }
-
       }
     };
 
@@ -130,7 +125,7 @@ export default function TheGame({
     return () => {
       clearInterval(gameInterval);
     };
-  }, [ball, playerPaddleY, EnemyPaddleY, keys, gameStarted, onlinemode]);
+  }, [ball, playerPaddleY, EnemyPaddleY, keys, gameStarted]);
 
   const handleStartGame = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === " ") {

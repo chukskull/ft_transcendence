@@ -15,7 +15,7 @@ export const Circle = ({ perc }: CircleProps) => {
         status="active"
         strokeColor={"#F417C4"}
         showInfo={false}
-        size={80}
+        size={75}
         trailColor="none"
       />
     </div>

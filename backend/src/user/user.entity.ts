@@ -7,22 +7,26 @@ import {
 } from 'typeorm';
 import { Conversation } from 'src/conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
-@Entity()
-export class MatchHistory {
-  @PrimaryGeneratedColumn()
-  id: number;
-}
+import { Channel } from '../channel/channel.entity';
+
+import { MatchHistory } from '../match-history/match-history.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  intraLogin: string;
+  @Column({ nullable: true })
+  email: string;
 
   @Column()
   nickName: string;
+
+  @Column({ nullable: true })
+  authenticated: boolean;
+
+  @Column({ nullable: true })
+  intraLogin: string;
 
   @Column()
   firstName: string;
@@ -47,28 +51,32 @@ export class User {
   @JoinTable()
   blockedUsers: User[];
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: ['online', 'offline', 'ingame'],
+    default: 'offline',
+    nullable: true,
+  })
   status: string;
 
-  @Column()
-  pendingInvite: boolean;
+  @Column({ nullable: true })
+  firstTimeLogiIn: boolean;
 
-
-  @ManyToMany(() => MatchHistory)
-  @JoinTable()
-  matchHistory: MatchHistory[];
-
-  @Column()
+  @Column({ default: 0 })
   experience: number;
 
-  @Column()
+  @Column({ default: 0 })
   level: number;
 
-  @Column()
+  @Column({ default: 0 })
   wins: number;
 
-  @Column()
+  @Column({ default: 0 })
   totalGames: number;
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  pendingFriendRequests: User[];
 
   @ManyToMany(() => Conversation)
   @JoinTable()
@@ -77,4 +85,20 @@ export class User {
   @ManyToMany(() => Achievement)
   @JoinTable()
   achievements: Achievement[];
+
+  @Column({
+    type: 'enum',
+    enum: ['Iron', 'Bronze', 'Silver', 'Gold'],
+    nullable: true,
+    default: 'Iron',
+  })
+  rank: string;
+
+  @ManyToMany(() => MatchHistory)
+  @JoinTable()
+  matchHistory: MatchHistory[];
+
+  @ManyToMany(() => Channel)
+  @JoinTable()
+  channels: Channel[];
 }

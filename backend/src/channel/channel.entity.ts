@@ -5,7 +5,6 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
-  JoinColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Conversation } from '../conversations/conversation.entity';
@@ -30,7 +29,7 @@ export class Channel {
   @Column()
   is_protected: boolean;
 
-  @ManyToOne(() => Conversation, { nullable: true })
+  @ManyToOne(() => Conversation)
   conversation: Conversation;
 
   @ManyToMany(() => User)

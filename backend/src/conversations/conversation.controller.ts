@@ -1,22 +1,25 @@
 import { Controller } from '@nestjs/common';
-import { Get, Param, Post, Body } from '@nestjs/common';
+import { Get, Param, Req } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
-
-@Controller('conversation')
+import { JwtGuard } from 'src/auth/Jwt.guard';
+import { UseGuards } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
+@Controller('conversations')
 export class ConversationController {
-  constructor(private readonly conversationService: ConversationService) {}
+  constructor(
+    private readonly conversationService: ConversationService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get(':convId')
-  async getConversation(@Param('convId') convId: number) {
-    return this.conversationService.getConversation(convId);
-  }
-  @Post('start/:userId')
-  async startConversation(@Param() userId: number) {
-    return this.conversationService.startConversation(userId);
+  @UseGuards(JwtGuard)
+  async getConversation(@Param('convId') convId: number, @Req() req) {
+    return this.conversationService.getConversation(convId, req.user.id);
   }
 
-  @Get('/myDms')
-  async getMyDms() {
-    return this.conversationService.getMyDms();
+  @Get()
+  @UseGuards(JwtGuard)
+  async MyDms(@Req() req) {
+    return this.conversationService.getMyDms(req.user.id);
   }
 }
