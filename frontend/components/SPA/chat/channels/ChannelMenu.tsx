@@ -6,8 +6,7 @@ import InFosPlayer from "../../Profile/atoms/InFosPlayer";
 import ChannelSettings from "./ChannelSettings";
 import axios from "axios";
 
-const InviteSection = ({chandId}:any) => {
-  console.log(chandId);
+const InviteSection = ({ chandId }: any) => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     axios
@@ -29,6 +28,7 @@ const InviteSection = ({chandId}:any) => {
       )
       .then((res) => {
         console.log(res.data);
+        document.location.reload();
       })
       .catch((err) => console.log(err));
   };
@@ -70,7 +70,7 @@ const InviteSection = ({chandId}:any) => {
   );
 };
 
-const AuthoritySection = ({ owner, mods }: any) => {
+const AuthoritySection = ({ owner, mods, chanID }: any) => {
   return (
     <div className={style["authority-section"]}>
       <h2>Owners</h2>
@@ -80,8 +80,8 @@ const AuthoritySection = ({ owner, mods }: any) => {
         nickName={owner?.nickName}
         firstName={owner?.firstName}
         lastName={owner?.lastName}
-        inChannel={false}
-        channelId={owner?.id}
+        inChannel={true}
+        channelId={chanID}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>
@@ -95,6 +95,7 @@ const AuthoritySection = ({ owner, mods }: any) => {
             lastName={e.lastName}
             inChannel={true}
             channelId={e.id}
+            isMod={true}
           />
         ))}
       </div>
@@ -102,7 +103,7 @@ const AuthoritySection = ({ owner, mods }: any) => {
   );
 };
 
-const MembersSection = ({ members }: any) => {
+const MembersSection = ({ members, channelId }: any) => {
   return (
     <div className={style["members-section"]}>
       <h2>Members</h2>
@@ -117,7 +118,7 @@ const MembersSection = ({ members }: any) => {
               firstName={e?.firstName}
               lastName={e?.lastName}
               inChannel={true}
-              channelId={e?.id}
+              channelId={channelId}
             />
           </div>
         ))}
@@ -158,6 +159,7 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
       )
       .then((res) => {
         setChannelData(res.data);
+        console.log(res.data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -188,15 +190,19 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
           <AuthoritySection
             owner={channelData?.owner}
             mods={channelData?.Moderators}
+            chanID={channelData?.id}
           />
         )}
         {activeSection === "Members" && (
-          <MembersSection members={channelData?.members} />
+          <MembersSection
+            members={channelData?.members}
+            channelId={channelData?.id}
+          />
         )}
         {activeSection === "Settings" && isMod && (
           <ChannelSettings
-            banned={channelData?.banned}
-            muted={channelData?.muted}
+            banned={channelData?.BannedUsers}
+            muted={channelData?.conversation.MutedUsers}
             id={channel?.id}
             chPrivate={channelData?.is_private}
           />
@@ -220,4 +226,5 @@ const OptionsSections = [
     name: "Settings",
   },
 ];
+
 export default ChannelMenu;

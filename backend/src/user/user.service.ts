@@ -421,8 +421,8 @@ export class UserService {
         'channels.owner',
         'channels.Moderators',
         'channels.BannedUsers',
-        'channels.MutedUsers',
         'channels.conversation',
+        'channels.conversation.MutedUsers',
       ],
     });
     if (!user) {
