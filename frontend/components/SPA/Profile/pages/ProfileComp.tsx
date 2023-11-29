@@ -53,6 +53,7 @@ export default function Profile({ id }: any) {
 
   if (error) return "An error has occurred: " + error;
   if (isLoading) return "Loading...";
+
   return (
     <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
@@ -63,7 +64,7 @@ export default function Profile({ id }: any) {
             : ``}
         </span>
       </h1>
-      <div className="item-1  relative ">
+      <div className={`${id === "me" ? "item-1-me" : "item-1"} relative`}>
         <LeftProfile
           image={
             data?.avatarUrl
@@ -85,20 +86,16 @@ export default function Profile({ id }: any) {
           )}
         />
         <div className="min-w-[80px] h-0"></div>
-        <ProgressBar
-
-
-          lvl={data?.level}
-          exp={data?.expersience}
-          maxExp={1098}
-        />
+        <ProgressBar lvl={data?.level} exp={data?.expersience} maxExp={1098} />
         <Stats
-          perc={data?.totalGames === 0 ? 0 : (data?.wins / data?.totalGames) * 100}
+          perc={
+            data?.totalGames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
+          }
           matches={data?.totalGames}
         />
       </div>
 
-      <div className="item-2">
+      <div className={`${id === "me" ? "item-2-me" : "item-2"}`}>
         <div
           className="C-1"
           style={{ overflow: "auto", paddingInline: "40px" }}

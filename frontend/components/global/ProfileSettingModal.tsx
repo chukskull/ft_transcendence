@@ -15,26 +15,36 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const [checked, setChecked] = useState(false);
   const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [base64Image, setBase64Image] = useState<string | null>(null);
+
   const [name, setName] = useState("");
 
   const handleClick = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
-    fileInput.click();
 
     fileInput.addEventListener("change", (e: any) => {
       const selectedFile = e.target.files[0];
-      if (selectedFile) {
-        setFile(selectedFile);
+      if (selectedFile && selectedFile.size <= 500 * 1024) {
+        const reader = new FileReader();
+        reader.onload = (event: any) => {
+          const base64String = event.target.result;
+          setFile(selectedFile);
+          setBase64Image(base64String);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        alert("File too big!");
       }
     });
+    fileInput.click();
   };
 
   const updateUser = async () => {
     const formData = {
       nickName: name,
-      avatarUrl: file,
+      image: base64Image,
       twoFactorAuthEnabled: checked,
     };
     axios
@@ -54,7 +64,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       })
       .catch((err) => {
         console.log(err);
-      });
   };
 
   useEffect(() => {
@@ -70,6 +79,44 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         console.log(err);
       });
   }, []);
+  // const func = (file: any) => {
+  //   return new Promise((resolve, reject) => {
+  //     if (file) {
+  //       const reader = new FileReader();
+  //       reader.onload = (e: any) => {
+  //         const base64Image = e.target.result;
+  //         if (base64Image) {
+  //           const blob = new Blob([file], { type: file.type });
+  //           const base64URL = URL.createObjectURL(blob);
+  //           resolve(base64URL);
+  //         } else {
+  //           reject("Failed to convert file to base64");
+  //         }
+  //       };
+  //       reader.readAsDataURL(file);
+  //     } else {
+  //       reject("No file provided");
+  //     }
+  //   });
+  // };
+
+  // const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   if (file) {
+  //     console.log("File provided");
+  //     func(file)
+  //       .then((url: string) => {
+  //         console.log(url);
+  //         setImageUrl(url);
+  //       })
+  //       .catch((error: string) => {
+  //         console.error(error);
+  //       });
+  //   } else {
+  //     console.log("No file");
+  //   }
+  // }, [file]);
 
   return (
     <>
@@ -83,6 +130,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               src={file ? URL.createObjectURL(file) : myData?.avatarUrl}
               size={100}
               className="relative"
+              alt="Avatar"
             />
             <div
               onClick={handleClick}

@@ -22,7 +22,6 @@ export const LeftProfile = ({
   me,
   isFriend,
 }: LeftProfileProps) => {
-
   if (isLoading) return <SkeletonComp large={9} />;
   return (
     <div className="profile-user  ">
@@ -31,18 +30,14 @@ export const LeftProfile = ({
           <img src={image} alt="profile" />
         </div>
       </div>
-      <div className="flex flex-col pt-6">
+      <div className="pt-6 ">
         <h1 className="text-white font-ClashGrotesk-Semibold text-2xl">
           {name}
         </h1>
         <h1 className="font-ClashGrotesk-Medium  text-white opacity-80">
           #{nickName}
         </h1>
-        <AddFriend
-          display={me}
-          userId={userId}
-          isFriend={isFriend}
-        />
+        <AddFriend display={me} userId={userId} isFriend={isFriend} />
       </div>
     </div>
   );
