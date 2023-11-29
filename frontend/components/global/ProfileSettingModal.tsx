@@ -37,12 +37,24 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       avatarUrl: file,
       twoFactorAuthEnabled: checked,
     };
-    axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, formData, {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        document.location.reload();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   useEffect(() => {

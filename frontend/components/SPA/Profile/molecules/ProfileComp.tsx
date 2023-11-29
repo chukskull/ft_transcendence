@@ -16,6 +16,7 @@ interface ProfileCompProps {
   type?: "Protected" | "Public" | "achiv" | null;
   inChannel?: boolean;
   channelId?: number;
+  isMod?: boolean;
 }
 
 const ProfileComp = ({
@@ -28,9 +29,9 @@ const ProfileComp = ({
   color,
   inChannel,
   channelId,
+  isMod,
 }: ProfileCompProps) => {
   const [showModal, setShow] = React.useState(false);
-
   const handleModalClick = () => {
     if (type === "Protected") {
       setShow(true);
@@ -52,7 +53,6 @@ const ProfileComp = ({
       setShow(true);
     }
   };
-
   return (
     <div>
       <Modal
@@ -69,7 +69,9 @@ const ProfileComp = ({
               id={id}
               channel={inChannel}
               avatarUrl={img}
+              chann={channelId}
               nickName={nickName}
+              isMod={isMod}
             />
           ))}
       </Modal>
