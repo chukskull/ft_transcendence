@@ -64,6 +64,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       })
       .catch((err) => {
         console.log(err);
+      });
   };
 
   useEffect(() => {
