@@ -50,7 +50,6 @@ export default function Profile({ id }: any) {
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
-
   if (error) return "An error has occurred: " + error;
   if (isLoading) return "Loading...";
 

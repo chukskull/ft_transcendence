@@ -7,6 +7,7 @@ import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
 import { useMediaQuery } from "@mantine/hooks";
 import { last } from "lodash";
+import { useQuery } from "react-query";
 
 interface ProfileCompProps {
   id?: number;
@@ -31,6 +32,17 @@ const ProfileComp = ({
   inChannel,
   channelId,
 }: ProfileCompProps) => {
+  const { isLoading, data, error } = useQuery("getSession", async () => {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return res.data;
+  });
+
   const [showModal, setShow] = React.useState(false);
   const isTabletOrMobile = useMediaQuery("(max-width: 1222px)"); // Adjust the max-width value for tablet and mobile screens
 
@@ -55,7 +67,8 @@ const ProfileComp = ({
       setShow(true);
     }
   };
-
+  if (isLoading) return "Loading...";
+  if (error) return "An error has occurred: " + error;
   if (lastName === undefined) lastName = "";
   return (
     <div>
@@ -69,12 +82,14 @@ const ProfileComp = ({
           (type === "Protected" ? (
             <ProtectedModal channelId={channelId} />
           ) : (
-            <UserMenu
-              id={id}
-              channel={inChannel}
-              avatarUrl={img}
-              nickName={nickName}
-            />
+            data.nickName !== nickName && (
+              <UserMenu
+                id={id}
+                channel={inChannel}
+                avatarUrl={img}
+                nickName={nickName}
+              />
+            )
           ))}
       </Modal>
 
