@@ -80,12 +80,17 @@ const ProfileComp = ({
       >
         <Avatar isBordered color="success" src={img} />
         <div className="m-0 p-0">
+          {/* Truncate long names and nicknames */}
           <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0 ">
-            {firstName} {lastName}
+            {lastName && firstName.length + lastName.length > 15
+              ? `${firstName.slice(0, 5)}...${lastName?.slice(0, 5)}`
+              : `${firstName} ${lastName}`}
           </h4>
           <h6 className="text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0">
             {nickName ? "#" : ""}
-            {nickName}
+            {nickName && nickName.length > 10
+              ? `${nickName.slice(0, 7)}...`
+              : nickName}
           </h6>
         </div>
       </div>
