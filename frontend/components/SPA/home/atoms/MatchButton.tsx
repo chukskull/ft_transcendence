@@ -5,13 +5,8 @@ import io from "socket.io-client";
 export const MatchButton = () => {
   const handleJoinQueue = () => {
     const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSocket`);
-    if (socket) {
-      socket.on("connect", () => {
-        console.log("connected");
-      });
-      socket.on("disconnect", () => {
-        console.log("disconnected");
-      });
+    if (!socket) {
+      return;
     }
     socket.emit("joinQueue");
   };
