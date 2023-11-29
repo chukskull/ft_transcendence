@@ -5,6 +5,8 @@ import UserMenu from "@/components/SPA/chat/UserMenu";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
+import { useMediaQuery } from "@mantine/hooks";
+import { last } from "lodash";
 
 interface ProfileCompProps {
   id?: number;
@@ -30,6 +32,7 @@ const ProfileComp = ({
   channelId,
 }: ProfileCompProps) => {
   const [showModal, setShow] = React.useState(false);
+  const isTabletOrMobile = useMediaQuery("(max-width: 1222px)"); // Adjust the max-width value for tablet and mobile screens
 
   const handleModalClick = () => {
     if (type === "Protected") {
@@ -53,6 +56,7 @@ const ProfileComp = ({
     }
   };
 
+  if (lastName === undefined) lastName = "";
   return (
     <div>
       <Modal
@@ -75,18 +79,34 @@ const ProfileComp = ({
       </Modal>
 
       <div
-        className="flex items-start justify-start gap-5"
+        className={`flex items-start justify-start gap-5 ${
+          isTabletOrMobile ? "sm:gap-3" : ""
+        }`}
         onClick={handleModalClick}
       >
-        <Avatar isBordered color="success" src={img} />
+        {/* Use size="sm" for tablets and mobiles */}
+        <Avatar
+          isBordered
+          color="success"
+          src={img}
+          size={isTabletOrMobile ? "md" : "md"}
+        />
         <div className="m-0 p-0">
           {/* Truncate long names and nicknames */}
-          <h4 className="text-white font-ClashGrotesk-Medium text-base m-0 p-0 ">
+          <h4
+            className={`text-white font-ClashGrotesk-Medium text-base m-0 p-0 ${
+              isTabletOrMobile ? "sm:text-sm" : ""
+            }`}
+          >
             {lastName && firstName.length + lastName.length > 15
-              ? `${firstName.slice(0, 5)}...${lastName?.slice(0, 5)}`
-              : `${firstName} ${lastName}`}
+              ? `${firstName.slice(0, 5)}...${lastName?.slice(0, 5)} `
+              : `${firstName} ${lastName} `}
           </h4>
-          <h6 className="text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0">
+          <h6
+            className={`text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0 ${
+              isTabletOrMobile ? "sm:text-sm" : ""
+            }`}
+          >
             {nickName ? "#" : ""}
             {nickName && nickName.length > 10
               ? `${nickName.slice(0, 7)}...`

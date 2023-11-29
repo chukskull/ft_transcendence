@@ -10,6 +10,7 @@
     "json-server": "json-server --watch db.json --port 4000"
   },
   "dependencies": {
+    "@mantine/hooks": "^7.2.2",
     "@nextui-org/react": "^2.1.13",
     "@react-aria/overlays": "^3.19.0",
     "@tanstack/react-query-devtools": "^5.0.0",
