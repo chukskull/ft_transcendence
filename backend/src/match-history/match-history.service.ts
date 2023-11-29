@@ -49,6 +49,10 @@ export class MatchHistoryService {
     return this.matchHistory.find();
   }
 
+  async findOne(id: any): Promise<MatchHistory> {
+    return this.matchHistory.findOne(id);
+  }
+
   async trackWinsInARow(playerID: number): Promise<number> {
     const matchHistory = await this.matchHistory.find({
       where: { winner: { id: playerID } },

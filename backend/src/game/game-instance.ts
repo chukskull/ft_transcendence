@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import {
-	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED, INIT_BALL_SPEED, PADDLE1_POSITION, PADDLE2_POSITION, PlayerNumber
+	GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE1_POSITION, PADDLE2_POSITION
 } from './game.service';
 
 
@@ -16,6 +16,7 @@ export class GameInstance {
 	public	gameRunning: boolean;
 	private gamePaused: boolean;
 	private gameEnded: boolean;
+	public  winnerID: number;
 
 	constructor(socket1: Socket, socket2: Socket) {
 		this.player1 = socket1;
