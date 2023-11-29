@@ -79,11 +79,10 @@ export class GameGateway
   @UseGuards(WsGuard)
   @SubscribeMessage('createGame')
   async createGame(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ) {
+    @ConnectedSocket() client: Socket) {
     const isInQueue = this.joinQueue(client);
-    if (isInQueue) this.gameService.createGame(client, payload);
+    const opponentId = this.gameService.queue.find((player) => player.socket !== client)?.id;
+    if (isInQueue) this.gameService.createGame(client, opponentId);
   }
 
   @UseGuards(WsGuard)
@@ -119,9 +118,33 @@ export class GameGateway
   @UseGuards(WsGuard)
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
+    @ConnectedSocket() client: Socket
+  ) {
+    const friendId = this.jwtService.decode(client.handshake.query.token as string);
+    this.gameService.inviteFriend(client, friendId);
+  }
+
+  @UseGuards(WsGuard)
+  @SubscribeMessage('inviteResponse')
+  async inviteResponse(client: Socket, @MessageBody() payload: any) {
+    this.gameService.inviteResponse(client, payload);
+  }
+
+  @UseGuards(WsGuard)
+  @SubscribeMessage('acceptInvite')
+  async acceptInvite(
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: any,
   ) {
-    this.gameService.inviteFriend(client, payload);
+    this.gameService.acceptInvite(client, payload);
+  }
+
+  @UseGuards(WsGuard)
+  @SubscribeMessage('declineInvite')
+  async declineInvite(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: any,
+  ) {
+    this.gameService.declineInvite(client, payload);
   }
 }
