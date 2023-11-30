@@ -11,7 +11,6 @@ import { User } from '../user/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { FortyTwoStrategy } from 'src/auth/auth.strategy';
 import { UserService } from 'src/user/user.service';
-import { NotifGateway } from '../notifications.gateway';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
@@ -26,7 +25,6 @@ import { JwtService } from '@nestjs/jwt';
     AuthService,
     FortyTwoStrategy,
     UserService,
-    NotifGateway,
     JwtService,
   ],
   exports: [ChannelService],

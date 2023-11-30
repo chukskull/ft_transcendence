@@ -19,12 +19,13 @@ import { NotifGateway } from 'src/notifications.gateway';
     AchievementModule,
   ],
   providers: [
-    GameService,
     GameGateway,
+    GameService,
     MatchHistoryService,
     JwtService,
     AchievementService,
     NotifGateway,
   ],
+  exports: [GameService],
 })
 export class GameModule {}

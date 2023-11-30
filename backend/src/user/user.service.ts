@@ -4,7 +4,6 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { Conversation, Chat } from '../conversations/conversation.entity';
 import { NotFoundException } from '@nestjs/common';
-import { NotifGateway } from 'src/notifications.gateway';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
@@ -14,7 +13,6 @@ import { Achievement } from 'src/achievement/achievement.entity';
 @Injectable()
 export class UserService {
   constructor(
-    private readonly notifGateway: NotifGateway,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,

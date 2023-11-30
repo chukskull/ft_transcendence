@@ -8,7 +8,6 @@ import { Channel } from '../channel/channel.entity';
 import { Conversation } from '../conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { NotifGateway } from 'src/notifications.gateway';
 import { ChannelService } from 'src/channel/channel.service';
 import { ConversationService } from '../conversations/conversation.service';
 
@@ -20,7 +19,6 @@ import { ConversationService } from '../conversations/conversation.service';
   providers: [
     UserService,
     AuthService,
-    NotifGateway,
     JwtService,
     ChannelService,
     ConversationService,
