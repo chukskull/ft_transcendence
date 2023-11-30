@@ -14,6 +14,10 @@ $background-color: #3d0655;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    @media screen and (max-width: 768px) {
+        height: 50px;
+        
+    }
     .top_logo {
         z-index: 101;
         margin-left: 13px;
@@ -42,10 +46,23 @@ $background-color: #3d0655;
             font-size: 16px;
             outline: none;
         }
+        @media screen and (max-width: 768px) {
+            width: 250px;
+            input {
+                width: 150px;
+                height: 80%;
+                font-size: 12px;
+            }
+            
+        }
 
         .search_icon {
             filter: invert(50%);
             font-size: 21px;
+            @media screen and (max-width: 768px) {
+                font-size: 16px;
+                
+            }
         }
     }
     .top_notif {
@@ -68,6 +85,10 @@ $background-color: #3d0655;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
+    @media  screen and (max-width: 768px) {
+        display: none;
+        
+    }
 
     .left_menu {
         margin-top: 150px;

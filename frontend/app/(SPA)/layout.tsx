@@ -11,13 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main
-      style={{
-        height: "100vh",
-        padding: "60px",
-        background: "none",
-      }}
-    >
+    <main className="py-12 md:p-12">
       <TopLeftNav />
       {children}
     </main>

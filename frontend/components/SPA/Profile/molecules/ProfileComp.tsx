@@ -1,5 +1,5 @@
 import { Avatar } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
 import Modal from "react-modal";
 import UserMenu from "@/components/SPA/chat/UserMenu";
 import style from "@/styles/SPA/chat/chat.module.scss";
@@ -44,7 +44,18 @@ const ProfileComp = ({
   });
 
   const [showModal, setShow] = React.useState(false);
-  const isTabletOrMobile = useMediaQuery("(max-width: 1222px)"); // Adjust the max-width value for tablet and mobile screens
+  const [isTabletOrMobile, setIsTabletOrMobile] = React.useState(false);
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 640) {
+        setIsTabletOrMobile(true);
+      } else {
+        setIsTabletOrMobile(false);
+      }
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleModalClick = () => {
     if (type === "Protected") {
@@ -61,15 +72,14 @@ const ProfileComp = ({
         .catch((err) => {
           console.log(err);
         });
-    } else if (type === "achiv") {
+    } else if (type === "achiv" || data?.id === id) {
       setShow(false);
     } else {
       setShow(true);
     }
   };
-  if (isLoading) return "Loading...";
-  if (error) return "An error has occurred: " + error;
   if (lastName === undefined) lastName = "";
+
   return (
     <div>
       <Modal
@@ -82,14 +92,12 @@ const ProfileComp = ({
           (type === "Protected" ? (
             <ProtectedModal channelId={channelId} />
           ) : (
-            data.nickName !== nickName && (
-              <UserMenu
-                id={id}
-                channel={inChannel}
-                avatarUrl={img}
-                nickName={nickName}
-              />
-            )
+            <UserMenu
+              id={id}
+              channel={inChannel}
+              avatarUrl={img}
+              nickName={nickName}
+            />
           ))}
       </Modal>
 
@@ -104,7 +112,7 @@ const ProfileComp = ({
           isBordered
           color="success"
           src={img}
-          size={isTabletOrMobile ? "md" : "md"}
+          size={isTabletOrMobile ? "sm" : "md"}
         />
         <div className="m-0 p-0">
           {/* Truncate long names and nicknames */}
@@ -113,18 +121,18 @@ const ProfileComp = ({
               isTabletOrMobile ? "sm:text-sm" : ""
             }`}
           >
-            {lastName && firstName.length + lastName.length > 15
-              ? `${firstName.slice(0, 5)}...${lastName?.slice(0, 5)} `
-              : `${firstName} ${lastName} `}
+            {lastName.length !== 0 && firstName.length + lastName.length > 15
+              ? `${firstName.slice(0, 12)}...${lastName?.slice(0, 5)}`
+              : `${firstName} ${lastName}`}
           </h4>
           <h6
             className={`text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0 ${
-              isTabletOrMobile ? "sm:text-sm" : ""
+              isTabletOrMobile ? "sm:text-xs" : ""
             }`}
           >
             {nickName ? "#" : ""}
             {nickName && nickName.length > 10
-              ? `${nickName.slice(0, 7)}...`
+              ? `${nickName.slice(0, 12)}...`
               : nickName}
           </h6>
         </div>
