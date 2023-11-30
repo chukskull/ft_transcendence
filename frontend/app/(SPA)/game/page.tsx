@@ -26,14 +26,26 @@ const Game: React.FC = () => {
   const [value, setValue] = useState(0);
   const [socket, setSocket] = useState<any>(null);
   const [joinedQueue, setJoinedQueue] = useState<boolean>(false);
-  // useEffect(() => {
-  // const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
-  //   newSocket.connect();
-  //   setSocket(newSocket);
-  //   return () => {
-  //     socket?.disconnect();
-  //   };
-  // }, [joinedQueue]);
+
+  useEffect(() => {
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
+    newSocket.connect();
+    setSocket(newSocket);
+    return () => {
+      socket?.disconnect();
+    };
+  }, []);
+
+  function handleJoinQueue() {
+    if (socket) {
+      socket?.emit("joinQueue", { token: document.cookie.split("=")[1] });
+      setJoinedQueue(true);
+    }
+  }
+
+  socket?.on("changeState", (data: any) => {
+    console.log("statechatnefe", data);
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -107,7 +119,7 @@ const Game: React.FC = () => {
             data-hover
             data-focus
             onClick={() => {
-              setJoinedQueue(true);
+              handleJoinQueue();
             }}
           >
             JOIN MATCHMAKING

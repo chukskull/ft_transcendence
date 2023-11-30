@@ -25,6 +25,8 @@ export class UserService {
     private readonly conversationService: ConversationService,
   ) {}
 
+  
+
   async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
     let alreadyExists;
     try {

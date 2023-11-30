@@ -10,7 +10,9 @@ import { Achievement } from 'src/achievement/achievement.entity';
 import { CreateMatchHistoryDto } from 'src/match-history/dto/create-match-history.dto';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
-
+const jwt = require('jsonwebtoken');
+import { Inject } from '@nestjs/common';
+import { GameGateway } from './game.gateway';
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
@@ -41,6 +43,7 @@ export class GameService {
     private jwtService: JwtService,
     @InjectRepository(Achievement)
     private readonly achievementRepo: Repository<Achievement>,
+    @Inject(GameGateway) private readonly gameGateWay: GameGateway,
   ) {
     setInterval(() => {
       this.update();
@@ -49,27 +52,29 @@ export class GameService {
 
   /**
    * Invites a friend to play a game.
-   * 
+   *
    * @param client - The socket client initiating the invitation.
    * @param friendId - The ID of the friend to invite.
    * @returns A Promise that resolves to void.
    */
-  async inviteFriend(client: Socket, friendId: number): Promise<any> {
-    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
-    if (!user) {
+  async inviteFriend(
+    client: Socket,
+    friendId: number,
+    token: string,
+    roomName: string,
+  ): Promise<any> {
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (userId == undefined) {
       client.disconnect();
       return;
     }
     const friend = await this.userService.userProfile(friendId);
-    if (!friend) return;
-    if (!this.onlineUsers.has(friendId)) {
-      this.onlineUsers.set(friendId, new Set<Socket>());
-    }
-    const friendSockets = this.onlineUsers.get(friendId);
-    if (!friendSockets) return;
-    friendSockets.forEach((socket) => {
-      socket.emit('inviteResponse', { id: user.id, username: user.username });
-    });
+    if (!friend) throw new Error('User not found');
+    // this.notificationGateway.newEmit(
+    //   'newGameInvite',
+    //   { friend: userId, roomName: roomName },
+    //   friendId,
+    // );
   }
 
   async inviteResponse(client: Socket, payload: any): Promise<void> {
@@ -95,15 +100,15 @@ export class GameService {
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
     // create game instance
-    game.startGame()
+    game.startGame();
   }
 
   async declineInvite(client: Socket, payload: any): Promise<void> {
     const { player2 } = payload;
-    const game = this.activeGames[client.id+ ',' + player2.id];
+    const game = this.activeGames[client.id + ',' + player2.id];
     if (!game) return;
     delete this.activeGames[client.id + ',' + player2.id];
-    game.endGame()
+    game.endGame();
   }
 
   /*
@@ -150,7 +155,7 @@ export class GameService {
       }
       const match = await this.matchHistory.findOne({
         where: { player1: { id: player1.id }, player2: { id: player2.id } },
-      })
+      });
       if (match.winner === player1.id) {
         match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
         match.losesInARow = 0;
@@ -207,34 +212,28 @@ export class GameService {
   /*
    * Join matchmaking queue
    */
-  async joinQueue(client: Socket): Promise<boolean> {
-    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
-    if (!user) {
-      client.disconnect();
-      return false;
+  async joinQueue(client: Socket, token: string): Promise<boolean> {
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+
+    if (!this.onlineUsers.has(userId)) {
+      this.onlineUsers.set(userId, new Set<Socket>());
+      this.onlineUsers.get(userId)?.add(client);
     }
-    if (!this.onlineUsers.has(user.id)) {
-      this.onlineUsers.set(user.id, new Set<Socket>());
-    }
-    this.onlineUsers.get(user.id)?.add(client);
-    client.emit('changeState', { state: 'inQueue' });
-    client.removeAllListeners('joinQueue');
-    client.on('joinQueue', () => {
-      this.queue.push({ id: user.id, socket: client });
-    });
-    client.removeAllListeners('leaveQueue');
-    client.on('leaveQueue', () => {
-      this.leaveQueue(client);
-    });
-    client.removeAllListeners('disconnect');
-    client.on('disconnect', () => {
-      this.leaveQueue(client);
-    });
+
+    this.gameGateWay.newEmit(
+      { data: { state: 'inQueue' } },
+      'changeState',
+      null,
+    );
+
+    this.queue.push({ id: userId, socket: client });
     return true;
   }
+
   /*
    * leave matchmaking queue
    */
+
   async leaveQueue(client: Socket) {
     const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
     if (!user) {
@@ -259,20 +258,18 @@ export class GameService {
     socket.on('acceptInvite', (payload) => {
       this.acceptInvite(socket, payload); // starts game inside acceptInvite
     });
-    const isInQueue = this.joinQueue(socket);
-    if (isInQueue) {
+    // this.gateway.newEmit({ data: { state: 'inGame' } }, 'nameofebemt', null);
+    const isthere2inqueue = this.queue.length >= 2;
+    if (isthere2inqueue) {
       const player1 = this.queue.shift();
       const player2 = this.queue.shift();
       if (player1 && player2) {
-        const game = new GameInstance(
-          player1.socket,
-          player2.socket
-        );
-        this.activeGames[player1.id + ',' + player2.id] = game;
+        //   take user from queue bcs user in queue has the .id to update data in MH , .Socket to send data to front
+        // const game = new GameInstance(player1, player2);
+
+        const game = new GameInstance(player1.socket, player2.socket); // this is a class
         game.startGame();
       }
     }
-
   }
-
 }

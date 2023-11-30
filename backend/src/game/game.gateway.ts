@@ -24,21 +24,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
-  handleDisconnect(client: Socket) {}
-
   @WebSocketServer() server;
+
+  newEmit(data: any, emitedEvent: any, roomName: any) {
+    if (roomName) this.server.to(roomName).emit(emitedEvent, data);
+    else this.server.emit(emitedEvent, data);
+  }
+
+  handleDisconnect(client: Socket) {}
   handleConnection(client: Socket) {
-    console.log('client connected');
+    console.log('gaeme socker connected');
   }
 
   @SubscribeMessage('joinQueue')
-  async joinQueue(client: Socket) {
-    console.log('user joined queue', client.handshake.query);
-    // this.gameService.joinQueue(client);
+  async joinQueue(
+    @MessageBody()
+    data: {
+      token: string;
+    },
+    client: Socket,
+  ) {
+    this.gameService.joinQueue(client, data?.token);
     return true;
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('leaveQueue')
   async leaveQueue(client: Socket) {
     this.gameService.leaveQueue(client);
@@ -48,29 +57,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *	create Game
    */
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('createGame')
   async createGame(client: Socket) {
-    const isInQueue = this.joinQueue(client);
     const opponentId = this.gameService.queue.find(
       (player) => player.socket !== client,
     )?.id;
-    if (isInQueue) this.gameService.createGame(client, opponentId);
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('sendBallState')
   async updateBall(client: Socket, @MessageBody() payload: any) {
     this.gameService.updateBall(client, payload);
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('sendPaddleState')
   async updatePaddle(client: Socket, @MessageBody() payload: any) {
     this.gameService.updatePaddle(client, payload);
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('updateScore')
   async updateScore(client: Socket, @MessageBody() payload: any) {
     this.gameService.updateScore(client, payload);
@@ -79,28 +82,31 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /*
    * handling invite friends
    */
-  // @UseGuards(WsGuard)
   @SubscribeMessage('inviteFriend')
-  async inviteFriend(client: Socket) {
-    const friendId = this.jwtService.decode(
-      client.handshake.query.token as string,
-    );
-    this.gameService.inviteFriend(client, friendId);
+  async inviteFriend(
+    @MessageBody()
+    data: {
+      token: string;
+      friendIwantToInvite: number;
+    },
+    client: Socket,
+  ) {
+    const { token, friendIwantToInvite } = data;
+    const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
+    this.gameService.inviteFriend(client, friendIwantToInvite, token, roomName);
+    client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('inviteResponse')
   async inviteResponse(client: Socket, @MessageBody() payload: any) {
     this.gameService.inviteResponse(client, payload);
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('acceptInvite')
   async acceptInvite(client: Socket, @MessageBody() payload: any) {
     this.gameService.acceptInvite(client, payload);
   }
 
-  // @UseGuards(WsGuard)
   @SubscribeMessage('declineInvite')
   async declineInvite(client: Socket, @MessageBody() payload: any) {
     this.gameService.declineInvite(client, payload);
