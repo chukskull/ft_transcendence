@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
+import io from "socket.io-client";
 
 type Score = {
   player: number;
@@ -30,11 +31,7 @@ const useKeyHandler = () => {
   return keys;
 };
 
-export default function TheGame({
-  map,
-}: {
-  map: string;
-}) {
+export default function TheGame({ map }: { map: string }) {
   const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
@@ -48,7 +45,6 @@ export default function TheGame({
   });
   const [playerPaddleY, setPlayerPaddleY] = useState(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
-
 
   const keys = useKeyHandler();
 
@@ -87,15 +83,12 @@ export default function TheGame({
           speedY: 2,
         });
         return;
-
       }
 
       // Ball collisions with top and bottom walls
       if (
-
         ball.y + ball.speedY > canvasHeight - 15 ||
         ball.y + ball.speedY < -3
-
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
@@ -114,9 +107,9 @@ export default function TheGame({
 
       // Update AI paddle position based on ball's y-coordinate
       if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + 110 < canvasHeight) {
-          setEnemyPaddleY(EnemyPaddleY + 2);
-        } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
-          setEnemyPaddleY(EnemyPaddleY - 2);
+        setEnemyPaddleY(EnemyPaddleY + 2);
+      } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
+        setEnemyPaddleY(EnemyPaddleY - 2);
       }
     };
 

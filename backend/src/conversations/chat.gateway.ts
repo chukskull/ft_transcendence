@@ -35,7 +35,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() server: Server;
   handleConnection(client: Socket) {
-    console.log('connected');
+    console.log('client connected');
     const conversationId: any = client.handshake.query.conversationId;
     const roomName = `conversation_${conversationId}_chatRoom`;
     client.join(roomName);
@@ -73,7 +73,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
 
       const roomName = `conversation_${conversationId}_chatRoom`;
-      this.server.emit('messageReceived', chatMessage);
+      this.server.to(roomName).emit('messageReceived', chatMessage);
     } catch (error) {
       this.server.emit('connect_error', error.message || 'Unknown error');
       console.error('Error saving and broadcasting the message:', error);

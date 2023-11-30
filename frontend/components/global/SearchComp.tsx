@@ -19,42 +19,22 @@ const SearchComp = () => {
   const [activeSearch, setActiveSearch] = useState<any>([]);
   const [res, setRes] = useState<(any | any)[]>([]);
   const [Mount, setMount] = useState(false);
-  // const [isLoading, data, error] = useQuery("channels", async () => {
-  //   const channelsRes = await axios.get(`http://localhost:4000/Channels`, {
-  //     withCredentials: true,
-  //   });
 
-  //   const channels:any = channelsRes.data?.map((channel: any) => ({
-  //     ...channel,
-  //     isChannel: true,
-  //   }));
-
-  //   const profileres:any = await axios.get(` http://localhost:4000/Leadrboard`, {
-  //     withCredentials: true,
-  //   });
-  //   const profiles = profileres.data?.map((profile: any) => ({
-  //     ...profile,
-  //     isChannel: false,
-  //   }));
-
-  //   setRes([...channels, ...profiles]);
-  //   setMount(true);
-  // });
   useEffect(() => {
     const fetchChannels = async () => {
       try {
         const channelsRes: { data: any } = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/all`,
           {
             withCredentials: true,
           }
         );
-  
+
         const channels = channelsRes.data?.map((channel: any) => ({
           ...channel,
           isChannel: true,
         }));
-  
+
         const fetchProfiles = async () => {
           try {
             const profileres: { data: any } = await axios.get(
@@ -67,23 +47,22 @@ const SearchComp = () => {
               ...profile,
               isChannel: false,
             }));
-  
+
             setRes([...channels, ...profiles]);
             setMount(true);
           } catch (error) {
             console.error("Error fetching profiles", error);
           }
         };
-  
+
         fetchProfiles();
       } catch (error) {
         console.error("Error fetching channels", error);
       }
     };
-  
+
     fetchChannels();
   }, []);
-  
 
   const debouncedSearch = debounce((search) => {
     const searchValue = search.toLowerCase();
@@ -94,18 +73,18 @@ const SearchComp = () => {
       if (user.isChannel) {
         fullName = user.name.toLowerCase();
       } else {
-        fullName = `${user.firstName} ${user.lastName} ${user.nickName}`.toLowerCase();
+        fullName =
+          `${user.firstName} ${user.lastName} ${user.nickName}`.toLowerCase();
       }
       const userFullName = fullName;
 
-      return (
-        user.isChannel ? user.name.toLowerCase().includes(searchValue) :
-        user.nickName.includes(searchValue) ||
-        (searchTerms.length === 1 && fullName.includes(searchValue)) ||
-        (searchTerms.length === 2 &&
-          userFullName.includes(searchTerms[0]) &&
-          userFullName.includes(searchTerms[1]))
-      );
+      return user.isChannel
+        ? user.name.toLowerCase().includes(searchValue)
+        : user.nickName.includes(searchValue) ||
+            (searchTerms.length === 1 && fullName.includes(searchValue)) ||
+            (searchTerms.length === 2 &&
+              userFullName.includes(searchTerms[0]) &&
+              userFullName.includes(searchTerms[1]));
     });
 
     setActiveSearch(filteredUsers.slice(0, 8));
@@ -132,7 +111,7 @@ const SearchComp = () => {
       </div>
       {activeSearch.length > 0 && (
         <div className="absolute top-20 p-4 bg-black text-white w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
-          {activeSearch.map((data: any, index:number) => (
+          {activeSearch.map((data: any, index: number) => (
             <ProfileComp
               key={index}
               img={data?.isChannel ? "" : data?.avatarUrl}
@@ -147,8 +126,8 @@ const SearchComp = () => {
                   ? getChannelStatus(data) === "Public"
                     ? "Public"
                     : getChannelStatus(data) === "Protected"
-                      ? "Protected"
-                      : null
+                    ? "Protected"
+                    : null
                   : null
               }
             />

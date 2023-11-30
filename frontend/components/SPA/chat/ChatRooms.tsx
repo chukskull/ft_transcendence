@@ -23,7 +23,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [msgs, setMsgs] = useState<Chat[]>([]);
-  const [conv, setConv] = useState<any>("");
+  const [conv, setConv] = useState<any>(null);
   const [receivedData, setReceivedData] = useState<any>(null);
   useEffect(() => {
     const endPoints = isGroup

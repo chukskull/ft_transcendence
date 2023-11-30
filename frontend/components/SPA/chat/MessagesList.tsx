@@ -53,15 +53,19 @@ const MsgsList = ({ chats }: { chats: any }) => {
                   <AvatarBubble
                     avatar={msg.sender?.avatarUrl}
                     online={msg.sender?.status}
+                    key={msg?.id}
                   />
                 </div>
-                <div className={style["msg-info"]}>
+                <div className={style["msg-info"]} key={msg?.id}>
                   <div className={style["username"]}>
                     {msg.sender?.nickName}
                   </div>
                   <div className={style["msg-content"]}>{msg?.message}</div>
                 </div>
-                <div className={style["msg-time"]}>{msg?.time}</div>
+                <div className={style["msg-time"]}>
+                  {msg?.time.split("T")[0] + " "}
+                  {msg?.time.split("T")[1].split(".")[0]}
+                </div>
               </div>
             )
         )}

@@ -117,7 +117,7 @@ export class ConversationService {
     if (!user) throw new NotFoundException('User not found');
 
     const isMember = conv.members.find((member) => member.id === userId);
-    if (isMember) throw new Error('User is already in the conversation');
+    if (isMember) return null;
 
     conv.members.push(user);
     user.conversations.push(conv);

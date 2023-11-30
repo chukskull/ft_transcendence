@@ -10,7 +10,12 @@ interface DMSectionProps {
 const DMbox = ({ dm, className, badge }: DMSectionProps) => {
   return (
     <div className={`${style["dm-item"]} ${className} `} key={dm.id}>
-      <AvatarBubble badge={badge} avatar={dm.members[0].avatarUrl} online={dm?.online} />
+      <AvatarBubble
+        badge={badge}
+        avatar={dm.members[0].avatarUrl}
+        online={dm?.online}
+        key={dm?.id}
+      />
       <div className={style["dm-info"]}>
         <div className={style["dm-name"]}>{dm.members[0].nickName}</div>
         <div className={style["dm-last-msg"]}>{dm.lastMsg}</div>

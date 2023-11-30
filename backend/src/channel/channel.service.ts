@@ -206,29 +206,30 @@ export class ChannelService {
     }
     const isBanned = channel.BannedUsers.some((member) => member.id == userId);
     if (isBanned) throw new NotFoundException('User is banned from channel');
-    if (channel.is_private) {
+    if (channel.is_private)
       throw new NotFoundException(
         'Channel is private you cant join without invite',
       );
-    }
 
     // Check if the channel is protected and verify the password
-    if (channel.is_protected) {
-      const passwordMatch = await bcrypt.compare(password, channel.password);
-      if (!passwordMatch) {
-        throw new NotFoundException('Password is incorrect');
-      }
-    }
 
     // Check if the user is already a member of the channel
     const isAlreadyMember = channel.members.some(
       (member) => member.id === userId,
     );
     if (isAlreadyMember) throw new NotFoundException('User already in channel');
+    if (channel.is_protected) {
+      const passwordMatch = await bcrypt.compare(password, channel.password);
+      console.log('password match', passwordMatch);
+      if (!passwordMatch) throw new NotFoundException('Password is incorrect');
+    }
 
     channel.members.push(user);
     user.channels.push(channel);
-    this.conversationService.joinConversation(channel.conversation.id, userId);
+    await this.conversationService.joinConversation(
+      channel.conversation.id,
+      userId,
+    );
     this.userRepository.save(user);
     return this.chanRepository.save(channel);
   }

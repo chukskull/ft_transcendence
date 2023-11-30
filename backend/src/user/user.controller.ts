@@ -66,7 +66,7 @@ export class UserController {
   @Post('/update')
   @UseGuards(JwtGuard)
   async update(@Body() data: updateDto) {
-    return this.usersService.updateUserInfo(data);
+    return this.usersService.updateUserInfo(data);3
   }
 
   @Get('profile/:userId')
@@ -107,8 +107,8 @@ export class UserController {
 
   @Get('/friends/:friendId/chat')
   @UseGuards(JwtGuard)
-  async getChat(@Req() req: any, @Param('friendId') friendId: number) {
-    return this.usersService.getChatWithFriend(1, friendId);
+  async getChat(@Req() req: any, @Param('friendId') friendId: string) {
+    return this.usersService.getChatWithFriend(req.user.id, friendId);
   }
 
   @Get('/addFriend/:friendId')

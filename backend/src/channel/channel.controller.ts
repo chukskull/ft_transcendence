@@ -63,6 +63,7 @@ export class ChannelController {
   @UseGuards(JwtGuard)
   join(@Body() data: any, @Req() req, @Param('chanId') chanId: number) {
     const { password } = data;
+    console.log('join channel', chanId, password);
     return this.channelService.joinChannel(chanId, password, req.user.id);
   }
 
