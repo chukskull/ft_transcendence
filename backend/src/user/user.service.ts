@@ -130,9 +130,7 @@ export class UserService {
             ],
           });
 
-    if (!user) {
-      throw new NotFoundException('User not found.');
-    }
+    if (!user) throw new NotFoundException('User not found.');
 
     return user;
   }
@@ -170,7 +168,7 @@ export class UserService {
     }
     return client;
   }
-  async getChatWithFriend(clientID: number, friendId: number): Promise<any> {
+  async getChatWithFriend(clientID: number, friendId: string): Promise<any> {
     const client = await this.userRepository.findOne({
       where: { id: clientID },
       relations: [
@@ -178,21 +176,20 @@ export class UserService {
         'conversations.chats',
         'conversations.members',
         'conversations.chats.sender',
+        'conversations.BannedUsers',
       ],
     });
+
     if (!client) {
-      return null;
+      throw new NotFoundException('User not found');
     }
+
     const conversation = client.conversations.find(
       (conv) =>
-        conv.is_group === false &&
-        conv.members.find((member) => member.id == friendId),
+        !conv.is_group &&
+        conv.members.some((member) => member.nickName == friendId),
     );
-
-    if (!conversation) {
-      return null;
-    }
-    return conversation;
+    return conversation || null;
   }
 
   async updateUserInfo(data): Promise<any> {

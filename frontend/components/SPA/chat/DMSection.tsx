@@ -16,24 +16,23 @@ const FindFriendModal = () => {
         withCredentials: true,
       })
       .then((res) => {
-        setFriendsList(res.data);
+        setFriendsList(res.data.friends);
       })
       .catch((err) => console.log(err));
   }, []);
-  const startConversation = (userName: string) => {
-    router.push(`/chat/users/${userName}`);
-  };
 
   return (
     <>
       <h1>Select Friend</h1>
       <input type="text" id="username" placeholder="username of your friend" />
       <div className={style["friendsList"]}>
-        {friendsList.map((friend: any) => (
+        {friendsList?.map((friend: any) => (
           <div
             className={style["friend"]}
             key={friend.id}
-            onClick={() => startConversation(friend.nickName)}
+            onClick={() => {
+              router.push(`/chat/users/${friend.nickName}`);
+            }}
           >
             <AvatarBubble avatar={friend.avatarUrl} online={friend.online} />
             <h3>{friend.nickName}</h3>

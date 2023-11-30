@@ -63,7 +63,7 @@ const MsgsList = ({ chats }: { chats: any }) => {
                   <div className={style["msg-content"]}>{msg?.message}</div>
                 </div>
                 <div className={style["msg-time"]}>
-                  {msg?.time.split("T")[0]+ " "}
+                  {msg?.time.split("T")[0] + " "}
                   {msg?.time.split("T")[1].split(".")[0]}
                 </div>
               </div>

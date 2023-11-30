@@ -1,5 +1,5 @@
 "use client";
-import ChatRooms from "@/components/SPA/chat/pages/ChatRooms";
+import ChatRooms from "@/components/SPA/chat/ChatRooms";
 import { useParams } from "next/navigation";
 import React from "react";
 
