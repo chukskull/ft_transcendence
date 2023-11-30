@@ -16,7 +16,6 @@ export class JwtGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: any = context.switchToHttp().getRequest();
     if (!req.cookies.token) {
-      console.log('no token');
       throw new UnauthorizedException('Please log in to continue');
     }
     try {

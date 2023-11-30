@@ -13,62 +13,34 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import { WsGuard } from './ws.guard';
+// import { WsGuard } from './ws.guard';
+import { Injectable } from '@nestjs/common';
 
-@WebSocketGateway({ namespace: '/gameSocket' })
-export class GameGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
-  @WebSocketServer() server;
-  private logger: Logger = new Logger('GameGateway');
-
+@Injectable()
+@WebSocketGateway({ namespace: 'gameSockets', cors: true })
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly gameService: GameService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
+  handleDisconnect(client: Socket) {}
 
-  afterInit(server: any) {
-    this.logger.log('Initialized');
-  }
-  /*
-   *	Handle connection and disconnection
-   */
-  async handleConnection(client: Socket, ...args: any[]) {
-    const id = this.jwtService.verifyAsync(client.handshake.auth.token)['id'];
-    this.userService.setOnline(id);
-    let connectedSockets = this.gameService.onlineUsers.get(id);
-    if (!connectedSockets) connectedSockets = new Set<Socket>();
-    connectedSockets.add(client);
-    this.gameService.onlineUsers.set(id, connectedSockets);
+  @WebSocketServer() server;
+  handleConnection(client: Socket) {
+    console.log('client connected');
   }
 
-  async handleDisconnect(client: Socket) {
-    const id = this.jwtService.decode(client.handshake.auth.token)['id'];
-    let connectedSockets = this.gameService.onlineUsers.get(id);
-    if (connectedSockets) {
-      connectedSockets.delete(client);
-      if (connectedSockets.size === 0) {
-        this.userService.setOffline(id);
-        this.gameService.onlineUsers.delete(id);
-        this.leaveQueue(client);
-      }
-    }
-  }
-
-  /*
-   *	Handle queue
-   */
-  @UseGuards(WsGuard)
   @SubscribeMessage('joinQueue')
-  async joinQueue(@ConnectedSocket() client: Socket): Promise<boolean> {
-    this.gameService.joinQueue(client);
+  async joinQueue(client: Socket) {
+    console.log('user joined queue', client.handshake.query);
+    // this.gameService.joinQueue(client);
     return true;
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('leaveQueue')
-  async leaveQueue(@ConnectedSocket() client: Socket) {
+  async leaveQueue(client: Socket) {
     this.gameService.leaveQueue(client);
   }
 
@@ -76,75 +48,61 @@ export class GameGateway
    *	create Game
    */
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('createGame')
-  async createGame(
-    @ConnectedSocket() client: Socket) {
+  async createGame(client: Socket) {
     const isInQueue = this.joinQueue(client);
-    const opponentId = this.gameService.queue.find((player) => player.socket !== client)?.id;
+    const opponentId = this.gameService.queue.find(
+      (player) => player.socket !== client,
+    )?.id;
     if (isInQueue) this.gameService.createGame(client, opponentId);
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('sendBallState')
-  async updateBall(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ) {
+  async updateBall(client: Socket, @MessageBody() payload: any) {
     this.gameService.updateBall(client, payload);
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('sendPaddleState')
-  async updatePaddle(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ) {
+  async updatePaddle(client: Socket, @MessageBody() payload: any) {
     this.gameService.updatePaddle(client, payload);
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('updateScore')
-  async updateScore(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ) {
+  async updateScore(client: Socket, @MessageBody() payload: any) {
     this.gameService.updateScore(client, payload);
   }
 
   /*
    * handling invite friends
    */
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('inviteFriend')
-  async inviteFriend(
-    @ConnectedSocket() client: Socket
-  ) {
-    const friendId = this.jwtService.decode(client.handshake.query.token as string);
+  async inviteFriend(client: Socket) {
+    const friendId = this.jwtService.decode(
+      client.handshake.query.token as string,
+    );
     this.gameService.inviteFriend(client, friendId);
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('inviteResponse')
   async inviteResponse(client: Socket, @MessageBody() payload: any) {
     this.gameService.inviteResponse(client, payload);
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('acceptInvite')
-  async acceptInvite(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ) {
+  async acceptInvite(client: Socket, @MessageBody() payload: any) {
     this.gameService.acceptInvite(client, payload);
   }
 
-  @UseGuards(WsGuard)
+  // @UseGuards(WsGuard)
   @SubscribeMessage('declineInvite')
-  async declineInvite(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: any,
-  ) {
+  async declineInvite(client: Socket, @MessageBody() payload: any) {
     this.gameService.declineInvite(client, payload);
   }
 }
