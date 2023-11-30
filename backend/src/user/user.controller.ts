@@ -66,7 +66,7 @@ export class UserController {
   @Post('/update')
   @UseGuards(JwtGuard)
   async update(@Body() data: updateDto) {
-    return this.usersService.updateUserInfo(data);
+    return this.usersService.updateUserInfo(data);3
   }
 
   @Get('profile/:userId')

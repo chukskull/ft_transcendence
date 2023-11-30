@@ -35,7 +35,6 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       })
       .then((res) => {
         setConv(res.data);
-        console.log("this is ", conv)
         setMsgs(res.data.chats);
       })
       .catch((err) => {

@@ -97,7 +97,14 @@ export class UserService {
   }
 
   async all(): Promise<User[]> {
-    return this.userRepository.find();
+    const allUsers = this.userRepository.find();
+    const modifiedUsers = allUsers.then((users) => {
+      return users.map((user) => {
+        user.twoFactorSecret = '';
+        return user;
+      });
+    });
+    return modifiedUsers;
   }
 
   async userProfile(id: string | number): Promise<User> {
