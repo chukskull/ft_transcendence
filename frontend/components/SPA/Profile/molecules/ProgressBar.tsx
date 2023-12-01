@@ -7,19 +7,18 @@ interface ProgressBarProps {
   maxExp: number;
 }
 export const ProgressBar = ({ lvl, exp, maxExp }: ProgressBarProps) => {
-  if (exp === undefined)
-    exp = 0;
+  if (exp === undefined) exp = 0;
   return (
-    <div className="flex flex-col justify-center gap-3 flex-grow max-w-[400px]">
+    <div className="flex flex-col justify-center gap-2  w-[40%] py-4">
       <div className="flex items-center justify-between">
-        <h1 className=" text-white font-ClashGrotesk-Regular text-base ">
+        <h1 className=" text-white lg:font-ClashGrotesk-Regular lg:text-base  font-ClashGrotesk-Light text-sm">
           Level {lvl}
         </h1>
-        <h1 className=" text-white opacity-80 font-ClashGrotesk-Light text-xs">
-          {exp}/{maxExp + (lvl * 100)}
+        <h1 className=" text-white opacity-80 font-ClashGrotesk-Light text-xs ">
+          {exp}/{maxExp + lvl * 100}
         </h1>
       </div>
-      <Bar value={(exp / (maxExp + (lvl * 100))) * 100} />
+      <Bar value={(exp / (maxExp + lvl * 100)) * 100} />
       <div className="flex items-center justify-between">
         <h1 className=" text-white font-ClashGrotesk-Light text-xs ">
           Next level

@@ -3,7 +3,7 @@ import React from "react";
 
 export const Profile = () => {
   return (
-    <div>
+    <div className="p-11">
       <ProfileComp id={"me"} />
     </div>
   );

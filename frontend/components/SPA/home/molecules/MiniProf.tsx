@@ -14,8 +14,8 @@ export const MiniProf = ({ image, name, id }: MiniProfProps) => {
     console.log(friendId);
   };
   return (
-    <>
-      <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[132px] bg-friend rounded-xl">
+    <div>
+      <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[120px] bg-friend rounded-xl">
         <Avatar isBordered color="success" src={image} />
         <h1 className="max-w-[8ch] text-white text-base font-semibold">
           {name}
@@ -27,7 +27,7 @@ export const MiniProf = ({ image, name, id }: MiniProfProps) => {
           Invite
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
