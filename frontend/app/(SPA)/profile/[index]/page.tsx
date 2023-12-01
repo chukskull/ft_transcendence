@@ -22,9 +22,17 @@ const Profile = () => {
   if (error) return "An error has occurred: " + error;
   console.log(data.nickName, params.index, "nancy ajram");
   if (data?.nickName === `${params.index}`.toLowerCase()) {
-    return <ProfileComp id={"me"} />;
+    return (
+      <div className="p-14">
+        <ProfileComp id={"me"} />
+      </div>
+    );
   }
-  return <ProfileComp id={params.index} />;
+  return (
+    <div className="p-14">
+      <ProfileComp id={params.index} />
+    </div>
+  );
 };
 
 export default Profile;

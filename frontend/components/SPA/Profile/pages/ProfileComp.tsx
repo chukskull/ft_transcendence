@@ -65,7 +65,7 @@ export default function Profile({ id }: any) {
   if (isLoading) return "Loading...";
 
   return (
-    <div className="Parent max-w-[1536px] m-auto ">
+    <div className="Parent max-w-[1536px] m-auto">
       <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
         <span style={{ display: "flex", alignItems: "center" }}>
           <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
