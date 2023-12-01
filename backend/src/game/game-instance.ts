@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import {
   GAME_WIDTH,
   GAME_HEIGHT,
@@ -6,10 +6,12 @@ import {
   PADDLE1_POSITION,
   PADDLE2_POSITION,
 } from './game.service';
+import { Player } from './interfaces/player';
 
 export class GameInstance {
-  public player1: Socket;
-  public player2: Socket;
+  public player1: Player;
+  public player2: Player;
+  public _sockets: Socket[];
   public player1Score: number;
   public player2Score: number;
   public ball: { x: number; y: number; speedX: number; speedY: number };
@@ -21,9 +23,9 @@ export class GameInstance {
   public winnerID: number;
 
   //   take user from queue bcs user in queue has the .id to update data in MH , .Socket to send data to front
-  constructor(socket1: Socket, socket2: Socket) {
-    this.player1 = socket1;
-    this.player2 = socket2;
+  constructor(first: Player, second: Player, socket : Server) {
+    this.player1 = first;
+    this.player2 = second;
     this.player1Score = 0;
     this.player2Score = 0;
     this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
