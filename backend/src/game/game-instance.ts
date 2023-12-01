@@ -8,6 +8,15 @@ import {
 } from './game.service';
 
 export class GameInstance {
+  public positionsStruct: {
+    //starting data
+    ballx: number; //default
+    bally: number; //default
+    player1Score: number; //default
+    player2Score: number; //default
+    paddle1YPosition: number; //default
+    paddle2YPosition: number; //default
+  };
   public player1: Socket;
   public player2: Socket;
   public player1Score: number;
@@ -35,22 +44,40 @@ export class GameInstance {
 
   public startGame(): void {
     this.gameRunning = true;
+    this.positionsStruct = {
+      //starting data
+      ballx: 417, //default
+      bally: 240, //default
+      player1Score: 0, //default
+      player2Score: 0, //default
+      paddle1YPosition: 215, //default
+      paddle2YPosition: 215, //default
+    };
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
-        const prevBall = { ...this.ball };
-        this.updateBall(prevBall);
-        this.updatePaddle();
-		
-		// {
-		//   ballx: 417,
-		//   bally: 240,
-		//   player1Score: 0,
-		//   player2Score: 0,
-		//   paddle1YPosition: 215,
-		//   paddle2YPosition: 215,
-		// }
-        this.player1.emit('sendBallState', this.ball);
-        this.player2.emit('sendBallState', this.ball);
+        this.player1.on('positionUpdate', (data) => {
+          this.paddle1Position = data;
+        });
+        this.player2.on('positionUpdate', (data) => {
+          this.paddle2Position = data;
+        });
+        this.player1.emit('roomPostions' + 1, {
+          ballX: this.ball.x,
+          ballY: this.ball.y,
+          player1Score: this.player1Score,
+          player2Score: this.player2Score,
+          enemyY: this.paddle2Position,
+        });
+        this.player2.emit('roomPostions' + 2, {
+          ballX: this.ball.x,
+          ballY: this.ball.y,
+          player1Score: this.player2Score,
+          player2Score: this.player1Score,
+          enemyY: this.paddle1Position,
+        });
+
+        // call the math function
+        // calculate_movement();
       }
     }, 1000 / 60);
   }
@@ -116,15 +143,6 @@ export class GameInstance {
     });
     this.player2.on('updateScore', (score) => {
       this.player2Score = score;
-    });
-  }
-
-  public updatePaddle(): void {
-    this.player1.on('sendPaddleState', (paddleState) => {
-      this.paddle1Position = paddleState;
-    });
-    this.player2.on('sendPaddleState', (paddleState) => {
-      this.paddle2Position = paddleState;
     });
   }
 }

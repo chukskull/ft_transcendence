@@ -6,10 +6,12 @@ import TheGame from "@/components/SPA/game/TheGame";
 import Result from "@/components/SPA/game/Result";
 import io from "socket.io-client";
 import { Button } from "@nextui-org/react";
+import OnlineGame from "@/components/SPA/game/OnlineGame";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
   const [gameStarted, setGameStarted] = useState(false);
+  const [onlineMode, setOnlineMode] = useState<boolean>(false);
   const [score, setScore] = useState<Record<string, number>>({
     player: 0,
     enemy: 0,
@@ -39,14 +41,19 @@ const Game: React.FC = () => {
   function handleJoinQueue() {
     if (socket) {
       socket?.emit("joinQueue", { token: document.cookie.split("=")[1] });
-      setJoinedQueue(true);
     }
   }
-
   socket?.on("changeState", (data: any) => {
-    console.log("statechatnefe", data);
+    if (data.status == "inQueue") {
+      setJoinedQueue(true);
+    } else if (data.status == "failed") {
+      // popus that user is already in queue in another window
+    }
   });
-
+  socket?.on("gameStarted", (data: any) => {
+    setJoinedQueue(false);
+    setOnlineMode(true);
+  });
   useEffect(() => {
     const interval = setInterval(() => {
       setValue((v) => (v >= 100 ? 0 : v + 10));
@@ -64,7 +71,6 @@ const Game: React.FC = () => {
       return (
         <div className={style.centeredContent}>
           <div
-            className={""}
             style={{
               opacity: 0.6,
               position: "fixed",
@@ -112,7 +118,11 @@ const Game: React.FC = () => {
         </div>
       </>
       <div className="flex flex-col gap-9 justify-center items-center">
-        <TheGame map={map} />
+        {onlineMode ? (
+          <OnlineGame map={map} socket={socket} />
+        ) : (
+          <TheGame map={map} />
+        )}
         <div>
           <Button
             className="bg-live text-white font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
