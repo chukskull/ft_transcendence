@@ -7,6 +7,8 @@ import {
   FaVolumeMute,
   FaBan,
   FaWalking,
+  FaCommentSlash,
+  FaCompressAlt,
 } from "react-icons/fa";
 import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
@@ -68,7 +70,11 @@ const UserMenu = ({
           onClick={() => {
             axios
               .post(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`,
+                {},
+                {
+                  withCredentials: true,
+                }
               )
               .then((res) => {})
               .catch((err) => {
@@ -79,33 +85,17 @@ const UserMenu = ({
           <BsController />
           Invite To A Game
         </div>
-        {isUserBlocked() && (
+
+        {isFriend() ? (
           <div
             className={style["menu-item"]}
             onClick={() => {
               axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/0`
-                )
-                .then((res) => {
-                  console.log(res);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }}
-          >
-            <FaUserSlash />
-            Unblock
-          </div>
-        )}
-        {isFriend() && (
-          <div
-            className={style["menu-item"]}
-            onClick={() => {
-              axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
+                  {
+                    withCredentials: true,
+                  }
                 )
                 .then((res) => {
                   console.log(res);
@@ -118,28 +108,20 @@ const UserMenu = ({
             <FaUserSlash />
             Remove Friend
           </div>
-        )}
-
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            router.push(
-              `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/users/${nickName}`
-            );
-          }}
-        >
-          <BsChatLeftText />
-          Message
-        </div>
-        {!isFriend() && (
+        ) : (
           <div
             className={style["menu-item"]}
             onClick={() => {
               axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`,
+                  {
+                    withCredentials: true,
+                  }
                 )
-                .then((res) => {})
+                .then(() => {
+                  document.location.reload();
+                })
                 .catch((err) => {
                   console.log(err);
                 });
@@ -149,23 +131,58 @@ const UserMenu = ({
             Add Friend
           </div>
         )}
-        {!isUserBlocked() && (
+
+        <div
+          className={style["menu-item"]}
+          onClick={() => {
+            router.push(`/chat/users/${nickName}`);
+          }}
+        >
+          <BsChatLeftText />
+          Message
+        </div>
+        {isUserBlocked() ? (
           <div
             className={style["menu-item"]}
             onClick={() => {
               axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/0`,
+                  {
+                    withCredentials: true,
+                  }
                 )
-                .then((res) => {
-                  console.log(res);
+                .then(() => {
+                  document.location.reload();
                 })
                 .catch((err) => {
                   console.log(err);
                 });
             }}
           >
-            <FaUserSlash />
+            <FaCompressAlt />
+            Unblock
+          </div>
+        ) : (
+          <div
+            className={style["menu-item"]}
+            onClick={() => {
+              axios
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`,
+                  {
+                    withCredentials: true,
+                  }
+                )
+                .then(() => {
+                  document.location.reload();
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }}
+          >
+            <FaCommentSlash />
             Block
           </div>
         )}

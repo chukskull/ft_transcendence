@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
-import { NotifGateway } from '../notifications.gateway';
 @Injectable()
 export class ConversationService {
   constructor(
@@ -13,7 +12,6 @@ export class ConversationService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(User)
     private UserRepository: Repository<User>,
-    @Inject(NotifGateway) private readonly notifGateway: NotifGateway,
   ) {}
 
   async getMyDms(MyUser: number) {

@@ -2,39 +2,28 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
   MessageBody,
-  ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger, UseGuards } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-// import { WsGuard } from './ws.guard';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 @WebSocketGateway({ namespace: 'gameSockets', cors: true })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(
-    private readonly gameService: GameService,
-    private readonly jwtService: JwtService,
-    private readonly userService: UserService,
-  ) {}
-  @WebSocketServer() server;
+  constructor(private gameService: GameService) {}
+  @WebSocketServer() server: Server;
 
-  newEmit(data: any, emitedEvent: any, roomName: any) {
-    if (roomName) this.server.to(roomName).emit(emitedEvent, data);
-    else this.server.emit(emitedEvent, data);
+  emitToClients(data: any, emitedEvent: any, roomName: any) {
+    this.server.to(roomName).emit(emitedEvent, data);
   }
 
   handleDisconnect(client: Socket) {}
-  handleConnection(client: Socket) {
-    console.log('gaeme socker connected');
-  }
+  handleConnection(client: Socket) {}
 
   @SubscribeMessage('joinQueue')
   async joinQueue(

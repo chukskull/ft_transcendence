@@ -7,7 +7,6 @@ import { Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { Achievement } from 'src/achievement/achievement.entity';
-import { CreateMatchHistoryDto } from 'src/match-history/dto/create-match-history.dto';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 const jwt = require('jsonwebtoken');
@@ -43,7 +42,6 @@ export class GameService {
     private jwtService: JwtService,
     @InjectRepository(Achievement)
     private readonly achievementRepo: Repository<Achievement>,
-    @Inject(GameGateway) private readonly gameGateWay: GameGateway,
   ) {
     setInterval(() => {
       this.update();
@@ -223,12 +221,6 @@ export class GameService {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
     }
-
-    this.gameGateWay.newEmit(
-      { data: { state: 'inQueue' } },
-      'changeState',
-      null,
-    );
 
     this.queue.push({ id: userId, socket: client });
     return true;

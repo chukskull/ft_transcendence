@@ -5,7 +5,6 @@ import { ChatGateway } from './chat.gateway';
 import { User } from '../user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Conversation, Chat } from './conversation.entity';
-import { NotifGateway } from '../notifications.gateway';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
@@ -17,7 +16,6 @@ import { Channel } from 'src/channel/channel.entity';
   providers: [
     ConversationService,
     ChatGateway,
-    NotifGateway,
     JwtService,
     UserService,
     AuthService,
