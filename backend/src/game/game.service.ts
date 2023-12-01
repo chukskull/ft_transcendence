@@ -95,6 +95,8 @@ export class GameService {
   async acceptInvite(client: Socket, payload: any): Promise<void> {
     const { player1, player2 } = payload;
     // receive payload from client
+    player1.join(player1.id);
+    player2.join(player2.id);
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
     // create game instance
@@ -106,7 +108,7 @@ export class GameService {
     const game = this.activeGames[client.id + ',' + player2.id];
     if (!game) return;
     delete this.activeGames[client.id + ',' + player2.id];
-    game.endGame();
+
   }
 
   /*
@@ -146,6 +148,8 @@ export class GameService {
     game.updateScore();
     if (game.player1Score === 5 || game.player2Score === 5) {
       game.endGame();
+      player1.leave(player1.id);
+      player2.leave(player2.id);
       if (this.activeGames.hasOwnProperty(player1.id + ',' + player2.id)) {
         player1.setStatus('online');
         player2.setStatus('online');
