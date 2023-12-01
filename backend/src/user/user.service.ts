@@ -415,24 +415,18 @@ export class UserService {
           (user) => user.id != handlerId,
         );
       }
-      const conversation: any = client.conversations.map((conv) => {
-        if (
-          conv.is_group == false &&
-          conv.members.find((member) => member.id == blockedID)
-        ) {
-          return conv;
-        }
-        return null;
-      });
+      const conversation: any = client.conversations.find(
+        (conv) =>
+          conv.is_group === false &&
+          conv.members.find((member) => member.id == blockedID),
+      );
       if (conversation) {
-        console.log('conversation found');
         client.conversations = client.conversations.filter(
           (conv) => conv.id != conversation.id,
         );
         friendUs.conversations = friendUs.conversations.filter(
           (conv) => conv.id != conversation.id,
         );
-        console.log('conversation deleted', conversation);
         this.conversationService.deleteConversation(conversation.id);
       }
       client.blockedUsers.push(friendUs);

@@ -4,7 +4,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import UserMenu from "./UserMenu";
 
-const MsgsList = ({ chats }: { chats: any }) => {
+const MsgsList = ({ chats, blockedList }: { chats: any; blockedList: any }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [showModal, setShow] = useState(false);
   const [userInfo, setUserInfo] = useState<any>({
@@ -17,6 +17,15 @@ const MsgsList = ({ chats }: { chats: any }) => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
+    // remove blocked users from chats
+    chats?.forEach((chat: any) => {
+      blockedList?.forEach((blockedUser: any) => {
+        if (chat?.sender?.id == blockedUser?.id) {
+          chat.message = "This User is blocked !";
+        }
+        1;
+      });
+    });
   }, [chats]);
   return (
     <>
@@ -58,7 +67,7 @@ const MsgsList = ({ chats }: { chats: any }) => {
                 </div>
                 <div className={style["msg-info"]} key={msg?.id}>
                   <div className={style["username"]}>
-                    {msg.sender?.nickName}
+                    {msg?.sender?.nickName}
                   </div>
                   <div className={style["msg-content"]}>{msg?.message}</div>
                 </div>

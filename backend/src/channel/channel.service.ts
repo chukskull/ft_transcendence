@@ -167,7 +167,7 @@ export class ChannelService {
   async deleteChannel(id: number, mod: number): Promise<void> {
     const channel = await this.chanRepository.findOne({
       where: { id },
-      relations: ['owner'],
+      relations: ['owner', 'conversation'],
     });
     if (!channel) {
       throw new NotFoundException('Channel not found');
@@ -185,6 +185,7 @@ export class ChannelService {
     if (!isOwner) {
       throw new NotFoundException('User not owner of the channel');
     }
+    await this.conversationService.deleteConversation(channel.conversation.id);
     await this.chanRepository.remove(channel);
   }
 
