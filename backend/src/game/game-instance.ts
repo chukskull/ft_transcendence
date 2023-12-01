@@ -6,7 +6,18 @@ import {
   PADDLE1_POSITION,
   PADDLE2_POSITION,
 } from './game.service';
-import { Player } from './interfaces/player';
+
+export class Player {
+  id: number;
+	socket: Socket;
+	score: number;
+	constructor(id: number, socket: Socket) {
+		this.id = id;
+		this.socket = socket;
+		this.score = 0;
+	}
+}
+
 
 export class GameInstance {
   public positionsStruct: {
@@ -18,8 +29,8 @@ export class GameInstance {
     paddle1YPosition: number; //default
     paddle2YPosition: number; //default
   };
-  public player1: Socket;
-  public player2: Socket;
+  public player1: Player;
+  public player2: Player;
   public player1Score: number;
   public player2Score: number;
   public ball: { x: number; y: number; speedX: number; speedY: number };
@@ -31,14 +42,11 @@ export class GameInstance {
   public winnerID: number;
 
   //   take user from queue bcs user in queue has the .id to update data in MH , .Socket to send data to front
-  constructor(first: Player, second: Player, socket : Server) {
+  constructor(first: Player, second: Player, server: Server) {
     this.player1 = first;
     this.player2 = second;
-    this.player1Score = 0;
-    this.player2Score = 0;
-    this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
-    this.paddle1Position = PADDLE1_POSITION;
-    this.paddle2Position = PADDLE2_POSITION;
+    this.player1Score = this.player1.score;
+    this.player2Score = this.player2.score;
     this.gameRunning = false;
     this.gameEnded = false;
   }
@@ -56,20 +64,20 @@ export class GameInstance {
     };
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
-        this.player1.on('positionUpdate', (data) => {
+        this.player1.socket.on('positionUpdate', (data) => {
           this.paddle1Position = data;
         });
-        this.player2.on('positionUpdate', (data) => {
+        this.player2.socket.on('positionUpdate', (data) => {
           this.paddle2Position = data;
         });
-        this.player1.emit('roomPostions' + 1, {
+        this.player1.socket.emit('roomPostions' + 1, {
           ballX: this.ball.x,
           ballY: this.ball.y,
           player1Score: this.player1Score,
           player2Score: this.player2Score,
           enemyY: this.paddle2Position,
         });
-        this.player2.emit('roomPostions' + 2, {
+        this.player2.socket.emit('roomPostions' + 2, {
           ballX: this.ball.x,
           ballY: this.ball.y,
           player1Score: this.player2Score,
@@ -78,7 +86,8 @@ export class GameInstance {
         });
         
         // call the math function
-        // calculate_movement();
+        this.updateBall(this.ball);
+        console.log(this.ball); // checking whether update goes well
       }
     }, 1000 / 60);
   }
@@ -124,21 +133,21 @@ export class GameInstance {
   public endGame(): void {
     this.gameEnded = true;
     this.gameRunning = false;
-    this.player1.disconnect();
-    this.player2.disconnect();
+    this.player1.socket.disconnect();
+    this.player2.socket.disconnect();
     clearInterval(this.gameLoop);
   }
   public resetBall(): void {
     this.updateScore();
-    this.player1.emit('sendBallState', this.ball);
-    this.player2.emit('sendBallState', this.ball);
+    this.player1.socket.emit('sendBallState', this.ball);
+    this.player2.socket.emit('sendBallState', this.ball);
     this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
   }
   public updateScore(): void {
-    this.player1.on('updateScore', (score) => {
+    this.player1.socket.on('updateScore', (score) => {
       this.player1Score = score;
     });
-    this.player2.on('updateScore', (score) => {
+    this.player2.socket.on('updateScore', (score) => {
       this.player2Score = score;
     });
   }

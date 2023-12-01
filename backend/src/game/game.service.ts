@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Body } from 'matter-js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 const jwt = require('jsonwebtoken');
-import { Inject } from '@nestjs/common';
-import { GameGateway } from './game.gateway';
 
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
@@ -43,11 +40,7 @@ export class GameService {
     private jwtService: JwtService,
     @InjectRepository(Achievement)
     private readonly achievementRepo: Repository<Achievement>,
-  ) {
-    setInterval(() => {
-      this.update();
-    }, 1000 / 60);
-  }
+  ) { }
 
   /**
    * Invites a friend to play a game.
@@ -89,7 +82,7 @@ export class GameService {
       this.acceptInvite(friend.socket, payload); // starts game inside acceptInvite
     });
     friend.socket.on('declineInvite', (payload) => {
-      this.declineInvite(friend.socket, payload); // starts game inside acceptInvite
+      this.declineInvite(friend.socket, payload);
     });
   }
 
@@ -212,7 +205,7 @@ export class GameService {
   /*
    * Join matchmaking MatchMakingQueue
    */
-  async joinQueue(client: Socket, token: string): Promise<boolean> {
+  async joinQueue(client: Socket, server: Server, token: string): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
 
     if (!this.onlineUsers.has(userId)) {
@@ -225,20 +218,20 @@ export class GameService {
     });
     if (!isInQueue) {
       this.MatchMakingQueue.push({ id: userId, socket: client });
-      // this.server.to('MatchMakingQueue' + userId).emit('changeState', {
-      //   state: 'inQueue',
-      //   message: 'waiting for other opponent to join',
-      // });
+      server.to('MatchMakingQueue' + userId).emit('changeState', {
+        state: 'inQueue',
+        message: 'waiting for other opponent to join',
+      });
     } else {
-      // this.server.to('MatchMakingQueue' + userId).emit('changeState', {
-      //   state: 'failed',
-      //   message: 'already in queue',
-      // });
+      server.to('MatchMakingQueue' + userId).emit('changeState', {
+        state: 'failed',
+        message: 'already in queue',
+      });
     }
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();
-      this.createGame(player1, player2);
+      this.createGame(player1, player2, server);
     }
     return true;
   }
@@ -267,12 +260,12 @@ export class GameService {
   /*
    * start game
    */
-  createGame(player1: any, player2: any): void {
+  createGame(player1: any, player2: any, server : Server): void {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
-    const game = new GameInstance(player1.socket, player2.socket); // take the entire player
-    // server.to('gameStart' + player1.id).emit('gameStarted');
-    // server.to('gameStart' + player2.id).emit('gameStarted');
+    const game = new GameInstance(player1, player2, server); // take the entire player
+    server.to('gameStart' + player1.id).emit('gameStarted');
+    server.to('gameStart' + player2.id).emit('gameStarted');
     game.startGame();
   }
 }
