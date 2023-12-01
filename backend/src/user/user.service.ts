@@ -427,13 +427,13 @@ export class UserService {
       if (conversation) {
         console.log('conversation found');
         client.conversations = client.conversations.filter(
-          (conv) => conv.id !== conversation.id,
+          (conv) => conv.id != conversation.id,
         );
         friendUs.conversations = friendUs.conversations.filter(
-          (conv) => conv.id !== conversation.id,
+          (conv) => conv.id != conversation.id,
         );
-        console.log('conversation deleted', conversation.id);
-        await this.conversationRepository.delete({ id: conversation.id });
+        console.log('conversation deleted', conversation);
+        this.conversationService.deleteConversation(conversation.id);
       }
       client.blockedUsers.push(friendUs);
     } else if (action == 0) {
