@@ -25,6 +25,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const [msgs, setMsgs] = useState<Chat[]>([]);
   const [conv, setConv] = useState<any>(null);
   const [receivedData, setReceivedData] = useState<any>(null);
+  const [blockedList, setBlockedList] = useState<any>([]);
   useEffect(() => {
     const endPoints = isGroup
       ? `/api/channels/${id}/chat`
@@ -36,6 +37,16 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       .then((res) => {
         setConv(res.data);
         setMsgs(res.data.chats);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setBlockedList(res.data.blockedUsers);
       })
       .catch((err) => {
         console.log(err);
@@ -92,7 +103,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   return (
     <div className={style["chat"]}>
       <div className={style["msgs"]}>
-        <MsgsList chats={msgs} />
+        <MsgsList chats={msgs} blockedList={blockedList} />
       </div>
       <div className={style["msg-input"]}>
         <button
