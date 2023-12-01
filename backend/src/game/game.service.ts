@@ -100,7 +100,7 @@ export class GameService {
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
     // create game instance
-    game.startGame();
+    // game.startGame();
   }
 
   async declineInvite(client: Socket, payload: any): Promise<void> {
@@ -118,8 +118,8 @@ export class GameService {
     for (const game of Object.values(this.activeGames)) {
       if (game.gameRunning) {
         const prevBall = { ...game.ball };
-        game.updateBall(prevBall);
-        game.updatePaddle();
+        // game.updateBall(prevBall);
+        // game.updatePaddle();
       }
     }
   }
@@ -130,7 +130,7 @@ export class GameService {
     if (!game) return;
     else {
       const prevBall = { ...game.ball };
-      game.updateBall(prevBall);
+      // game.updateBall(prevBall);
     }
   }
 
@@ -138,16 +138,16 @@ export class GameService {
     const { player1, player2 } = payload;
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
-    game.updatePaddle();
+    // game.updatePaddle();
   }
 
   async updateScore(client: Socket, payload: any): Promise<void> {
     const { player1, player2 } = payload;
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
-    game.updateScore();
+    // game.updateScore();
     if (game.player1Score === 5 || game.player2Score === 5) {
-      game.endGame();
+      // game.endGame();
       player1.leave(player1.id);
       player2.leave(player2.id);
       if (this.activeGames.hasOwnProperty(player1.id + ',' + player2.id)) {
@@ -263,8 +263,8 @@ export class GameService {
         //   take user from queue bcs user in queue has the .id to update data in MH , .Socket to send data to front
         // const game = new GameInstance(player1, player2);
 
-        const game = new GameInstance(player1.socket, player2.socket); // this is a class
-        game.startGame();
+        // const game = new GameInstance(player1.socket, player2.socket); // this is a class
+        // game.startGame();
       }
     }
   }
