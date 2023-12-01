@@ -6,6 +6,7 @@ import {
   Delete,
   Patch,
   Get,
+  Put,
   Req,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
@@ -62,6 +63,7 @@ export class ChannelController {
   @UseGuards(JwtGuard)
   join(@Body() data: any, @Req() req, @Param('chanId') chanId: number) {
     const { password } = data;
+    console.log('join channel', chanId, password);
     return this.channelService.joinChannel(chanId, password, req.user.id);
   }
 
@@ -69,6 +71,17 @@ export class ChannelController {
   @UseGuards(JwtGuard)
   leave(@Param('chanId') chanId: number, @Req() req) {
     return this.channelService.leaveChannel(chanId, req.user.id);
+  }
+
+  @Get(':chandId/kickUser/:userId')
+  @UseGuards(JwtGuard)
+  kickuser(
+    @Param('chandId') chanId: number,
+    @Param('userId') userId: number,
+    @Req() req,
+  ) {
+    console.log('kick user why isnt it working');
+    return this.channelService.kickFromChannel(chanId, userId, req.user.id);
   }
 
   @Get(':chandId/invite/:userId')
@@ -81,9 +94,9 @@ export class ChannelController {
     return this.channelService.inviteToChannel(chanId, userId, req.user.id);
   }
 
-  @Post(':chandId/banning/:userId/:action')
+  @Get(':chandId/banning/:userId/:action')
   @UseGuards(JwtGuard)
-  ban(
+  banUser(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
     @Param('action') action: number,
@@ -97,29 +110,35 @@ export class ChannelController {
     );
   }
 
-  @Post(':chandId/muting/:userId/:action')
+  @Get(':chandId/muting/:userId/:action')
   @UseGuards(JwtGuard)
   mute(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
     @Param('action') action: number,
+    @Req() req,
   ) {
-    return this.channelService.muteUnmuteFromChannel(chanId, userId, action);
+    return this.channelService.muteUnmuteFromChannel(
+      chanId,
+      userId,
+      action,
+      req.user.id,
+    );
   }
 
-  @Post(':chandId/modding/:userId/:action')
+  @Get(':chandId/modding/:userId/:action')
   @UseGuards(JwtGuard)
   mod(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
     @Param('action') action: number,
+    @Req() req,
   ) {
-    return this.channelService.modUnmodFromChannel(chanId, userId, action);
-  }
-
-  @Post(':chandId/owner/:userId')
-  @UseGuards(JwtGuard)
-  owner(@Param('chandId') chanId: number, @Param('userId') userId: number) {
-    return this.channelService.makeOwner(chanId, userId);
+    return this.channelService.modUnmodFromChannel(
+      chanId,
+      userId,
+      action,
+      req.user.id,
+    );
   }
 }

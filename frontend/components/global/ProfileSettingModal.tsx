@@ -16,7 +16,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
   const [base64Image, setBase64Image] = useState<string | null>(null);
-
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const [name, setName] = useState("");
 
   const handleClick = () => {
@@ -47,17 +47,40 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       image: base64Image,
       twoFactorAuthEnabled: checked,
     };
-    console.log(formData);
-    axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`,
-      formData,
-      {
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        document.location.reload();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 2fs on off
+  const handle2Fa = () => {
+    const endPoint = checked ? "disable" : "enable";
+    console.log("in 2fa", endPoint);
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
         withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+      })
+      .then((res) => {
+        setQrCode(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   useEffect(() => {
@@ -147,7 +170,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               type="name"
               aria-label="Name"
               className="bg-inherit text-white"
-              onChange={(e) => setName(e.target.value)}
             />
           </div>
         </div>
@@ -160,10 +182,20 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             color="danger"
             isSelected={checked}
             aria-label="Automatic updates"
-            onChange={() => setChecked(!checked)}
+            onChange={() => {
+              setChecked(!checked);
+              handle2Fa();
+            }}
           />
         </div>
-
+        {qrCode && checked && (
+          <div className="flex flex-col gap-2 items-center">
+            <h1 className="text-white font-ClashGrotesk-Regular text-base">
+              Scan QR Code
+            </h1>
+            <img src={qrCode} alt="qr code" />
+          </div>
+        )}
         <div className="flex items-center justify-between gap-8">
           <Button
             className="bg-inherit text-white font-ClashGrotesk-Medium text-base text-center"

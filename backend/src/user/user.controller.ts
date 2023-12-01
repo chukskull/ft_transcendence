@@ -107,8 +107,8 @@ export class UserController {
 
   @Get('/friends/:friendId/chat')
   @UseGuards(JwtGuard)
-  async getChat(@Req() req: any, @Param('friendId') friendId: number) {
-    return this.usersService.getChatWithFriend(1, friendId);
+  async getChat(@Req() req: any, @Param('friendId') friendId: string) {
+    return this.usersService.getChatWithFriend(req.user.id, friendId);
   }
 
   @Get('/addFriend/:friendId')
@@ -137,7 +137,7 @@ export class UserController {
     return this.usersService.handleFriendRequest(id, action, req.user.id);
   }
 
-  @Post('/handleBlock/:friendId/:action')
+  @Get('/handleBlock/:friendId/:action')
   @UseGuards(JwtGuard)
   async blockFriend(
     @Param('friendId') frId: number,

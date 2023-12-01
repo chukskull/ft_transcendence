@@ -6,7 +6,6 @@ import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
 import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 
 interface chatHeaderProps {
@@ -18,16 +17,13 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
   const [user, setUser] = useState<any>(null);
 
-  const router = useRouter();
   const leaveGroup = (id: number) => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
         withCredentials: true,
       })
       .then((res) => {
-        if (res.data.success) {
-          router.push("/chat");
-        }
+        document.location.reload();
       })
       .catch((err) => {
         console.log(err);

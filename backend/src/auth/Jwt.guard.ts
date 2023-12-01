@@ -20,12 +20,11 @@ export class JwtGuard implements CanActivate {
     }
     try {
       const decode = await this.authService.verifyToken(req.cookies.token);
-      // if (!decode) throw new UnauthorizedException('Please log in to continue');
       const user = await this.userService.findOne(decode.email);
       if (!user) throw new UnauthorizedException('Please log in to continue');
       req.user = user;
     } catch {
-      throw new UnauthorizedException('I nvalid Token');
+      throw new UnauthorizedException('Invalid Token');
     }
     return true;
   }

@@ -38,10 +38,6 @@ export class Channel {
 
   @ManyToMany(() => User)
   @JoinTable()
-  MutedUsers: User[];
-
-  @ManyToMany(() => User)
-  @JoinTable()
   Moderators: User[];
 
   @ManyToOne(() => User, { nullable: true })

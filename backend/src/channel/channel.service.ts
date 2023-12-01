@@ -89,9 +89,10 @@ export class ChannelService {
         'members',
         'conversation',
         'BannedUsers',
-        'MutedUsers',
         'Moderators',
         'owner',
+        'conversation',
+        'conversation.MutedUsers',
       ],
     });
     if (!channel) {
@@ -115,6 +116,7 @@ export class ChannelService {
         'conversation.chats',
         'conversation.members',
         'conversation.chats.sender',
+        'conversation.MutedUsers',
         'members',
       ],
     });
@@ -165,7 +167,7 @@ export class ChannelService {
   async deleteChannel(id: number, mod: number): Promise<void> {
     const channel = await this.chanRepository.findOne({
       where: { id },
-      relations: ['owner'],
+      relations: ['owner', 'conversation'],
     });
     if (!channel) {
       throw new NotFoundException('Channel not found');
@@ -183,6 +185,7 @@ export class ChannelService {
     if (!isOwner) {
       throw new NotFoundException('User not owner of the channel');
     }
+    await this.conversationService.deleteConversation(channel.conversation.id);
     await this.chanRepository.remove(channel);
   }
 
@@ -193,7 +196,7 @@ export class ChannelService {
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
-      relations: ['members', 'conversation'],
+      relations: ['members', 'conversation', 'BannedUsers'],
     });
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -202,30 +205,32 @@ export class ChannelService {
     if (!user || !channel) {
       throw new NotFoundException('User/channel not found');
     }
-    // Check if the channel is private
-    if (channel.is_private) {
+    const isBanned = channel.BannedUsers.some((member) => member.id == userId);
+    if (isBanned) throw new NotFoundException('User is banned from channel');
+    if (channel.is_private)
       throw new NotFoundException(
         'Channel is private you cant join without invite',
       );
-    }
 
     // Check if the channel is protected and verify the password
-    if (channel.is_protected) {
-      const passwordMatch = await bcrypt.compare(password, channel.password);
-      if (!passwordMatch) {
-        throw new NotFoundException('Password is incorrect');
-      }
-    }
 
     // Check if the user is already a member of the channel
     const isAlreadyMember = channel.members.some(
       (member) => member.id === userId,
     );
     if (isAlreadyMember) throw new NotFoundException('User already in channel');
+    if (channel.is_protected) {
+      const passwordMatch = await bcrypt.compare(password, channel.password);
+      console.log('password match', passwordMatch);
+      if (!passwordMatch) throw new NotFoundException('Password is incorrect');
+    }
 
     channel.members.push(user);
     user.channels.push(channel);
-    this.conversationService.joinConversation(channel.conversation.id, userId);
+    await this.conversationService.joinConversation(
+      channel.conversation.id,
+      userId,
+    );
     this.userRepository.save(user);
     return this.chanRepository.save(channel);
   }
@@ -233,12 +238,11 @@ export class ChannelService {
   async leaveChannel(chanId: number, userId: number): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
-      relations: ['members', 'conversation'],
+      relations: ['members', 'conversation', 'owner', 'Moderators'],
     });
 
-    if (!channel) 
-      throw new NotFoundException('Channel not found');
-    
+    if (!channel) throw new NotFoundException('Channel not found');
+
     if (channel.name === 'Welcome/Global channel') {
       throw new NotFoundException("You can't leave this channel");
     }
@@ -246,28 +250,76 @@ export class ChannelService {
     // Check if the user exists
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['conversations', 'channels'],
+      relations: ['channels'],
     });
+    if (!user) throw new NotFoundException('User not found');
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
     // Remove user from the channel's members
     channel.members = channel.members?.filter((member) => member.id !== userId);
+    channel.Moderators = channel.Moderators?.filter(
+      (member) => member.id !== userId,
+    );
+
+    if (channel.owner.id === userId) {
+      channel.owner = null;
+      // randomly choose a new owner
+      const newOwner =
+        channel.members[Math.floor(Math.random() * channel.members.length)];
+      channel.owner = newOwner;
+    }
     user.channels = user.channels.filter((chan) => chan.id !== channel.id);
 
     await this.userRepository.save(user);
     return this.chanRepository.save(channel);
   }
-
-  async inviteToChannel(
-    chanId: number,
-    userId: number,
-    inviter: number,
-  ) {
+  async kickFromChannel(chanId: number, userId: number, mod: number) {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
-      relations: ['members', 'conversation'],
+      relations: [
+        'members',
+        'Moderators',
+        'owner',
+        'conversation',
+        'conversation.members',
+        'BannedUsers',
+      ],
+    });
+    if (!channel) throw new NotFoundException('Channel not found');
+    if (channel.name === 'Welcome/Global channel')
+      throw new NotFoundException("You can't kick someone from this channel");
+
+    if (channel.owner.id === userId)
+      throw new NotFoundException('User is owner');
+    const isMod = channel.Moderators.some((member) => member.id === mod);
+    const isOwner = channel.owner.id === mod;
+    if (!isMod && !isOwner)
+      throw new NotFoundException('User not mod from channel');
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['channels'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    channel.members = channel.members.filter((member) => member.id != userId);
+    channel.Moderators = channel.Moderators.filter(
+      (member) => member.id != userId,
+    );
+    user.channels = user.channels.filter(
+      (channelius) => channelius.name !== channel.name,
+    );
+    channel.conversation.members = channel.conversation.members.filter(
+      (member) => member.id != userId,
+    );
+    console.log('user kickerd from channel');
+    this.userRepository.save(user);
+    return this.chanRepository.save(channel);
+  }
+
+  async inviteToChannel(chanId: number, userId: number, inviter: number) {
+    const channel = await this.chanRepository.findOne({
+      where: { id: chanId },
+      relations: ['members', 'conversation', 'BannedUsers'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
 
@@ -286,6 +338,11 @@ export class ChannelService {
     );
     if (isAlreadyMember) throw new NotFoundException('User already in channel');
 
+    const isBanned = channel.BannedUsers.some((member) => {
+      return member.id == userId;
+    });
+    if (isBanned) throw new NotFoundException('User is banned from channel');
+
     const friend = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['conversations', 'channels'],
@@ -298,7 +355,6 @@ export class ChannelService {
     this.userRepository.save(friend);
 
     this.chanRepository.save(channel);
-
   }
 
   async banUnbanFromChannel(
@@ -309,67 +365,23 @@ export class ChannelService {
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
+      relations: ['BannedUsers', 'owner', 'Moderators'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
-
-    if (channel.owner.id === userId)
-      throw new NotFoundException('User is owner');
-    const requestMaker = await this.userRepository.findOne({
-      where: { id: mod },
-    });
-    if (!requestMaker) throw new NotFoundException('User not found');
-
-    const isMod = channel.Moderators.some(
-      (member) => member.id === requestMaker.id,
-    );
-    if (!isMod) throw new NotFoundException('User not mod from channel');
-
-    const conv = await this.conversationRepository.findOne({
-      where: {
-        id: channel.conversation.id,
-      },
-    });
-    if (!conv) throw new NotFoundException('Conversation not found');
-
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['conversations', 'channels'],
-    });
-    if (!user) throw new NotFoundException('User not found');
-
+    // 1 = ban, 0 = unban
     if (action == 1) {
-      const isAlreadyBanned = channel.BannedUsers.some(
-        (member) => member?.id === userId,
-      );
-      if (isAlreadyBanned)
-        throw new NotFoundException('User already banned from channel');
-      else {
-        channel.BannedUsers?.push(user);
-        conv.BannedUsers?.push(user);
-        channel.members = channel.members.filter(
-          (member) => member?.id !== userId,
-        );
-        conv.members = conv.members.filter((member) => member?.id !== userId);
-        user.channels = user.channels.filter(
-          (channel) => channel?.id !== chanId,
-        );
-        user.conversations = user.conversations.filter(
-          (conv) => conv?.id !== channel.conversation.id,
-        );
-      }
+      const channel = await this.kickFromChannel(chanId, userId, mod);
+      if (!channel) throw new NotFoundException('Channel not found');
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+      channel.BannedUsers?.push(user);
+      this.chanRepository.save(channel);
     } else {
-      channel.BannedUsers = channel.BannedUsers.filter(
-        (member) => member?.id !== userId,
+      channel.BannedUsers = channel.BannedUsers?.filter(
+        (member) => member?.id != userId,
       );
-      conv.BannedUsers = conv.BannedUsers.filter(
-        (member) => member?.id !== userId,
-      );
-      user.channels.push(channel);
-      user.conversations.push(channel.conversation);
-      channel.members.push(user);
     }
-
-    await this.conversationRepository.save(conv);
     return this.chanRepository.save(channel);
   }
 
@@ -377,46 +389,50 @@ export class ChannelService {
     chanId: number,
     userId: number,
     action: number,
+    mod: number,
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
+      relations: [
+        'owner',
+        'conversation',
+        'conversation.MutedUsers',
+        'Moderators',
+      ],
     });
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
-    }
-    const conv = await this.conversationRepository.findOne({
-      where: {
-        id: channel.conversation.id,
-      },
+    if (!channel) throw new NotFoundException('Channel not found');
+    if (channel.name === 'Welcome/Global channel')
+      throw new NotFoundException("You can't kick someone from this channel");
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: channel.conversation.id },
+      relations: ['MutedUsers'],
     });
-    if (!conv) {
-      throw new NotFoundException('Conversation not found');
-    }
-    if (action == 1) {
-      const isAlreadyMuted = channel.MutedUsers?.some(
-        (member) => member?.id === userId,
-      );
-      if (isAlreadyMuted) {
-        throw new NotFoundException('User already muted from channel');
-      } else {
-        const user = await this.userRepository.findOne({
-          where: { id: userId },
-        });
+    const isMod = channel.Moderators.some((member) => member.id == mod);
+    const isOwner = channel.owner.id == mod;
+    if (!isMod && !isOwner)
+      throw new NotFoundException('User not mod from channel');
 
-        channel.MutedUsers?.push(user);
-        conv.MutedUsers?.push(user);
-      }
+    if (channel.owner.id === userId)
+      throw new NotFoundException('User is owner');
+    if (action == 1) {
+      const isAlreadyMuted = channel.conversation.MutedUsers.some(
+        (member) => member?.id == userId,
+      );
+      if (isAlreadyMuted)
+        throw new NotFoundException('User already muted from channel');
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      conversation.MutedUsers?.push(user);
     } else {
       // Remove user from channel.members list
-      channel.MutedUsers = channel?.MutedUsers.filter(
-        (member) => member?.id !== userId,
-      );
-      conv.MutedUsers = conv.MutedUsers?.filter(
-        (member) => member.id !== userId,
+      conversation.MutedUsers = conversation.MutedUsers.filter(
+        (member) => member?.id != userId,
       );
     }
 
-    await this.conversationRepository.save(conv);
+    this.conversationRepository.save(conversation);
     return this.chanRepository.save(channel);
   }
 
@@ -424,41 +440,32 @@ export class ChannelService {
     chanId: number,
     userId: number,
     action: number,
+    owner: number,
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
+      relations: ['Moderators', 'owner', 'members'],
     });
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
-    }
+    if (!channel) throw new NotFoundException('Channel not found');
+    if (channel.owner.id != owner)
+      throw new NotFoundException('User isnt the owner');
     if (action == 1) {
       const isAlreadyMod = channel.Moderators.some(
-        (member) => member.id === userId,
+        (member) => member.id == userId,
       );
-      if (isAlreadyMod) {
+      if (isAlreadyMod)
         throw new NotFoundException('User already mod from channel');
-      } else {
-        channel.Moderators.push(new User());
+      else {
+        const newMod = await this.userRepository.findOne({
+          where: { id: userId },
+        });
+        channel.Moderators.push(newMod);
       }
     } else {
-      // Remove user from channel.members list
-      channel.Moderators = channel.Moderators.filter(
-        (member) => member.id !== userId,
-      );
+      channel.Moderators = channel.Moderators.filter((mod) => {
+        mod.id != userId;
+      });
     }
-    return this.chanRepository.save(channel);
-  }
-
-  async makeOwner(chanId: number, userId: number): Promise<Channel> {
-    const channel = await this.chanRepository.findOne({
-      where: { id: chanId },
-    });
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
-    }
-    // if (channel.owner.id === requestMaker.id) {
-    //   channel.owner = userId;
-    // }
     return this.chanRepository.save(channel);
   }
 }

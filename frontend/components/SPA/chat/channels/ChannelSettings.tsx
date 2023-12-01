@@ -28,27 +28,31 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
       });
   };
 
+  console.log("these are the muted user", muted);
   const unban = (userId: number) => {
+    console.log("unban", userId);
     axios
-      .post(
+      .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`,
         {
           withCredentials: true,
         }
       ) //0 to unban 1 to ban
       .then((res) => {
+        document.location.reload();
       })
       .catch((err) => console.log(err));
   };
   const unmute = (userId: number) => {
     axios
-      .post(
+      .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/muting/${userId}/0`,
         {
           withCredentials: true,
         }
       ) //0 to unmute 1 to mute
       .then((res) => {
+        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };

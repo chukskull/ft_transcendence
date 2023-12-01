@@ -19,6 +19,7 @@ interface ProfileCompProps {
   type?: "Protected" | "Public" | "achiv" | null;
   inChannel?: boolean;
   channelId?: number;
+  isMod?: boolean;
 }
 
 const ProfileComp = ({
@@ -31,6 +32,7 @@ const ProfileComp = ({
   color,
   inChannel,
   channelId,
+  isMod,
 }: ProfileCompProps) => {
   const { isLoading, data, error } = useQuery("getSession", async () => {
     const res = await axios.get(
@@ -96,7 +98,9 @@ const ProfileComp = ({
               id={id}
               channel={inChannel}
               avatarUrl={img}
+              chann={channelId}
               nickName={nickName}
+              isMod={isMod}
             />
           ))}
       </Modal>

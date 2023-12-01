@@ -118,7 +118,6 @@ export default function VerifyPage() {
 
   function handleSubmit(e: any) {
     e.preventDefault();
-
     dispatch({ type: "VERIFY" });
     doSubmit(inputValues).then(() => dispatch({ type: "VERIFY_SUCCESS" }));
   }
@@ -128,12 +127,11 @@ export default function VerifyPage() {
         className={`${style["rectangle"]} flex flex-col items-center justify-center gap-7   `}
       >
         <h1 className="text-center text-white font-ClashGrotesk-Medium text-3xl">
-          {" "}
-          Authenricate Your Account{" "}
+          Authenricate Your Account
         </h1>
         <form className={style["form"]} onSubmit={handleSubmit}>
           <div className={style["inputs"]}>
-            {inputValues.map((value, index) => {
+            {inputValues.map((value: any, index: any) => {
               return (
                 <Input
                   key={index}
@@ -186,7 +184,7 @@ function Input({
   useEffect(() => {
     requestAnimationFrame(() => {
       if (ref.current !== document.activeElement && isFocused) {
-        ref.current.focus();
+        ref?.current.focus();
       }
     });
   }, [isFocused]);

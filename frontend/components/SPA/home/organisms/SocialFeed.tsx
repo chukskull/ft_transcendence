@@ -12,7 +12,7 @@ export const SocialFeed = () => {
         withCredentials: true,
       })
       .then((res) => {
-        setFriends(res.data);
+        setFriends(res.data.friends);
       })
       .catch((err) => console.log(err));
   }, []);
