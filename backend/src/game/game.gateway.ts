@@ -48,7 +48,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('createGame')
   async createGame(client: Socket) {
-    const opponentId = this.gameService.queue.find(
+    const opponentId = this.gameService.MatchMakingQueue.find(
       (player) => player.socket !== client,
     )?.id;
   }

@@ -9,9 +9,17 @@ import {
 import { Player } from './interfaces/player';
 
 export class GameInstance {
-  public player1: Player;
-  public player2: Player;
-  public _sockets: Socket[];
+  public positionsStruct: {
+    //starting data
+    ballx: number; //default
+    bally: number; //default
+    player1Score: number; //default
+    player2Score: number; //default
+    paddle1YPosition: number; //default
+    paddle2YPosition: number; //default
+  };
+  public player1: Socket;
+  public player2: Socket;
   public player1Score: number;
   public player2Score: number;
   public ball: { x: number; y: number; speedX: number; speedY: number };
@@ -35,98 +43,104 @@ export class GameInstance {
     this.gameEnded = false;
   }
 
-  // public startGame(): void {
-  //   this.gameRunning = true;
-  //   this.gameLoop = setInterval(() => {
-  //     if (this.gameRunning && !this.gameEnded) {
-  //       const prevBall = { ...this.ball };
-  //       this.updateBall(prevBall);
-  //       this.updatePaddle();
-		
-	// 	// {
-	// 	//   ballx: 417,
-	// 	//   bally: 240,
-	// 	//   player1Score: 0,
-	// 	//   player2Score: 0,
-	// 	//   paddle1YPosition: 215,
-	// 	//   paddle2YPosition: 215,
-	// 	// }
-  //       this.player1.emit('sendBallState', this.ball);
-  //       this.player2.emit('sendBallState', this.ball);
-  //     }
-  //   }, 1000 / 60);
-  // }
+  public startGame(): void {
+    this.gameRunning = true;
+    this.positionsStruct = {
+      //starting data
+      ballx: 417, //default
+      bally: 240, //default
+      player1Score: 0, //default
+      player2Score: 0, //default
+      paddle1YPosition: 215, //default
+      paddle2YPosition: 215, //default
+    };
+    this.gameLoop = setInterval(() => {
+      if (this.gameRunning && !this.gameEnded) {
+        this.player1.on('positionUpdate', (data) => {
+          this.paddle1Position = data;
+        });
+        this.player2.on('positionUpdate', (data) => {
+          this.paddle2Position = data;
+        });
+        this.player1.emit('roomPostions' + 1, {
+          ballX: this.ball.x,
+          ballY: this.ball.y,
+          player1Score: this.player1Score,
+          player2Score: this.player2Score,
+          enemyY: this.paddle2Position,
+        });
+        this.player2.emit('roomPostions' + 2, {
+          ballX: this.ball.x,
+          ballY: this.ball.y,
+          player1Score: this.player2Score,
+          player2Score: this.player1Score,
+          enemyY: this.paddle1Position,
+        });
+        
+        // call the math function
+        // calculate_movement();
+      }
+    }, 1000 / 60);
+  }
+  public updateBall(prevBall): void {
+    prevBall = this.ball;
+    const paddle1Position = this.paddle1Position;
+    const paddle2Position = this.paddle2Position;
 
-  // public endGame(): void {
-  //   this.gameEnded = true;
-  //   this.gameRunning = false;
-  //   this.player1.disconnect();
-  //   this.player2.disconnect();
-  //   clearInterval(this.gameLoop);
-  // }
+    // Move ball
+    prevBall.x += prevBall.speedX;
+    prevBall.y += prevBall.speedY;
 
-  // public updateBall(prevBall): void {
-  //   prevBall = this.ball;
-  //   const paddle1Position = this.paddle1Position;
-  //   const paddle2Position = this.paddle2Position;
+    // Bounce off top and bottom edges
+    if (
+      prevBall.y + prevBall.speedY > GAME_HEIGHT - BALL_RADIUS ||
+      prevBall.y + prevBall.speedY < BALL_RADIUS
+    )
+      prevBall.speedY = -prevBall.speedY;
+    // Bounce off paddles
+    else if (
+      prevBall.x + prevBall.speedX > GAME_WIDTH - 13 ||
+      (prevBall.x + prevBall.speedX < 25 &&
+        prevBall.y >= paddle1Position &&
+        prevBall.y <= paddle1Position + 110) ||
+      prevBall.x + prevBall.speedX < 13 ||
+      (prevBall.x + prevBall.speedX > 775 &&
+        prevBall.y >= paddle2Position &&
+        prevBall.y <= paddle2Position + 110)
+    ) {
+      const increasedSpeed = -prevBall.speedX;
+      prevBall.speedX = increasedSpeed;
+    }
 
-  //   // Move ball
-  //   prevBall.x += prevBall.speedX;
-  //   prevBall.y += prevBall.speedY;
+    // Score
+    if (prevBall.x < 0) {
+      this.player2Score++;
+      this.resetBall();
+    } else if (prevBall.x > GAME_WIDTH) {
+      this.player1Score++;
+      this.resetBall();
+    }
+  }
+  public endGame(): void {
+    this.gameEnded = true;
+    this.gameRunning = false;
+    this.player1.disconnect();
+    this.player2.disconnect();
+    clearInterval(this.gameLoop);
+  }
+  public resetBall(): void {
+    this.updateScore();
+    this.player1.emit('sendBallState', this.ball);
+    this.player2.emit('sendBallState', this.ball);
+    this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
+  }
+  public updateScore(): void {
+    this.player1.on('updateScore', (score) => {
+      this.player1Score = score;
+    });
+    this.player2.on('updateScore', (score) => {
+      this.player2Score = score;
+    });
+  }
+  }
 
-  //   // Bounce off top and bottom edges
-  //   if (
-  //     prevBall.y + prevBall.speedY > GAME_HEIGHT - BALL_RADIUS ||
-  //     prevBall.y + prevBall.speedY < BALL_RADIUS
-  //   )
-  //     prevBall.speedY = -prevBall.speedY;
-  //   // Bounce off paddles
-  //   else if (
-  //     prevBall.x + prevBall.speedX > GAME_WIDTH - 13 ||
-  //     (prevBall.x + prevBall.speedX < 25 &&
-  //       prevBall.y >= paddle1Position &&
-  //       prevBall.y <= paddle1Position + 110) ||
-  //     prevBall.x + prevBall.speedX < 13 ||
-  //     (prevBall.x + prevBall.speedX > 775 &&
-  //       prevBall.y >= paddle2Position &&
-  //       prevBall.y <= paddle2Position + 110)
-  //   ) {
-  //     const increasedSpeed = -prevBall.speedX;
-  //     prevBall.speedX = increasedSpeed;
-  //   }
-
-  //   // Score
-  //   if (prevBall.x < 0) {
-  //     this.player2Score++;
-  //     this.resetBall();
-  //   } else if (prevBall.x > GAME_WIDTH) {
-  //     this.player1Score++;
-  //     this.resetBall();
-  //   }
-  // }
-
-  // public resetBall(): void {
-  //   this.updateScore();
-  //   this.player1.emit('sendBallState', this.ball);
-  //   this.player2.emit('sendBallState', this.ball);
-  //   this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
-  // }
-
-  // public updateScore(): void {
-  //   this.player1.on('updateScore', (score) => {
-  //     this.player1Score = score;
-  //   });
-  //   this.player2.on('updateScore', (score) => {
-  //     this.player2Score = score;
-  //   });
-  // }
-
-  // public updatePaddle(): void {
-  //   this.player1.on('sendPaddleState', (paddleState) => {
-  //     this.paddle1Position = paddleState;
-  //   });
-  //   this.player2.on('sendPaddleState', (paddleState) => {
-  //     this.paddle2Position = paddleState;
-  //   });
-  // }
-}

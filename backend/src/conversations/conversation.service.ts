@@ -125,4 +125,15 @@ export class ConversationService {
     ]);
     return conv;
   }
+
+  // deleteConversation(convId: number)
+  async deleteConversation(convId: number) {
+    const conv = await this.conversationRepository.findOne({
+      where: { id: convId },
+      relations: ['members', 'chats'],
+    });
+    if (!conv) throw new NotFoundException('Conversation not found');
+    await this.conversationRepository.remove(conv);
+    return conv;
+  }
 }

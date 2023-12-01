@@ -12,6 +12,7 @@ import { UserService } from 'src/user/user.service';
 const jwt = require('jsonwebtoken');
 import { Inject } from '@nestjs/common';
 import { GameGateway } from './game.gateway';
+
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
@@ -29,7 +30,7 @@ export enum PlayerNumber {
 
 @Injectable()
 export class GameService {
-  public queue: Array<{ id: number; socket: Socket }> = [];
+  public MatchMakingQueue: Array<{ id: number; socket: Socket }> = [];
   private currPlayers = new Array<{ id: number; socket: Socket }>();
   private activeGames: { [key: string]: GameInstance } = {};
   public onlineUsers = new Map<number, Set<Socket>>();
@@ -108,7 +109,6 @@ export class GameService {
     const game = this.activeGames[client.id + ',' + player2.id];
     if (!game) return;
     delete this.activeGames[client.id + ',' + player2.id];
-
   }
 
   /*
@@ -119,7 +119,6 @@ export class GameService {
       if (game.gameRunning) {
         const prevBall = { ...game.ball };
         // game.updateBall(prevBall);
-        // game.updatePaddle();
       }
     }
   }
@@ -138,7 +137,6 @@ export class GameService {
     const { player1, player2 } = payload;
     const game = this.activeGames[player1.id + ',' + player2.id];
     if (!game) return;
-    // game.updatePaddle();
   }
 
   async updateScore(client: Socket, payload: any): Promise<void> {
@@ -212,7 +210,7 @@ export class GameService {
   }
 
   /*
-   * Join matchmaking queue
+   * Join matchmaking MatchMakingQueue
    */
   async joinQueue(client: Socket, token: string): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
@@ -221,13 +219,32 @@ export class GameService {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
     }
-
-    this.queue.push({ id: userId, socket: client });
+    client.join('MatchMakingQueue' + userId);
+    const isInQueue = this.MatchMakingQueue.find((player) => {
+      return player.id == userId;
+    });
+    if (!isInQueue) {
+      this.MatchMakingQueue.push({ id: userId, socket: client });
+      // this.server.to('MatchMakingQueue' + userId).emit('changeState', {
+      //   state: 'inQueue',
+      //   message: 'waiting for other opponent to join',
+      // });
+    } else {
+      // this.server.to('MatchMakingQueue' + userId).emit('changeState', {
+      //   state: 'failed',
+      //   message: 'already in queue',
+      // });
+    }
+    if (this.MatchMakingQueue.length >= 2) {
+      const player1 = this.MatchMakingQueue.shift();
+      const player2 = this.MatchMakingQueue.shift();
+      this.createGame(player1, player2);
+    }
     return true;
   }
 
   /*
-   * leave matchmaking queue
+   * leave matchmaking MatchMakingQueue
    */
 
   async leaveQueue(client: Socket) {
@@ -242,30 +259,20 @@ export class GameService {
         this.onlineUsers.delete(user.id);
       }
     }
-    this.queue = this.queue.filter((player) => {
+    this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
       return player.id !== user.id;
     });
-    client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving queue
+    client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
   }
   /*
-   * creates a game instance and adds it to the activeGames object
+   * start game
    */
-  createGame(socket: Socket, payload: any) {
-    socket.on('acceptInvite', (payload) => {
-      this.acceptInvite(socket, payload); // starts game inside acceptInvite
-    });
-    // this.gateway.newEmit({ data: { state: 'inGame' } }, 'nameofebemt', null);
-    const isthere2inqueue = this.queue.length >= 2;
-    if (isthere2inqueue) {
-      const player1 = this.queue.shift();
-      const player2 = this.queue.shift();
-      if (player1 && player2) {
-        //   take user from queue bcs user in queue has the .id to update data in MH , .Socket to send data to front
-        // const game = new GameInstance(player1, player2);
-
-        // const game = new GameInstance(player1.socket, player2.socket); // this is a class
-        // game.startGame();
-      }
-    }
+  createGame(player1: any, player2: any): void {
+    player1.socket.join('gameStart' + player1.id);
+    player2.socket.join('gameStart' + player2.id);
+    const game = new GameInstance(player1.socket, player2.socket); // take the entire player
+    // server.to('gameStart' + player1.id).emit('gameStarted');
+    // server.to('gameStart' + player2.id).emit('gameStarted');
+    game.startGame();
   }
 }
