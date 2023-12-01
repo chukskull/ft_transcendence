@@ -66,7 +66,7 @@ export class UserController {
   @Post('/update')
   @UseGuards(JwtGuard)
   async update(@Body() data: updateDto) {
-    return this.usersService.updateUserInfo(data);3
+    return this.usersService.updateUserInfo(data);
   }
 
   @Get('profile/:userId')
@@ -137,7 +137,7 @@ export class UserController {
     return this.usersService.handleFriendRequest(id, action, req.user.id);
   }
 
-  @Post('/handleBlock/:friendId/:action')
+  @Get('/handleBlock/:friendId/:action')
   @UseGuards(JwtGuard)
   async blockFriend(
     @Param('friendId') frId: number,
