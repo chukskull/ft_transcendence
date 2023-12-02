@@ -119,7 +119,7 @@ export const NotificationComp = ({}) => {
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex flex-row gap-4 items-center ">
                       <Avatar src={notif?.icon} size={"large"} />
-                      <h6 className="text-base font-ClashGrotesk-Regular text-white py-1">
+                      <h6 className="text-base font-ClashGrotesk-Regular text-fontlight py-1">
                         {`Congratulations ! ${notif?.description}`}
                       </h6>
                     </div>
@@ -136,6 +136,7 @@ export const NotificationComp = ({}) => {
                         firstName={notif?.firstName}
                         lastName={notif?.lastName}
                         nickName={notif?.nickName}
+                        status={notif?.status}
                       />
                     </div>
                     <div

@@ -34,17 +34,19 @@ export const Result = ({
         alt={"userprofile"}
         className="rounded-full"
       />
-      <h1 className="text-2xl font-ClashGrotesk-Regular text-white">{name}</h1>
+      <h1 className="text-2xl font-ClashGrotesk-Regular text-fontlight">
+        {name}
+      </h1>
 
       <div className="flex flex-row items-center justify-evenly w-[112px]">
         <div>
-          <h1 className="text-2xl font-bold text-white">{scoreleft}</h1>
+          <h1 className="text-2xl font-bold text-fontlight">{scoreleft}</h1>
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">:</h1>
+          <h1 className="text-2xl font-bold text-fontlight">:</h1>
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">{scoreright}</h1>
+          <h1 className="text-2xl font-bold text-fontlight">{scoreright}</h1>
         </div>
       </div>
 

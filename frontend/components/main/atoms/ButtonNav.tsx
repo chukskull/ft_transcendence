@@ -21,7 +21,7 @@ export const ButtonNav = () => {
         className={`flex items-center z-10 justify-between border-1 border-purple-600 
       rounded-xl bg-inherit font-ClashGrotesk-Medium 
       py-[14px] px-[16px] text-sm font-medium text-gray-500 transition group 
-      ${isHovered ? "text-white" : ""}
+      ${isHovered ? "text-fontlight" : ""}
       `}
         onClick={handleClick}
         onMouseEnter={handleHover}

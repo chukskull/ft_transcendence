@@ -126,7 +126,7 @@ export default function VerifyPage() {
       <div
         className={`${style["rectangle"]} flex flex-col items-center justify-center gap-7   `}
       >
-        <h1 className="text-center text-white font-ClashGrotesk-Medium text-3xl">
+        <h1 className="text-center text-fontlight font-ClashGrotesk-Medium text-3xl">
           Authenricate Your Account
         </h1>
         <form className={style["form"]} onSubmit={handleSubmit}>
@@ -148,7 +148,7 @@ export default function VerifyPage() {
             })}
           </div>
           <Button
-            className={`w-full  text-base text-white font-ClashGrotesk-Medium h-12 ${style["button"]}`}
+            className={`w-full  text-base text-fontlight font-ClashGrotesk-Medium h-12 ${style["button"]}`}
             disabled={status === "pending"}
           >
             {status === "pending" ? "Verifying..." : "Verify"}
@@ -210,7 +210,7 @@ function Input({
 
   return (
     <input
-      className={`${style["input"]} + text-white`}
+      className={`${style["input"]} + text-fontlight`}
       ref={ref}
       type="text"
       value={value}

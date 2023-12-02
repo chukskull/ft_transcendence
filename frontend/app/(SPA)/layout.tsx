@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="p-2">
+    <main className="">
       <TopLeftNav />
       {children}
     </main>

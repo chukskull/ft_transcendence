@@ -5,11 +5,11 @@ const About = () => {
     <div className="mx-auto  p-[1.25rem]">
       <div className="flex items-center justify-between">
         <div className="">
-          <h1 className="text-white font-ClashGrotesk-Semibold text-5xl">
+          <h1 className="text-fontlight font-ClashGrotesk-Semibold text-5xl">
             {" "}
             Our <span className="gamesvg">Vison: </span>
           </h1>
-          <p className="text-white w-[60ch] max-sm:w-[100%] mt-8 font-ClashGrotesk-Regular text-base opacity-80">
+          <p className="text-fontlight w-[60ch] max-sm:w-[100%] mt-8 font-ClashGrotesk-Regular text-base opacity-80">
             Be ready for an electrifying high-pace ping-pong game, with varying
             difficulties and different environments! Compare the scores with
             players worldwide and compete for different rewards, using our

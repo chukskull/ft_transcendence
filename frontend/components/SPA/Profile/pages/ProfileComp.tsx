@@ -66,7 +66,7 @@ export default function Profile({ id }: any) {
 
   return (
     <div className="Parent max-w-[1536px] m-auto">
-      <h1 className="font-custom text-white text-2xl font-ClashGrotesk-Regular">
+      <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular">
         <span style={{ display: "flex", alignItems: "center" }}>
           <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
           {data.firstName && data.lastName
@@ -83,7 +83,7 @@ export default function Profile({ id }: any) {
           }
         />
         <div className="">
-          <h1 className="text-white xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl ">
+          <h1 className="text-fontlight xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl ">
             {truncateText(
               data.firstName && data.lastName
                 ? `${data.firstName} ${data.lastName}`
@@ -91,7 +91,7 @@ export default function Profile({ id }: any) {
               15
             )}
           </h1>
-          <h1 className="font-ClashGrotesk-Medium text-white opacity-80">
+          <h1 className="font-ClashGrotesk-Medium text-fontlight opacity-80">
             #{truncateText(data?.nickName, 10)}
           </h1>
           <AddFriend
@@ -119,7 +119,7 @@ export default function Profile({ id }: any) {
           className="C-1"
           style={{ overflow: "auto", paddingInline: "40px" }}
         >
-          <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-white  p-2 text-center">
+          <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight  p-2 text-center">
             Leaderboard
           </h1>
 
@@ -142,7 +142,7 @@ export default function Profile({ id }: any) {
           <MiddleComponent index={active} data={data} isLoading={isLoading} />
         </div>
         <div className="C-3 overflow-y-auto w-[100%] ">
-          <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-white text-center p-2 ">
+          <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight text-center p-2 ">
             Archivements
           </h1>
           <Achievement data={data.Achievement} />

@@ -139,7 +139,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     <>
       <form className="flex flex-col  gap-3">
         <div className="flex flex-col gap-4 items-center">
-          <h1 className="text-white font-ClashGrotesk-Semibold text-2xl">
+          <h1 className="text-fontlight font-ClashGrotesk-Semibold text-2xl">
             Settings
           </h1>
           <div className="relative h-24 w-24 mt-2">
@@ -157,11 +157,11 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             </div>
           </div>
 
-          <h1 className="font-ClashGrotesk-Semibold text-white text-2xl text-center">
+          <h1 className="font-ClashGrotesk-Semibold text-fontlight text-2xl text-center">
             {myData?.nickName}
           </h1>
           <div className="flex flex-col gap-2">
-            <h1 className="font-ClashGrotesk-Regular text-white text-lg">
+            <h1 className="font-ClashGrotesk-Regular text-fontlight text-lg">
               Change UserName
             </h1>
             <Input
@@ -169,12 +169,12 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               maxLength={12}
               type="name"
               aria-label="Name"
-              className="bg-inherit text-white"
+              className="bg-inherit text-fontlight"
             />
           </div>
         </div>
         <div className="flex  items-center justify-between px-2 my-4">
-          <h1 className="text-white font-ClashGrotesk-Regular text-base">
+          <h1 className="text-fontlight font-ClashGrotesk-Regular text-base">
             Enable 2Fa
           </h1>
 
@@ -190,7 +190,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         </div>
         {qrCode && checked && (
           <div className="flex flex-col gap-2 items-center">
-            <h1 className="text-white font-ClashGrotesk-Regular text-base">
+            <h1 className="text-fontlight font-ClashGrotesk-Regular text-base">
               Scan QR Code
             </h1>
             <img src={qrCode} alt="qr code" />
@@ -198,7 +198,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         )}
         <div className="flex items-center justify-between gap-8">
           <Button
-            className="bg-inherit text-white font-ClashGrotesk-Medium text-base text-center"
+            className="bg-inherit text-fontlight font-ClashGrotesk-Medium text-base text-center"
             onClick={onClose}
           >
             Cancel
@@ -206,7 +206,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           <Button
             // type="submit"
             onClick={updateUser}
-            className="bg-buttonbg text-white font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
+            className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >
             Save
           </Button>

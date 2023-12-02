@@ -12,11 +12,11 @@ interface Styles {
 }
 
 const styles: Styles = {
-  label: "text-gray-400 dark:text-white/90 font-bold text-sm mb-1 pl-2",
+  label: "text-gray-400 dark:text-fontlight/90 font-bold text-sm mb-1 pl-2",
   input: [
     "bg-transparent",
-    "text-white dark:text-white/90",
-    "placeholder:text-white dark:placeholder:text-white/60",
+    "text-fontlight dark:text-fontlight/90",
+    "placeholder:text-fontlight dark:placeholder:text-fontlight/60",
     "placeholder-opacity-60",
     "pl-2",
     "font-bold",
@@ -127,7 +127,7 @@ export default function Fill() {
               <Button
                 type="submit"
                 className="mt-2 w-[140px] h-[40px] gradient-button 
-           text-white shadow-lg rounded-3xl"
+           text-fontlight shadow-lg rounded-3xl"
                 onClick={handleSubmit(addNewUser)}
               >
                 Play

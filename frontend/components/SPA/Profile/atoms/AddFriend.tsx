@@ -20,7 +20,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
   const buttonSize = "12";
 
   const commonIconProps = {
-    className: "group-hover:text-white transition text-white",
+    className: "group-hover:text-fontlight transition text-fontlight",
     size: 25,
   };
 
@@ -78,7 +78,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
           {icon}
         </div>
       </button>
-      <h1 className="text-white font-ClashGrotesk-Regular text-base group-hover:text-white transition opacity-80">
+      <h1 className="text-fontlight font-ClashGrotesk-Regular text-base group-hover:text-fontlight transition opacity-80">
         {buttonText}
       </h1>
     </div>

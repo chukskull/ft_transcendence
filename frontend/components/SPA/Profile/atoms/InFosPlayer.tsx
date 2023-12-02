@@ -20,7 +20,7 @@ export const InFosPlayer = ({
     <div className="bg-none">
       <Button
         onClick={whenClick}
-        className={`bg-inherit opacity-90 font-ClashGrotesk-Medium text-lg text-white border-1  border-x-0 border-y-0 rounded-none ${
+        className={`bg-inherit opacity-90 font-ClashGrotesk-Medium text-lg text-fontlight border-1  border-x-0 border-y-0 rounded-none ${
           active ? string : "border-b-0"
         }`}
       >

@@ -36,10 +36,10 @@ export const Stats = ({ perc, rank, matches }: StatsProps) => {
     <div className="flex    items-center lg:gap-2 flex-row md:gap-2">
       <div className="flex flex-col items-center  justify-between  lg:w-[150px] lg:h-[150px]  w-[100px] h-[100px]">
         <Circle perc={perc ? perc : 0} size={IsDes ? 75 : 50} />
-        <h1 className=" text-white lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
+        <h1 className=" text-fontlight lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
           {perc ? perc : 0}%
         </h1>
-        <h1 className=" text-white lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
+        <h1 className=" text-fontlight lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
           Win Rate
         </h1>
       </div>
@@ -50,10 +50,10 @@ export const Stats = ({ perc, rank, matches }: StatsProps) => {
           height={IsDes ? 75 : 50}
           alt="rank"
         />
-        <h1 className=" text-white lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
+        <h1 className=" text-fontlight lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
           {rank ? rank : "Iron"}
         </h1>
-        <h1 className=" text-white lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
+        <h1 className=" text-fontlight lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
           Ranking
         </h1>
       </div>
@@ -65,10 +65,10 @@ export const Stats = ({ perc, rank, matches }: StatsProps) => {
           height={IsDes ? 75 : 50}
           alt="punch"
         />
-        <h1 className=" text-white lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
+        <h1 className=" text-fontlight lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
           {matches}
         </h1>
-        <h1 className=" text-white lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
+        <h1 className=" text-fontlight lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
           Matches played
         </h1>
       </div>

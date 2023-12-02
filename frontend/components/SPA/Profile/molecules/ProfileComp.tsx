@@ -8,6 +8,7 @@ import axios from "axios";
 import { useMediaQuery } from "@mantine/hooks";
 import { last } from "lodash";
 import { useQuery } from "react-query";
+import { stat } from "fs";
 
 interface ProfileCompProps {
   id?: number;
@@ -17,6 +18,7 @@ interface ProfileCompProps {
   lastName?: string;
   color?: string;
   type?: "Protected" | "Public" | "achiv" | null;
+  status?: string;
   inChannel?: boolean;
   channelId?: number;
   isMod?: boolean;
@@ -29,6 +31,7 @@ const ProfileComp = ({
   firstName,
   lastName,
   type,
+  status,
   color,
   inChannel,
   channelId,
@@ -58,6 +61,28 @@ const ProfileComp = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  type StatusType =
+    | "success"
+    | "warning"
+    | "default"
+    | "primary"
+    | "secondary"
+    | "danger"
+    | undefined;
+
+  const getActivityStatus = (status: string | undefined): StatusType => {
+    switch (status) {
+      case "online":
+        return "success";
+      case "offline":
+        return "danger";
+      case "ingame":
+        return "warning";
+      default:
+        return "default";
+    }
+  };
 
   const handleModalClick = () => {
     if (type === "Protected") {
@@ -113,15 +138,15 @@ const ProfileComp = ({
       >
         {/* Use size="sm" for tablets and mobiles */}
         <Avatar
-          isBordered
-          color="success"
+          isBordered={status ? true : false}
+          color={getActivityStatus(status)}
           src={img}
           size={isTabletOrMobile ? "sm" : "md"}
         />
         <div className="m-0 p-0">
           {/* Truncate long names and nicknames */}
           <h4
-            className={`text-white font-ClashGrotesk-Medium text-base m-0 p-0 ${
+            className={`text-fontlight font-ClashGrotesk-Medium text-base m-0 p-0 ${
               isTabletOrMobile ? "sm:text-sm" : ""
             }`}
           >
@@ -130,7 +155,7 @@ const ProfileComp = ({
               : `${firstName} ${lastName}`}
           </h4>
           <h6
-            className={`text-white font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0 ${
+            className={`text-fontlight font-ClashGrotesk-Regular text-sm opacity-50 m-0 p-0 ${
               isTabletOrMobile ? "sm:text-xs" : ""
             }`}
           >

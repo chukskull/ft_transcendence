@@ -6,7 +6,7 @@ export const Footer = () => {
   return (
     <div className="mt-5">
       <div className="footer-header my-3">
-        <h1 className="text-white text-center font-ClashGrotesk-Semibold text-4xl">
+        <h1 className="text-fontlight text-center font-ClashGrotesk-Semibold text-4xl">
           Meet Our Team:
         </h1>
       </div>
@@ -56,6 +56,13 @@ const StudentsInfos = [
   {
     name: "Ahmed El Mountassir",
     title: "Full Stack Developer",
+
+    img: "https://avatars.githubusercontent.com/u/49590486?s=400&u=62f724f6350cb04749e80f7b33ab4575bfd8890d",
+    parag: "E leetinitiative for everyone",
+  },
+  {
+    name: "Issam el mekhfi",
+    title: "Cyber Security",
 
     img: "https://avatars.githubusercontent.com/u/49590486?s=400&u=62f724f6350cb04749e80f7b33ab4575bfd8890d",
     parag: "E leetinitiative for everyone",

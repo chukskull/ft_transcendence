@@ -48,6 +48,8 @@ const config: Config = {
         buttonbg: "#3E0756",
         bghover: "#fefcfc33",
         stats: "#851487",
+        silver : "#C0C0C0",
+        fontlight: "#F5F5F5"
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

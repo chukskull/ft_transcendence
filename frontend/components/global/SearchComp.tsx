@@ -110,7 +110,7 @@ const SearchComp = () => {
         />
       </div>
       {activeSearch.length > 0 && (
-        <div className="absolute top-20 p-4 bg-black text-white w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
+        <div className="absolute top-20 p-4 bg-black text-fontlight w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
           {activeSearch.map((data: any, index: number) => (
             <ProfileComp
               key={index}
@@ -121,6 +121,7 @@ const SearchComp = () => {
               firstName={data?.isChannel ? data?.name : data?.firstName}
               lastName={data?.isChannel ? "" : data?.lastName}
               channelId={data?.id}
+              status={data?.isChannel ? null : data?.status}
               type={
                 data?.isChannel
                   ? getChannelStatus(data) === "Public"

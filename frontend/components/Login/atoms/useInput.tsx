@@ -5,11 +5,11 @@ import { useInput } from "@nextui-org/react";
 // import {CloseFilledIcon} from "./CloseFilledIcon";
 
 const styles = {
-  label: "text-black/50 dark:text-white/90",
+  label: "text-black/50 dark:text-fontlight/90",
   input: [
     "bg-transparent",
-    "text-black/90 dark:text-white/90",
-    "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+    "text-black/90 dark:text-fontlight/90",
+    "placeholder:text-default-700/50 dark:placeholder:text-fontlight/60",
   ],
   innerWrapper: "bg-transparent",
   inputWrapper: [
@@ -54,7 +54,7 @@ const MyInput = forwardRef((props, ref) => {
     type: "search",
     placeholder: "Type to search...",
     // startContent: (
-    //   <SearchIcon className="text-black/50 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
+    //   <SearchIcon className="text-black/50 dark:text-fontlight/90 text-slate-400 pointer-events-none flex-shrink-0" />
     // ),
     // custom styles
     classNames: {
@@ -91,7 +91,7 @@ const MyInput = forwardRef((props, ref) => {
   }, [startContent, end, getInputProps, getInnerWrapperProps]);
 
   return (
-    <div className="w-[340px] h-[300px] px-8 rounded-2xl flex justify-center items-center bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg">
+    <div className="w-[340px] h-[300px] px-8 rounded-2xl flex justify-center items-center bg-gradient-to-tr from-pink-500 to-yellow-500 text-fontlight shadow-lg">
       <Component {...getBaseProps()}>
         {shouldLabelBeOutside ? labelContent : null}
         <div

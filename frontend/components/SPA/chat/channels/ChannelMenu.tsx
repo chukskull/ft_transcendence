@@ -44,8 +44,8 @@ const InviteSection = ({ chandId }: any) => {
       />
 
       <div className={style["invite-list"]}>
-        {friends.map((e: any) => (
-          <div className={style["friend"]}>
+        {friends.map((e: any, index: number) => (
+          <div key={index} className={style["friend"]}>
             <ProfileComp
               key={e.id}
               id={e.id}
@@ -54,6 +54,7 @@ const InviteSection = ({ chandId }: any) => {
               firstName={e.firstName}
               lastName={e.lastName}
               channelId={e.id}
+              status={e.status}
             />
             <button
               onClick={() => {
@@ -82,6 +83,7 @@ const AuthoritySection = ({ owner, mods, chanID }: any) => {
         lastName={owner?.lastName}
         inChannel={true}
         channelId={chanID}
+        status={owner?.status}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>
@@ -96,6 +98,7 @@ const AuthoritySection = ({ owner, mods, chanID }: any) => {
             inChannel={true}
             channelId={e.id}
             isMod={true}
+            status={e.status}
           />
         ))}
       </div>
@@ -119,6 +122,7 @@ const MembersSection = ({ members, channelId }: any) => {
               lastName={e?.lastName}
               inChannel={true}
               channelId={channelId}
+              status={e?.status}
             />
           </div>
         ))}

@@ -125,7 +125,7 @@ const Game: React.FC = () => {
         )}
         <div>
           <Button
-            className="bg-live text-white font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
+            className="bg-live text-fontlight font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
             data-hover
             data-focus
             onClick={() => {

@@ -32,7 +32,7 @@ export const ProtectedModal = ({ channelId }: { channelId: any }) => {
 
   return (
     <div className="p-12 flex flex-col gap-5 w-[90%]">
-      <h1 className="text-xl font-ClashGrotesk-Semibold text-white w-[90%] text-center">
+      <h1 className="text-xl font-ClashGrotesk-Semibold text-fontlight w-[90%] text-center">
         {" "}
         Please enter the password to join
       </h1>
@@ -55,7 +55,7 @@ export const ProtectedModal = ({ channelId }: { channelId: any }) => {
 
         <Button
           type="submit"
-          className="font-ClashGrotesk-Medium text-white bg-buttonbg"
+          className="font-ClashGrotesk-Medium text-fontlight bg-buttonbg"
         >
           Join
         </Button>
