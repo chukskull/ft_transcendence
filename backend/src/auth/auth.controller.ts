@@ -58,7 +58,7 @@ export class AuthController {
     await this.userRepository.update(req.user.id, { authenticated: false });
     await this.userService.setStatus(req.user.id, 'offline');
     res.clearCookie('token');
-    res.redirect(process.env.frontendUrl);
+    res.sendStatus(HttpStatus.OK);
   }
 
   @Get('/google')
@@ -94,13 +94,16 @@ export class AuthController {
     console.log(secret);
     await this.userService.saveTwoFactorSecret(secret, req.user.id);
 
-    return (toDataURL(otpUri));
-
-  } 
+    return toDataURL(otpUri);
+  }
 
   @Post('/2fa/authenticate')
   @UseGuards(JwtGuard)
-  async turnOn2fa(@Req() req,@Body() { pin } : TwoFactorAuthenticationCodeDto, @Res() res) {
+  async turnOn2fa(
+    @Req() req,
+    @Body() { pin }: TwoFactorAuthenticationCodeDto,
+    @Res() res,
+  ) {
     const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(
       pin,
       req.user,
@@ -109,7 +112,7 @@ export class AuthController {
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong code');
     } else {
-      res.redirect(process.env.frontendUrl + '/home')
+      res.redirect(process.env.frontendUrl + '/home');
     }
     await this.userService.enableTwoFactor(req.user.id);
 

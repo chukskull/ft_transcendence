@@ -33,7 +33,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     client: Socket,
   ) {
-    this.gameService.joinQueue(client, data?.token);
+    this.gameService.joinQueue(client, this.server, data?.token);
     return true;
   }
 
@@ -51,6 +51,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const opponentId = this.gameService.MatchMakingQueue.find(
       (player) => player.socket !== client,
     )?.id;
+    this.gameService.createGame(client, opponentId, this.server);
   }
 
   @SubscribeMessage('sendBallState')
