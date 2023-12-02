@@ -55,6 +55,7 @@ export const MiddleComponent = ({
               firstName={user.firstName}
               lastName={user.lastName}
               channelId={user.id}
+              id={user.id}
             />
           </div>
         ))}

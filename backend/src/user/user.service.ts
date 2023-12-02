@@ -217,10 +217,6 @@ export class UserService {
     return this.userRepository.update(clientID, { status: status });
   }
 
-  async setStatusByNick(nickName: string, status: string): Promise<any> {
-    return this.userRepository.update(nickName, { status: status });
-  }
-
   async getLeaderboard(): Promise<User[]> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     queryBuilder.orderBy('user.experience', 'DESC');
@@ -350,29 +346,6 @@ export class UserService {
     return { message: 'Friend request handeled' };
   }
 
-  async removeFriend(clientID: number, friendID: number): Promise<any> {
-    const client = await this.userRepository.findOne({
-      where: { id: clientID },
-      relations: ['friends'],
-    });
-
-    const friend = await this.userRepository.findOne({
-      where: { id: friendID },
-      relations: ['friends'],
-    });
-
-    if (!client || !friend) {
-      throw new NotFoundException('User not found.');
-    }
-
-    client.friends = client.friends.filter((f) => f.id !== friendID);
-    friend.friends = friend.friends.filter((f) => f.id !== clientID);
-
-    await this.userRepository.save(client);
-    await this.userRepository.save(friend);
-    return { message: 'Friend removed' };
-  }
-
   private isAlreadyFriend(client: User, friend: User): boolean {
     return client.friends.some((f) => f.id === friend.id);
   }
@@ -386,6 +359,9 @@ export class UserService {
   }
 
   async handleBlock(blockedID: number, handlerId: number, action: number) {
+    if (blockedID === handlerId) {
+      return { message: 'Cannot block yourself' };
+    }
     const client = await this.userRepository.findOne({
       where: { id: handlerId },
       relations: [
@@ -521,9 +497,7 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
     });
-    if (!user) {
-      throw new NotFoundException('User not found.');
-    }
+    if (!user) throw new NotFoundException('User not found.');
 
     const level = Math.floor(xp / (1098 + user.level * 100));
     user.level = level;

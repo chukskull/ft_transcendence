@@ -39,14 +39,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
           className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-start items-center p-10 gap-6`}
         >
           <span className="text-white font-ClashGrotesk-Semibold text-lg flex items-center">
-            {index < 9 ? (
-              `#0${index + 1}`
-            ):
-            (
-              `#${index + 1}`
-
-            )}
-
+            {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
           </span>
 
           <ProfileComp

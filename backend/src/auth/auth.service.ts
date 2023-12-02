@@ -12,7 +12,7 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async checkUser(username: string, email: string) {
+  async checkUser(intraLogin: string, email: string) {
     const user = await this.userService.findOne(email);
     if (!user) {
       return null;
