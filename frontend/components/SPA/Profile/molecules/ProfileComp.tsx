@@ -144,7 +144,7 @@ const ProfileComp = ({
         <div className="m-0 p-0">
           {/* Truncate long names and nicknames */}
           <h4
-            className={`text-fontlight font-ClashGrotesk-Medium text-base m-0 p-0 ${
+            className={`text-fontlight font-ClashGrotesk-Medium text-base m-0 p-0 truncate${
               isTabletOrMobile ? "sm:text-sm" : ""
             }`}
           >

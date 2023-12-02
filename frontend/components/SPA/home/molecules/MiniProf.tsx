@@ -17,7 +17,7 @@ export const MiniProf = ({ image, name, id }: MiniProfProps) => {
     <div>
       <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[120px] bg-friend rounded-xl">
         <Avatar isBordered color="success" src={image} />
-        <h1 className="max-w-[8ch] text-fontlight text-base font-semibold">
+        <h1 className="max-w-[8ch] text-fontlight text-base font-semibold truncate">
           {name}
         </h1>
         <Button

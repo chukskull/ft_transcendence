@@ -66,7 +66,7 @@ export default function Profile({ id }: any) {
 
   return (
     <div className="Parent max-w-[1536px] m-auto">
-      <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular">
+      <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular truncate">
         <span style={{ display: "flex", alignItems: "center" }}>
           <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
           {data.firstName && data.lastName
