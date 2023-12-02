@@ -2,7 +2,6 @@
 import style from "@/styles/components/TopLeftNav.module.scss";
 
 import Image from "next/image";
-import { BsBell } from "react-icons/bs";
 import { Badge, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
@@ -10,13 +9,14 @@ import Link from "next/link";
 import ProfileSettingModal from "./ProfileSettingModal";
 import SearchComp from "./SearchComp";
 import { NotificationIcon } from "./NotificationIcon";
-import { notification } from "antd";
 import { NotificationComp } from "./NotificationComp";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [string, setString] = useState<string>("");
+  const router = useRouter();
 
   const handleClick = (comp: string) => {
     onOpen();
@@ -41,7 +41,7 @@ export default function TopLeftNav() {
         </div>
         <SearchComp />
         <div className={`${style["top_notif"]} + cursor-pointer`}>
-          <NotificationComp count={5} />
+          <NotificationComp />
         </div>
       </div>
       <div className={style["left-bar"]}>
@@ -77,7 +77,7 @@ export default function TopLeftNav() {
                   withCredentials: true,
                 })
                 .then((res) => {
-                  window.location.href = "/";
+                  router.push("/");
                 })
                 .catch((err) => {
                   console.log(err);

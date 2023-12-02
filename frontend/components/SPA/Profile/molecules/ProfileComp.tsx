@@ -5,8 +5,6 @@ import UserMenu from "@/components/SPA/chat/UserMenu";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
-import { useMediaQuery } from "@mantine/hooks";
-import { last } from "lodash";
 import { useQuery } from "react-query";
 
 interface ProfileCompProps {
