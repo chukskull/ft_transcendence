@@ -97,7 +97,10 @@ const ProfileComp = ({
         .catch((err) => {
           console.log(err);
         });
-    } else if (type === "achiv" || data?.id === id) {
+    } else if (
+      type === "achiv" ||
+      data?.nickName.toLowerCase() === nickName?.toLocaleLowerCase()
+    ) {
       setShow(false);
     } else {
       setShow(true);

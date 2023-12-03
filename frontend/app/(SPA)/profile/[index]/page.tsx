@@ -20,8 +20,13 @@ const Profile = () => {
   });
   if (isLoading) return "Loading...";
   if (error) return "An error has occurred: " + error;
-  console.log(data.nickName, params.index, "nancy ajram");
-  if (data?.nickName === `${params.index}`.toLowerCase()) {
+  console.log(
+    data.nickName,
+    params.index,
+    "nancy ajram",
+    data.nickName === `${params.index}`.toLowerCase()
+  );
+  if (data?.nickName.toLowerCase() === `${params.index}`.toLowerCase()) {
     return (
       <div className="p-14">
         <ProfileComp id={"me"} />
