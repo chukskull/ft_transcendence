@@ -346,6 +346,27 @@ export class UserService {
     return { message: 'Friend request handeled' };
   }
 
+  async removeFriend(friendID: number, handlerId: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: handlerId },
+      relations: ['friends'],
+    });
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+      relations: ['friends'],
+    });
+    if (!client || !friend) {
+      throw new NotFoundException('User not found.');
+    }
+    const alreadyFriend = this.isAlreadyFriend(client, friend);
+    if (!alreadyFriend) return { message: 'User not in friends' };
+    client.friends = client.friends.filter((user) => user.id != friendID);
+    friend.friends = friend.friends.filter((user) => user.id != handlerId);
+    await this.userRepository.save(client);
+    await this.userRepository.save(friend);
+    return { message: 'Friend removed' };
+  }
+
   private isAlreadyFriend(client: User, friend: User): boolean {
     return client.friends.some((f) => f.id === friend.id);
   }

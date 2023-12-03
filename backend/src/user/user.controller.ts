@@ -117,15 +117,11 @@ export class UserController {
     return this.usersService.sendFriendRequest(req.user.id, frid);
   }
 
-  // @Post('/removeFriend/:friendId')
-  // @UseGuards(JwtGuard)
-  // async removeFriend(@Param('friendId') id: number, @Req() req: any) {
-  //   return this.usersService.removeFriend(req.user.id, id);
-  // }
-  // async addFriend(@Param('friendId') id: number, @Req() req: any) {
-  //   const myId = req.user.id;
-  //   return this.usersService.sendFriendRequest(myId, id);
-  // }
+  @Post('/removeFriend/:friendId')
+  @UseGuards(JwtGuard)
+  async removeFriend(@Param('friendId') friendId: number, @Req() req: any) {
+    return this.usersService.removeFriend(req.user.id, friendId);
+  }
 
   @Get('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
   @UseGuards(JwtGuard)

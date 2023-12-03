@@ -44,23 +44,22 @@ export const AddFriend: React.FC<AddFriendProps> = ({
 
   const handleRequest = () => {
     if (isFriend === 0) {
-      //add friend
       axios
         .get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addFriend/${userId}`,
           { withCredentials: true }
         )
-        .then((res) => {
-          console.log(res);
-          // window.location.reload();
+        .then(() => {
+          window.location.reload();
         })
         .catch((err) => console.log(err));
     } else if (isFriend === 1) {
-      //remove friend
       axios
-        .delete(`/api/friend-request/${userId}`)
-        .then((res) => {
-          console.log(res);
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${userId}`,
+          { withCredentials: true }
+        )
+        .then(() => {
           window.location.reload();
         })
         .catch((err) => console.log(err));

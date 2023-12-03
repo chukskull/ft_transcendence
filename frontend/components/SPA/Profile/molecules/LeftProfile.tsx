@@ -1,5 +1,4 @@
 import React from "react";
-import { AddFriend } from "../atoms/AddFriend";
 import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface LeftProfileProps {
