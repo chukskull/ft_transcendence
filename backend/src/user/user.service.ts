@@ -405,13 +405,10 @@ export class UserService {
     if (action == 1) {
       const alreadyBlocked = this.isAlreadyBlocked(client, friendUs);
       if (alreadyBlocked) return { message: 'User already blocked' };
-      const friend = this.findFriend(client, blockedID);
-      if (friend) {
-        client.friends = client.friends.filter((user) => user.id != blockedID);
-        friendUs.friends = friendUs.friends.filter(
-          (user) => user.id != handlerId,
-        );
-      }
+      client.friends = client.friends.filter((user) => user.id != blockedID);
+      friendUs.friends = friendUs.friends.filter(
+        (user) => user.id != handlerId,
+      );
       const conversation: any = client.conversations.find(
         (conv) =>
           conv.is_group === false &&

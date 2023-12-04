@@ -28,6 +28,7 @@ function friendStatus(pendingFrReq: any, friendsList: any, userId: any) {
   }
   return 0;
 }
+
 const truncateText = (text: string, maxLength: number) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + "...";
@@ -39,24 +40,36 @@ export default function Profile({ id }: any) {
   const [myData, setMyData] = useState<any>(null);
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
+  function isBlocked() {
+    if (myData?.blockedUsers?.length > 0) {
+      let blocked = myData?.blockedUsers?.find((e: any) => e.nickName == id);
+      if (blocked) return true;
+    }
+    return false;
+  }
 
   function handleActive(index: number) {
     setActive(index);
   }
 
-  function handleBlock() {
-    // axios
-    //   .get(
-    //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/blockUser/${id}`,
-    //     {
-    //       withCredentials: true,
-    //     }
-    //   )
-    //   .then((res) => {
-    //     console.log(res);
-    //     window.location.reload();
-    //   })
-    //   .catch((err) => console.log(err));
+  function handleBlock(blockUnblock: number) {
+    let userId;
+    if (blockUnblock == 1) 
+      userId = myData?.friends?.find((e: any) => e.nickName == id)?.id;
+    else
+      userId = myData?.blockedUsers?.find((e: any) => e.nickName == id)?.id;
+    
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${userId}/${blockUnblock}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((err) => console.log(err));
   }
   useEffect(() => {
     axios
@@ -94,13 +107,14 @@ export default function Profile({ id }: any) {
       ) : (
         <div className="flex items-center justify-end">
           <Button
-            onClick={handleBlock}
+            onClick={() => handleBlock(isBlocked() ? 0 : 1)}
             color={"danger"}
             variant="bordered"
             className="w-fit mt-4"
           >
             <span style={{ display: "flex", alignItems: "center" }}>
-              <FaUserAltSlash style={{ marginRight: "0.5rem" }} /> Block{" "}
+              <FaUserAltSlash style={{ marginRight: "0.5rem" }} />{" "}
+              {isBlocked() ? "Unblock" : "Block"}
             </span>
           </Button>
         </div>
@@ -125,7 +139,6 @@ export default function Profile({ id }: any) {
           <h1 className="font-ClashGrotesk-Medium text-fontlight opacity-80 text-center md:text-start">
             #{truncateText(data?.nickName, 10)}
           </h1>
-
           <AddFriend
             display={id == "me" ? true : false}
             userId={data?.id}

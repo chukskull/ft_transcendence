@@ -393,12 +393,7 @@ export class ChannelService {
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
-      relations: [
-        'owner',
-        'conversation',
-        'conversation.MutedUsers',
-        'Moderators',
-      ],
+      relations: ['owner', 'conversation', 'Moderators', 'MutedUsers'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     if (channel.name === 'Welcome/Global channel')
@@ -412,10 +407,10 @@ export class ChannelService {
     if (!isMod && !isOwner)
       throw new NotFoundException('User not mod from channel');
 
-    if (channel.owner.id === userId)
+    if (channel.owner.id == userId)
       throw new NotFoundException('User is owner');
     if (action == 1) {
-      const isAlreadyMuted = channel.conversation.MutedUsers.some(
+      const isAlreadyMuted = conversation.MutedUsers.some(
         (member) => member?.id == userId,
       );
       if (isAlreadyMuted)
@@ -425,11 +420,16 @@ export class ChannelService {
       });
 
       conversation.MutedUsers?.push(user);
+      channel.MutedUsers?.push(user);
+      console.log('user muted from channel');
     } else {
-      // Remove user from channel.members list
       conversation.MutedUsers = conversation.MutedUsers.filter(
         (member) => member?.id != userId,
       );
+      channel.MutedUsers = channel.MutedUsers.filter(
+        (member) => member?.id != userId,
+      );
+      console.log('user unmuted from channel');
     }
 
     this.conversationRepository.save(conversation);
@@ -455,12 +455,10 @@ export class ChannelService {
       );
       if (isAlreadyMod)
         throw new NotFoundException('User already mod from channel');
-      else {
-        const newMod = await this.userRepository.findOne({
-          where: { id: userId },
-        });
-        channel.Moderators.push(newMod);
-      }
+      const newMod = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+      channel.Moderators.push(newMod);
     } else {
       channel.Moderators = channel.Moderators.filter((mod) => {
         mod.id != userId;

@@ -68,6 +68,10 @@ export default function OnlineGame({
     });
   });
 
+  socket.on("changeState", (data: any) => {
+    console.log("this is event on joinmatchkanmsdkjfhnrewjghenrjgn ",data);
+  });
+
   return (
     <div className={style.gameBody} tabIndex={0}>
       <p>{score.player1}</p>
