@@ -45,6 +45,7 @@ export class GameInstance {
   constructor(first: Player, second: Player, server: Server) {
     this.player1 = first;
     this.player2 = second;
+    this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
     this.player1Score = this.player1.score;
     this.player2Score = this.player2.score;
     this.gameRunning = false;
@@ -55,8 +56,8 @@ export class GameInstance {
     this.gameRunning = true;
     this.positionsStruct = {
       //starting data
-      ballx: 417, //default
-      bally: 240, //default
+      ballx: this.ball.x, //default
+      bally: this.ball.y, //default
       player1Score: 0, //default
       player2Score: 0, //default
       paddle1YPosition: 215, //default
@@ -71,7 +72,7 @@ export class GameInstance {
           this.paddle2Position = data;
         });
         this.player1.socket.emit('roomPostions' + 1, {
-          ballX: this.ball.x,
+          ballX: this.ball.x, // undefined
           ballY: this.ball.y,
           player1Score: this.player1Score,
           player2Score: this.player2Score,

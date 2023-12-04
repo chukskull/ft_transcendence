@@ -228,6 +228,7 @@ export class GameService {
         message: 'already in queue',
       });
     }
+    console.log(this.MatchMakingQueue.length)
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();

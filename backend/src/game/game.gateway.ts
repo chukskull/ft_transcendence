@@ -5,11 +5,10 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -31,7 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       token: string;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
     this.gameService.joinQueue(client, this.server, data?.token);
     return true;
