@@ -6,13 +6,15 @@ import Stats from "@/components/SPA/Profile/molecules/Stats";
 import MiddleComponent from "@/components/SPA/Profile/organisms/MiddleComponent";
 import Achievement from "@/components/SPA/Profile/organisms/Achievement";
 import React, { useState, useEffect } from "react";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaUserAltSlash } from "react-icons/fa";
 import { useQuery } from "react-query";
 import { getUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
+import { Button } from "@nextui-org/react";
+import { tree } from "next/dist/build/templates/app-page";
 
 function friendStatus(pendingFrReq: any, friendsList: any, userId: any) {
   // if friend return 1 if pending return 2 if not return 0
@@ -42,6 +44,20 @@ export default function Profile({ id }: any) {
     setActive(index);
   }
 
+  function handleBlock() {
+    // axios
+    //   .get(
+    //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/blockUser/${id}`,
+    //     {
+    //       withCredentials: true,
+    //     }
+    //   )
+    //   .then((res) => {
+    //     console.log(res);
+    //     window.location.reload();
+    //   })
+    //   .catch((err) => console.log(err));
+  }
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
@@ -66,14 +82,29 @@ export default function Profile({ id }: any) {
 
   return (
     <div className="Parent max-w-[1536px] m-auto">
-      <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular truncate">
-        <span style={{ display: "flex", alignItems: "center" }}>
-          <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
-          {data.firstName && data.lastName
-            ? `${data.firstName} ${data.lastName}`
-            : ``}
-        </span>
-      </h1>
+      {id === "me" ? (
+        <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular truncate">
+          <span style={{ display: "flex", alignItems: "center" }}>
+            <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
+            {data.firstName && data.lastName
+              ? `${data.firstName} ${data.lastName}`
+              : ``}
+          </span>
+        </h1>
+      ) : (
+        <div className="flex items-center justify-end">
+          <Button
+            onClick={handleBlock}
+            color={"danger"}
+            variant="bordered"
+            className="w-fit mt-4"
+          >
+            <span style={{ display: "flex", alignItems: "center" }}>
+              <FaUserAltSlash style={{ marginRight: "0.5rem" }} /> Block{" "}
+            </span>
+          </Button>
+        </div>
+      )}
       <div className={`${id === "me" ? "item-1-me" : "item-1"}`}>
         <LeftProfile
           image={
@@ -83,7 +114,7 @@ export default function Profile({ id }: any) {
           }
         />
         <div className="">
-          <h1 className="text-fontlight xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl ">
+          <h1 className="text-fontlight xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl text-center md:text-start md:mt-10">
             {truncateText(
               data.firstName && data.lastName
                 ? `${data.firstName} ${data.lastName}`
@@ -91,9 +122,10 @@ export default function Profile({ id }: any) {
               15
             )}
           </h1>
-          <h1 className="font-ClashGrotesk-Medium text-fontlight opacity-80">
+          <h1 className="font-ClashGrotesk-Medium text-fontlight opacity-80 text-center md:text-start">
             #{truncateText(data?.nickName, 10)}
           </h1>
+
           <AddFriend
             display={id == "me" ? true : false}
             userId={data?.id}
