@@ -206,7 +206,7 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
         {activeSection === "Settings" && isMod && (
           <ChannelSettings
             banned={channelData?.BannedUsers}
-            muted={channelData?.conversation.MutedUsers}
+            muted={channelData?.MutedUsers}
             id={channel?.id}
             chPrivate={channelData?.is_private}
           />
