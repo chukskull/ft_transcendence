@@ -82,22 +82,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const { token, friendIwantToInvite } = data;
     const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
-    this.gameService.inviteFriend(client, friendIwantToInvite, token, roomName);
+    this.gameService.inviteFriend(client,this.server,friendIwantToInvite, token, roomName);
     client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
-  }
-
-  @SubscribeMessage('inviteResponse')
-  async inviteResponse(client: Socket, @MessageBody() payload: any) {
-    this.gameService.inviteResponse(client, payload);
-  }
-
-  @SubscribeMessage('acceptInvite')
-  async acceptInvite(client: Socket, @MessageBody() payload: any) {
-    this.gameService.acceptInvite(client, payload);
-  }
-
-  @SubscribeMessage('declineInvite')
-  async declineInvite(client: Socket, @MessageBody() payload: any) {
-    this.gameService.declineInvite(client, payload);
   }
 }
