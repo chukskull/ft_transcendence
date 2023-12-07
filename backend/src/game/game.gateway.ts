@@ -53,15 +53,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.gameService.createGame(client, opponentId, this.server);
   }
 
-  @SubscribeMessage('sendBallState')
-  async updateBall(client: Socket, @MessageBody() payload: any) {
-    this.gameService.updateBall(client, payload);
-  }
-
-  @SubscribeMessage('sendPaddleState')
-  async updatePaddle(client: Socket, @MessageBody() payload: any) {
-    this.gameService.updatePaddle(client, payload);
-  }
 
   @SubscribeMessage('updateScore')
   async updateScore(client: Socket, @MessageBody() payload: any) {
