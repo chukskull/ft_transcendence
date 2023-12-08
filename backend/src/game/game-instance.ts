@@ -65,19 +65,22 @@ export class GameInstance {
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
         this.player1.socket.on('positionUpdate', (data) => {
+          console.log('this is p1', data);
           this.paddle1Position = data;
         });
         this.player2.socket.on('positionUpdate', (data) => {
+          console.log('this is p2', data);
+
           this.paddle2Position = data;
         });
-        this.player1.socket.emit('roomPostions' + 1, {
+        this.player1.socket.emit('roomPostions', {
           ballX: this.ball.x, // undefined
           ballY: this.ball.y,
           player1Score: this.player1Score,
           player2Score: this.player2Score,
           enemyY: this.paddle2Position,
         });
-        this.player2.socket.emit('roomPostions' + 2, {
+        this.player2.socket.emit('roomPostions', {
           ballX: this.ball.x,
           ballY: this.ball.y,
           player1Score: this.player2Score,

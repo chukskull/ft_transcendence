@@ -59,6 +59,7 @@ export default function OnlineGame({
   }, [keys]);
 
   socket.on("roomPostions", (data: any) => {
+    console.log("this is the new positions", data);
     setEnemyPaddleY(data.enemyY);
     setBall({
       x: data.ballX,
@@ -72,16 +73,13 @@ export default function OnlineGame({
     console.log("this is event on joinmatchmaking ", data);
   });
 
-  console.log("this is enemy paddle y: ", EnemyPaddleY);
-  console.log("this is player1 paddle y: ", player1PaddleY);
-
   return (
     <div className={style.gameBody} tabIndex={0}>
       <p>{score.player1}</p>
       <div className={style[`${map}`]} tabIndex={0}>
         <div className={style.middleLine} />
-        <div className={style.player1} style={{ top: player1PaddleY }}></div>
-        <div className={style.player2} style={{ top: EnemyPaddleY }}></div>
+        <div className={style.player} style={{ top: player1PaddleY }}></div>
+        <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
         <div
           className={style.ball}
           style={{
