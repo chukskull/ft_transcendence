@@ -40,7 +40,7 @@ export class GameService {
     private jwtService: JwtService,
     @InjectRepository(Achievement)
     private readonly achievementRepo: Repository<Achievement>,
-  ) { }
+  ) {}
 
   /**
    * Invites a friend to play a game.
@@ -68,7 +68,7 @@ export class GameService {
       this.onlineUsers.set(friendId, new Set<Socket>());
       this.onlineUsers.get(friendId)?.add(client);
     }
-    const friendSockets = this.onlineUsers.get(friendId)
+    const friendSockets = this.onlineUsers.get(friendId);
     if (!friendSockets) return;
     // event to be discussed again
     friendSockets.forEach((friendSocket) => {
@@ -192,9 +192,13 @@ export class GameService {
   /*
    * Join matchmaking MatchMakingQueue
    */
-  async joinQueue(client: Socket, server: Server, token: string): Promise<boolean> {
+  async joinQueue(
+    client: any,
+    server: Server,
+    token: string,
+  ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-
+    console.log('use id is', userId);
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
@@ -205,6 +209,9 @@ export class GameService {
     });
     if (!isInQueue) {
       this.MatchMakingQueue.push({ id: userId, socket: client });
+      // empty the the queue on disconnect
+      console.log('i joined the queue');
+      console.log('MatchMakingQueue', this.MatchMakingQueue);
       server.to('MatchMakingQueue' + userId).emit('changeState', {
         state: 'inQueue',
         message: 'waiting for other opponent to join',
@@ -212,14 +219,14 @@ export class GameService {
     } else {
       server.to('MatchMakingQueue' + userId).emit('changeState', {
         state: 'failed',
-        message: 'already in queue',
+        message: 'already in queue/already in game',
       });
     }
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();
-      console.log("player1: ", player1)
-      console.log("player2: ", player2)
+      console.log('player1: ', player1);
+      console.log('player2: ', player2);
       this.createGame(player1, player2, server);
     }
     return true;
@@ -249,12 +256,17 @@ export class GameService {
   /*
    * start game
    */
-  createGame(player1: any, player2: any, server : Server): void {
+  createGame(player1: any, player2: any, server: Server): void {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
     const game = new GameInstance(player1, player2, server); // take the entire player
-    server.to('gameStart' + player1.id).emit('gameStarted');
-    server.to('gameStart' + player2.id).emit('gameStarted');
+    server.to('gameStart' + player1.id).emit('gameStarted', {
+      MyId: player1.id,
+      OpponentId: player2.id,
+    });
+    server
+      .to('gameStart' + player2.id)
+      .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
     game.startGame();
   }
 }

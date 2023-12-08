@@ -68,9 +68,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.gameService.updateScore(client, payload);
   }
 
-  /*
-   * handling invite friends
-   */
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
     @MessageBody()
