@@ -1,3 +1,4 @@
+"use client";
 import { Button, Input } from "@nextui-org/react";
 import axios from "axios";
 import { LockIcon } from "lucide-react";
@@ -11,8 +12,8 @@ export const ProtectedModal = ({ channelId }: { channelId: any }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const router = useRouter();
   const onSubmit = (data: any) => {
-    const router = useRouter();
     const { password } = data;
     axios
       .post(

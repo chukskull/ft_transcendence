@@ -56,7 +56,7 @@ export default function OnlineGame({
     socket.emit("positionUpdate", {
       player1PaddleY,
     });
-  }, [keys, EnemyPaddleY, ball, player1PaddleY]);
+  }, [keys]);
 
   socket.on("roomPostions", (data: any) => {
     setEnemyPaddleY(data.enemyY);
@@ -69,8 +69,11 @@ export default function OnlineGame({
   });
 
   socket.on("changeState", (data: any) => {
-    console.log("this is event on joinmatchkanmsdkjfhnrewjghenrjgn ",data);
+    console.log("this is event on joinmatchmaking ", data);
   });
+
+  console.log("this is enemy paddle y: ", EnemyPaddleY);
+  console.log("this is player1 paddle y: ", player1PaddleY);
 
   return (
     <div className={style.gameBody} tabIndex={0}>

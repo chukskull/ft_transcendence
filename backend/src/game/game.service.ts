@@ -31,7 +31,7 @@ export class GameService {
   private currPlayers = new Array<{ id: number; socket: Socket }>();
   private activeGames: { [key: string]: GameInstance } = {};
   public onlineUsers = new Map<number, Set<Socket>>();
-  public privateRoom = new Map<number, Set<Socket>>();
+  public privateQueue = Array<{ id: number; socket: Socket }>();
 
   constructor(
     private matchHistory: MatchHistoryService,
@@ -51,6 +51,7 @@ export class GameService {
    */
   async inviteFriend(
     client: Socket,
+    server: Server,
     friendId: number,
     token: string,
     roomName: string,
@@ -60,50 +61,36 @@ export class GameService {
       client.disconnect();
       return;
     }
+    this.privateQueue.push({ id: userId, socket: client });
     const friend = await this.userService.userProfile(friendId);
     if (!friend) throw new Error('User not found');
-    // this.notificationGateway.newEmit(
-    //   'newGameInvite',
-    //   { friend: userId, roomName: roomName },
-    //   friendId,
-    // );
-  }
-
-  async inviteResponse(client: Socket, payload: any): Promise<void> {
-    const { friend } = payload;
-    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
-    if (!user) {
-      client.disconnect();
-      return;
+    if (!this.onlineUsers.has(friendId)) {
+      this.onlineUsers.set(friendId, new Set<Socket>());
+      this.onlineUsers.get(friendId)?.add(client);
     }
-    const friendSockets = this.onlineUsers.get(friend.id);
+    const friendSockets = this.onlineUsers.get(friendId);
     if (!friendSockets) return;
-    friend.socket.on('acceptInvite', (payload) => {
-      this.acceptInvite(friend.socket, payload); // starts game inside acceptInvite
+    // event to be discussed again
+    friendSockets.forEach((friendSocket) => {
+      friendSocket.emit('invited', {
+        from: { id: userId, username: client.handshake.auth.username },
+        roomName: roomName,
+      });
     });
-    friend.socket.on('declineInvite', (payload) => {
-      this.declineInvite(friend.socket, payload);
+    // payload from frontend to be discussed
+    client.on('acceptInvite', (payload) => {
+      this.privateQueue.push({ id: friendId, socket: client });
+      if (this.privateQueue.length >= 2) {
+        const player1 = this.privateQueue.shift();
+        const player2 = this.privateQueue.shift();
+        this.createGame(player1, player2, server);
+      }
+    });
+    client.on('declineInvite', (payload) => {
+      client.emit('changeState', { state: 'home' });
+      this.privateQueue.pop();
     });
   }
-
-  async acceptInvite(client: Socket, payload: any): Promise<void> {
-    const { player1, player2 } = payload;
-    // receive payload from client
-    player1.join(player1.id);
-    player2.join(player2.id);
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-    // create game instance
-    // game.startGame();
-  }
-
-  async declineInvite(client: Socket, payload: any): Promise<void> {
-    const { player2 } = payload;
-    const game = this.activeGames[client.id + ',' + player2.id];
-    if (!game) return;
-    delete this.activeGames[client.id + ',' + player2.id];
-  }
-
   /*
    * updates the game state
    */
@@ -232,12 +219,14 @@ export class GameService {
     } else {
       server.to('MatchMakingQueue' + userId).emit('changeState', {
         state: 'failed',
-        message: 'already in queue',
+        message: 'already in queue/already in game',
       });
     }
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();
+      console.log('player1: ', player1);
+      console.log('player2: ', player2);
       this.createGame(player1, player2, server);
     }
     return true;
@@ -271,8 +260,13 @@ export class GameService {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
     const game = new GameInstance(player1, player2, server); // take the entire player
-    server.to('gameStart' + player1.id).emit('gameStarted');
-    server.to('gameStart' + player2.id).emit('gameStarted');
+    server.to('gameStart' + player1.id).emit('gameStarted', {
+      MyId: player1.id,
+      OpponentId: player2.id,
+    });
+    server
+      .to('gameStart' + player2.id)
+      .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
     game.startGame();
   }
 }

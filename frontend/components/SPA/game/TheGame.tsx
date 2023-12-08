@@ -35,6 +35,7 @@ export default function TheGame({ map }: { map: string }) {
   const [gameStarted, setGameStarted] = useState(false);
   const canvasWidth: number = 860;
   const canvasHeight: number = 500;
+  const ballDiameter: number = 16;
   const [score, setScore] = useState<Score>({ player: 0, ai: 0 });
   const [ball, setBall] = useState({
     x: 417,

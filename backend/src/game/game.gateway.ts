@@ -5,11 +5,10 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -31,7 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       token: string;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
     this.gameService.joinQueue(client, this.server, data?.token);
     return true;
@@ -69,9 +68,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.gameService.updateScore(client, payload);
   }
 
-  /*
-   * handling invite friends
-   */
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
     @MessageBody()
@@ -83,22 +79,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const { token, friendIwantToInvite } = data;
     const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
-    this.gameService.inviteFriend(client, friendIwantToInvite, token, roomName);
-    client.join('invitationRoom' + client.id + ',' + friendIwantToInvite);
-  }
-
-  @SubscribeMessage('inviteResponse')
-  async inviteResponse(client: Socket, @MessageBody() payload: any) {
-    this.gameService.inviteResponse(client, payload);
-  }
-
-  @SubscribeMessage('acceptInvite')
-  async acceptInvite(client: Socket, @MessageBody() payload: any) {
-    this.gameService.acceptInvite(client, payload);
-  }
-
-  @SubscribeMessage('declineInvite')
-  async declineInvite(client: Socket, @MessageBody() payload: any) {
-    this.gameService.declineInvite(client, payload);
+    this.gameService.inviteFriend(client,this.server,friendIwantToInvite, token, roomName);
+    client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
   }
 }

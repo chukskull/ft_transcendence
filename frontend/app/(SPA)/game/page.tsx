@@ -7,6 +7,7 @@ import Result from "@/components/SPA/game/Result";
 import io from "socket.io-client";
 import { Button } from "@nextui-org/react";
 import OnlineGame from "@/components/SPA/game/OnlineGame";
+import axios from "axios";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -28,7 +29,8 @@ const Game: React.FC = () => {
   const [value, setValue] = useState(0);
   const [socket, setSocket] = useState<any>(null);
   const [joinedQueue, setJoinedQueue] = useState<boolean>(false);
-
+  const [playersData, setPlayersData] = useState<any>({});
+  const [enemy, setEnemy] = useState<string>("");
   useEffect(() => {
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
     newSocket.connect();
@@ -41,6 +43,7 @@ const Game: React.FC = () => {
   function handleJoinQueue() {
     if (socket) {
       socket?.emit("joinQueue", { token: document.cookie.split("=")[1] });
+      console.log("token: ", document.cookie.split("=")[1]);
     }
   }
   socket?.on("changeState", (data: any) => {
@@ -51,6 +54,19 @@ const Game: React.FC = () => {
     }
   });
   socket?.on("gameStarted", (data: any) => {
+    setPlayersData(data);
+
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${data.OpponentId}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        setEnemy(res.data);
+      })
+      .catch((err) => console.log(err));
     setJoinedQueue(false);
     setOnlineMode(true);
   });
@@ -100,7 +116,7 @@ const Game: React.FC = () => {
 
   return (
     <div className={style.gamePage}>
-      <GHeader />
+      <GHeader isONline={onlineMode} enemy={enemy} />
       <>
         <div className={style.mapSelector}>
           <div className={style.map} onClick={() => setMap("game")}>
@@ -123,18 +139,20 @@ const Game: React.FC = () => {
         ) : (
           <TheGame map={map} />
         )}
-        <div>
-          <Button
-            className="bg-live text-fontlight font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
-            data-hover
-            data-focus
-            onClick={() => {
-              handleJoinQueue();
-            }}
-          >
-            JOIN MATCHMAKING
-          </Button>
-        </div>
+        {!onlineMode && (
+          <div>
+            <Button
+              className="bg-live text-fontlight font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
+              data-hover
+              data-focus
+              onClick={() => {
+                handleJoinQueue();
+              }}
+            >
+              JOIN MATCHMAKING
+            </Button>
+          </div>
+        )}
       </div>
       {renderRectangle()}
     </div>
