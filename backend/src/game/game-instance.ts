@@ -48,34 +48,37 @@ export class GameInstance {
     };
   }
 
-  public startGame(server : Server): void {
+  public startGame(): void {
     this.gameRunning = true;
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
         this.player1.socket.on('positionUpdate', (data) => {
+          console.log('this is p1', data);
           this.paddle1Position = data;
         });
         this.player2.socket.on('positionUpdate', (data) => {
+          console.log('this is p2', data);
+
           this.paddle2Position = data;
         });
-        server.to('gameStart' + this.player1.id).emit('roomPostions' + 1, {
+        this.player1.socket.emit('roomPostions', {
           ballX: this.ball.x, // undefined
           ballY: this.ball.y,
           player1Score: this.player1Score,
           player2Score: this.player2Score,
           enemyY: this.paddle2Position,
         });
-        server.to('gameStart' + this.player1.id).emit('roomPostions' + 2, {
+        this.player2.socket.emit('roomPostions', {
           ballX: this.ball.x,
           ballY: this.ball.y,
           player1Score: this.player2Score,
           player2Score: this.player1Score,
           enemyY: this.paddle1Position,
         });
-        
-        // call the update function
+
+        // call the math function
         this.updateBall(this.ball);
-        // console.log(this.ball); // the update seems to be working
+        // console.log(this.ball); // checking whether update goes well
       }
     }, 1000 / 60);
   }
@@ -148,4 +151,4 @@ export class GameInstance {
       this.player2Score = score;
     });
   }
-  }
+}
