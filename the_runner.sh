@@ -12,8 +12,6 @@ cleanup() {
 }
 
 build() {
-    rm -rf ./frontend/node_modules
-    rm -rf ./backend/node_modules
 
     # mkdir -p ~/Desktop/TranscendenceDB
 

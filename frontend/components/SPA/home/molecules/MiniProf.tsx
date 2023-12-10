@@ -14,20 +14,20 @@ export const MiniProf = ({ image, name, id }: MiniProfProps) => {
     console.log(friendId);
   };
   return (
-    <>
-      <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[132px] bg-friend rounded-xl">
+    <div>
+      <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[120px] bg-friend rounded-xl">
         <Avatar isBordered color="success" src={image} />
-        <h1 className="max-w-[8ch] text-white text-base font-semibold">
+        <h1 className="max-w-[8ch] text-fontlight text-base font-semibold truncate">
           {name}
         </h1>
         <Button
-          className="bg-live max-w-6xl h-5 text-white font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
+          className="bg-live max-w-6xl h-5 text-fontlight font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
           onClick={() => inviteToGame(id)}
         >
           Invite
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 

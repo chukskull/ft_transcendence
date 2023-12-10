@@ -6,78 +6,86 @@ import {
   Delete,
   Patch,
   Get,
+  Put,
   Req,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dtos/create-channel.dto';
 import { UpdateChannelDto } from './dtos/update-channel.dto';
+import { JwtGuard } from 'src/auth/Jwt.guard';
 import { UseGuards } from '@nestjs/common';
-// import { JwtGuard } from 'src/auth/ft_oauth.guard';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('channels')
 export class ChannelController {
-  constructor(private readonly channelService: ChannelService) {}
+  constructor(
+    private readonly channelService: ChannelService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('create')
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   create(@Body() createChannelDto: CreateChannelDto, @Req() req) {
     return this.channelService.createChannel(createChannelDto, req.user.id);
   }
 
-  @Get()
-  // @UseGuards(JwtGuard)
+  @Patch('update')
+  @UseGuards(JwtGuard)
+  update(@Body() updateChannelDto: UpdateChannelDto, @Req() req) {
+    return this.channelService.updateChannel(updateChannelDto, req.user.id);
+  }
+
+  @Get('all')
+  @UseGuards(JwtGuard)
   findAll() {
     return this.channelService.getChannels();
   }
 
   @Get(':id')
-  // @UseGuards(JwtGuard)
-  findOne(@Param('id') id: number) {
-    return this.channelService.getChannel(id);
-  }
-
-  @Get('myChannels')
-  // @UseGuards(JwtGuard)
-  findMyChannels(@Req() req) {
-    return this.channelService.getMyChannels(req.user.id);
+  @UseGuards(JwtGuard)
+  findOne(@Param('id') id: number, @Req() req) {
+    return this.channelService.getChannel(id, req.user.id);
   }
 
   @Get(':id/chat')
-  // @UseGuards(JwtGuard)
-  findChat(@Param('id') id: number, @Req() req) {
-    // const userId = req.user.id;
-    return this.channelService.getChannelChat(1, id);
-  }
-
-  @Patch('/update')
-  // @UseGuards(JwtGuard)
-  update(@Body() updateChannelDto: UpdateChannelDto, @Req() req) {
-    return this.channelService.updateChannel(updateChannelDto, req.user.id);
+  @UseGuards(JwtGuard)
+  findChat(@Param('id') ChannId: number, @Req() req) {
+    return this.channelService.getChannelChat(ChannId, req.user.id);
   }
 
   @Delete('/delete/:id')
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   delete(@Param('id') id: number, @Req() req) {
     return this.channelService.deleteChannel(id, req.user.id);
   }
 
-  @Post('/join')
-  join(@Body() data: any, @Req() req) {
-    const { chanId, Password } = data;
-    return this.channelService.joinChannel(chanId, Password, req.user.id);
+  @Post(':chanId/join')
+  @UseGuards(JwtGuard)
+  join(@Body() data: any, @Req() req, @Param('chanId') chanId: number) {
+    const { password } = data;
+    console.log('join channel', chanId, password);
+    return this.channelService.joinChannel(chanId, password, req.user.id);
   }
 
-  @Post(':chanId/leave')
+  @Get(':chanId/leave')
+  @UseGuards(JwtGuard)
   leave(@Param('chanId') chanId: number, @Req() req) {
-    if (chanId == 1337) {
-      return { message: 'Cannot leave general channel' };
-    }
-    if (req.user == null) {
-      return { message: 'Not logged in' };
-    }
     return this.channelService.leaveChannel(chanId, req.user.id);
   }
-  @Post(':chandId/invite/:userId')
+
+  @Get(':chandId/kickUser/:userId')
+  @UseGuards(JwtGuard)
+  kickuser(
+    @Param('chandId') chanId: number,
+    @Param('userId') userId: number,
+    @Req() req,
+  ) {
+    console.log('kick user why isnt it working');
+    return this.channelService.kickFromChannel(chanId, userId, req.user.id);
+  }
+
+  @Get(':chandId/invite/:userId')
+  @UseGuards(JwtGuard)
   invite(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
@@ -86,9 +94,9 @@ export class ChannelController {
     return this.channelService.inviteToChannel(chanId, userId, req.user.id);
   }
 
-  @Post(':chandId/banning/:userId/:action')
-  // @UseGuards(JwtGuard)
-  ban(
+  @Get(':chandId/banning/:userId/:action')
+  @UseGuards(JwtGuard)
+  banUser(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
     @Param('action') action: number,
@@ -102,29 +110,35 @@ export class ChannelController {
     );
   }
 
-  @Post(':chandId/muting/:userId/:action')
-  // @UseGuards(JwtGuard)
+  @Get(':chandId/muting/:userId/:action')
+  @UseGuards(JwtGuard)
   mute(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
     @Param('action') action: number,
+    @Req() req,
   ) {
-    return this.channelService.muteUnmuteFromChannel(chanId, userId, action);
+    return this.channelService.muteUnmuteFromChannel(
+      chanId,
+      userId,
+      action,
+      req.user.id,
+    );
   }
 
-  @Post(':chandId/modding/:userId/:action')
-  // @UseGuards(JwtGuard)
+  @Get(':chandId/modding/:userId/:action')
+  @UseGuards(JwtGuard)
   mod(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
     @Param('action') action: number,
+    @Req() req,
   ) {
-    return this.channelService.modUnmodFromChannel(chanId, userId, action);
-  }
-
-  @Post(':chandId/owner/:userId')
-  // @UseGuards(JwtGuard)
-  owner(@Param('chandId') chanId: number, @Param('userId') userId: number) {
-    return this.channelService.makeOwner(chanId, userId);
+    return this.channelService.modUnmodFromChannel(
+      chanId,
+      userId,
+      action,
+      req.user.id,
+    );
   }
 }

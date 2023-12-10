@@ -8,15 +8,21 @@ import { Channel } from '../channel/channel.entity';
 import { Conversation } from '../conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { PassportModule } from '@nestjs/passport';
-import { NotifGateway } from 'src/notifications.gateway';
-import { JwtModule } from '@nestjs/jwt';
+import { ChannelService } from 'src/channel/channel.service';
+import { ConversationService } from '../conversations/conversation.service';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
   ],
   controllers: [UserController],
-  providers: [UserService, AuthService, NotifGateway, JwtService],
+  providers: [
+    UserService,
+    AuthService,
+    JwtService,
+    ChannelService,
+    ConversationService,
+  ],
   exports: [UserService],
 })
 export class UserModule {}

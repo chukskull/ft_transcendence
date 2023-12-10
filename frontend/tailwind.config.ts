@@ -13,6 +13,22 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'sm': '640px',
+        // => @media (min-width: 640px) { ... }
+  
+        'md': '768px',
+        // => @media (min-width: 768px) { ... }
+  
+        'lg': '1024px',
+        // => @media (min-width: 1024px) { ... }
+  
+        'xl': '1280px',
+        // => @media (min-width: 1280px) { ... }
+  
+        '2xl': '1536px',
+        // => @media (min-width: 1536px) { ... }
+      },
       fontFamily: {
         'ClashGrotesk-Variable': ['ClashGrotesk-Variable', 'sans-serif'],
         'ClashGrotesk-Extralight': ['ClashGrotesk-Extralight', 'sans-serif'],
@@ -31,6 +47,9 @@ const config: Config = {
         modalBackground: "#1D0229",
         buttonbg: "#3E0756",
         bghover: "#fefcfc33",
+        stats: "#851487",
+        silver : "#C0C0C0",
+        fontlight: "#F5F5F5"
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

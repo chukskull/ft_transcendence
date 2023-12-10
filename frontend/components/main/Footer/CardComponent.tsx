@@ -23,8 +23,8 @@ export const CardComponent = ({
       <h2>{title}</h2>
       <p>{text}</p>
       <div className="flex items-center justify-center space-x-4">
-        <AiFillGithub size={50} className="text-white" />
-        <AiFillLinkedin size={50} className="text-white" />
+        <AiFillGithub size={50} className="text-fontlight" />
+        <AiFillLinkedin size={50} className="text-fontlight" />
       </div>
     </div>
   );

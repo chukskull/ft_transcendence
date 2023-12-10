@@ -6,6 +6,7 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import io from "socket.io-client";
 import MsgsList from "@/components/SPA/chat/MessagesList";
 import axios from "axios";
+
 interface ChatRoomsProps {
   id: String | String[];
   isGroup: boolean;
@@ -23,7 +24,8 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [msgs, setMsgs] = useState<Chat[]>([]);
   const [conv, setConv] = useState<any>(null);
-
+  const [receivedData, setReceivedData] = useState<any>(null);
+  const [blockedList, setBlockedList] = useState<any>([]);
   useEffect(() => {
     const endPoints = isGroup
       ? `/api/channels/${id}/chat`
@@ -39,38 +41,47 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       .catch((err) => {
         console.log(err);
       });
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setBlockedList(res.data.blockedUsers);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
+
   useEffect(() => {
-    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`);
+    if (!conv) return;
+
+    const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`, {
+      query: {
+        conversationId: conv.id,
+      },
+    });
+    newSocket.connect();
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  }, [conv]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (receivedData) {
+      setMsgs((prevMsgs) => [...prevMsgs, receivedData]);
+    }
+  }, [receivedData]);
+  if (!socket) return;
 
-    socket.on("connect_error", (error: any) => {
-      console.error("WebSocket connection error:", error);
-    });
-
-    socket.on("disconnect", (reason: any) => {
-      console.warn("WebSocket disconnected:", reason);
-    });
-
-    socket.on("newMessage", (newMessage: any) => {
-      console.log("newMessage : " + newMessage);
-      setMsgs((prevMsgs: Chat[]) => [...prevMsgs, newMessage]);
-    });
-
-    return () => {
-      socket.off("connect_error");
-      socket.off("disconnect");
-      socket.off("newMessage");
-    };
-  }, [socket]);
+  socket.on("messageReceived", (data: any) => setReceivedData(data));
+  socket.on("connect_error", (err: any) => {
+    console.error(err.message);
+    socket.close();
+  });
+  socket.on("disconnect", setReceivedData);
 
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
@@ -81,6 +92,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       socket.emit("messageSent", {
         conversationId: conv.id,
         message: message,
+        token: document.cookie.split("=")[1],
       });
 
       setMessage("");
@@ -91,7 +103,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   return (
     <div className={style["chat"]}>
       <div className={style["msgs"]}>
-        <MsgsList msgs={msgs} />
+        <MsgsList chats={msgs} blockedList={blockedList} />
       </div>
       <div className={style["msg-input"]}>
         <button

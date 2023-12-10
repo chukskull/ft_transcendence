@@ -10,10 +10,10 @@ function GlobalModalComp({ onClose, action, object }: GlobalModalCompProps) {
   return (
     <div className="">
       <ModalHeader className="flex flex-col  items-center">
-        <h1 className="text-white font-ClashGrotesk-Medium text-2xl">
+        <h1 className="text-fontlight font-ClashGrotesk-Medium text-2xl">
           Are you Sure,
         </h1>
-        <span className="text-white font-ClashGrotesk-Medium text-2xl">
+        <span className="text-fontlight font-ClashGrotesk-Medium text-2xl">
           You want to {action} {object}?
         </span>
       </ModalHeader>
@@ -21,14 +21,14 @@ function GlobalModalComp({ onClose, action, object }: GlobalModalCompProps) {
       <ModalFooter>
         <Button
           // color="danger"
-          className="bg-inherit text-white font-ClashGrotesk-Medium text-base text-center mr-4"
+          className="bg-inherit text-fontlight font-ClashGrotesk-Medium text-base text-center mr-4"
           // variant="light"
           onPress={onClose}
         >
           Cancel
         </Button>
         <Button
-          className="bg-buttonbg text-white font-ClashGrotesk-Medium text-base min-w-[149px] min-h-[46px] rounded-2xl text-center"
+          className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-[149px] min-h-[46px] rounded-2xl text-center"
           onPress={onClose}
         >
           {action}

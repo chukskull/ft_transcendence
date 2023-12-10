@@ -22,20 +22,24 @@ const CreateChannelModal = () => {
 
     setError(null);
 
-    try {
-      const formData = { name, password, is_private };
-      const res = await axios.post(
+    const formData = password
+      ? { name, password, is_private }
+      : { name, is_private };
+    axios
+      .post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/create`,
         formData,
         {
           withCredentials: true,
         }
-      );
-      window.location.reload();
-      console.log(res.data);
-    } catch (error) {
-      console.error("Error creating channel:", error);
-    }
+      )
+      .then((res) => {
+        console.log(res.data);
+        document.location.reload();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (

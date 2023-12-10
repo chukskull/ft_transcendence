@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Body } from 'matter-js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
-import Matter , { Engine, World, Bodies } from 'matter-js';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
-import { MatchHistory } from 'src/match-history/match-history.entity';
-import { ConnectedSocket, MessageBody } from '@nestjs/websockets';
+import { Achievement } from 'src/achievement/achievement.entity';
+import { AchievementService } from 'src/achievement/achievement.service';
+import { UserService } from 'src/user/user.service';
+const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 860;
 export const GAME_HEIGHT = 500;
@@ -17,9 +17,8 @@ export const PADDLE_WIDTH = 13;
 export const PADDLE_HEIGHT = 110;
 export const PADDLE_SPEED = 10;
 export const INIT_BALL_SPEED = 10;
-export const PADDLE1_POSITION = GAME_HEIGHT / 2
-export const PADDLE2_POSITION = GAME_HEIGHT / 2
-export const MAX_ANGLE = (5 * Math.PI) / 12;
+export const PADDLE1_POSITION = GAME_HEIGHT / 2;
+export const PADDLE2_POSITION = GAME_HEIGHT / 2;
 
 export enum PlayerNumber {
   One,
@@ -28,142 +27,192 @@ export enum PlayerNumber {
 
 @Injectable()
 export class GameService {
-  private queue: Array<{ id: number; socket: Socket }> = [];
+  public MatchMakingQueue: Array<{ id: number; socket: Socket }> = [];
   private currPlayers = new Array<{ id: number; socket: Socket }>();
   private activeGames: { [key: string]: GameInstance } = {};
   public onlineUsers = new Map<number, Set<Socket>>();
+  public privateQueue = Array<{ id: number; socket: Socket }>();
 
   constructor(
     private matchHistory: MatchHistoryService,
+    private achievementService: AchievementService,
+    private userService: UserService,
     private jwtService: JwtService,
-    @InjectRepository(MatchHistory)
-    private readonly statsRepo: Repository<MatchHistory>,
-  ) {
-    setInterval(() => {
-      this.update();
-    }, 1000 / 60);
-  }
+    @InjectRepository(Achievement)
+    private readonly achievementRepo: Repository<Achievement>,
+  ) {}
 
-  async inviteFriend(client: Socket, payload: any): Promise<Boolean> {
-    const { player1, player2 } = payload;
-    if (
-      this.currPlayers.find((player) => player.id === player1.id) ||
-      this.currPlayers.find((player) => player.id === player2.id)
-    ) {
-      return false;
-    }
-    const invUser = this.onlineUsers.get(player2.id);
-    if (invUser) {
-      invUser.forEach((sock) => {
-        sock.emit('invite', { player: player1});
-        sock.removeAllListeners('invResponse');
-        sock.once('invResponse', (response) => {
-          invUser.forEach((sock_) => {
-            if (
-              sock_ !== sock &&
-              response == true &&
-              !this.currPlayers.find((player) => player.id === player2.id) &&
-              !this.currPlayers.find((player) => player.id === player1.id) &&
-              this.onlineUsers.get(player1.id)?.has(client)
-            ) {
-              if (
-                this.queue.find((player) => player.id === player1.id) ||
-                this.queue.find((player) => player.id === player2.id)
-              ) {
-                this.queue = this.queue.filter((player) => {
-                  return player.id !== player1.id && player.id !== player2.id;
-                });
-              }
-            }
-          });
-        });
-      });
-    }
-  }
-
-  /*
-   * updates the game state
+  /**
+   * Invites a friend to play a game.
+   *
+   * @param client - The socket client initiating the invitation.
+   * @param friendId - The ID of the friend to invite.
+   * @returns A Promise that resolves to void.
    */
-  update(): void {
-    for (const game of Object.values(this.activeGames)) {
-      if (game.gameRunning) {
-        const prevBall = { ...game.ball };
-        game.updateBall(prevBall);
-        game.updatePaddle();
+  async inviteFriend(
+    client: Socket,
+    server: Server,
+    friendId: number,
+    token: string,
+    roomName: string,
+  ): Promise<any> {
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (userId == undefined) {
+      client.disconnect();
+      return;
+    }
+    this.privateQueue.push({ id: userId, socket: client });
+    const friend = await this.userService.userProfile(friendId);
+    if (!friend) throw new Error('User not found');
+    if (!this.onlineUsers.has(friendId)) {
+      this.onlineUsers.set(friendId, new Set<Socket>());
+      this.onlineUsers.get(friendId)?.add(client);
+    }
+    const friendSockets = this.onlineUsers.get(friendId);
+    if (!friendSockets) return;
+    // event to be discussed again
+    friendSockets.forEach((friendSocket) => {
+      friendSocket.emit('invited', {
+        from: { id: userId, username: client.handshake.auth.username },
+        roomName: roomName,
+      });
+    });
+    // payload from frontend to be discussed
+    client.on('acceptInvite', (payload) => {
+      this.privateQueue.push({ id: friendId, socket: client });
+      if (this.privateQueue.length >= 2) {
+        const player1 = this.privateQueue.shift();
+        const player2 = this.privateQueue.shift();
+        this.createGame(player1, player2, server);
+      }
+    });
+    client.on('declineInvite', (payload) => {
+      client.emit('changeState', { state: 'home' });
+      this.privateQueue.pop();
+    });
+  }
+
+  async updateScore(client: Socket, payload: any): Promise<void> {
+    const { player1, player2 } = payload;
+    const game = this.activeGames[player1.id + ',' + player2.id];
+    if (!game) return;
+    // game.updateScore();
+    if (game.player1Score === 5 || game.player2Score === 5) {
+      // game.endGame();
+      player1.leave(player1.id);
+      player2.leave(player2.id);
+      if (this.activeGames.hasOwnProperty(player1.id + ',' + player2.id)) {
+        player1.setStatus('online');
+        player2.setStatus('online');
+        delete this.activeGames[player1.id + ',' + player2.id];
+      }
+      const match = await this.matchHistory.findOne({
+        where: { player1: { id: player1.id }, player2: { id: player2.id } },
+      });
+      if (match.winner === player1.id) {
+        match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
+        match.losesInARow = 0;
+      } else {
+        match.winsInARow = 0;
+        match.losesInARow = await this.matchHistory.trackWinsInARow(player1.id);
+      }
+      if (match.winner === player2.id) {
+        match.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
+        match.losesInARow = 0;
+      } else {
+        match.winsInARow = 0;
+        match.losesInARow = await this.matchHistory.trackWinsInARow(player2.id);
+      }
+
+      if (match.winsInARow === 3) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '3 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+      if (match.winsInARow === 5) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '5 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+
+      if (match.winsInARow === 10) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '10 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+      const achievement =
+        game.player2Score === 0
+          ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
+          : null;
+      if (achievement) {
+        this.achievementService.giveAchievement(
+          game.player2Score === 0 ? player1.id : player2.id,
+          achievement.id,
+        );
       }
     }
   }
 
-
-
-  async updateBall(client: Socket, payload: any): Promise<void> {
-    const { player1, player2} = payload;
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-    else {
-      const prevBall = { ...game.ball };
-      game.updateBall(prevBall);
+  /*
+   * Join matchmaking MatchMakingQueue
+   */
+  async joinQueue(
+    client: any,
+    server: Server,
+    token: string,
+  ): Promise<boolean> {
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    console.log('use id is', userId);
+    if (!this.onlineUsers.has(userId)) {
+      this.onlineUsers.set(userId, new Set<Socket>());
+      this.onlineUsers.get(userId)?.add(client);
     }
-  }
-
-  async updatePaddle(client: Socket, payload: any): Promise<void> {
-    const { player1, player2} = payload;
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-      game.updatePaddle();
+    client.join('MatchMakingQueue' + userId);
+    const isInQueue = this.MatchMakingQueue.find((player) => {
+      return player.id == userId;
+    });
+    if (!isInQueue) {
+      this.MatchMakingQueue.push({ id: userId, socket: client });
+      // empty the the queue on disconnect
+      console.log('i joined the queue');
+      console.log('MatchMakingQueue', this.MatchMakingQueue);
+      server.to('MatchMakingQueue' + userId).emit('changeState', {
+        state: 'inQueue',
+        message: 'waiting for other opponent to join',
+      });
+    } else {
+      server.to('MatchMakingQueue' + userId).emit('changeState', {
+        state: 'failed',
+        message: 'already in queue/already in game',
+      });
+    }
+    console.log("player1: ", this.MatchMakingQueue[0]?.socket.id);
+    console.log("player2: ", this.MatchMakingQueue[1]?.socket.id);
+    if (this.MatchMakingQueue.length >= 2) {
+      const player1 = this.MatchMakingQueue.shift();
+      const player2 = this.MatchMakingQueue.shift();
+      console.log('player1: ', player1);
+      console.log('player2: ', player2);
+      this.createGame(player1, player2, server);
+    }
+    return true;
   }
 
   /*
-   * checks if the cookie is valid
+   * leave matchmaking MatchMakingQueue
    */
 
-  async checkCookie(@ConnectedSocket() client: Socket): Promise<any> {
-    const cookie = client.handshake.headers?.cookie
-      ?.split(';')
-      .find((c) => c.trim().startsWith("token"))
-      ?.split('=')[1];
-    if (!cookie) {
-      client.disconnect();
-      return;
-    }
-    return this.jwtService.verify(cookie);
-  }
-  /*
-  * Join matchmaking queue
-  */
-  async joinQueue(client: Socket): Promise<boolean> {
-    const user = await this.checkCookie(client);
-    if (!user) {
-      client.disconnect();
-      return false;
-    }
-    if (!this.onlineUsers.has(user.id)) {
-      this.onlineUsers.set(user.id, new Set<Socket>());
-    }
-    this.onlineUsers.get(user.id)?.add(client);
-    client.emit('changeState', { state: 'inQueue' });
-    client.removeAllListeners('invite');
-    client.on('invite', (payload) => {
-      this.inviteFriend(client, payload);
-    });
-    client.removeAllListeners('joinQueue');
-    client.on('joinQueue', () => {
-      this.queue.push({ id: user.id, socket: client });
-    });
-    client.removeAllListeners('leaveQueue');
-    client.on('leaveQueue', () => {
-      this.leaveQueue(client);
-    });
-    client.removeAllListeners('disconnect');
-    client.on('disconnect', () => {
-      this.leaveQueue(client);
-    });
-  }
-  /*
-   * leave matchmaking queue
-   */
   async leaveQueue(client: Socket) {
-    const user = client.handshake.auth.user;
+    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
     if (!user) {
       client.disconnect();
       return;
@@ -174,51 +223,25 @@ export class GameService {
         this.onlineUsers.delete(user.id);
       }
     }
-    this.queue = this.queue.filter((player) => {
+    this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
       return player.id !== user.id;
     });
-    client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving queue
+    client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
   }
   /*
-   * creates a game instance and adds it to the activeGames object
+   * start game
    */
-  createGame(socket: Socket, payload: any) {
-    const { player1, player2 } = payload;
-    if (!this.onlineUsers.get(player1.id)?.has(socket) || !this.onlineUsers.get(player2.id)?.has(socket))
-      return;
-    if (
-      this.currPlayers.find((player) => player.id === player1.id) ||
-      this.currPlayers.find((player) => player.id === player2.id)
-    )
-      return;
-
-    if (!player2) {
-      // if player2 is not defined, player1 is waiting for an opponent
-      if (!this.queue.find((player) => player.id === player1.id)) {
-        
-        socket.emit('changeState', { state: 'waitingForOponent' });
-      } else {
-        this.queue = this.queue.filter((player) => {
-          return player.id !== player1.id; // remove player1 from the queue
-        });
-        this.queue.push({ id: player1.id, socket }); // add player1 to the queue
-        socket.emit('changeState', { state: 'inGame' }); // change player1 state to inGame
-      }
-    } else {
-      if (
-        this.queue.find((player) => player.id === player1.id) ||
-        this.queue.find((player) => player.id === player2.id)
-      ) {
-        this.queue = this.queue.filter((player) => {
-          return player.id !== player1.id && player.id !== player2.id;
-        });
-      }
-      this.currPlayers.push({ id: player1.id, socket });
-      this.currPlayers.push({ id: player2.id, socket });
-      this.activeGames[player1.id + ',' + player2.id] = new GameInstance(
-        socket,
-        socket,
-      );
-    }
+  createGame(player1: any, player2: any, server: Server): void {
+    player1.socket.join('gameStart' + player1.id);
+    player2.socket.join('gameStart' + player2.id);
+    const game = new GameInstance(player1, player2, server); // take the entire player
+    server.to('gameStart' + player1.id).emit('gameStarted', {
+      MyId: player1.id,
+      OpponentId: player2.id,
+    });
+    server
+      .to('gameStart' + player2.id)
+      .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
+    game.startGame();
   }
 }

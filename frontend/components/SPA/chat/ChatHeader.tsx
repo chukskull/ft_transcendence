@@ -1,12 +1,11 @@
 "use client";
 import { FiLogOut } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import { IoIosArrowDown } from "react-icons/io";
 import UserMenu from "@/components/SPA/chat/UserMenu";
 import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 
 interface chatHeaderProps {
@@ -16,20 +15,32 @@ interface chatHeaderProps {
 
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
-  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+
   const leaveGroup = (id: number) => {
-    console.log("hola " + id);
     axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/leave`, {
         withCredentials: true,
       })
       .then((res) => {
-        console.log(res);
-        if (res.status === 201) {
-          router.push("/chat/channels/1337");
-        }
+        document.location.reload();
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <>
       <Modal
@@ -45,9 +56,18 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         overlayClassName={style["modal-overlay"]}
       >
         {chatHeaderProps?.isChannel ? (
-          <ChannelMenu channel={chatHeaderProps?.dmOrChannel} />
+          <ChannelMenu
+            channel={chatHeaderProps?.dmOrChannel}
+            currentUser={user}
+          />
         ) : (
-          <UserMenu user={chatHeaderProps?.dmOrChannel} />
+          <UserMenu
+            id={chatHeaderProps?.dmOrChannel?.members[0].id}
+            avatarUrl={chatHeaderProps?.dmOrChannel?.members[0].avatarUrl}
+            nickName={chatHeaderProps?.dmOrChannel?.members[0].nickName}
+            online={chatHeaderProps?.dmOrChannel?.members[0].online}
+            channel={false}
+          />
         )}
       </Modal>
       <div className={style["chat-header"]}>
@@ -55,7 +75,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           <div className={style["name"]}>
             {chatHeaderProps?.isChannel
               ? chatHeaderProps?.dmOrChannel?.name
-              : chatHeaderProps?.dmOrChannel}
+              : chatHeaderProps?.dmOrChannel.members[0].nickName}
           </div>
           <button
             onClick={() => {

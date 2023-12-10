@@ -9,7 +9,7 @@ export default function Login() {
   return (
     <div className="h-screen w-screen flex items-center justify-center">
       <div className="rectangle flex flex-col items-center justify-center gap-14">
-        <h1 className=" h-7 text-white text-center font-semibold text-4xl">
+        <h1 className=" h-7 text-fontlight text-center font-semibold text-4xl">
           {" "}
           Sign In
         </h1>

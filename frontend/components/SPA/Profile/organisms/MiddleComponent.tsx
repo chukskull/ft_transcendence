@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import ProfileComp from "../molecules/ProfileComp";
 import LiveGameRec from "../../home/molecules/LiveGameRec";
 import { useQuery } from "react-query";
-import { getDataProfile } from "@/utils/getDataProfile";
 import { Skeleton } from "antd";
 import { SkeletonComp } from "@/components/global/Skeleton";
-import { get } from "http";
 
 interface MiddleComponentProps {
   index: number;
@@ -18,13 +16,6 @@ export const MiddleComponent = ({
   data,
   isLoading,
 }: MiddleComponentProps) => {
-  const [error, setError] = useState("");
-  // const { isLoading, data } = useQuery("data", async () => {
-  //   return getDataProfile().catch((err) => {
-  //     setError(err.message);
-  //   });
-  // });
-
   const getChannelStatus = (channel: any) => {
     if (channel.isPrivate) {
       return "Private";
@@ -40,51 +31,72 @@ export const MiddleComponent = ({
         <SkeletonComp large={10} />
       </div>
     );
-  const friends = data?.friends;
-  const matches = data?.userLastScore;
-  const Channels = data?.Channels;
+  const Friends = data?.friends;
+  const Matches = data?.matches;
+  const Channels = data?.channels;
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
+      {index === 0 && !Friends?.length && (
+        <div className=" text-gray-500 text-center text-lg font-medium ">
+          No friends found.
+        </div>
+      )}
+
       {index === 0 &&
         data &&
-        data?.friends?.map((user: any) => (
+        Friends?.map((user: any) => (
           <div
             key={index}
-            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
+            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-normal px-20"
           >
             <ProfileComp
               img={user.avatarUrl}
               nickName={user.nickName}
               firstName={user.firstName}
               lastName={user.lastName}
+              channelId={user.id}
+              status={user.status}
             />
           </div>
         ))}
 
+      {index === 1 && !Matches && (
+        <div className="text-center text-lg font-medium text-gray-500">
+          No match history found.
+        </div>
+      )}
+
       {index === 1 &&
         data &&
-        data?.userLastScore?.map((data: any) => (
+        Matches?.map((match: any) => (
           <LiveGameRec
             key={index}
-            LeftProf={data.imageLeft}
-            RightProf={data.imageRight}
-            scoreLeft={data.scoreLeft}
-            scoreRight={data.scoreRight}
+            LeftProf={match.player1.avatarUrl}
+            RightProf={match.player2.avatarUrl}
+            scoreLeft={1}
+            scoreRight={2}
             boolBut={false}
           />
         ))}
 
+      {index === 2 && !Channels && (
+        <div className="text-center text-lg font-medium text-gray-500">
+          No channels found.
+        </div>
+      )}
+
       {index === 2 &&
         data &&
-        data?.Channels?.map((channel: any) => (
+        Channels?.map((channel: any) => (
           <div
             key={index}
-            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-center"
+            className="border-1 border-none rounded-2xl w-full bg-purpleProfile h-20 flex items-center justify-start px-20"
           >
             <ProfileComp
               img={""}
               nickName={getChannelStatus(channel)}
               firstName={channel.name}
+              channelId={channel.id}
               type={
                 getChannelStatus(channel) === "Public"
                   ? "Public"

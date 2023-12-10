@@ -32,23 +32,25 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     MonStyle === "Profile" ? "bg-purpleProfile" : "bg-friend";
   let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
   return (
-    <div className="flex flex-col items-center justify-center gap-4 flex-grow ">
+    <div className="flex flex-col items-center justify-center gap-4 w-full py-2">
       {data?.map((user: any, index: any) => (
         <div
-          key={user.id} // Use a unique identifier for each user
-          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-center p-4`}
+          key={user.id}
+          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-start items-center p-10 gap-6`}
         >
-          <span className="text-center text-white font-ClashGrotesk-Semibold text-lg flex items-center pr-12 ">
-            #{index + 1}
+          <span className="text-fontlight font-ClashGrotesk-Semibold text-lg flex items-center">
+            {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
           </span>
 
           <ProfileComp
-            // key={index} // Remove redundant key prop for ProfileComp
             img={user.avatarUrl}
             nickName={user.nickName}
             firstName={user.firstName}
             lastName={user.lastName}
             color={colors[index]}
+            id={user.id}
+            channelId={user.id}
+            status={user.status}
           />
         </div>
       ))}

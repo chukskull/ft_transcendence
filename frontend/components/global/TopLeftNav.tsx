@@ -2,7 +2,6 @@
 import style from "@/styles/components/TopLeftNav.module.scss";
 
 import Image from "next/image";
-import { BsBell } from "react-icons/bs";
 import { Badge, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
@@ -10,12 +9,14 @@ import Link from "next/link";
 import ProfileSettingModal from "./ProfileSettingModal";
 import SearchComp from "./SearchComp";
 import { NotificationIcon } from "./NotificationIcon";
-import { notification } from "antd";
 import { NotificationComp } from "./NotificationComp";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function TopLeftNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [string, setString] = useState<string>("");
+  const router = useRouter();
 
   const handleClick = (comp: string) => {
     onOpen();
@@ -40,7 +41,7 @@ export default function TopLeftNav() {
         </div>
         <SearchComp />
         <div className={`${style["top_notif"]} + cursor-pointer`}>
-          <NotificationComp count={5} />
+          <NotificationComp />
         </div>
       </div>
       <div className={style["left-bar"]}>
@@ -70,12 +71,28 @@ export default function TopLeftNav() {
           />
           <img
             src="/assets/main/Navbar/Logout.svg"
-            onClick={() => handleClick("Logout")}
+            onClick={() => {
+              axios
+                .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  router.push("/");
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }}
           />
         </div>
       </div>
-      <Modal hideCloseButton={true} isOpen={isOpen} onClose={onClose}>
-        <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem]">
+      <Modal
+        hideCloseButton={true}
+        isOpen={isOpen}
+        onClose={onClose}
+        backdrop="blur"
+      >
+        <ModalContent className="flex flex-col items-center justify-center bg-modalBackground w-full  p-12 rounded-[4rem] z-3000000">
           {string === "setting" ? (
             <ProfileSettingModal onClose={onClose} />
           ) : (

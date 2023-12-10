@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, Length } from 'class-validator';
+import { IsString, IsBoolean, Length, IsOptional } from 'class-validator';
 
 export class CreateChannelDto {
   @IsString()
@@ -6,6 +6,7 @@ export class CreateChannelDto {
   name: string;
 
   @IsString()
+  @IsOptional()
   @Length(5, 20)
   password: string;
 

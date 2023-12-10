@@ -10,5 +10,6 @@ import { NotifGateway } from '../notifications.gateway';
   imports: [TypeOrmModule.forFeature([Achievement, User])],
   controllers: [AchievementController],
   providers: [AchievementService, NotifGateway],
+  exports: [AchievementService],
 })
 export class AchievementModule {}

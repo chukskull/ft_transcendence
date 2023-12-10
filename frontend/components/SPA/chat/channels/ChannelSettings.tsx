@@ -11,37 +11,41 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
   const [formData, setFormData] = useState({ is_private, password, id: id });
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/channel/update/`,
+    formData.is_private = is_private;
+    axios
+      .patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/update`,
         formData,
         {
           withCredentials: true,
         }
-      );
-      console.log("Update successful", response.data);
-    } catch (error) {
-      console.error("Error updating channel", error);
-    }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
+  console.log("these are the muted user", muted);
   const unban = (userId: number) => {
+    console.log("unban", userId);
     axios
-      .post(
+      .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`,
         {
           withCredentials: true,
         }
       ) //0 to unban 1 to ban
       .then((res) => {
-        console.log(res.data);
+        document.location.reload();
       })
       .catch((err) => console.log(err));
   };
   const unmute = (userId: number) => {
     axios
-      .post(
+      .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/muting/${userId}/0`,
         {
           withCredentials: true,
@@ -76,7 +80,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
                 <Switch
                   color="success"
                   onValueChange={() => setPrivate(!is_private)}
-                  isSelected={is_private}
+                  isSelected={!is_private}
                 />
                 Public
               </div>
@@ -84,7 +88,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
                 <Switch
                   color="danger"
                   onValueChange={() => setPrivate(!is_private)}
-                  isSelected={!is_private}
+                  isSelected={is_private}
                 />
                 Private
               </div>
@@ -110,8 +114,8 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
           <div className={style["banned"]}>
             <h2>Banned</h2>
             <div className={style["list"]}>
-              {banned?.map((e: any) => (
-                <div className={style["user"]}>
+              {banned?.map((e: any, index: number) => (
+                <div key={index} className={style["user"]}>
                   <AvatarBubble avatar={e.avatarUrl} online />
                   <div className={style["friend-name"]}>{e.nickName}</div>
                   <button onClick={() => unban(e.id)}>
@@ -124,8 +128,8 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
           <div className={style["muted"]}>
             <h2>Muted</h2>
             <div className={style["list"]}>
-              {muted?.map((e: any) => (
-                <div className={style["user"]}>
+              {muted?.map((e: any, index: number) => (
+                <div key={index} className={style["user"]}>
                   <AvatarBubble avatar={e.avatarUrl} online />
                   <div className={style["friend-name"]}>{e.nickName}</div>
                   <button onClick={() => unmute(e.id)}>

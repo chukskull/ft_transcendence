@@ -1,18 +1,17 @@
 {
-  "user": {
+  "me": {
     "id": 1,
-    "FullName": "John Doe",
-    "FirstName": "John",
-    "LastName": "Doe",
+    "firstName": "John",
+    "lastName": "Doe",
     "nickName": "Johny67",
-    "Lvl": 90,
-    "userExp": 6399,
+    "level": 90,
+    "experience": 6399,
     "userMoney": 3022,
     "WinPerc": 90,
-    "userMatches": 14,
-    "userImage": "https://i.pravatar.cc/300?img=9"
+    "totalGames": 14,
+    "avatarUrl": "https://i.pravatar.cc/300?img=9"
   },
-  "users": [
+  "Lead": [
     {
       "id": 1,
       "name": "hamza_lkr",
@@ -51,91 +50,90 @@
       "id": 6
     }
   ],
-  "Leadrboard": [
+  "Channels": [
     {
-      "img": "https://i.pravatar.cc/300?img=1",
-      "nickName": "blonde",
-      "firstName": "Hajar",
-      "lastName": "blondy"
+      "id": 1,
+      "name": "Jebril",
+      "is_private": true,
+      "is_protected": true
     },
     {
-      "img": "https://i.pravatar.cc/300?img=1",
-      "nickName": "blonde",
-      "firstName": "Hajar",
-      "lastName": "blondy"
+      "id": 2,
+      "name": "Ilove My Ex",
+      "is_private": false,
+      "is_protected": false
     },
     {
-      "img": "https://i.pravatar.cc/300?img=1",
-      "nickName": "blonde",
-      "firstName": "Hajar",
-      "lastName": "blondy"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=1",
-      "nickName": "blonde",
-      "firstName": "Hajar",
-      "lastName": "blondy"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=1",
-      "nickName": "blonde",
-      "firstName": "Hajar",
-      "lastName": "blondy"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=1",
-      "nickName": "blonde",
-      "firstName": "Hajar",
-      "lastName": "blondy"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=2",
-      "nickName": "lemntsr",
-      "firstName": "mountassir",
-      "lastName": "fat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=3",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=4",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=5",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=6",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=7",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=8",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
-    },
-    {
-      "img": "https://i.pravatar.cc/300?img=9",
-      "nickName": "hamza_lkr",
-      "firstName": "Saleh",
-      "lastName": "Nagat"
+      "id": 3,
+      "name": "fes",
+      "is_private": false,
+      "is_protected": true
     }
+  ],
+  "users": [
+    
+      {
+        "img": "https://i.pravatar.cc/300?img=1",
+        "nickName": "Radiant",
+        "firstName": "Emma",
+        "lastName": "Watson"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=2",
+        "nickName": "CoolDude",
+        "firstName": "Robert",
+        "lastName": "Downey Jr."
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=3",
+        "nickName": "SingingBird",
+        "firstName": "Adele",
+        "lastName": ""
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=4",
+        "nickName": "TennisMaster",
+        "firstName": "Rafael",
+        "lastName": "Nadal"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=5",
+        "nickName": "CodingGenius",
+        "firstName": "Bill",
+        "lastName": "Gates"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=6",
+        "nickName": "BasketballLegend",
+        "firstName": "Michael",
+        "lastName": "Jordan"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=7",
+        "nickName": "ChefExtraordinaire",
+        "firstName": "Gordon",
+        "lastName": "Ramsay"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=8",
+        "nickName": "LiteratureGuru",
+        "firstName": "J.K.",
+        "lastName": "Rowling"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=9",
+        "nickName": "FashionIcon",
+        "firstName": "Victoria",
+        "lastName": "Beckham"
+      },
+      {
+        "img": "https://i.pravatar.cc/300?img=10",
+        "nickName": "PhilanthropicHeart",
+        "firstName": "Oprah",
+        "lastName": "Winfrey"
+      }
+    
+    
   ],
   "data": {
     "userFriends": [
@@ -213,26 +211,7 @@
         "scoreLeft": 8,
         "scoreRight": 2
       }
-    ],
-    "Channels": [
-      {
-        "img": "",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Protected"
-      },
-      {
-        "img": "",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Public"
-      },
-      {
-        "img": "",
-        "nickName": "private",
-        "name": "Pedago",
-        "type": "Protected"
-      }
     ]
+   
   }
 }

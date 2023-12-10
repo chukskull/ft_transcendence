@@ -3,9 +3,10 @@ import React from "react";
 
 interface CircleProps {
   perc: number;
+  size: number;
 }
 
-export const Circle = ({ perc }: CircleProps) => {
+export const Circle = ({ perc, size }: CircleProps) => {
   return (
     <div className="flex flex-col gap-8">
       <Progress
@@ -15,7 +16,7 @@ export const Circle = ({ perc }: CircleProps) => {
         status="active"
         strokeColor={"#F417C4"}
         showInfo={false}
-        size={75}
+        size={size}
         trailColor="none"
       />
     </div>

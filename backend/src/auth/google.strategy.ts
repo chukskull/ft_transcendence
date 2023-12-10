@@ -27,23 +27,25 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     try {
-      const { id, name, emails, photos } = profile;
+      // const { id, name, emails, photos } = profile;
       const data = profile._json;
 
-      const nickName = generateFromEmail(data.email, 3);
+      const intrLogin = generateFromEmail(data.email, 3);
       let user = await this.authService.checkUser(null, data.email);
       if (!user)
         user = await this.userService.createNewUser(
-          nickName,
+          intrLogin,
           data.picture,
           data.email,
         );
+      this.userService.setStatus(user.id, 'online');
+
       // if (user) await this.userService.setStatusByNick(nickName, 'ONLINE');
       // const userData = {
       //     provider: 'google',
       //     providerId: id,
       //     email: emails[0].value,
-      //     name: ${name.givenName} ${name.familyName},
+      //     name: `${name.givenName} ${name.familyName}`,
       //     picture: photos[0].value,
       // };
       done(null, user);

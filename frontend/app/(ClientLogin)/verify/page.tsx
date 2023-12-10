@@ -92,7 +92,6 @@ export default function VerifyPage() {
     reducer,
     initialState
   );
-  // console.log(focusedIndex);
 
   function handleInput(index: number, value: string) {
     dispatch({ type: "INPUT", payload: { index, value } });
@@ -119,7 +118,6 @@ export default function VerifyPage() {
 
   function handleSubmit(e: any) {
     e.preventDefault();
-
     dispatch({ type: "VERIFY" });
     doSubmit(inputValues).then(() => dispatch({ type: "VERIFY_SUCCESS" }));
   }
@@ -128,13 +126,12 @@ export default function VerifyPage() {
       <div
         className={`${style["rectangle"]} flex flex-col items-center justify-center gap-7   `}
       >
-        <h1 className="text-center text-white font-ClashGrotesk-Medium text-3xl">
-          {" "}
-          Authenricate Your Account{" "}
+        <h1 className="text-center text-fontlight font-ClashGrotesk-Medium text-3xl">
+          Authenricate Your Account
         </h1>
         <form className={style["form"]} onSubmit={handleSubmit}>
           <div className={style["inputs"]}>
-            {inputValues.map((value, index) => {
+            {inputValues.map((value: any, index: any) => {
               return (
                 <Input
                   key={index}
@@ -151,7 +148,7 @@ export default function VerifyPage() {
             })}
           </div>
           <Button
-            className={`w-full  text-base text-white font-ClashGrotesk-Medium h-12 ${style["button"]}`}
+            className={`w-full  text-base text-fontlight font-ClashGrotesk-Medium h-12 ${style["button"]}`}
             disabled={status === "pending"}
           >
             {status === "pending" ? "Verifying..." : "Verify"}
@@ -187,7 +184,7 @@ function Input({
   useEffect(() => {
     requestAnimationFrame(() => {
       if (ref.current !== document.activeElement && isFocused) {
-        ref.current.focus();
+        ref?.current.focus();
       }
     });
   }, [isFocused]);
@@ -213,7 +210,7 @@ function Input({
 
   return (
     <input
-      className={`${style["input"]} + text-white`}
+      className={`${style["input"]} + text-fontlight`}
       ref={ref}
       type="text"
       value={value}
