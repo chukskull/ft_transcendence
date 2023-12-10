@@ -59,7 +59,6 @@ export default function OnlineGame({
   }, [keys]);
 
   socket.on("roomPostions", (data: any) => {
-    console.log("this is the new positions", data);
     setEnemyPaddleY(data.enemyY);
     setBall({
       x: data.ballX,
