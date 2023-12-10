@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, getSqljsManager } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
@@ -15,10 +15,11 @@ export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
 export const PADDLE_WIDTH = 13;
 export const PADDLE_HEIGHT = 110;
-export const PADDLE_SPEED = 10;
+export const PADDLE_SPEED = 12;
 export const INIT_BALL_SPEED = 10;
 export const PADDLE1_POSITION = GAME_HEIGHT / 2;
 export const PADDLE2_POSITION = GAME_HEIGHT / 2;
+export const DIST_WALL_TO_PADDLE = 20;
 
 export enum PlayerNumber {
   One,
@@ -171,7 +172,7 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    console.log('use id is', userId);
+    // console.log('use id is', userId); 
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
@@ -183,8 +184,6 @@ export class GameService {
     if (!isInQueue) {
       this.MatchMakingQueue.push({ id: userId, socket: client });
       // empty the the queue on disconnect
-      console.log('i joined the queue');
-      console.log('MatchMakingQueue', this.MatchMakingQueue);
       server.to('MatchMakingQueue' + userId).emit('changeState', {
         state: 'inQueue',
         message: 'waiting for other opponent to join',
@@ -195,16 +194,12 @@ export class GameService {
         message: 'already in queue/already in game',
       });
     }
-    console.log("player1: ", this.MatchMakingQueue[0]?.socket.id);
-    console.log("player2: ", this.MatchMakingQueue[1]?.socket.id);
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();
-      console.log('player1: ', player1);
-      console.log('player2: ', player2);
       this.createGame(player1, player2, server);
+      return true;
     }
-    return true;
   }
 
   /*
@@ -235,6 +230,7 @@ export class GameService {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
     const game = new GameInstance(player1, player2, server); // take the entire player
+
     server.to('gameStart' + player1.id).emit('gameStarted', {
       MyId: player1.id,
       OpponentId: player2.id,
@@ -243,5 +239,24 @@ export class GameService {
       .to('gameStart' + player2.id)
       .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
     game.startGame();
+
+    // Create match history entry
+    this.matchHistory.create({
+      player1ID: player1.id,
+      player2ID: player2.id,
+      winnerID: null,
+      winsInARow: player1.winsInARow,
+      losesInARow: 0,
+      date: new Date(),
+      player1score: 0,
+      player2score: 0,
+    });
+  }
+
+  endGame(player1: any, player2: any, server: Server): void {
+    player1.socket.leave('gameStart' + player1.id);
+    player2.socket.leave('gameStart' + player2.id);
+    server.to('gameStart' + player1.id).emit('gameEnded');
+    server.to('gameStart' + player2.id).emit('gameEnded');
   }
 }
