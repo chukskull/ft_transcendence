@@ -1,10 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import {
-  GAME_WIDTH,
-  GAME_HEIGHT,
-  BALL_RADIUS,
-} from './game.service';
-
+import { GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS } from './game.service';
 
 export class GameInstance {
   public positionsStruct: {
@@ -53,13 +48,10 @@ export class GameInstance {
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
         this.player1.socket.on('positionUpdate', (data) => {
-          console.log('this is p1', data);
-          this.paddle1Position = data;
+          this.paddle1Position = data.player1PaddleY;
         });
         this.player2.socket.on('positionUpdate', (data) => {
-          console.log('this is p2', data);
-
-          this.paddle2Position = data;
+          this.paddle2Position = data.player1PaddleY;
         });
         this.player1.socket.emit('roomPostions', {
           ballX: this.ball.x, // undefined
@@ -69,7 +61,7 @@ export class GameInstance {
           enemyY: this.paddle2Position,
         });
         this.player2.socket.emit('roomPostions', {
-          ballX: this.ball.x,
+          ballX: GAME_WIDTH - this.ball.x,
           ballY: this.ball.y,
           player1Score: this.player2Score,
           player2Score: this.player1Score,
