@@ -91,33 +91,6 @@ export class GameService {
       this.privateQueue.pop();
     });
   }
-  /*
-   * updates the game state
-   */
-  update(): void {
-    for (const game of Object.values(this.activeGames)) {
-      if (game.gameRunning) {
-        const prevBall = { ...game.ball };
-        // game.updateBall(prevBall);
-      }
-    }
-  }
-
-  async updateBall(client: Socket, payload: any): Promise<void> {
-    const { player1, player2 } = payload;
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-    else {
-      const prevBall = { ...game.ball };
-      // game.updateBall(prevBall);
-    }
-  }
-
-  async updatePaddle(client: Socket, payload: any): Promise<void> {
-    const { player1, player2 } = payload;
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-  }
 
   async updateScore(client: Socket, payload: any): Promise<void> {
     const { player1, player2 } = payload;
@@ -222,6 +195,8 @@ export class GameService {
         message: 'already in queue/already in game',
       });
     }
+    console.log("player1: ", this.MatchMakingQueue[0]?.socket.id);
+    console.log("player2: ", this.MatchMakingQueue[1]?.socket.id);
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();
