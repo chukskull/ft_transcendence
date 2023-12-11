@@ -1,6 +1,6 @@
 import { IsNumber } from 'class-validator';
 
-export class CreateMatchHistoryDto {
+export class MatchHistoryDto {
   @IsNumber()
   player1ID: number;
 

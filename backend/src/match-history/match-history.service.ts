@@ -3,14 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
-import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
+import { MatchHistoryDto } from './dto/match-history.dto'
 
 @Injectable()
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
     private matchHistoryRepo: Repository<MatchHistory>,
-
     private userService: UserService,
   ) {}
 
@@ -18,8 +17,8 @@ export class MatchHistoryService {
    * Creates a new match history entry in the database.
    * @param createMatchHistoryDto - The DTO containing the necessary data to create a new match history entry.
    */
-  async create(MatchHistoryDto: CreateMatchHistoryDto) {
-    const mh = await this.matchHistoryRepo.create({
+  async create(MatchHistoryDto: MatchHistoryDto) : Promise<MatchHistory> {
+    const mh = this.matchHistoryRepo.create({
       winner: null,
       winsInARow: 0,
       losesInARow: 0,
@@ -30,10 +29,13 @@ export class MatchHistoryService {
     mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
     mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
     mh.date = new Date();
-    console.log('this is the new Mh: ', mh);
     await this.matchHistoryRepo.save(mh);
 
     return mh;
+  }
+
+  async update(mh: MatchHistory) {
+    await this.matchHistoryRepo.save(mh);
   }
 
   /*
