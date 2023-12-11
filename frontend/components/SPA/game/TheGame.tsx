@@ -11,6 +11,7 @@ const DIST_WALL_TO_PADDLE = 20;
 const PADDLE_HEIGHT = 110;
 const PADDLE_WIDTH = 13;
 const BALL_RADIUS = 16;
+const PLAYER_PADDLE_SPEED = 12;
 
 const useKeyHandler = () => {
   const [keys, setKeys] = useState<Record<string, boolean>>({});
@@ -59,8 +60,6 @@ export default function TheGame({ map }: { map: string }) {
     }
 
     const gameLoop = () => {
-      
-
       // Check for ball going out of left/right walls
       const hitRightEdge = ball.x > canvasWidth - PADDLE_WIDTH;
       const hitLeftEdge = ball.x <= 5;
@@ -69,9 +68,8 @@ export default function TheGame({ map }: { map: string }) {
         setScore((prev) => ({
           ...prev,
           player: hitRightEdge ? prev.player + 1 : prev.player,
-          ai: hitLeftEdge ? prev.ai + 1 : prev.ai
+          ai: hitLeftEdge ? prev.ai + 1 : prev.ai,
         }));
-        console.log("=> 3");
 
         setBall({
           x: 417,
@@ -79,7 +77,11 @@ export default function TheGame({ map }: { map: string }) {
           speedX: 3,
           speedY: 3,
         });
-        console.log("=> 4");
+        if (score.player === 5 || score.ai === 5) {
+          setScore({ player: 0, ai: 0 });
+          setGameStarted(false);
+          return;
+        }
         return;
       }
 
@@ -96,15 +98,21 @@ export default function TheGame({ map }: { map: string }) {
       }
 
       // Ball collisions with paddle
-      const hitRightPaddle = ball.x >= canvasWidth - (PADDLE_WIDTH + DIST_WALL_TO_PADDLE + BALL_RADIUS);
-      const hitLeftPaddle = ball.x <= DIST_WALL_TO_PADDLE && ball.y >= playerPaddleY && ball.y <= playerPaddleY + PADDLE_HEIGHT;
+      const hitRightPaddle =
+        ball.x >=
+        canvasWidth - (PADDLE_WIDTH + DIST_WALL_TO_PADDLE + BALL_RADIUS);
+      const hitLeftPaddle =
+        ball.x <= DIST_WALL_TO_PADDLE &&
+        ball.y >= playerPaddleY &&
+        ball.y <= playerPaddleY + PADDLE_HEIGHT;
       if (hitLeftPaddle || hitRightPaddle) {
         // Increase ball speed on paddle collision
-        console.log(`{hitLeftPaddle: ${hitLeftPaddle}, hitRightPaddle: ${hitRightPaddle}}, {ball.speedX: ${ball.speedX}}`)
-        if ((hitLeftPaddle && ball.speedX < 0) || (hitRightPaddle && ball.speedX >= 0)) {
-          console.log(` changed ===> {hitLeftPaddle: ${hitLeftPaddle}, hitRightPaddle: ${hitRightPaddle}}, {ball.speedX: ${ball.speedX}}`)
+        if (
+          (hitLeftPaddle && ball.speedX < 0) ||
+          (hitRightPaddle && ball.speedX >= 0)
+        ) {
           if (ball.speedX * ball.speedX < 81) {
-            const increasedSpeedX = -ball.speedX * 1.2; // Increase speed by a factor (e.g., 1.05)
+            const increasedSpeedX = -ball.speedX * 1.05; // Increase speed by a factor (e.g., 1.05)
             setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
             console.log("=> 6");
           } else {
@@ -115,7 +123,7 @@ export default function TheGame({ map }: { map: string }) {
       }
 
       /**
-       * 
+       *
        * Looks like the reason the ball is bouncing before hitting the paddle  is because of setting the ball x position to a big value or small value using speedX
        * hitLeftPadlle can be triggered multiple times ater the first hit because the condition is true for multiple frames
        * thus we should check first if the ball has already hit (by checking the speedX sign)
@@ -123,13 +131,17 @@ export default function TheGame({ map }: { map: string }) {
       // Ball movement
       setBall((prevBall) => ({
         ...prevBall,
-        x: prevBall.x + (hitLeftPaddle || hitRightPaddle ? (hitLeftPaddle ? 0.3 : -0.3) * BALL_RADIUS : prevBall.speedX),
+        x:
+          prevBall.x +
+          (hitLeftPaddle || hitRightPaddle
+            ? (hitLeftPaddle ? 0.3 : -0.3) * BALL_RADIUS
+            : prevBall.speedX),
         y: prevBall.y + prevBall.speedY,
       }));
       // ball.speedX * ball.speedX >= 55 && console.log(`=> 8 {ball.x: ${ball.x} hitLeftPaddle: ${hitLeftPaddle}, hitRightPaddle: ${hitRightPaddle}}`);
     };
 
-    const gameInterval = setInterval(gameLoop, 17 ); // Prblem appears only when the debugger is of (not sure why) => the higher less the problem
+    const gameInterval = setInterval(gameLoop, 17); // Prblem appears only when the debugger is of (not sure why) => the higher less the problem
     /**
      * I guess the problem is setting state is async and sometimes it skips the state where it hit the paddle
      */
@@ -146,12 +158,14 @@ export default function TheGame({ map }: { map: string }) {
     }
 
     // Update AI paddle position based on ball's y-coordinate
-    if (EnemyPaddleY + 40 < ball.y && EnemyPaddleY + PADDLE_HEIGHT < canvasHeight) {
+    if (
+      EnemyPaddleY + 40 < ball.y &&
+      EnemyPaddleY + PADDLE_HEIGHT < canvasHeight
+    ) {
       setEnemyPaddleY(EnemyPaddleY + 4);
     } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
       setEnemyPaddleY(EnemyPaddleY - 4);
     }
-
   }, [gameStarted, ball.y, EnemyPaddleY]);
 
   useEffect(() => {
@@ -161,9 +175,9 @@ export default function TheGame({ map }: { map: string }) {
 
     // handle player paddle
     if (keys["ArrowDown"] && playerPaddleY + PADDLE_HEIGHT < canvasHeight) {
-      setPlayerPaddleY(playerPaddleY + 12);
+      setPlayerPaddleY(playerPaddleY + PLAYER_PADDLE_SPEED);
     } else if (keys["ArrowUp"] && playerPaddleY > 5) {
-      setPlayerPaddleY(playerPaddleY - 12);
+      setPlayerPaddleY(playerPaddleY - PLAYER_PADDLE_SPEED);
     }
   }, [gameStarted, keys]);
 

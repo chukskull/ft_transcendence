@@ -59,7 +59,6 @@ export default function OnlineGame({
   }, [keys]);
 
   socket.on("roomPostions", (data: any) => {
-    console.log("this is the new positions", data);
     setEnemyPaddleY(data.enemyY);
     setBall({
       x: data.ballX,
@@ -71,6 +70,10 @@ export default function OnlineGame({
 
   socket.on("changeState", (data: any) => {
     console.log("this is event on joinmatchmaking ", data);
+  });
+
+  socket.on("updateScore", (data: any) => {
+    setScore(data);
   });
 
   return (
