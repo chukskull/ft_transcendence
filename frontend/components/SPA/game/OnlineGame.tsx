@@ -72,6 +72,10 @@ export default function OnlineGame({
     console.log("this is event on joinmatchmaking ", data);
   });
 
+  socket.on("updateScore", (data: any) => {
+    setScore(data);
+  });
+
   return (
     <div className={style.gameBody} tabIndex={0}>
       <p>{score.player1}</p>

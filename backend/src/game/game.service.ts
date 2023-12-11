@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, getSqljsManager } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
@@ -15,10 +15,11 @@ export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
 export const PADDLE_WIDTH = 13;
 export const PADDLE_HEIGHT = 110;
-export const PADDLE_SPEED = 10;
+export const PADDLE_SPEED = 12;
 export const INIT_BALL_SPEED = 10;
 export const PADDLE1_POSITION = GAME_HEIGHT / 2;
 export const PADDLE2_POSITION = GAME_HEIGHT / 2;
+export const DIST_WALL_TO_PADDLE = 20;
 
 export enum PlayerNumber {
   One,
@@ -27,9 +28,7 @@ export enum PlayerNumber {
 
 @Injectable()
 export class GameService {
-  public MatchMakingQueue: Array<{ id: number; socket: Socket }> = [];
-  private currPlayers = new Array<{ id: number; socket: Socket }>();
-  private activeGames: { [key: string]: GameInstance } = {};
+  public MatchMakingQueue: Array<{ id: number; socket: Socket, score: number }> = [];
   public onlineUsers = new Map<number, Set<Socket>>();
   public privateQueue = Array<{ id: number; socket: Socket }>();
 
@@ -92,22 +91,9 @@ export class GameService {
     });
   }
 
-  async updateScore(client: Socket, payload: any): Promise<void> {
-    const { player1, player2 } = payload;
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-    // game.updateScore();
-    if (game.player1Score === 5 || game.player2Score === 5) {
-      // game.endGame();
-      player1.leave(player1.id);
-      player2.leave(player2.id);
-      if (this.activeGames.hasOwnProperty(player1.id + ',' + player2.id)) {
-        player1.setStatus('online');
-        player2.setStatus('online');
-        delete this.activeGames[player1.id + ',' + player2.id];
-      }
-      const match = await this.matchHistory.findOne({
-        where: { player1: { id: player1.id }, player2: { id: player2.id } },
+  async giveAchievement(player1: any, player2: any, game: GameInstance): Promise<void> {
+    const match = await this.matchHistory.findOne({
+      where: { player1: { id: player1.id }, player2: { id: player2.id } },
       });
       if (match.winner === player1.id) {
         match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
@@ -160,7 +146,6 @@ export class GameService {
         );
       }
     }
-  }
 
   /*
    * Join matchmaking MatchMakingQueue
@@ -171,7 +156,7 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    console.log('use id is', userId);
+    // console.log('use id is', userId); 
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
@@ -181,10 +166,8 @@ export class GameService {
       return player.id == userId;
     });
     if (!isInQueue) {
-      this.MatchMakingQueue.push({ id: userId, socket: client });
+      this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
       // empty the the queue on disconnect
-      console.log('i joined the queue');
-      console.log('MatchMakingQueue', this.MatchMakingQueue);
       server.to('MatchMakingQueue' + userId).emit('changeState', {
         state: 'inQueue',
         message: 'waiting for other opponent to join',
@@ -195,16 +178,12 @@ export class GameService {
         message: 'already in queue/already in game',
       });
     }
-    console.log("player1: ", this.MatchMakingQueue[0]?.socket.id);
-    console.log("player2: ", this.MatchMakingQueue[1]?.socket.id);
     if (this.MatchMakingQueue.length >= 2) {
       const player1 = this.MatchMakingQueue.shift();
       const player2 = this.MatchMakingQueue.shift();
-      console.log('player1: ', player1);
-      console.log('player2: ', player2);
       this.createGame(player1, player2, server);
+      return true;
     }
-    return true;
   }
 
   /*
@@ -227,7 +206,7 @@ export class GameService {
       return player.id !== user.id;
     });
     client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
-  }
+}
   /*
    * start game
    */
@@ -235,6 +214,7 @@ export class GameService {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
     const game = new GameInstance(player1, player2, server); // take the entire player
+
     server.to('gameStart' + player1.id).emit('gameStarted', {
       MyId: player1.id,
       OpponentId: player2.id,
@@ -243,5 +223,24 @@ export class GameService {
       .to('gameStart' + player2.id)
       .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
     game.startGame();
+
+    // Create match history entry
+    this.matchHistory.create({
+      player1ID: player1.id,
+      player2ID: player2.id,
+      winnerID: null,
+      winsInARow: player1.winsInARow,
+      losesInARow: 0,
+      date: new Date(),
+      player1score: player1.score,
+      player2score: player2.score,
+    });
+  }
+
+  endGame(player1: any, player2: any, server: Server): void {
+    player1.socket.leave('gameStart' + player1.id);
+    player2.socket.leave('gameStart' + player2.id);
+    server.to('gameStart' + player1.id).emit('gameEnded');
+    server.to('gameStart' + player2.id).emit('gameEnded');
   }
 }

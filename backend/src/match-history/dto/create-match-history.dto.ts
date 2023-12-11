@@ -13,6 +13,8 @@ export class CreateMatchHistoryDto {
 	@IsNumber()
 	winsInARow: number;
 
+	date: Date;
+
 	@IsNumber()
 	losesInARow: number;
 

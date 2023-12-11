@@ -11,6 +11,7 @@ const DIST_WALL_TO_PADDLE = 20;
 const PADDLE_HEIGHT = 110;
 const PADDLE_WIDTH = 13;
 const BALL_RADIUS = 16;
+const PLAYER_PADDLE_SPEED = 12;
 
 const useKeyHandler = () => {
   const [keys, setKeys] = useState<Record<string, boolean>>({});
@@ -69,7 +70,6 @@ export default function TheGame({ map }: { map: string }) {
           player: hitRightEdge ? prev.player + 1 : prev.player,
           ai: hitLeftEdge ? prev.ai + 1 : prev.ai,
         }));
-        console.log("=> 3");
 
         setBall({
           x: 417,
@@ -77,7 +77,11 @@ export default function TheGame({ map }: { map: string }) {
           speedX: 3,
           speedY: 3,
         });
-        console.log("=> 4");
+        if (score.player === 5 || score.ai === 5) {
+          setScore({ player: 0, ai: 0 });
+          setGameStarted(false);
+          return;
+        }
         return;
       }
 
@@ -103,16 +107,10 @@ export default function TheGame({ map }: { map: string }) {
         ball.y <= playerPaddleY + PADDLE_HEIGHT;
       if (hitLeftPaddle || hitRightPaddle) {
         // Increase ball speed on paddle collision
-        console.log(
-          `{hitLeftPaddle: ${hitLeftPaddle}, hitRightPaddle: ${hitRightPaddle}}, {ball.speedX: ${ball.speedX}}`
-        );
         if (
           (hitLeftPaddle && ball.speedX < 0) ||
           (hitRightPaddle && ball.speedX >= 0)
         ) {
-          console.log(
-            ` changed ===> {hitLeftPaddle: ${hitLeftPaddle}, hitRightPaddle: ${hitRightPaddle}}, {ball.speedX: ${ball.speedX}}`
-          );
           if (ball.speedX * ball.speedX < 81) {
             const increasedSpeedX = -ball.speedX * 1.05; // Increase speed by a factor (e.g., 1.05)
             setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
@@ -177,9 +175,9 @@ export default function TheGame({ map }: { map: string }) {
 
     // handle player paddle
     if (keys["ArrowDown"] && playerPaddleY + PADDLE_HEIGHT < canvasHeight) {
-      setPlayerPaddleY(playerPaddleY + 12);
+      setPlayerPaddleY(playerPaddleY + PLAYER_PADDLE_SPEED);
     } else if (keys["ArrowUp"] && playerPaddleY > 5) {
-      setPlayerPaddleY(playerPaddleY - 12);
+      setPlayerPaddleY(playerPaddleY - PLAYER_PADDLE_SPEED);
     }
   }, [gameStarted, keys]);
 
