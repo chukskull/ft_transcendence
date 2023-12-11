@@ -28,9 +28,7 @@ export enum PlayerNumber {
 
 @Injectable()
 export class GameService {
-  public MatchMakingQueue: Array<{ id: number; socket: Socket }> = [];
-  private currPlayers = new Array<{ id: number; socket: Socket }>();
-  private activeGames: { [key: string]: GameInstance } = {};
+  public MatchMakingQueue: Array<{ id: number; socket: Socket, score: number }> = [];
   public onlineUsers = new Map<number, Set<Socket>>();
   public privateQueue = Array<{ id: number; socket: Socket }>();
 
@@ -93,22 +91,9 @@ export class GameService {
     });
   }
 
-  async updateScore(client: Socket, payload: any): Promise<void> {
-    const { player1, player2 } = payload;
-    const game = this.activeGames[player1.id + ',' + player2.id];
-    if (!game) return;
-    // game.updateScore();
-    if (game.player1Score === 5 || game.player2Score === 5) {
-      // game.endGame();
-      player1.leave(player1.id);
-      player2.leave(player2.id);
-      if (this.activeGames.hasOwnProperty(player1.id + ',' + player2.id)) {
-        player1.setStatus('online');
-        player2.setStatus('online');
-        delete this.activeGames[player1.id + ',' + player2.id];
-      }
-      const match = await this.matchHistory.findOne({
-        where: { player1: { id: player1.id }, player2: { id: player2.id } },
+  async giveAchievement(player1: any, player2: any, game: GameInstance): Promise<void> {
+    const match = await this.matchHistory.findOne({
+      where: { player1: { id: player1.id }, player2: { id: player2.id } },
       });
       if (match.winner === player1.id) {
         match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
@@ -161,7 +146,6 @@ export class GameService {
         );
       }
     }
-  }
 
   /*
    * Join matchmaking MatchMakingQueue
@@ -182,7 +166,7 @@ export class GameService {
       return player.id == userId;
     });
     if (!isInQueue) {
-      this.MatchMakingQueue.push({ id: userId, socket: client });
+      this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
       // empty the the queue on disconnect
       server.to('MatchMakingQueue' + userId).emit('changeState', {
         state: 'inQueue',
@@ -222,7 +206,7 @@ export class GameService {
       return player.id !== user.id;
     });
     client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
-  }
+}
   /*
    * start game
    */
@@ -248,8 +232,8 @@ export class GameService {
       winsInARow: player1.winsInARow,
       losesInARow: 0,
       date: new Date(),
-      player1score: 0,
-      player2score: 0,
+      player1score: player1.score,
+      player2score: player2.score,
     });
   }
 
