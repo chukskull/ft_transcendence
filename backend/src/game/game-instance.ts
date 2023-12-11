@@ -1,4 +1,4 @@
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH, DIST_WALL_TO_PADDLE } from './game.service';
 
 
@@ -21,18 +21,20 @@ export class GameInstance {
   private paddle2Position: number;
   private gameLoop: NodeJS.Timeout;
   public gameRunning: boolean;
-  private gameEnded: boolean;
+  public gameEnded: boolean;
   public winnerID: number;
+  private server: Server;
 
   // first and second are taken from the queue (player: {id, socket}) and server is the socket server
   constructor(first: any, second: any, server: Server) {
     this.player1 = first;
     this.player2 = second;
     this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
-    this.player1Score = this.player1.score;
-    this.player2Score = this.player2.score;
+    this.player1Score = this.player1.score; // undefined
+    this.player2Score = this.player2.score; // undefined
     this.gameRunning = false;
     this.gameEnded = false;
+    this.server = server;
     this.positionsStruct = {
       //starting data
       ballx: this.ball.x, //default
@@ -55,15 +57,45 @@ export class GameInstance {
         
     // handle disconnect
     this.player1.socket.on('disconnect', () => {
-      this.endGame();
+      this.player1Score = 0;
+      this.player2Score = 5;
+      this.winnerID = this.player2.id;
+      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+        player1: this.player2Score,
+        player2: this.player1Score,
+      });
+      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+        player1: this.player1Score,
+        player2: this.player2Score,
+      });
+      this.server.to('gameStart' + this.player2.id).emit('gameEnded', {
+        winner: this.winnerID,
+      });
+      this.gameRunning = false;
+      this.gameEnded = true;
     });
     this.player2.socket.on('disconnect', () => {
-      this.endGame();
+      this.player1Score = 5;
+      this.player2Score = 0;
+      this.winnerID = this.player1.id;
+      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+        player1: this.player2Score,
+        player2: this.player1Score,
+      });
+      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+        player1: this.player1Score,
+        player2: this.player2Score,
+      });
+      this.server.to('gameStart' + this.player2.id).emit('gameEnded', {
+        winner: this.winnerID,
+      });
+      this.gameRunning = false;
+      this.gameEnded = true;
     });
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
         this.player1.socket.emit('roomPostions', {
-          ballX: this.ball.x, // undefined
+          ballX: this.ball.x,
           ballY: this.ball.y,
           player1Score: this.player1Score,
           player2Score: this.player2Score,
@@ -78,37 +110,31 @@ export class GameInstance {
         });
 
         // call the math function
-        this.updateBall();
+        this.updateGame(this.player1Score, this.player2Score);
         // console.log(this.ball); // checking whether update goes well
       }
     }, 1000 / 60);
   }
-  public updateBall(): void {
+  public updateGame(player1score: number, player2score: number): void {
 
+    player1score = this.player1Score;
+    player2score = this.player2Score;
     const hitRightEdge = this.ball.x > GAME_WIDTH - PADDLE_WIDTH
     const hitLeftEdge = this.ball.x <= 5
 
     if (hitRightEdge || hitLeftEdge) {
-      this.player1Score += hitLeftEdge ? 1 : 0;
-      this.player2Score += hitRightEdge ? 1 : 0;
-      this.player1.socket.emit('updateScore', {
-        player1: this.player1Score,
-        player2: this.player2Score,
-      });
-      this.player2.socket.emit('updateScore', {
-        player1: this.player2Score,
-        player2: this.player1Score,
-      });
+      player1score += hitLeftEdge ? 1 : 0;
+      player2score += hitRightEdge ? 1 : 0;
       this.resetBall();
-      // check game over
-      if (this.player1Score >= 5) {
-        this.winnerID = this.player1.id;
-        this.endGame();
-      }
-
-      if (this.player2Score >= 5) {
-        this.winnerID = this.player2.id;
-        this.endGame();
+      if (this.checkGameEnd()) {
+        this.server.to('gameStart' + this.player1.id).emit('gameEnded', {
+          winner: this.winnerID,
+        });
+        this.server.to('gameStart' + this.player2.id).emit('gameEnded', {
+          winner: this.winnerID,
+        });
+        this.gameEnded = true;
+        this.gameRunning = false;
       }
     }
 
@@ -128,25 +154,38 @@ export class GameInstance {
     this.ball.x += this.ball.speedX;
     this.ball.y += this.ball.speedY;
   }
-  public endGame(): void {
-    this.gameEnded = true;
-    this.gameRunning = false;
+  public endGame() {
     this.player1.socket.disconnect();
     this.player2.socket.disconnect();
     clearInterval(this.gameLoop);
   }
-  public resetBall(): void {
+  public resetBall(): boolean {
     this.updateScore();
     this.player1.socket.emit('sendBallState', this.ball);
     this.player2.socket.emit('sendBallState', this.ball);
     this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
+    return true
   }
   public updateScore(): void {
-    this.player1.socket.on('updateScore', (score) => {
-      this.player1Score = score;
+    this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+      player1: this.player1Score,
+      player2: this.player2Score,
     });
-    this.player2.socket.on('updateScore', (score) => {
-      this.player2Score = score;
+    this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+      player1: this.player2Score,
+      player2: this.player1Score,
     });
+  }
+
+  // check game end
+  public checkGameEnd(): boolean {
+    if (this.player1Score === 5) {
+      this.winnerID = this.player1.id;
+      return true;
+    } else if (this.player2Score === 5) {
+      this.winnerID = this.player2.id;
+      return true;
+    } else
+      return false;
   }
 }
