@@ -28,7 +28,11 @@ export enum PlayerNumber {
 
 @Injectable()
 export class GameService {
-  public MatchMakingQueue: Array<{ id: number; socket: Socket, score: number }> = [];
+  public MatchMakingQueue: Array<{
+    id: number;
+    socket: Socket;
+    score: number;
+  }> = [];
   public onlineUsers = new Map<number, Set<Socket>>();
   public privateQueue = Array<{ id: number; socket: Socket }>();
 
@@ -91,61 +95,65 @@ export class GameService {
     });
   }
 
-  async giveAchievement(player1: any, player2: any, game: GameInstance): Promise<void> {
+  async giveAchievement(
+    player1: any,
+    player2: any,
+    game: GameInstance,
+  ): Promise<void> {
     const match = await this.matchHistory.findOne({
       where: { player1: { id: player1.id }, player2: { id: player2.id } },
+    });
+    if (match.winner === player1.id) {
+      match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
+      match.losesInARow = 0;
+    } else {
+      match.winsInARow = 0;
+      match.losesInARow = await this.matchHistory.trackWinsInARow(player1.id);
+    }
+    if (match.winner === player2.id) {
+      match.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
+      match.losesInARow = 0;
+    } else {
+      match.winsInARow = 0;
+      match.losesInARow = await this.matchHistory.trackWinsInARow(player2.id);
+    }
+
+    if (match.winsInARow === 3) {
+      const achievement = await this.achievementRepo.findOne({
+        where: { name: '3 in a row' },
       });
-      if (match.winner === player1.id) {
-        match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
-        match.losesInARow = 0;
-      } else {
-        match.winsInARow = 0;
-        match.losesInARow = await this.matchHistory.trackWinsInARow(player1.id);
-      }
-      if (match.winner === player2.id) {
-        match.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
-        match.losesInARow = 0;
-      } else {
-        match.winsInARow = 0;
-        match.losesInARow = await this.matchHistory.trackWinsInARow(player2.id);
-      }
-
-      if (match.winsInARow === 3) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '3 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-      if (match.winsInARow === 5) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '5 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-
-      if (match.winsInARow === 10) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '10 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-      const achievement =
-        game.player2Score === 0
-          ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
-          : null;
       if (achievement) {
-        this.achievementService.giveAchievement(
-          game.player2Score === 0 ? player1.id : player2.id,
-          achievement.id,
-        );
+        this.achievementService.giveAchievement(player1.id, achievement.id);
       }
     }
+    if (match.winsInARow === 5) {
+      const achievement = await this.achievementRepo.findOne({
+        where: { name: '5 in a row' },
+      });
+      if (achievement) {
+        this.achievementService.giveAchievement(player1.id, achievement.id);
+      }
+    }
+
+    if (match.winsInARow === 10) {
+      const achievement = await this.achievementRepo.findOne({
+        where: { name: '10 in a row' },
+      });
+      if (achievement) {
+        this.achievementService.giveAchievement(player1.id, achievement.id);
+      }
+    }
+    const achievement =
+      game.player2Score === 0
+        ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
+        : null;
+    if (achievement) {
+      this.achievementService.giveAchievement(
+        game.player2Score === 0 ? player1.id : player2.id,
+        achievement.id,
+      );
+    }
+  }
 
   /*
    * Join matchmaking MatchMakingQueue
@@ -156,7 +164,7 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    // console.log('use id is', userId); 
+    // console.log('use id is', userId);
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
@@ -206,7 +214,7 @@ export class GameService {
       return player.id !== user.id;
     });
     client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
-}
+  }
   /*
    * start game
    */
@@ -222,19 +230,11 @@ export class GameService {
     server
       .to('gameStart' + player2.id)
       .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
-    game.startGame();
-
-    // Create match history entry
     this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,
-      winnerID: null,
-      winsInARow: player1.winsInARow,
-      losesInARow: 0,
-      date: new Date(),
-      player1score: player1.score,
-      player2score: player2.score,
     });
+    game.startGame();
   }
 
   endGame(player1: any, player2: any, server: Server): void {

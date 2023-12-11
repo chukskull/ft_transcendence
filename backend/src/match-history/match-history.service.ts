@@ -9,7 +9,8 @@ import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
-    private matchHistory: Repository<MatchHistory>,
+    private matchHistoryRepo: Repository<MatchHistory>,
+
     private userService: UserService,
   ) {}
 
@@ -18,25 +19,19 @@ export class MatchHistoryService {
    * @param createMatchHistoryDto - The DTO containing the necessary data to create a new match history entry.
    */
   async create(MatchHistoryDto: CreateMatchHistoryDto) {
-    const mh = new MatchHistory();
-
+    const mh = await this.matchHistoryRepo.create({
+      winner: null,
+      winsInARow: 0,
+      losesInARow: 0,
+      date: null,
+      player1Score: 0,
+      player2Score: 0,
+    });
     mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
-
     mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
-
-    mh.winner = await this.userService.userProfile(MatchHistoryDto.winnerID);
-
-    mh.winsInARow = Number(MatchHistoryDto.winsInARow);
-
-    mh.losesInARow = Number(MatchHistoryDto.losesInARow);
-
     mh.date = new Date();
-
-    mh.player1Score = Number(MatchHistoryDto.player1score);
-
-    mh.player2Score = Number(MatchHistoryDto.player2score);
-
-    await this.matchHistory.save(mh);
+    console.log('this is the new Mh: ', mh);
+    await this.matchHistoryRepo.save(mh);
 
     return mh;
   }
@@ -46,15 +41,15 @@ export class MatchHistoryService {
    */
 
   async findAll(): Promise<MatchHistory[]> {
-    return this.matchHistory.find();
+    return this.matchHistoryRepo.find();
   }
 
   async findOne(id: any): Promise<MatchHistory> {
-    return this.matchHistory.findOne(id);
+    return this.matchHistoryRepo.findOne(id);
   }
 
   async trackWinsInARow(playerID: number): Promise<number> {
-    const matchHistory = await this.matchHistory.find({
+    const matchHistory = await this.matchHistoryRepo.find({
       where: { winner: { id: playerID } },
       order: { date: 'DESC' },
     });
