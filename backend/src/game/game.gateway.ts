@@ -53,12 +53,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.gameService.createGame(client, opponentId, this.server);
   }
 
-
-  @SubscribeMessage('updateScore')
-  async updateScore(client: Socket, @MessageBody() payload: any) {
-    this.gameService.updateScore(client, payload);
-  }
-
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
     @MessageBody()
@@ -70,7 +64,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const { token, friendIwantToInvite } = data;
     const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
-    this.gameService.inviteFriend(client,this.server,friendIwantToInvite, token, roomName);
+    this.gameService.inviteFriend(
+      client,
+      this.server,
+      friendIwantToInvite,
+      token,
+      roomName,
+    );
     client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
   }
 }
