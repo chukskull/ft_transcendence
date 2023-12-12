@@ -1,6 +1,10 @@
 import { Server } from 'socket.io';
 import { GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH, DIST_WALL_TO_PADDLE } from './game.service';
 
+const BASE_BALL_SPEED = 2;
+const FRAME_RATE = 1000 / 20;
+const BALL_SPEED = Math.floor(BASE_BALL_SPEED * FRAME_RATE / 16.66666);
+
 
 export class GameInstance {
   public positionsStruct: {
@@ -27,9 +31,10 @@ export class GameInstance {
 
   // first and second are taken from the queue (player: {id, socket}) and server is the socket server
   constructor(first: any, second: any, server: Server) {
+    console.log('game created')
     this.player1 = first;
     this.player2 = second;
-    this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
+    this.ball = { x: 417, y: 240, speedX: BALL_SPEED, speedY: BALL_SPEED };
     this.player1Score = this.player1.score; // undefined
     this.player2Score = this.player2.score; // undefined
     this.gameRunning = false;
@@ -47,6 +52,7 @@ export class GameInstance {
   }
 
   public startGame(): void {
+    console.log('game started')
     this.gameRunning = true;
     this.player1.socket.on('positionUpdate', (data) => {
       this.paddle1Position = data.player1PaddleY;
@@ -92,6 +98,8 @@ export class GameInstance {
       this.gameRunning = false;
       this.gameEnded = true;
     });
+    
+    
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
         // emit positions
@@ -99,7 +107,7 @@ export class GameInstance {
         // call the math function
         this.updateGame();
       }
-    }, 1000 / 60);
+    }, FRAME_RATE);
   }
   public updateGame(): void {
     // check collision with left and right walls
@@ -141,7 +149,7 @@ export class GameInstance {
   public resetBall(): boolean {
     this.player1.socket.emit('sendBallState', this.ball);
     this.player2.socket.emit('sendBallState', this.ball);
-    this.ball = { x: 417, y: 240, speedX: 2, speedY: 2 };
+    this.ball = { x: 417, y: 240, speedX: BALL_SPEED, speedY: BALL_SPEED };
     return true
   }
 
