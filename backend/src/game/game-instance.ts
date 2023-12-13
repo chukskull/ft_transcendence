@@ -165,6 +165,14 @@ export class GameInstance {
     if (hitRightEdge || hitLeftEdge) {
       this.player1Score += hitRightEdge ? 1 : 0;
       this.player2Score += hitLeftEdge ? 1 : 0;
+      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+        player1: this.player1Score,
+        player2: this.player2Score,
+      });
+      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+        player1: this.player2Score,
+        player2: this.player1Score,
+      });
       this.resetBall();
       if (this.checkGameEnd()) {
         this.server.to('gameStart' + this.player1.id).emit('gameEnded', {
@@ -176,14 +184,6 @@ export class GameInstance {
         this.gameEnded = true;
         this.gameRunning = false;
       }
-      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
-        player1: this.player1Score,
-        player2: this.player2Score,
-      });
-      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
-        player1: this.player2Score,
-        player2: this.player1Score,
-      });
     }
   }
 
