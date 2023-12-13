@@ -59,6 +59,7 @@ const Game: React.FC = () => {
   });
 
   // What the hell is this?
+  // wtf is this?
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     setValue((v) => (v >= 100 ? 0 : v + 10));
@@ -143,7 +144,7 @@ const Game: React.FC = () => {
           </div>
         )}
       </div>
-      {/* {renderRectangle()} */}
+      {renderRectangle()}
     </div>
   );
 };
