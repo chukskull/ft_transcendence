@@ -14,7 +14,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 @WebSocketGateway({ namespace: 'gameSockets', cors: true })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService) {}
   @WebSocketServer() server: Server;
 
   emitToClients(data: any, emitedEvent: any, roomName: any) {
