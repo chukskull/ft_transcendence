@@ -163,8 +163,8 @@ export class GameInstance {
     const hitLeftEdge = this.ball.x <= 5
 
     if (hitRightEdge || hitLeftEdge) {
-      this.player1Score += hitLeftEdge ? 1 : 0;
-      this.player2Score += hitRightEdge ? 1 : 0;
+      this.player1Score += hitRightEdge ? 1 : 0;
+      this.player2Score += hitLeftEdge ? 1 : 0;
       this.resetBall();
       if (this.checkGameEnd()) {
         this.server.to('gameStart' + this.player1.id).emit('gameEnded', {

@@ -53,7 +53,7 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['online', 'offline', 'ingame'],
+    enum: ['online', 'offline', 'inGame'],
     default: 'offline',
     nullable: true,
   })

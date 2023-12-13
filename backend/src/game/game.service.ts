@@ -214,9 +214,11 @@ export class GameService {
   /*
    * start game
    */
-  createGame(player1: any, player2: any, server: Server): void {
+  async createGame(player1: any, player2: any, server: Server): Promise<void> {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
+    await this.userService.setStatus(player1.id, 'inGame');
+    await this.userService.setStatus(player2.id, 'inGame');
     const game = new GameInstance(player1, player2, server); // take the entire player
     
     server.to('gameStart' + player1.id).emit('gameStarted', {
@@ -259,6 +261,9 @@ export class GameService {
 
   async endGame(game: GameInstance) {
     await this.updateFinalScore(game);
+    await this.giveAchievement(game.player1, game.player2, game);
+    this.userService.setStatus(game.player1.id, 'online');
+    this.userService.setStatus(game.player2.id, 'online');
     game.endGame();
   }
 }
