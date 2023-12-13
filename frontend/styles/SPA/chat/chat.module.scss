@@ -159,7 +159,7 @@
     border-radius: 14.537px;
     background: #1d0229;
     display: flex;
-    color: white;
+    color: silver;
     flex-direction: column;
     align-items: center;
     padding: 20px;
@@ -200,10 +200,10 @@
 
 .chat-container {
     overflow: hidden;
-    margin-top: 60px;
-    margin-left: 60px;
+    padding-top: 60px;
+    padding-left: 60px;
     display: flex;
-    color: white;
+    color: silver;
     
 
     .menu-sections {
@@ -319,19 +319,23 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+        
         .chat {
             padding-inline: 32px;
             .msgs-list {
-                padding-block: 20px;
+                padding-block: 10px;
                 display: flex;
                 flex-direction: column;
                 gap: 30px;
                 overflow-y: scroll;
-                height: 82vh;
+                height: 79vh;
+                width: 100%;
 
                 .msg-item {
                     display: flex;
-                    align-items: center;
+                    align-items: start;
+                    padding-right: 16px;
+                    
                     gap: 15px;
 
                     .msg-info {
@@ -352,13 +356,18 @@
 
                             font-family: ClashGrotesk-Regular;
                             line-height: 120.5%;
+                            white-space: pre-line;
+                            word-break: break-all;
+
+                        
+                            overflow-x: hidden;
                         }
 
-                        &:hover {
-                            ~ .msg-time {
-                                display: block;
-                            }
-                        }
+                        // &:hover {
+                        //     ~ .msg-time {
+                        //         display: block;
+                        //     }
+                        // }
                     }
 
                     .msg-time {
@@ -654,7 +663,7 @@
                         align-items: center;
                         gap: 10px;
                         .switch {
-                            color: white;
+                            color: silver;
                         }
                     }
                 }
