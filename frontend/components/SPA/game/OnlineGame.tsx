@@ -60,6 +60,11 @@ export default function OnlineGame({
     setScore(data);
   });
 
+  socket.on("gameEnded", (data: any) => {
+    // for winner/loser screen component
+    console.log("game ended");
+  });
+
   return (
     <div className={style.gameBody} tabIndex={0}>
       <p>{score.player1}</p>

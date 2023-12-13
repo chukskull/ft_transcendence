@@ -112,8 +112,6 @@ export class GameInstance {
   public updateGame(): void {
     // check collision with left and right walls
     this.updateScore();
-    if (this.gameEnded && !this.gameRunning)
-      this.endGame();
     // check collision with top and bottom walls
     this.bounceOffTopAndBottomWalls();
     // check collision with players paddles
@@ -123,9 +121,15 @@ export class GameInstance {
   }
 
   public endGame() {
-    this.player1.socket.disconnect();
-    this.player2.socket.disconnect();
     clearInterval(this.gameLoop);
+    this.player1.socket.removeAllListeners();
+    this.player2.socket.removeAllListeners();
+    this.player1.socket.leave('gameStart' + this.player1.id);
+    this.player2.socket.leave('gameStart' + this.player2.id);
+    this.player1.score = 0;
+    this.player2.score = 0;
+    this.player1 = null;
+    this.player2 = null;
   }
 
   public emitPositions(): void {
@@ -183,6 +187,7 @@ export class GameInstance {
         });
         this.gameEnded = true;
         this.gameRunning = false;
+        this.endGame();
       }
     }
   }
