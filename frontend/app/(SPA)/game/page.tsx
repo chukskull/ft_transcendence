@@ -11,20 +11,7 @@ import axios from "axios";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
-  const [gameStarted, setGameStarted] = useState(false);
   const [onlineMode, setOnlineMode] = useState<boolean>(false);
-  const [score, setScore] = useState<Record<string, number>>({
-    player: 0,
-    enemy: 0,
-  });
-  const [ball, setBall] = useState({
-    x: 430,
-    y: 250,
-    speedX: 2,
-    speedY: 2,
-  });
-  const [playerPaddleY, setPlayerPaddleY] = useState<number>(210);
-  const [online, setOnline] = useState<boolean>(false);
   const [showRec, setRec] = useState<boolean>(false);
   const [value, setValue] = useState(0);
   const [socket, setSocket] = useState<any>(null);
@@ -70,17 +57,19 @@ const Game: React.FC = () => {
     setJoinedQueue(false);
     setOnlineMode(true);
   });
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setValue((v) => (v >= 100 ? 0 : v + 10));
-    }, 500);
-    if (value === 100) {
-      setRec(false);
-    }
-    return () => {
-      clearInterval(interval);
-    };
-  }, [value]);
+
+  // What the hell is this?
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setValue((v) => (v >= 100 ? 0 : v + 10));
+  //   }, 500);
+  //   if (value === 100) {
+  //     setRec(false);
+  //   }
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [value]);
 
   const renderRectangle = () => {
     if (showRec) {
@@ -154,7 +143,7 @@ const Game: React.FC = () => {
           </div>
         )}
       </div>
-      {renderRectangle()}
+      {/* {renderRectangle()} */}
     </div>
   );
 };

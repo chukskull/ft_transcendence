@@ -45,13 +45,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *	create Game
    */
 
-  @SubscribeMessage('createGame')
+  /* @SubscribeMessage('createGame')
   async createGame(client: Socket) {
     const opponentId = this.gameService.MatchMakingQueue.find(
       (player) => player.socket !== client,
     )?.id;
     this.gameService.createGame(client, opponentId, this.server);
-  }
+  } */
 
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
