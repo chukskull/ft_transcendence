@@ -14,7 +14,6 @@ import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
 import { Button } from "@nextui-org/react";
-import { tree } from "next/dist/build/templates/app-page";
 
 function friendStatus(pendingFrReq: any, friendsList: any, userId: any) {
   // if friend return 1 if pending return 2 if not return 0
@@ -54,11 +53,10 @@ export default function Profile({ id }: any) {
 
   function handleBlock(blockUnblock: number) {
     let userId;
-    if (blockUnblock == 1) 
+    if (blockUnblock == 1)
       userId = myData?.friends?.find((e: any) => e.nickName == id)?.id;
-    else
-      userId = myData?.blockedUsers?.find((e: any) => e.nickName == id)?.id;
-    
+    else userId = myData?.blockedUsers?.find((e: any) => e.nickName == id)?.id;
+
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${userId}/${blockUnblock}`,
@@ -110,7 +108,7 @@ export default function Profile({ id }: any) {
             onClick={() => handleBlock(isBlocked() ? 0 : 1)}
             color={"danger"}
             variant="bordered"
-            className="w-fit mt-4"
+            className="w-fit"
           >
             <span style={{ display: "flex", alignItems: "center" }}>
               <FaUserAltSlash style={{ marginRight: "0.5rem" }} />{" "}
