@@ -98,6 +98,7 @@ const UserMenu = ({
                   }
                 )
                 .then((res) => {
+                  document.location.reload();
                   console.log(res);
                 })
                 .catch((err) => {
@@ -247,6 +248,7 @@ const UserMenu = ({
                     }
                   )
                   .then((res) => {
+                    document.location.reload();
                     console.log(res);
                   })
                   .catch((err) => {
