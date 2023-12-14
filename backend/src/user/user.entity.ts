@@ -69,6 +69,9 @@ export class User {
   level: number;
 
   @Column({ default: 0 })
+  winsInARow: number;
+
+  @Column({ default: 0 })
   wins: number;
 
   @Column({ default: 0 })

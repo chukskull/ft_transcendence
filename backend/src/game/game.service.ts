@@ -29,6 +29,7 @@ export class GameService {
     socket: Socket;
     score: number;
   }> = [];
+  public games: Array<GameInstance> = [];
   public onlineUsers = new Map<number, Set<Socket>>();
   public privateQueue = Array<{ id: number; socket: Socket }>();
 
@@ -101,22 +102,15 @@ export class GameService {
     const match = await this.matchHistory.findOne({
       where: { player1: { id: player1.id }, player2: { id: player2.id } },
     });
-    if (match.winner === player1.id) {
-      match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
-      match.losesInARow = 0;
-    } else {
-      match.winsInARow = 0;
-      match.losesInARow = await this.matchHistory.trackWinsInARow(player1.id);
-    }
-    if (match.winner === player2.id) {
-      match.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
-      match.losesInARow = 0;
-    } else {
-      match.winsInARow = 0;
-      match.losesInARow = await this.matchHistory.trackWinsInARow(player2.id);
+    if (match.winner === player1.id || match.winner === player2.id) {
+      const achievement = await this.achievementRepo.findOne({
+        where: { name: 'First win' },
+      });
+      if (achievement)
+        this.achievementService.giveAchievement(match.winner, achievement.id);
     }
 
-    if (match.winsInARow === 3) {
+    if (match.player1.winsInARow === 3 || match.player2.winsInARow === 3) {
       const achievement = await this.achievementRepo.findOne({
         where: { name: '3 in a row' },
       });
@@ -124,7 +118,7 @@ export class GameService {
         this.achievementService.giveAchievement(player1.id, achievement.id);
       }
     }
-    if (match.winsInARow === 5) {
+    if (match.player1.winsInARow === 5) {
       const achievement = await this.achievementRepo.findOne({
         where: { name: '5 in a row' },
       });
@@ -133,7 +127,7 @@ export class GameService {
       }
     }
 
-    if (match.winsInARow === 10) {
+    if (match.player1.winsInARow === 10) {
       const achievement = await this.achievementRepo.findOne({
         where: { name: '10 in a row' },
       });
@@ -224,6 +218,7 @@ export class GameService {
     const matchHisto = this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,
+      winsInARow: 0,
     });
     const game = new GameInstance(
       player1,
@@ -232,6 +227,7 @@ export class GameService {
       matchHisto,
       this.matchHistoryRepo,
     ); // take the entire player
+    this.games.push(game);
     server.to('gameStart' + player1.id).emit('gameStarted', {
       MyId: player1.id,
       OpponentId: player2.id,

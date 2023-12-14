@@ -12,20 +12,14 @@ export class MatchHistory {
   @ManyToOne(() => User)
   player2: User;
 
-  @ManyToOne(() => User)
-  winner: User;
-
+  @Column({ nullable: true })
+  winner: number;
+  
   @Column()
   player1Score: number;
 
   @Column()
   player2Score: number;
-
-  @Column()
-  winsInARow: number;
-
-  @Column()
-  losesInARow: number;
 
   @Column()
   date: Date;
