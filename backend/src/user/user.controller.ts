@@ -117,7 +117,7 @@ export class UserController {
     return this.usersService.sendFriendRequest(req.user.id, frid);
   }
 
-  @Post('/removeFriend/:friendId')
+  @Get('/removeFriend/:friendId')
   @UseGuards(JwtGuard)
   async removeFriend(@Param('friendId') friendId: number, @Req() req: any) {
     return this.usersService.removeFriend(req.user.id, friendId);
