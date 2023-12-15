@@ -25,7 +25,7 @@ const Game: React.FC = () => {
     return () => {
       socket?.disconnect();
     };
-  }, []);
+  }, [socket]);
 
   function handleJoinQueue() {
     if (socket) {

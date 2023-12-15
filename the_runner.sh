@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ] || ( [ "$1" != "del" ] && [ "$1" != "up" ] ); then
 fi
 
 cleanup() {
-    docker-compose down --rmi all --volumes --remove-orphans
+    docker compose down --rmi all --volumes --remove-orphans
     docker system prune --all --force --volumes
     docker volume prune --force
 }
@@ -17,7 +17,7 @@ build() {
 
     (cd ./frontend && npm cache clean --force --silent;) && (cd ./backend &&  npm cache clean --force --silent;)
 
-    docker-compose up --build
+    docker compose up --build
 }
 
 case "$1" in
