@@ -20,6 +20,8 @@ export class MatchHistoryService {
   async create(MatchHistoryDto: MatchHistoryDto): Promise<MatchHistory> {
     const mh = this.matchHistoryRepo.create({
       winner: null,
+      winsInARow: 0,
+      losesInARow: 0,
       date: new Date(),
       player1Score: 0,
       player2Score: 0,
@@ -49,12 +51,12 @@ export class MatchHistoryService {
 
   async trackWinsInARow(playerID: number): Promise<number> {
     const matchHistory = await this.matchHistoryRepo.find({
-      where: { winner: playerID },
+      where: { winner: { id: playerID } },
       order: { date: 'DESC' },
     });
     let winsInARow = 0;
     let i = 0;
-    while (matchHistory[i] && matchHistory[i].winner === playerID) {
+    while (matchHistory[i] && matchHistory[i].winner.id === playerID) {
       winsInARow++;
       i++;
     }

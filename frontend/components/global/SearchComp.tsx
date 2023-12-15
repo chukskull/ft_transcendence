@@ -19,7 +19,6 @@ const SearchComp = () => {
   const [activeSearch, setActiveSearch] = useState<any>([]);
   const [res, setRes] = useState<(any | any)[]>([]);
   const [Mount, setMount] = useState(false);
-  const [showModal, setShow] = useState(false);
 
   useEffect(() => {
     const fetchChannels = async () => {

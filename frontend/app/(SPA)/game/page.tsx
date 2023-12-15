@@ -35,7 +35,6 @@ const Game: React.FC = () => {
   }
   socket?.on("changeState", (data: any) => {
     if (data.status == "inQueue") {
-      console.log("in queue", socket.id);
       setJoinedQueue(true);
     } else if (data.status == "failed") {
       // popus that user is already in queue in another window

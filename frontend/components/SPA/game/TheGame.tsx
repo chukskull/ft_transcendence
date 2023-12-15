@@ -1,5 +1,6 @@
 import React, { useState, useEffect, use } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
+import io from "socket.io-client";
 
 type Score = {
   player: number;
@@ -9,9 +10,8 @@ type Score = {
 const DIST_WALL_TO_PADDLE = 20;
 const PADDLE_HEIGHT = 110;
 const PADDLE_WIDTH = 13;
-const ENEMY_PADDLE_SPEED = 5;
 const BALL_RADIUS = 16;
-const PLAYER_PADDLE_SPEED = 15;
+const PLAYER_PADDLE_SPEED = 12;
 
 const useKeyHandler = () => {
   const [keys, setKeys] = useState<Record<string, boolean>>({});
@@ -46,8 +46,8 @@ export default function TheGame({ map }: { map: string }) {
     x: 417,
     y: 240,
 
-    speedX: 6,
-    speedY: 6,
+    speedX: 2,
+    speedY: 2,
   });
   const [playerPaddleY, setPlayerPaddleY] = useState(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState(210);
@@ -74,8 +74,8 @@ export default function TheGame({ map }: { map: string }) {
         setBall({
           x: 417,
           y: 240,
-          speedX: 6,
-          speedY: 6,
+          speedX: 3,
+          speedY: 3,
         });
         if (score.player === 5 || score.ai === 5) {
           setScore({ player: 0, ai: 0 });
@@ -90,25 +90,36 @@ export default function TheGame({ map }: { map: string }) {
 
       // Ball collisions with top and bottom walls
       if (
-        ball.y + ball.speedY > canvasHeight - 5 ||
+        ball.y + ball.speedY > canvasHeight - 15 ||
         ball.y + ball.speedY < -3
-      )
+      ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
+        // console.log("=> 5");
+      }
+
       // Ball collisions with paddle
       const hitRightPaddle =
         ball.x >=
         canvasWidth - (PADDLE_WIDTH + DIST_WALL_TO_PADDLE + BALL_RADIUS);
       const hitLeftPaddle =
-        ball.x <= DIST_WALL_TO_PADDLE + PADDLE_WIDTH &&
+        ball.x <= DIST_WALL_TO_PADDLE &&
         ball.y >= playerPaddleY &&
         ball.y <= playerPaddleY + PADDLE_HEIGHT;
       if (hitLeftPaddle || hitRightPaddle) {
-        // Reverse ball direction on paddle collision
+        // Increase ball speed on paddle collision
         if (
           (hitLeftPaddle && ball.speedX < 0) ||
           (hitRightPaddle && ball.speedX >= 0)
-        )
-          setBall((prevBall) => ({ ...prevBall, speedX: -prevBall.speedX }));
+        ) {
+          if (ball.speedX * ball.speedX < 81) {
+            const increasedSpeedX = -ball.speedX * 1.05; // Increase speed by a factor (e.g., 1.05)
+            setBall((prevBall) => ({ ...prevBall, speedX: increasedSpeedX }));
+            console.log("=> 6");
+          } else {
+            setBall((prevBall) => ({ ...prevBall, speedX: -ball.speedX }));
+            console.log("=> 7");
+          }
+        }
       }
 
       /**
@@ -123,7 +134,7 @@ export default function TheGame({ map }: { map: string }) {
         x:
           prevBall.x +
           (hitLeftPaddle || hitRightPaddle
-            ? (hitLeftPaddle ? 0.1 : -0.1) * BALL_RADIUS
+            ? (hitLeftPaddle ? 0.3 : -0.3) * BALL_RADIUS
             : prevBall.speedX),
         y: prevBall.y + prevBall.speedY,
       }));
@@ -141,17 +152,20 @@ export default function TheGame({ map }: { map: string }) {
   }, [ball.x, ball.y, gameStarted]);
 
   useEffect(() => {
+    // handle ai paddle
     if (!gameStarted) {
       return;
     }
+
     // Update AI paddle position based on ball's y-coordinate
     if (
       EnemyPaddleY + 40 < ball.y &&
-      EnemyPaddleY + PADDLE_HEIGHT < canvasHeight - 5
-    )
-      setEnemyPaddleY(EnemyPaddleY + ENEMY_PADDLE_SPEED)
-    else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5)
-      setEnemyPaddleY(EnemyPaddleY - ENEMY_PADDLE_SPEED);
+      EnemyPaddleY + PADDLE_HEIGHT < canvasHeight
+    ) {
+      setEnemyPaddleY(EnemyPaddleY + 4);
+    } else if (EnemyPaddleY + 40 > ball.y && EnemyPaddleY > 5) {
+      setEnemyPaddleY(EnemyPaddleY - 4);
+    }
   }, [gameStarted, ball.y, EnemyPaddleY]);
 
   useEffect(() => {
@@ -160,9 +174,9 @@ export default function TheGame({ map }: { map: string }) {
     }
 
     // handle player paddle
-    if (keys["ArrowDown"] && (playerPaddleY + PADDLE_HEIGHT) + PLAYER_PADDLE_SPEED <= canvasHeight - 5) {
+    if (keys["ArrowDown"] && playerPaddleY + PADDLE_HEIGHT < canvasHeight) {
       setPlayerPaddleY(playerPaddleY + PLAYER_PADDLE_SPEED);
-    } else if (keys["ArrowUp"] && playerPaddleY > 0) {
+    } else if (keys["ArrowUp"] && playerPaddleY > 5) {
       setPlayerPaddleY(playerPaddleY - PLAYER_PADDLE_SPEED);
     }
   }, [gameStarted, keys]);

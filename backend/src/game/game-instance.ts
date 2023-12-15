@@ -92,7 +92,6 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.addScoreToDB();
     });
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
@@ -106,12 +105,11 @@ export class GameInstance {
         player1: this.player1Score,
         player2: this.player2Score,
       });
-      this.server.to('gameStart' + this.player1.id).emit('gameEnded', {
+      this.server.to('gameStart' + this.player2.id).emit('gameEnded', {
         winner: this.winnerID,
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.addScoreToDB();
     });
 
     this.gameLoop = setInterval(() => {
@@ -202,21 +200,17 @@ export class GameInstance {
         });
         this.gameEnded = true;
         this.gameRunning = false;
-        this.addScoreToDB();
+        this.matchHistory.player1Score = this.player1Score;
+        this.matchHistory.winner = this.matchHistory.player1;
+        this.matchHistory.winsInARow = 0;
+        this.matchHistory.losesInARow = 0;
+        this.matchHistory.date = new Date();
+        this.matchHistory.player2Score = this.player2Score;
+        this.matchHistoryRepo.save(this.matchHistory);
+        console.log('----------#@$%@#%@#--------------', this.matchHistory);
         this.endGame();
       }
     }
-  }
-
-  private addScoreToDB() {
-    this.matchHistory.player1Score = this.player1Score;
-    this.matchHistory.player2Score = this.player2Score;
-    this.matchHistory.winnerID = this.winnerID;
-    console.log('----------#@$%@#%@#--------------', this.matchHistory.winnerID)
-    // this.matchHistory.winsInARow += 1;
-    this.matchHistory.date = new Date();
-    this.matchHistoryRepo.save(this.matchHistory);
-    console.log('----------#@$%@#%@#--------------', this.matchHistory);
   }
 
   public bounceOffTopAndBottomWalls(): void {

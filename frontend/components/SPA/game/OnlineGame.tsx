@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
+import io from "socket.io-client";
+import { set } from "lodash";
 
 type Score = {
   player1: number;

@@ -6,7 +6,4 @@ export class MatchHistoryDto {
 
   @IsNumber()
   player2ID: number;
-
-  @IsNumber()
-  winsInARow: number;
 }
