@@ -8,7 +8,6 @@ import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
-import { MatchHistory } from 'src/match-history/match-history.entity';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 860;
@@ -21,6 +20,7 @@ export const INIT_BALL_SPEED = 10;
 export const PADDLE1_POSITION = GAME_HEIGHT / 2;
 export const PADDLE2_POSITION = GAME_HEIGHT / 2;
 export const DIST_WALL_TO_PADDLE = 20;
+
 
 @Injectable()
 export class GameService {
@@ -38,9 +38,7 @@ export class GameService {
     private userService: UserService,
     private jwtService: JwtService,
     @InjectRepository(Achievement)
-    private achievementRepo: Repository<Achievement>,
-    @InjectRepository(MatchHistory)
-    private matchHistoryRepo: Repository<MatchHistory>,
+    private readonly achievementRepo: Repository<Achievement>,
   ) {}
 
   /**
@@ -162,6 +160,7 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    // console.log('use id is', userId);
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
@@ -215,30 +214,51 @@ export class GameService {
   /*
    * start game
    */
-  async createGame(player1: any, player2: any, server: Server): Promise<void> {
+  createGame(player1: any, player2: any, server: Server): void {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
-    await this.userService.setStatus(player1.id, 'inGame');
-    await this.userService.setStatus(player2.id, 'inGame');
-    console.log('$$$$$$$$$$$$$$$$$$$$$-------------------- GAME CREATED');
-    const matchHisto = this.matchHistory.create({
-      player1ID: player1.id,
-      player2ID: player2.id,
-    });
-    const game = new GameInstance(
-      player1,
-      player2,
-      server,
-      matchHisto,
-      this.matchHistoryRepo,
-    ); // take the entire player
+    const game = new GameInstance(player1, player2, server); // take the entire player
+    
     server.to('gameStart' + player1.id).emit('gameStarted', {
       MyId: player1.id,
       OpponentId: player2.id,
     });
     server
-      .to('gameStart' + player2.id)
-      .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
+    .to('gameStart' + player2.id)
+    .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
+    this.matchHistory.create({
+      player1ID: player1.id,
+      player2ID: player2.id,
+    });
     game.startGame();
+    if (game.gameEnded) {
+      this.endGame(game);
+    }
+  }
+
+  /*
+  * get final score
+  */
+  async updateFinalScore(
+    game: GameInstance,
+  ): Promise<void> {
+
+    const match = await this.matchHistory.findOne({
+      where: { player1: { id: game.player1.id }, player2: { id: game.player2.id } },
+    });
+    match.player1Score = game.player1Score;
+    match.player2Score = game.player2Score;
+    if (game.player1Score > game.player2Score) {
+      match.winner = game.player1.id;
+    } else {
+      match.winner = game.player2.id;
+    }
+    console.log('match: ', match);
+    await this.matchHistory.update(match);
+  }
+
+  async endGame(game: GameInstance) {
+    await this.updateFinalScore(game);
+    game.endGame();
   }
 }

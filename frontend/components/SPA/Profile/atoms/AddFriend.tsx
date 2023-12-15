@@ -52,7 +52,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
         .then(() => {
           window.location.reload();
         })
-        .catch((err) => console.log(err.response.data.message));
+        .catch((err) => console.log(err));
     } else if (isFriend === 1) {
       axios
         .get(
@@ -62,7 +62,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
         .then(() => {
           window.location.reload();
         })
-        .catch((err) => console.log(err.response.data.message));
+        .catch((err) => console.log(err));
     }
   };
 

@@ -65,94 +65,82 @@ const UserMenu = ({
           <FaUser />
           View Profile
         </div>
-        {!isUserBlocked() ? (
+        <div
+          className={style["menu-item"]}
+          onClick={() => {
+            axios
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`,
+                {},
+                {
+                  withCredentials: true,
+                }
+              )
+              .then((res) => {})
+              .catch((err) => {
+                console.log(err);
+              });
+          }}
+        >
+          <BsController />
+          Invite To A Game
+        </div>
+
+        {isFriend() ? (
           <div
             className={style["menu-item"]}
             onClick={() => {
               axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`,
-                  {},
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
                   {
                     withCredentials: true,
                   }
                 )
-                .then((res) => {})
+                .then((res) => {
+                  console.log(res);
+                })
                 .catch((err) => {
                   console.log(err);
                 });
             }}
           >
-            <BsController />
-            Invite To A Game
+            <FaUserSlash />
+            Remove Friend
           </div>
         ) : (
-          <></>
-        )}
-
-        {!isUserBlocked() && (
-          <>
-            {isFriend() ? (
-              <div
-                className={style["menu-item"]}
-                onClick={() => {
-                  axios
-                    .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
-                      {
-                        withCredentials: true,
-                      }
-                    )
-                    .then((res) => {
-                      document.location.reload();
-                      console.log(res);
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
-                }}
-              >
-                <FaUserSlash />
-                Remove Friend
-              </div>
-            ) : (
-              <div
-                className={style["menu-item"]}
-                onClick={() => {
-                  axios
-                    .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`,
-                      {
-                        withCredentials: true,
-                      }
-                    )
-                    .then((res) => {
-                      // Handle the response if needed
-                      console.log(res);
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
-                }}
-              >
-                <FaUserPlus />
-                Add Friend
-              </div>
-            )}
-          </>
-        )}
-
-        {!isUserBlocked() && (
           <div
             className={style["menu-item"]}
             onClick={() => {
-              router.push(`/chat/users/${nickName}`);
+              axios
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`,
+                  {
+                    withCredentials: true,
+                  }
+                )
+                .then(() => {
+                  document.location.reload();
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             }}
           >
-            <BsChatLeftText />
-            Message
+            <FaUserPlus />
+            Add Friend
           </div>
         )}
+
+        <div
+          className={style["menu-item"]}
+          onClick={() => {
+            router.push(`/chat/users/${nickName}`);
+          }}
+        >
+          <BsChatLeftText />
+          Message
+        </div>
         {isUserBlocked() ? (
           <div
             className={style["menu-item"]}
@@ -259,7 +247,6 @@ const UserMenu = ({
                     }
                   )
                   .then((res) => {
-                    document.location.reload();
                     console.log(res);
                   })
                   .catch((err) => {

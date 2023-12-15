@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback, memo, use } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
-import io from "socket.io-client";
-import { set } from "lodash";
 
 type Score = {
   player1: number;
   player2: number;
 };
+
+type RoomPositionsData = {
+  ballX: number;
+  ballY: number;
+}
 
 export default function OnlineGame({
   map,
@@ -16,7 +19,6 @@ export default function OnlineGame({
   socket: any;
 }) {
   const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
-  const [ball, setBall] = useState({ x: 430, y: 250, speedX: 2, speedY: 2 });
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
 
@@ -42,49 +44,43 @@ export default function OnlineGame({
     };
   }, [handleKeyboardEvent]);
 
-  socket.on("roomPostions", (data: any) => {
-    setEnemyPaddleY(data.enemyY);
-    setBall({
-      x: data.ballX,
-      y: data.ballY,
-      speedX: 2,
-      speedY: 2,
+  useEffect(() => {
+    socket.on("enemyPositionUpdate", (data: any) => {
+      setEnemyPaddleY(data.enemyY);
     });
-  });
 
-  socket.on("changeState", (data: any) => {
-    console.log("this is event on joinmatchmaking ", data);
-  });
+    socket.on("changeState", (data: any) => {
+      console.log("this is event on joinmatchmaking ", data);
+    });
 
-  socket.on("updateScore", (data: any) => {
-    setScore(data);
-  });
+    socket.on("updateScore", (data: any) => {
+      setScore(data);
+    });
 
-  socket.on("gameEnded", (data: any) => {
-    // for winner/loser screen component
-    console.log("game ended");
-  });
+    return () => {
+      socket.off("enemyPositionUpdate");
+      socket.off("changeState");
+      socket.off("updateScore");
+    };
+  }, []);
+
 
   return (
-    <div className={style.gameBody} tabIndex={0}>
-      <p>{score.player1}</p>
-      <div className={style[`${map}`]} tabIndex={0}>
-        <PlayerPaddle player1PaddleY={player1PaddleY} />
-        <EnemyPaddle EnemyPaddleY={EnemyPaddleY} />
-        <div
-          className={style.ball}
-          style={{
-            top: ball.y,
-            left: ball.x,
-          }}
-        ></div>
-      </div>
-      <p>{score.player2}</p>
-    </div >
+    <>
+      <div className={style.gameBody} tabIndex={0}>
+        <p>{score.player1}</p>
+        <div className={style[`${map}`]} tabIndex={0}>
+          <PlayerPaddle player1PaddleY={player1PaddleY} />
+          <EnemyPaddle EnemyPaddleY={EnemyPaddleY} />
+          <Ball socket={socket} />
+        </div>
+        <p>{score.player2}</p>
+      </div >
+    </>
   );
 }
 
-const PlayerPaddle = memo(({ player1PaddleY, EnemyPaddleY }: any) => {
+const PlayerPaddle = memo(({ player1PaddleY }: any) => {
   return (
     <div className={style.player} style={{ top: player1PaddleY }}></div>
   );
@@ -95,3 +91,23 @@ const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
     <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
   );
 });
+
+const Ball = ({ socket }: any) => {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleRoomPositions = (data: RoomPositionsData) => {
+      setPosition({ x: data.ballX, y: data.ballY });
+    };
+
+    socket.on("roomPostions", handleRoomPositions);
+
+    return () => {
+      socket.off("roomPostions", handleRoomPositions);
+    };
+  }, []);
+
+  return (
+    <div className={style.ball} style={{ top: position.y, left: position.x }}></div>
+  );
+};

@@ -19,6 +19,20 @@ const SearchComp = () => {
   const [activeSearch, setActiveSearch] = useState<any>([]);
   const [res, setRes] = useState<(any | any)[]>([]);
   const [Mount, setMount] = useState(false);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setActiveSearch([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchChannels = async () => {
@@ -101,7 +115,7 @@ const SearchComp = () => {
 
   return (
     <>
-      <div className={style["top_search"]}>
+      <div className={style["top_search"]} ref={searchRef}>
         <BiSearchAlt className={style["search_icon"]} />
         <input
           type="text"
@@ -110,7 +124,10 @@ const SearchComp = () => {
         />
       </div>
       {activeSearch.length > 0 && (
-        <div className="absolute top-14 p-4 bg-black text-fontlight w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
+        <div
+          ref={searchRef}
+          className="absolute top-14 p-4 bg-black text-fontlight w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4"
+        >
           {activeSearch.map((data: any, index: number) => (
             <ProfileComp
               key={index}

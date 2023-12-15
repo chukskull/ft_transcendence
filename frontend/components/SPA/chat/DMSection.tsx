@@ -7,11 +7,7 @@ import AvatarBubble from "./AvatarBubble";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 
-interface FindFriendModalProps {
-  whenFriendModal: (type: boolean) => void;
-}
-
-const FindFriendModal = ({ whenFriendModal }: FindFriendModalProps) => {
+const FindFriendModal = () => {
   const router = useRouter();
   const [friendsList, setFriendsList] = useState<any>([]);
   useEffect(() => {
@@ -36,7 +32,6 @@ const FindFriendModal = ({ whenFriendModal }: FindFriendModalProps) => {
             key={friend.id}
             onClick={() => {
               router.push(`/chat/users/${friend.nickName}`);
-              whenFriendModal(false);
             }}
           >
             <AvatarBubble avatar={friend.avatarUrl} online={friend.online} />
@@ -93,7 +88,7 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
         overlayClassName={style["modal-overlay"]}
         onRequestClose={() => setFindFriendModal(false)}
       >
-        <FindFriendModal whenFriendModal={setFindFriendModal} />
+        <FindFriendModal />
       </Modal>
       <div className={style["direct-msgs"]}>
         <div className={style["section-header"]}>

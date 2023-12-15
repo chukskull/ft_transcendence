@@ -164,9 +164,9 @@
     align-items: center;
     padding: 20px;
     h1 {
-        font-size: 28px;
+        font-size: 32.765px;
         font-style: normal;
-        font-family: ClashGrotesk-Medium;
+        font-family: ClashGrotesk-Semibold;
         line-height: normal;
         letter-spacing: 1px;
     }
@@ -200,8 +200,8 @@
 
 .chat-container {
     overflow: hidden;
-    padding-top: 60px;
-    padding-left: 60px;
+    margin-top: 60px;
+    margin-left: 60px;
     display: flex;
     color: white;
     
@@ -319,23 +319,19 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        
         .chat {
             padding-inline: 32px;
             .msgs-list {
-                padding-block: 10px;
+                padding-block: 20px;
                 display: flex;
                 flex-direction: column;
                 gap: 30px;
                 overflow-y: scroll;
-                height: 79vh;
-                width: 100%;
+                height: 82vh;
 
                 .msg-item {
                     display: flex;
-                    align-items: flex-start;
-                    padding-right: 16px;
-                    
+                    align-items: center;
                     gap: 15px;
 
                     .msg-info {
@@ -356,18 +352,13 @@
 
                             font-family: ClashGrotesk-Regular;
                             line-height: 120.5%;
-                            white-space: pre-line;
-                            word-break: break-all;
-
-                        
-                            overflow-x: hidden;
                         }
 
-                        // &:hover {
-                        //     ~ .msg-time {
-                        //         display: block;
-                        //     }
-                        // }
+                        &:hover {
+                            ~ .msg-time {
+                                display: block;
+                            }
+                        }
                     }
 
                     .msg-time {

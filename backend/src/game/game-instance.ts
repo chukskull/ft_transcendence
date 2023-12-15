@@ -1,19 +1,14 @@
 import { Server } from 'socket.io';
-import {
-  GAME_WIDTH,
-  GAME_HEIGHT,
-  BALL_RADIUS,
-  PADDLE_HEIGHT,
-  PADDLE_WIDTH,
-  DIST_WALL_TO_PADDLE,
-} from './game.service';
+import { GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, PADDLE_HEIGHT, PADDLE_WIDTH, DIST_WALL_TO_PADDLE } from './game.service';
 
 const BASE_BALL_SPEED = 2;
-const FRAME_RATE = 1000 / 20;
-const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
+const FRAME_RATE = 1000 / 10;
+const BALL_SPEED = Math.floor(BASE_BALL_SPEED * FRAME_RATE / 16.66666);
+
 
 export class GameInstance {
   public positionsStruct: {
+    //starting data
     ballx: number; //default
     bally: number; //default
     player1Score: number; //default
@@ -33,19 +28,10 @@ export class GameInstance {
   public gameEnded: boolean;
   public winnerID: number;
   private server: Server;
-  public matchHistory: any;
-  public matchHistoryRepo: any;
 
   // first and second are taken from the queue (player: {id, socket}) and server is the socket server
-  constructor(
-    first: any,
-    second: any,
-    server: Server,
-    matchHistory: any,
-    matchHistoryRepo: any,
-  ) {
-    this.matchHistory = matchHistory;
-    this.matchHistoryRepo = matchHistoryRepo;
+  constructor(first: any, second: any, server: Server) {
+    console.log('game created')
     this.player1 = first;
     this.player2 = second;
     this.ball = { x: 417, y: 240, speedX: BALL_SPEED, speedY: BALL_SPEED };
@@ -66,14 +52,21 @@ export class GameInstance {
   }
 
   public startGame(): void {
+    console.log('game started')
     this.gameRunning = true;
     this.player1.socket.on('positionUpdate', (data) => {
       this.paddle1Position = data.player1PaddleY;
+      this.player2.socket.emit('enemyPositionUpdate', {
+        enemyY: this.paddle1Position,
+      });
     });
     this.player2.socket.on('positionUpdate', (data) => {
       this.paddle2Position = data.player1PaddleY;
+      this.player1.socket.emit('enemyPositionUpdate', {
+        enemyY: this.paddle2Position,
+      });
     });
-
+        
     // handle disconnect
     this.player1.socket.on('disconnect', () => {
       this.player1Score = 0;
@@ -111,21 +104,22 @@ export class GameInstance {
       this.gameRunning = false;
       this.gameEnded = true;
     });
-
+    
+    
     this.gameLoop = setInterval(() => {
       if (this.gameRunning && !this.gameEnded) {
         // emit positions
         this.emitPositions();
         // call the math function
         this.updateGame();
-      } else if (this.gameEnded) {
-        this.endGame();
       }
     }, FRAME_RATE);
   }
   public updateGame(): void {
     // check collision with left and right walls
     this.updateScore();
+    if (this.gameEnded && !this.gameRunning)
+      this.endGame();
     // check collision with top and bottom walls
     this.bounceOffTopAndBottomWalls();
     // check collision with players paddles
@@ -135,15 +129,9 @@ export class GameInstance {
   }
 
   public endGame() {
+    this.player1.socket.disconnect();
+    this.player2.socket.disconnect();
     clearInterval(this.gameLoop);
-    this.player1.socket.removeAllListeners();
-    this.player2.socket.removeAllListeners();
-    this.player1.socket.leave('gameStart' + this.player1.id);
-    this.player2.socket.leave('gameStart' + this.player2.id);
-    this.player1.score = 0;
-    this.player2.score = 0;
-    this.player1 = null;
-    this.player2 = null;
   }
 
   public emitPositions(): void {
@@ -152,22 +140,21 @@ export class GameInstance {
       ballY: this.ball.y,
       player1Score: this.player1Score,
       player2Score: this.player2Score,
-      enemyY: this.paddle2Position,
     });
     this.player2.socket.emit('roomPostions', {
       ballX: GAME_WIDTH - this.ball.x,
       ballY: this.ball.y,
       player1Score: this.player2Score,
       player2Score: this.player1Score,
-      enemyY: this.paddle1Position,
     });
   }
 
+  
   public resetBall(): boolean {
     this.player1.socket.emit('sendBallState', this.ball);
     this.player2.socket.emit('sendBallState', this.ball);
     this.ball = { x: 417, y: 240, speedX: BALL_SPEED, speedY: BALL_SPEED };
-    return true;
+    return true
   }
 
   public moveBall(): void {
@@ -176,20 +163,12 @@ export class GameInstance {
   }
   public updateScore(): void {
     // check collision with right and left walls
-    const hitRightEdge = this.ball.x > GAME_WIDTH - PADDLE_WIDTH;
-    const hitLeftEdge = this.ball.x <= 5;
+    const hitRightEdge = this.ball.x > GAME_WIDTH - PADDLE_WIDTH
+    const hitLeftEdge = this.ball.x <= 5
 
     if (hitRightEdge || hitLeftEdge) {
-      this.player1Score += hitRightEdge ? 1 : 0;
-      this.player2Score += hitLeftEdge ? 1 : 0;
-      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
-        player1: this.player1Score,
-        player2: this.player2Score,
-      });
-      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
-        player1: this.player2Score,
-        player2: this.player1Score,
-      });
+      this.player1Score += hitLeftEdge ? 1 : 0;
+      this.player2Score += hitRightEdge ? 1 : 0;
       this.resetBall();
       if (this.checkGameEnd()) {
         this.server.to('gameStart' + this.player1.id).emit('gameEnded', {
@@ -200,55 +179,42 @@ export class GameInstance {
         });
         this.gameEnded = true;
         this.gameRunning = false;
-        this.matchHistory.player1Score = this.player1Score;
-        this.matchHistory.winner = this.matchHistory.player1;
-        this.matchHistory.winsInARow = 0;
-        this.matchHistory.losesInARow = 0;
-        this.matchHistory.date = new Date();
-        this.matchHistory.player2Score = this.player2Score;
-        this.matchHistoryRepo.save(this.matchHistory);
-        console.log('----------#@$%@#%@#--------------', this.matchHistory);
-        this.endGame();
       }
+      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+        player1: this.player1Score,
+        player2: this.player2Score,
+      });
+      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+        player1: this.player2Score,
+        player2: this.player1Score,
+      });
     }
   }
 
   public bounceOffTopAndBottomWalls(): void {
     // check collision with top and bottom walls
-    if (
-      this.ball.y + this.ball.speedY > GAME_HEIGHT - 15 ||
-      this.ball.y + this.ball.speedY < 15
-    ) {
+    if (this.ball.y + this.ball.speedY > GAME_HEIGHT - 15 || this.ball.y + this.ball.speedY < 15) {
       this.ball.speedY = -this.ball.speedY;
     }
   }
 
   public bounceOffPaddles(): void {
-    const hitLeftPaddle =
-      this.ball.x <= DIST_WALL_TO_PADDLE &&
-      this.ball.y >= this.paddle1Position &&
-      this.ball.y <= this.paddle1Position + PADDLE_HEIGHT;
-    const hitRightPaddle =
-      this.ball.x >=
-        GAME_WIDTH - DIST_WALL_TO_PADDLE - PADDLE_WIDTH - BALL_RADIUS &&
-      this.ball.y >= this.paddle2Position &&
-      this.ball.y <= this.paddle2Position + PADDLE_HEIGHT;
-    if (
-      (hitLeftPaddle && this.ball.speedX < 0) ||
-      (hitRightPaddle && this.ball.speedX > 0)
-    ) {
+    const hitLeftPaddle = this.ball.x <= DIST_WALL_TO_PADDLE && this.ball.y >= this.paddle1Position && this.ball.y <= this.paddle1Position + PADDLE_HEIGHT
+    const hitRightPaddle = this.ball.x >= GAME_WIDTH - DIST_WALL_TO_PADDLE - PADDLE_WIDTH - BALL_RADIUS && this.ball.y >= this.paddle2Position && this.ball.y <= this.paddle2Position + PADDLE_HEIGHT
+    if ( hitLeftPaddle && this.ball.speedX < 0 || hitRightPaddle && this.ball.speedX > 0) {
       this.ball.speedX = -this.ball.speedX;
     }
   }
 
   // check game end
   public checkGameEnd(): boolean {
-    if (this.player1Score == 5) {
+    if (this.player1Score === 5) {
       this.winnerID = this.player1.id;
       return true;
-    } else if (this.player2Score == 5) {
+    } else if (this.player2Score === 5) {
       this.winnerID = this.player2.id;
       return true;
-    } else return false;
+    } else
+      return false;
   }
 }
