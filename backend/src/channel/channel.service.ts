@@ -369,6 +369,8 @@ export class ChannelService {
     });
     if (!channel) throw new NotFoundException('Channel not found');
     // 1 = ban, 0 = unban
+    if (channel?.owner?.id == userId)
+      throw new NotFoundException('User is owner');
     if (action == 1) {
       const channel = await this.kickFromChannel(chanId, userId, mod);
       if (!channel) throw new NotFoundException('Channel not found');
@@ -378,6 +380,7 @@ export class ChannelService {
       channel.BannedUsers?.push(user);
       this.chanRepository.save(channel);
     } else {
+      console.log('unbanning');
       channel.BannedUsers = channel.BannedUsers?.filter(
         (member) => member?.id != userId,
       );
