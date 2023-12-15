@@ -62,7 +62,7 @@ const InviteSection = ({ chandId }: any) => {
               }}
             >
               <AiOutlineUserAdd />
-              Invite
+              ADD
             </button>
           </div>
         ))}

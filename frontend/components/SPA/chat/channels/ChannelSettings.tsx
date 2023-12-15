@@ -21,6 +21,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       )
       .then((res) => {
+        document.location.reload();
         console.log(res.data);
       })
       .catch((err) => {

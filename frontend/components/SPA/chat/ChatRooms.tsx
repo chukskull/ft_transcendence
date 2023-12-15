@@ -51,7 +51,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [id, isGroup]);
 
   useEffect(() => {
     if (!conv) return;

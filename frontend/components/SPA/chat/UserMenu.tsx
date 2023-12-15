@@ -104,10 +104,12 @@ const UserMenu = ({
                       }
                     )
                     .then((res) => {
+                      alert(res.data.message);
                       document.location.reload();
                       console.log(res);
                     })
                     .catch((err) => {
+                      alert(err.response.data.message);
                       console.log(err);
                     });
                 }}
@@ -121,16 +123,17 @@ const UserMenu = ({
                 onClick={() => {
                   axios
                     .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`,
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addFriend/${id}`,
                       {
                         withCredentials: true,
                       }
                     )
                     .then((res) => {
-                      // Handle the response if needed
+                      alert(res.data.message);
                       console.log(res);
                     })
                     .catch((err) => {
+                      alert(err.response.data.message);
                       console.log(err);
                     });
                 }}
@@ -268,7 +271,7 @@ const UserMenu = ({
               }}
             >
               <FaVolumeMute />
-              Mute
+              Porn
             </div>
             <div
               className={style["menu-item"]}
