@@ -51,6 +51,7 @@ export class UserService {
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
+    user.winsInARow = 0;
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
