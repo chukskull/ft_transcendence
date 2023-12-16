@@ -163,10 +163,10 @@ export class GameInstance {
 
   public emitEnemyPaddlePosition(): void {
     this.player1.socket.emit('enemyPositionUpdate', {
-      enemyPaddlePosition: this.paddle2Position,
+      enemyY: this.paddle2Position,
     });
     this.player2.socket.emit('enemyPositionUpdate', {
-      enemyPaddlePosition: this.paddle1Position,
+      enemyY: this.paddle1Position,
     });
   }
 
