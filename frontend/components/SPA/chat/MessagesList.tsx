@@ -26,7 +26,7 @@ const MsgsList = ({ chats, blockedList }: { chats: any; blockedList: any }) => {
         1;
       });
     });
-  }, [chats]);
+  }, [chats, blockedList]);
   return (
     <>
       <Modal

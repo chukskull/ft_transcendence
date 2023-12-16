@@ -14,6 +14,7 @@ import {
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
 import axios from "axios";
+import { useQuery } from "react-query";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
@@ -22,20 +23,23 @@ export const NotificationComp = ({}) => {
   const handleClick = () => {
     setNotifCount(0);
   };
-  console.log("notifdata", notifData);
+
+  const pendingFriendRequestsQuery = useQuery(
+    "pendingFriendRequests",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+        { withCredentials: true }
+      );
+      return response.data.pendingFriendRequests;
+    }
+  );
   useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setNotifData(res.data.pendingFriendRequests);
-        setNotifCount(res.data.pendingFriendRequests.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (pendingFriendRequestsQuery.data) {
+      setNotifData(pendingFriendRequestsQuery.data);
+      setNotifCount(pendingFriendRequestsQuery.data.length);
+    }
+  }, [pendingFriendRequestsQuery.data]);
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
@@ -78,6 +82,10 @@ export const NotificationComp = ({}) => {
         });
     }
   };
+  if (pendingFriendRequestsQuery.isLoading)
+    return <NotificationIcon width={25} height={25} />;
+  if (pendingFriendRequestsQuery.error) return <div>{error}</div>;
+
   return (
     <>
       <Dropdown

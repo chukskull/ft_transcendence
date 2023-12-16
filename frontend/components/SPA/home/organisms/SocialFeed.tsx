@@ -3,19 +3,29 @@ import LiveGameRec from "../molecules/LiveGameRec";
 import MiniProf from "../molecules/MiniProf";
 import Leadrboard from "../../Profile/organisms/Leadrboard";
 import axios from "axios";
+import { useQuery } from "react-query";
 
 export const SocialFeed = () => {
   const [Friends, setFriends] = React.useState<any>([]);
-  useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+  const { isLoading, error, data } = useQuery(
+    "friends",
+    () =>
+      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
         withCredentials: true,
-      })
-      .then((res) => {
-        setFriends(res.data.friends);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+      }),
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  useEffect(() => {
+    if (data) {
+      setFriends(data.data.friends);
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="lg:flex lg:h-screen lg:justify-evenly lg:items-center">
