@@ -8,6 +8,7 @@ import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
+import { MatchHistory } from 'src/match-history/match-history.entity';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 860;
@@ -38,7 +39,9 @@ export class GameService {
     private userService: UserService,
     private jwtService: JwtService,
     @InjectRepository(Achievement)
-    private readonly achievementRepo: Repository<Achievement>,
+    private achievementRepo: Repository<Achievement>,
+    @InjectRepository(MatchHistory)
+    private matchHistoryRepo: Repository<MatchHistory>,
   ) {}
 
   /**
@@ -100,45 +103,67 @@ export class GameService {
       where: { player1: { id: player1.id }, player2: { id: player2.id } },
     });
     if (match.winner === player1.id) {
-      match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
-      match.losesInARow = 0;
+      match.player1.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
+      if (match.player1.winsInARow === 3) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '3 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+      if (match.player1.winsInARow === 5) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '5 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+  
+      if (match.player1.winsInARow === 10) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '10 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
     } else {
-      match.winsInARow = 0;
-      match.losesInARow = await this.matchHistory.trackWinsInARow(player1.id);
+      match.player1.winsInARow = 0;
     }
     if (match.winner === player2.id) {
-      match.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
-      match.losesInARow = 0;
+      match.player2.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
+      if (match.player2.winsInARow === 3) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '3 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
+      if (match.player2.winsInARow === 5) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '5 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
+  
+      if (match.player2.winsInARow === 10) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '10 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
     } else {
-      match.winsInARow = 0;
-      match.losesInARow = await this.matchHistory.trackWinsInARow(player2.id);
+      match.player2.winsInARow = 0;
     }
 
-    if (match.winsInARow === 3) {
-      const achievement = await this.achievementRepo.findOne({
-        where: { name: '3 in a row' },
-      });
-      if (achievement) {
-        this.achievementService.giveAchievement(player1.id, achievement.id);
-      }
-    }
-    if (match.winsInARow === 5) {
-      const achievement = await this.achievementRepo.findOne({
-        where: { name: '5 in a row' },
-      });
-      if (achievement) {
-        this.achievementService.giveAchievement(player1.id, achievement.id);
-      }
-    }
-
-    if (match.winsInARow === 10) {
-      const achievement = await this.achievementRepo.findOne({
-        where: { name: '10 in a row' },
-      });
-      if (achievement) {
-        this.achievementService.giveAchievement(player1.id, achievement.id);
-      }
-    }
+    
     const achievement =
       game.player2Score === 0
         ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
@@ -214,26 +239,31 @@ export class GameService {
   /*
    * start game
    */
-  createGame(player1: any, player2: any, server: Server): void {
+  async createGame(player1: any, player2: any, server: Server): Promise<void> {
     player1.socket.join('gameStart' + player1.id);
     player2.socket.join('gameStart' + player2.id);
-    const game = new GameInstance(player1, player2, server); // take the entire player
-    
+    await this.userService.setStatus(player1.id, 'inGame');
+    await this.userService.setStatus(player2.id, 'inGame');
+    console.log('$$$$$$$$$$$$$$$$$$$$$-------------------- GAME CREATED');
+    const matchHisto = this.matchHistory.create({
+      player1ID: player1.id,
+      player2ID: player2.id,
+    });
+    const game = new GameInstance(
+      player1,
+      player2,
+      server,
+      matchHisto,
+      this.matchHistoryRepo,
+    ); // take the entire player
     server.to('gameStart' + player1.id).emit('gameStarted', {
       MyId: player1.id,
       OpponentId: player2.id,
     });
     server
-    .to('gameStart' + player2.id)
-    .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
-    this.matchHistory.create({
-      player1ID: player1.id,
-      player2ID: player2.id,
-    });
+      .to('gameStart' + player2.id)
+      .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
     game.startGame();
-    if (game.gameEnded) {
-      this.endGame(game);
-    }
   }
 
   /*

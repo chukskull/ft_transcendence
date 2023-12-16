@@ -12,20 +12,14 @@ import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from 'typeorm';
     @ManyToOne( () => User, user => user.id)
     player2: User;
 
-    @ManyToOne(() => User, user => user.id)
-    winner: User;
+    @Column()
+    winner?: number;
 
     @Column()
     player1Score: number;
     
     @Column()
     player2Score: number;
-
-    @Column()
-    winsInARow: number;
-
-    @Column()
-    losesInARow: number;
     
     @Column()
     date: Date;
