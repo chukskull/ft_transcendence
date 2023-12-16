@@ -90,6 +90,7 @@ export class ChannelService {
         'conversation',
         'BannedUsers',
         'Moderators',
+        'MutedUsers',
         'owner',
         'conversation',
         'conversation.MutedUsers',
@@ -400,7 +401,7 @@ export class ChannelService {
     });
     if (!channel) throw new NotFoundException('Channel not found');
     if (channel.name === 'Welcome/Global channel')
-      throw new NotFoundException("You can't kick someone from this channel");
+      throw new NotFoundException("You can't mute someone in this channel");
     const conversation = await this.conversationRepository.findOne({
       where: { id: channel.conversation.id },
       relations: ['MutedUsers'],

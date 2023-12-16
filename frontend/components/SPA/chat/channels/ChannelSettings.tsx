@@ -6,6 +6,7 @@ import { AiOutlineIssuesClose, AiOutlineSound } from "react-icons/ai";
 import { useState } from "react";
 
 const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
+  console.log("these are the muted user", muted);
   const [is_private, setPrivate] = useState(chPrivate);
   const [password, setPassword] = useState("");
   const [formData, setFormData] = useState({ is_private, password, id: id });
