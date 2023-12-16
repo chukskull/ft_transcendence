@@ -14,7 +14,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 @WebSocketGateway({ namespace: 'gameSockets', cors: true })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private gameService: GameService) {}
+  constructor(private gameService: GameService) { }
   @WebSocketServer() server: Server;
 
   emitToClients(data: any, emitedEvent: any, roomName: any) {
@@ -45,13 +45,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *	create Game
    */
 
-  /* @SubscribeMessage('createGame')
+  @SubscribeMessage('createGame')
   async createGame(client: Socket) {
     const opponentId = this.gameService.MatchMakingQueue.find(
       (player) => player.socket !== client,
     )?.id;
     this.gameService.createGame(client, opponentId, this.server);
-  } */
+  }
 
   @SubscribeMessage('inviteFriend')
   async inviteFriend(

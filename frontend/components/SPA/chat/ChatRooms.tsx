@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { LiaTelegramPlane } from "react-icons/lia";
 import EmojiPicker from "emoji-picker-react";
 import style from "@/styles/SPA/chat/chat.module.scss";
@@ -53,6 +53,24 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       });
   }, [id, isGroup]);
 
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("messageReceived", (data: any) => setReceivedData(data));
+    socket.on("connect_error", (err: any) => {
+      console.error(err.message);
+      socket.close();
+    });
+    socket.on("disconnect", setReceivedData);
+
+    return () => {
+      socket.off("messageReceived");
+      socket.off("connect_error");
+      socket.off("disconnect");
+    };
+  }, [socket]);
+
   useEffect(() => {
     if (!conv) return;
 
@@ -66,6 +84,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
 
     return () => {
       newSocket.disconnect();
+      newSocket.close();
     };
   }, [conv]);
 
@@ -74,14 +93,6 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
       setMsgs((prevMsgs) => [...prevMsgs, receivedData]);
     }
   }, [receivedData]);
-  if (!socket) return;
-
-  socket.on("messageReceived", (data: any) => setReceivedData(data));
-  socket.on("connect_error", (err: any) => {
-    console.error(err.message);
-    socket.close();
-  });
-  socket.on("disconnect", setReceivedData);
 
   const handleEmojiClick = (emojiObject: any) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);

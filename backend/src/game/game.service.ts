@@ -22,6 +22,7 @@ export const PADDLE1_POSITION = GAME_HEIGHT / 2;
 export const PADDLE2_POSITION = GAME_HEIGHT / 2;
 export const DIST_WALL_TO_PADDLE = 20;
 
+
 @Injectable()
 export class GameService {
   public MatchMakingQueue: Array<{
@@ -102,45 +103,67 @@ export class GameService {
       where: { player1: { id: player1.id }, player2: { id: player2.id } },
     });
     if (match.winner === player1.id) {
-      match.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
-      match.losesInARow = 0;
+      match.player1.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
+      if (match.player1.winsInARow === 3) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '3 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+      if (match.player1.winsInARow === 5) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '5 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
+  
+      if (match.player1.winsInARow === 10) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '10 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
     } else {
-      match.winsInARow = 0;
-      match.losesInARow = await this.matchHistory.trackWinsInARow(player1.id);
+      match.player1.winsInARow = 0;
     }
     if (match.winner === player2.id) {
-      match.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
-      match.losesInARow = 0;
+      match.player2.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
+      if (match.player2.winsInARow === 3) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '3 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
+      if (match.player2.winsInARow === 5) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '5 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
+  
+      if (match.player2.winsInARow === 10) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: '10 in a row' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
     } else {
-      match.winsInARow = 0;
-      match.losesInARow = await this.matchHistory.trackWinsInARow(player2.id);
+      match.player2.winsInARow = 0;
     }
 
-    if (match.winsInARow === 3) {
-      const achievement = await this.achievementRepo.findOne({
-        where: { name: '3 in a row' },
-      });
-      if (achievement) {
-        this.achievementService.giveAchievement(player1.id, achievement.id);
-      }
-    }
-    if (match.winsInARow === 5) {
-      const achievement = await this.achievementRepo.findOne({
-        where: { name: '5 in a row' },
-      });
-      if (achievement) {
-        this.achievementService.giveAchievement(player1.id, achievement.id);
-      }
-    }
-
-    if (match.winsInARow === 10) {
-      const achievement = await this.achievementRepo.findOne({
-        where: { name: '10 in a row' },
-      });
-      if (achievement) {
-        this.achievementService.giveAchievement(player1.id, achievement.id);
-      }
-    }
+    
     const achievement =
       game.player2Score === 0
         ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
@@ -162,6 +185,7 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    // console.log('use id is', userId);
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
@@ -239,5 +263,31 @@ export class GameService {
       .to('gameStart' + player2.id)
       .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
     game.startGame();
+  }
+
+  /*
+  * get final score
+  */
+  async updateFinalScore(
+    game: GameInstance,
+  ): Promise<void> {
+
+    const match = await this.matchHistory.findOne({
+      where: { player1: { id: game.player1.id }, player2: { id: game.player2.id } },
+    });
+    match.player1Score = game.player1Score;
+    match.player2Score = game.player2Score;
+    if (game.player1Score > game.player2Score) {
+      match.winner = game.player1.id;
+    } else {
+      match.winner = game.player2.id;
+    }
+    console.log('match: ', match);
+    await this.matchHistory.update(match);
+  }
+
+  async endGame(game: GameInstance) {
+    await this.updateFinalScore(game);
+    game.endGame();
   }
 }

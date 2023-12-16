@@ -19,7 +19,6 @@ import { useQuery } from "react-query";
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
   const [notifData, setNotifData] = useState<any>(null);
-
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -53,9 +52,6 @@ export const NotificationComp = ({}) => {
         )
         .then((res) => {
           console.log(res);
-          setNotifData((prev: any) =>
-            prev.filter((notif: any) => notif.id !== friendId)
-          );
         })
         .catch((err) => {
           console.log(err);
@@ -72,11 +68,7 @@ export const NotificationComp = ({}) => {
             withCredentials: true,
           }
         )
-        .then((res) => {
-          setNotifData((prev: any) =>
-            prev.filter((notif: any) => notif.id !== friendId)
-          );
-        })
+        .then((res) => {})
         .catch((err) => {
           console.log(err);
         });
@@ -163,6 +155,7 @@ export const NotificationComp = ({}) => {
                         size="sm"
                         color="success"
                         onPress={() => {
+                          console.log("notif", notif);
                           handleAcceptReq(notif?.id, 1);
                         }}
                       >

@@ -19,13 +19,44 @@ const Game: React.FC = () => {
   const [playersData, setPlayersData] = useState<any>({});
   const [enemy, setEnemy] = useState<string>("");
   useEffect(() => {
+    console.log("connecting new socket");
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
     newSocket.connect();
     setSocket(newSocket);
+
+    newSocket.on("changeState", (data: any) => {
+      if (data.status == "inQueue") {
+        setJoinedQueue(true);
+      } else if (data.status == "failed") {
+        // popus that user is already in queue in another window
+      }
+    });
+    newSocket.on("gameStarted", (data: any) => {
+      setPlayersData(data);
+      console.log("gameStarted event received front", data);
+
+      axios
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${data.OpponentId}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          setEnemy(res.data);
+        })
+        .catch((err) => console.log(err));
+      setJoinedQueue(false);
+      setOnlineMode(true);
+    });
     return () => {
-      socket?.disconnect();
+      console.log("disconnecting socket", newSocket);
+      newSocket.off("changeState");
+      newSocket.off("gameStarted");
+      newSocket.disconnect();
+      newSocket.close();
     };
-  }, [socket]);
+  }, []);
 
   function handleJoinQueue() {
     if (socket) {
@@ -33,33 +64,8 @@ const Game: React.FC = () => {
       console.log("token: ", document.cookie.split("=")[1]);
     }
   }
-  socket?.on("changeState", (data: any) => {
-    if (data.status == "inQueue") {
-      setJoinedQueue(true);
-    } else if (data.status == "failed") {
-      // popus that user is already in queue in another window
-    }
-  });
-  socket?.on("gameStarted", (data: any) => {
-    setPlayersData(data);
-
-    axios
-      .get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${data.OpponentId}`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then((res) => {
-        setEnemy(res.data);
-      })
-      .catch((err) => console.log(err));
-    setJoinedQueue(false);
-    setOnlineMode(true);
-  });
 
   // What the hell is this?
-  // wtf is this?
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     setValue((v) => (v >= 100 ? 0 : v + 10));
@@ -144,7 +150,7 @@ const Game: React.FC = () => {
           </div>
         )}
       </div>
-      {renderRectangle()}
+      {/* {renderRectangle()} */}
     </div>
   );
 };
