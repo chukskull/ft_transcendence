@@ -220,7 +220,6 @@ export class GameService {
     player2.socket.join('gameStart' + player2.id);
     await this.userService.setStatus(player1.id, 'inGame');
     await this.userService.setStatus(player2.id, 'inGame');
-    console.log('$$$$$$$$$$$$$$$$$$$$$-------------------- GAME CREATED');
     const matchHisto = this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,

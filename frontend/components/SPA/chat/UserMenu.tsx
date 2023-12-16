@@ -271,7 +271,7 @@ const UserMenu = ({
               }}
             >
               <FaVolumeMute />
-              Porn
+              Mute From Channel
             </div>
             <div
               className={style["menu-item"]}

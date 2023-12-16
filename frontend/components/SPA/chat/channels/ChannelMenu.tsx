@@ -84,6 +84,7 @@ const AuthoritySection = ({ owner, mods, chanID }: any) => {
         inChannel={true}
         channelId={chanID}
         status={owner?.status}
+        isMod={true}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>

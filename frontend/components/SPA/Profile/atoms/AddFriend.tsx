@@ -34,7 +34,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
       break;
     case 2:
       icon = <Check {...commonIconProps} />;
-      buttonText = "Friend Request Sent";
+      buttonText = "Pending Friend Request";
       break;
     case 1:
       icon = <Minus {...commonIconProps} color="red" />;

@@ -116,6 +116,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
           type="text"
           placeholder="Type your message here..."
           className={style["input"]}
+          maxLength={200}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => {

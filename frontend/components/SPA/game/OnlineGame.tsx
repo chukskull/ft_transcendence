@@ -20,20 +20,23 @@ export default function OnlineGame({
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
 
-  const handleKeyboardEvent = useCallback((e: KeyboardEvent) => {
-    if (!socket) return;
-    let newPaddlePosition = player1PaddleY;
-    if (e.key === "ArrowDown") {
-      newPaddlePosition = player1PaddleY + 5;
-    } else if (e.key === "ArrowUp") {
-      newPaddlePosition = player1PaddleY - 5;
-    }
-    if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
-    setPlayer1PaddleY(newPaddlePosition);
-    socket.emit("positionUpdate", {
-      player1PaddleY: newPaddlePosition,
-    });
-  }, [player1PaddleY]);
+  const handleKeyboardEvent = useCallback(
+    (e: KeyboardEvent) => {
+      if (!socket) return;
+      let newPaddlePosition = player1PaddleY;
+      if (e.key === "ArrowDown") {
+        newPaddlePosition = player1PaddleY + 5;
+      } else if (e.key === "ArrowUp") {
+        newPaddlePosition = player1PaddleY - 5;
+      }
+      if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
+      setPlayer1PaddleY(newPaddlePosition);
+      socket.emit("positionUpdate", {
+        player1PaddleY: newPaddlePosition,
+      });
+    },
+    [player1PaddleY]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyboardEvent);
@@ -80,18 +83,14 @@ export default function OnlineGame({
         ></div>
       </div>
       <p>{score.player2}</p>
-    </div >
+    </div>
   );
 }
 
 const PlayerPaddle = memo(({ player1PaddleY, EnemyPaddleY }: any) => {
-  return (
-    <div className={style.player} style={{ top: player1PaddleY }}></div>
-  );
+  return <div className={style.player} style={{ top: player1PaddleY }}></div>;
 });
 
 const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
-  return (
-    <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
-  );
+  return <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
 });
