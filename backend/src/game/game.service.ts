@@ -84,8 +84,8 @@ export class GameService {
     client: Socket,
     server: Server,
     game: GameInstance,
+    matchiHistoId: number,
   ): Promise<void> {
-    const matchiHistoId = 4324234;
     const match = await this.matchHistory.findOne({
       where: { id: matchiHistoId },
     });
@@ -93,6 +93,15 @@ export class GameService {
       match.player1.winsInARow = await this.matchHistory.trackWinsInARow(
         player1.id,
       );
+      match.player1.wins = await this.matchHistory.trackNumberOfWins(player1.id);
+      if (match.player1.wins == 1) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: 'First Win' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
       if (match.player1.winsInARow == 3) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '3 in a row' },
@@ -125,6 +134,15 @@ export class GameService {
       match.player2.winsInARow = await this.matchHistory.trackWinsInARow(
         player2.id,
       );
+      match.player2.wins = await this.matchHistory.trackNumberOfWins(player2.id);
+      if (match.player2.wins == 1) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: 'First Win' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
       if (match.player2.winsInARow == 3) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '3 in a row' },
