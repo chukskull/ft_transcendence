@@ -4,7 +4,6 @@ import { BiSearchAlt } from "react-icons/bi";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import axios from "axios";
 import debounce from "lodash/debounce";
-import { useQuery } from "react-query";
 
 const SearchComp = () => {
   const getChannelStatus = (channel: any) => {
@@ -101,7 +100,7 @@ const SearchComp = () => {
 
   return (
     <>
-      <div className={style["top_search"]} ref={searchRef}>
+      <div className={style["top_search"]}>
         <BiSearchAlt className={style["search_icon"]} />
         <input
           type="text"
@@ -110,10 +109,7 @@ const SearchComp = () => {
         />
       </div>
       {activeSearch.length > 0 && (
-        <div
-          ref={searchRef}
-          className="absolute top-14 p-4 bg-black text-fontlight w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4"
-        >
+        <div className="absolute top-14 p-4 bg-black text-fontlight w-[400px] h-auto overflow-auto rounded-xl left-1/2 -translate-x-1/2 flex flex-col gap-4">
           {activeSearch.map((data: any, index: number) => (
             <ProfileComp
               key={index}
