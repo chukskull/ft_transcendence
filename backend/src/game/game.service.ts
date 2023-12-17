@@ -29,7 +29,6 @@ export class GameService {
     socket: Socket;
     score: number;
   }> = [];
-  public onlineUsers = new Map<number, Set<Socket>>();
   public privateQueue = Array<{ id: number; socket: Socket; score: number }>();
 
   constructor(
@@ -193,11 +192,6 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    // console.log('use id is', userId);
-    if (!this.onlineUsers.has(userId)) {
-      this.onlineUsers.set(userId, new Set<Socket>());
-      this.onlineUsers.get(userId)?.add(client);
-    }
     client.join('MatchMakingQueue' + userId);
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
@@ -232,12 +226,6 @@ export class GameService {
     if (!user) {
       client.disconnect();
       return;
-    }
-    if (this.onlineUsers.has(user.id)) {
-      this.onlineUsers.get(user.id)?.delete(client);
-      if (this.onlineUsers.get(user.id)?.size == 0) {
-        this.onlineUsers.delete(user.id);
-      }
     }
     this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
       return player.id !== user.id;
