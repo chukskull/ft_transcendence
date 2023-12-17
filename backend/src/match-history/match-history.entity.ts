@@ -12,7 +12,7 @@ import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from 'typeorm';
     @ManyToOne( () => User, user => user.id)
     player2: User;
 
-    @Column()
+    @Column({ nullable: true })
     winner?: number;
 
     @Column()

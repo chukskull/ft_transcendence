@@ -70,7 +70,6 @@ export default function Profile({ id }: any) {
   }
 
   function handleBlock(blockUnblock: number) {
-<<<<<<< HEAD
     if (blockUnblock == 1) {
       axios
         .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${id}`, {
@@ -83,14 +82,6 @@ export default function Profile({ id }: any) {
       setUserId(myData?.blockedUsers?.find((e: any) => e.nickName == id)?.id);
     }
     console.log("this is the user id", userId);
-=======
-    let userId;
-    if (blockUnblock == 1) 
-      userId = myData?.friends?.find((e: any) => e.nickName == id)?.id;
-    else
-      userId = myData?.blockedUsers?.find((e: any) => e.nickName == id)?.id;
-    
->>>>>>> achraf
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${userId}/${blockUnblock}`,

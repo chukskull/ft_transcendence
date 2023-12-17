@@ -22,7 +22,6 @@ export const PADDLE1_POSITION = GAME_HEIGHT / 2;
 export const PADDLE2_POSITION = GAME_HEIGHT / 2;
 export const DIST_WALL_TO_PADDLE = 20;
 
-
 @Injectable()
 export class GameService {
   public MatchMakingQueue: Array<{
@@ -31,7 +30,7 @@ export class GameService {
     score: number;
   }> = [];
   public onlineUsers = new Map<number, Set<Socket>>();
-  public privateQueue = Array<{ id: number; socket: Socket }>();
+  public privateQueue = Array<{ id: number; socket: Socket; score: number }>();
 
   constructor(
     private matchHistory: MatchHistoryService,
@@ -46,7 +45,6 @@ export class GameService {
 
   /**
    * Invites a friend to play a game.
-   *
    * @param client - The socket client initiating the invitation.
    * @param friendId - The ID of the friend to invite.
    * @returns A Promise that resolves to void.
@@ -59,29 +57,15 @@ export class GameService {
     roomName: string,
   ): Promise<any> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    if (userId == undefined) {
+    if (!userId) {
       client.disconnect();
       return;
     }
-    this.privateQueue.push({ id: userId, socket: client });
-    const friend = await this.userService.userProfile(friendId);
-    if (!friend) throw new Error('User not found');
-    if (!this.onlineUsers.has(friendId)) {
-      this.onlineUsers.set(friendId, new Set<Socket>());
-      this.onlineUsers.get(friendId)?.add(client);
-    }
-    const friendSockets = this.onlineUsers.get(friendId);
-    if (!friendSockets) return;
-    // event to be discussed again
-    friendSockets.forEach((friendSocket) => {
-      friendSocket.emit('invited', {
-        from: { id: userId, username: client.handshake.auth.username },
-        roomName: roomName,
-      });
-    });
+    
+    this.privateQueue.push({ id: userId, socket: client, score: 0 });
     // payload from frontend to be discussed
     client.on('acceptInvite', (payload) => {
-      this.privateQueue.push({ id: friendId, socket: client });
+      this.privateQueue.push({ id: friendId, socket: client, score: 0 });
       if (this.privateQueue.length >= 2) {
         const player1 = this.privateQueue.shift();
         const player2 = this.privateQueue.shift();
@@ -101,12 +85,15 @@ export class GameService {
     server: Server,
     game: GameInstance,
   ): Promise<void> {
+    const matchiHistoId = 4324234;
     const match = await this.matchHistory.findOne({
-      where: { player1: { id: player1.id }, player2: { id: player2.id } },
+      where: { id: matchiHistoId },
     });
-    if (match.winner === player1.id) {
-      match.player1.winsInARow = await this.matchHistory.trackWinsInARow(player1.id);
-      if (match.player1.winsInARow === 3) {
+    if (match.winner == player1.id) {
+      match.player1.winsInARow = await this.matchHistory.trackWinsInARow(
+        player1.id,
+      );
+      if (match.player1.winsInARow == 3) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '3 in a row' },
         });
@@ -114,7 +101,7 @@ export class GameService {
           this.achievementService.giveAchievement(player1.id, achievement.id);
         }
       }
-      if (match.player1.winsInARow === 5) {
+      if (match.player1.winsInARow == 5) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '5 in a row' },
         });
@@ -122,8 +109,8 @@ export class GameService {
           this.achievementService.giveAchievement(player1.id, achievement.id);
         }
       }
-  
-      if (match.player1.winsInARow === 10) {
+
+      if (match.player1.winsInARow == 10) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '10 in a row' },
         });
@@ -134,9 +121,11 @@ export class GameService {
     } else {
       match.player1.winsInARow = 0;
     }
-    if (match.winner === player2.id) {
-      match.player2.winsInARow = await this.matchHistory.trackWinsInARow(player2.id);
-      if (match.player2.winsInARow === 3) {
+    if (match.winner == player2.id) {
+      match.player2.winsInARow = await this.matchHistory.trackWinsInARow(
+        player2.id,
+      );
+      if (match.player2.winsInARow == 3) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '3 in a row' },
         });
@@ -144,7 +133,7 @@ export class GameService {
           this.achievementService.giveAchievement(player2.id, achievement.id);
         }
       }
-      if (match.player2.winsInARow === 5) {
+      if (match.player2.winsInARow == 5) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '5 in a row' },
         });
@@ -152,8 +141,8 @@ export class GameService {
           this.achievementService.giveAchievement(player2.id, achievement.id);
         }
       }
-  
-      if (match.player2.winsInARow === 10) {
+
+      if (match.player2.winsInARow == 10) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '10 in a row' },
         });
@@ -165,14 +154,13 @@ export class GameService {
       match.player2.winsInARow = 0;
     }
 
-    
     const achievement =
-      game.player2Score === 0
+      game.player2Score == 0
         ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
         : null;
     if (achievement) {
       this.achievementService.giveAchievement(
-        game.player2Score === 0 ? player1.id : player2.id,
+        game.player2Score == 0 ? player1.id : player2.id,
         achievement.id,
       );
     }
@@ -229,7 +217,7 @@ export class GameService {
     }
     if (this.onlineUsers.has(user.id)) {
       this.onlineUsers.get(user.id)?.delete(client);
-      if (this.onlineUsers.get(user.id)?.size === 0) {
+      if (this.onlineUsers.get(user.id)?.size == 0) {
         this.onlineUsers.delete(user.id);
       }
     }

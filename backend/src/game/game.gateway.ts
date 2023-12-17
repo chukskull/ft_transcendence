@@ -58,19 +58,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     data: {
       token: string;
-      friendIwantToInvite: number;
+      friendId: number;
     },
     client: Socket,
   ) {
-    const { token, friendIwantToInvite } = data;
-    const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
+    const { token, friendId } = data;
+    const roomName = 'PVP' + client.id + 'vs' + friendId;
     this.gameService.inviteFriend(
       client,
       this.server,
-      friendIwantToInvite,
+      friendId,
       token,
       roomName,
     );
-    client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
+    client.join(roomName);
   }
 }
