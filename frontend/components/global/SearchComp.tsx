@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from "@/styles/components/TopLeftNav.module.scss";
 import { BiSearchAlt } from "react-icons/bi";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import axios from "axios";
 import debounce from "lodash/debounce";
+import { useQuery } from "react-query";
 
 const SearchComp = () => {
   const getChannelStatus = (channel: any) => {

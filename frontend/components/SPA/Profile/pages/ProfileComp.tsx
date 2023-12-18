@@ -14,7 +14,6 @@ import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
 import { Button } from "@nextui-org/react";
-import { tree } from "next/dist/build/templates/app-page";
 
 function friendStatus(
   theirpendingFrReq: any,
@@ -133,7 +132,7 @@ export default function Profile({ id }: any) {
             onClick={() => handleBlock(isBlocked() ? 0 : 1)}
             color={"danger"}
             variant="bordered"
-            className="w-fit mt-4"
+            className="w-fit"
           >
             <span style={{ display: "flex", alignItems: "center" }}>
               <FaUserAltSlash style={{ marginRight: "0.5rem" }} />{" "}

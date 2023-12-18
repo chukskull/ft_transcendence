@@ -28,8 +28,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     );
   }
 
-  let bgStyle: string =
-    MonStyle === "Profile" ? "bg-purpleProfile" : "bg-friend";
+  let bgStyle: string = "bg-purpleProfile";
   let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
   return (
     <div className="flex flex-col items-center justify-center gap-4 w-full py-2">

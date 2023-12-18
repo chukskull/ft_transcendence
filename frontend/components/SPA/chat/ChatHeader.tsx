@@ -7,6 +7,8 @@ import UserMenu from "@/components/SPA/chat/UserMenu";
 import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { App } from "antd";
 
 interface chatHeaderProps {
   isChannel: boolean;
@@ -16,6 +18,7 @@ interface chatHeaderProps {
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
   const leaveGroup = (id: number) => {
     axios
@@ -23,7 +26,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         withCredentials: true,
       })
       .then((res) => {
-        document.location.reload();
+        window.location.href = "/chat/channels/1";
       })
       .catch((err) => {
         console.log(err);
