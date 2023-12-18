@@ -1,5 +1,4 @@
 import { ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
-import { act } from "react-dom/test-utils";
 
 interface GlobalModalCompProps {
   onClose: any;
