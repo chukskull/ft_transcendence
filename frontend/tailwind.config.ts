@@ -7,7 +7,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
-    "/goinfre/snagat/testing/sure/frontend/app/(ClientLogin)/fill/page.tsx",
+    "./frontend/app/(ClientLogin)/fill/page.tsx",
     "./node_modules/@nextui-org/theme/dist/components/(button|snippet|code|input).js",
     "./node_modules/@nextui-org/theme/dist/components/input.js",
   ],
