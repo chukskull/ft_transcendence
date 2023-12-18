@@ -40,11 +40,11 @@ const config: Config = {
       },
       colors: {
         live: "#F417C4",
-        friend: "#2C1A34", // Define your custom color here
+        friend: "#000000E6", // Define your custom color here
         customPink: "#F417C4",
         customPurple: "#270245",
         purpleProfile : "#15011EB3",
-        modalBackground: "#1D0229",
+        modalBackground: '#000000E6',
         buttonbg: "#3E0756",
         bghover: "#fefcfc33",
         stats: "#851487",
