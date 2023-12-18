@@ -104,12 +104,12 @@ const UserMenu = ({
                       }
                     )
                     .then((res) => {
-                      alert(res.data.message);
+                      //alert(res.data.message);
                       document.location.reload();
                       console.log(res);
                     })
                     .catch((err) => {
-                      alert(err.response.data.message);
+                      //alert(err.response.data.message);
                       console.log(err);
                     });
                 }}
@@ -129,11 +129,11 @@ const UserMenu = ({
                       }
                     )
                     .then((res) => {
-                      alert(res.data.message);
+                      //alert(res.data.message);
                       console.log(res);
                     })
                     .catch((err) => {
-                      alert(err.response.data.message);
+                      //alert(err.response.data.message);
                       console.log(err);
                     });
                 }}
