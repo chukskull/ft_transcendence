@@ -1,22 +1,20 @@
-$background-color:  rgba(0, 0, 0, 0.9);
+$background-color: rgb(16, 6, 57);
 
 .top-bar {
     background-color: $background-color;
     color: #fff;
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
     z-index: 100;
     height: 60px;
     border-bottom-right-radius: 20px;
-   border: 1px solid silver;
+    border: 1px solid silver;
     display: flex;
     justify-content: space-between;
     align-items: center;
     @media screen and (max-width: 768px) {
         height: 50px;
-        
     }
     .top_logo {
         z-index: 101;
@@ -26,10 +24,9 @@ $background-color:  rgba(0, 0, 0, 0.9);
         align-items: center;
     }
     .top_search {
-        
         width: 377px;
         height: 42px;
-    
+
         border-radius: 11px;
         border-bottom: 90%;
         background: #fefcfc33;
@@ -58,7 +55,6 @@ $background-color:  rgba(0, 0, 0, 0.9);
                 height: 80%;
                 font-size: 12px;
             }
-            
         }
 
         .search_icon {
@@ -66,7 +62,6 @@ $background-color:  rgba(0, 0, 0, 0.9);
             font-size: 21px;
             @media screen and (max-width: 768px) {
                 font-size: 16px;
-                
             }
         }
     }
@@ -90,16 +85,15 @@ $background-color:  rgba(0, 0, 0, 0.9);
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    @media  screen and (max-width: 768px) {
+    @media screen and (max-width: 768px) {
         display: none;
-        
     }
 
     .left_menu {
         margin-top: 150px;
         display: flex;
         flex-direction: column;
-        
+
         gap: 4rem;
         svg {
             &:hover {
@@ -123,6 +117,7 @@ $background-color:  rgba(0, 0, 0, 0.9);
         }
     }
 }
-.left-bar, .top-bar{
+.left-bar,
+.top-bar {
     box-shadow: 0px 0px 16px silver;
 }
