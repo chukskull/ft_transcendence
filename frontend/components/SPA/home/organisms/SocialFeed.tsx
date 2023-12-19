@@ -25,7 +25,7 @@ export const SocialFeed = () => {
   }, [data]);
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (error) return <div>error</div>;
 
   return (
     <div className="lg:flex lg:h-screen lg:justify-evenly lg:items-center">
@@ -67,61 +67,4 @@ export const SocialFeed = () => {
   );
 };
 
-// const Friends = [
-//   {
-//     id: 1,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "John",
-//   },
-//   {
-//     id: 2,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Jane",
-//   },
-//   {
-//     id: 3,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Alex",
-//   },
-//   {
-//     id: 4,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Lily",
-//   },
-//   {
-//     id: 5,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Max",
-//   },
-//   {
-//     id: 6,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Eva",
-//   },
-//   {
-//     id: 7,
-//     avatarUrl: "https://example.com/avatar7.n",
-//     nickName: "Leo",
-//   },
-//   {
-//     id: 8,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Mia",
-//   },
-//   {
-//     id: 9,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Benjamin",
-//   },
-//   {
-//     id: 10,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Isabella",
-//   },
-//   {
-//     id: 10,
-//     avatarUrl: "https://i.pravatar.cc/300?img=9",
-//     nickName: "Isabella",
-//   },
-// ];
 export default SocialFeed;

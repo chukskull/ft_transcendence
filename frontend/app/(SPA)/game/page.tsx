@@ -5,7 +5,7 @@ import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
 import Result from "@/components/SPA/game/Result";
 import io from "socket.io-client";
-import { Button } from "@nextui-org/react";
+import { Button, user } from "@nextui-org/react";
 import OnlineGame from "@/components/SPA/game/OnlineGame";
 import axios from "axios";
 
@@ -18,19 +18,31 @@ const Game: React.FC = () => {
   const [joinedQueue, setJoinedQueue] = useState<boolean>(false);
   const [playersData, setPlayersData] = useState<any>({});
   const [enemy, setEnemy] = useState<string>("");
+
   useEffect(() => {
-    console.log("connecting new socket");
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
     newSocket.connect();
     setSocket(newSocket);
 
     newSocket.on("changeState", (data: any) => {
-      if (data.status == "inQueue") {
+      if (data.state == "inQueue") {
         setJoinedQueue(true);
-      } else if (data.status == "failed") {
+      } else if (data.state == "failed") {
         // popus that user is already in queue in another window
+      } else if (data.state == "declined") {
+        // popus that user you invited has declonend ur invite
+      } else if (data.state == "waitingForResponse") {
+        console.log("waitingForResponse");
       }
     });
+    const userId = window.location.search.split("=")[1];
+    if (userId && newSocket) {
+      newSocket.emit("inviteFriend", {
+        token: document.cookie.split("=")[1],
+        friendId: userId,
+      });
+    }
+
     newSocket.on("gameStarted", (data: any) => {
       setPlayersData(data);
       console.log("gameStarted event received front", data);
@@ -64,19 +76,6 @@ const Game: React.FC = () => {
       console.log("token: ", document.cookie.split("=")[1]);
     }
   }
-
-  // What the hell is this?
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setValue((v) => (v >= 100 ? 0 : v + 10));
-  //   }, 500);
-  //   if (value === 100) {
-  //     setRec(false);
-  //   }
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [value]);
 
   const renderRectangle = () => {
     if (showRec) {

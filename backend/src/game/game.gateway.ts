@@ -14,7 +14,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 @WebSocketGateway({ namespace: 'gameSockets', cors: true })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService) {}
   @WebSocketServer() server: Server;
 
   emitToClients(data: any, emitedEvent: any, roomName: any) {
@@ -60,17 +60,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       token: string;
       friendId: number;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
     const { token, friendId } = data;
-    const roomName = 'PVP' + client.id + 'vs' + friendId;
-    this.gameService.inviteFriend(
-      client,
-      this.server,
-      friendId,
-      token,
-      roomName,
-    );
-    client.join(roomName);
+    this.gameService.inviteFriend(client, friendId, token);
+  }
+
+  @SubscribeMessage('acceptPVP')
+  async acceptGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.acceptPVP(client, this.server, token);
+  }
+  @SubscribeMessage('declinePVP')
+  async declineGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.declinePVP(client, token, friendId);
   }
 }
