@@ -144,10 +144,6 @@ export class GameInstance {
     this.player2.socket.removeAllListeners();
     this.player1.socket.leave('gameStart' + this.player1.id);
     this.player2.socket.leave('gameStart' + this.player2.id);
-    this.player1.score = 0;
-    this.player2.score = 0;
-    this.player1 = null;
-    this.player2 = null;
   }
 
   public emitBallPositions(): void {
@@ -224,23 +220,20 @@ export class GameInstance {
   public bounceOffTopAndBottomWalls(): void {
     // check collision with top and bottom walls
     if (
-      this.ball.y + this.ball.speedY > GAME_HEIGHT - 15 ||
-      this.ball.y + this.ball.speedY < 15
+      this.ball.y >= GAME_HEIGHT - 15 ||
+      this.ball.y <= 0
     ) {
       this.ball.speedY = -this.ball.speedY;
     }
   }
 
   public bounceOffPaddles(): void {
+    const hitRightPaddle =
+      this.ball.x >= GAME_WIDTH - (DIST_WALL_TO_PADDLE + PADDLE_WIDTH) && this.ball.y >= this.paddle2Position && this.ball.y <= this.paddle2Position + PADDLE_HEIGHT;
     const hitLeftPaddle =
-      this.ball.x <= DIST_WALL_TO_PADDLE &&
+      this.ball.x <= (DIST_WALL_TO_PADDLE + PADDLE_WIDTH) &&
       this.ball.y >= this.paddle1Position &&
       this.ball.y <= this.paddle1Position + PADDLE_HEIGHT;
-    const hitRightPaddle =
-      this.ball.x >=
-        GAME_WIDTH - DIST_WALL_TO_PADDLE - PADDLE_WIDTH - BALL_RADIUS &&
-      this.ball.y >= this.paddle2Position &&
-      this.ball.y <= this.paddle2Position + PADDLE_HEIGHT;
     if (
       (hitLeftPaddle && this.ball.speedX < 0) ||
       (hitRightPaddle && this.ball.speedX > 0)

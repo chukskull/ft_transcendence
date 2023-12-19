@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from "@/styles/components/TopLeftNav.module.scss";
 import { BiSearchAlt } from "react-icons/bi";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";

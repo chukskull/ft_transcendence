@@ -100,6 +100,7 @@ const ProfileComp = ({
         })
         .catch((err) => {
           console.log(err);
+          //alert(err);
         });
     } else if (
       type === "achiv" ||

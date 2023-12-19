@@ -11,7 +11,7 @@ import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 const jwt = require('jsonwebtoken');
 
-export const GAME_WIDTH = 860;
+export const GAME_WIDTH = 845;
 export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
 export const PADDLE_WIDTH = 13;
@@ -29,7 +29,6 @@ export class GameService {
     socket: Socket;
     score: number;
   }> = [];
-  public onlineUsers = new Map<number, Set<Socket>>();
   public privateQueue = Array<{ id: number; socket: Socket; score: number }>();
 
   constructor(
@@ -92,8 +91,8 @@ export class GameService {
     client: Socket,
     server: Server,
     game: GameInstance,
+    matchiHistoId: number,
   ): Promise<void> {
-    const matchiHistoId = 4324234;
     const match = await this.matchHistory.findOne({
       where: { id: matchiHistoId },
     });
@@ -101,6 +100,15 @@ export class GameService {
       match.player1.winsInARow = await this.matchHistory.trackWinsInARow(
         player1.id,
       );
+      match.player1.wins = await this.matchHistory.trackNumberOfWins(player1.id);
+      if (match.player1.wins == 1) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: 'First Win' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player1.id, achievement.id);
+        }
+      }
       if (match.player1.winsInARow == 3) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '3 in a row' },
@@ -133,6 +141,15 @@ export class GameService {
       match.player2.winsInARow = await this.matchHistory.trackWinsInARow(
         player2.id,
       );
+      match.player2.wins = await this.matchHistory.trackNumberOfWins(player2.id);
+      if (match.player2.wins == 1) {
+        const achievement = await this.achievementRepo.findOne({
+          where: { name: 'First Win' },
+        });
+        if (achievement) {
+          this.achievementService.giveAchievement(player2.id, achievement.id);
+        }
+      }
       if (match.player2.winsInARow == 3) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: '3 in a row' },
@@ -183,11 +200,7 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    // console.log('use id is', userId);
-    if (!this.onlineUsers.has(userId)) {
-      this.onlineUsers.set(userId, new Set<Socket>());
-      this.onlineUsers.get(userId)?.add(client);
-    }
+    client.join('MatchMakingQueue' + userId);
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
     });
@@ -221,12 +234,6 @@ export class GameService {
     if (!user) {
       client.disconnect();
       return;
-    }
-    if (this.onlineUsers.has(user.id)) {
-      this.onlineUsers.get(user.id)?.delete(client);
-      if (this.onlineUsers.get(user.id)?.size == 0) {
-        this.onlineUsers.delete(user.id);
-      }
     }
     this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
       return player.id !== user.id;
