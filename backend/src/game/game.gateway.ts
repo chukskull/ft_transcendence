@@ -17,12 +17,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private gameService: GameService) { }
   @WebSocketServer() server: Server;
 
-  emitToClients(data: any, emitedEvent: any, roomName: any) {
-    this.server.to(roomName).emit(emitedEvent, data);
+
+  handleDisconnect(client: Socket) {
   }
 
-  handleDisconnect(client: Socket) {}
-  handleConnection(client: Socket) {}
+  handleConnection(client: Socket) {
+  }
 
   @SubscribeMessage('joinQueue')
   async joinQueue(
@@ -32,13 +32,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     @ConnectedSocket() client: Socket,
   ) {
-    this.gameService.joinQueue(client, this.server, data?.token);
-    return true;
+    await this.gameService.joinQueue(client, this.server, data?.token);
   }
 
   @SubscribeMessage('leaveQueue')
-  async leaveQueue(client: Socket) {
-    this.gameService.leaveQueue(client);
+  async leaveQueue(@ConnectedSocket() client: Socket) {
+      await this.gameService.leaveQueue(client);
   }
 
   /*
@@ -47,10 +46,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('createGame')
   async createGame(client: Socket) {
-    const opponentId = this.gameService.MatchMakingQueue.find(
-      (player) => player.socket !== client,
-    )?.id;
-    this.gameService.createGame(client, opponentId, this.server);
+    try {
+      const opponentId = this.gameService.MatchMakingQueue.find(
+        (player) => player.socket !== client,
+      )?.id;
+      this.gameService.createGame(client, opponentId, this.server);
+    } catch (error) {
+      // Handle error
+      console.log("Cannot find opponent", error);
+      return;
+    }
   }
 
   @SubscribeMessage('inviteFriend')
@@ -62,15 +67,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     client: Socket,
   ) {
-    const { token, friendId } = data;
-    const roomName = 'PVP' + client.id + 'vs' + friendId;
-    this.gameService.inviteFriend(
-      client,
-      this.server,
-      friendId,
-      token,
-      roomName,
-    );
-    client.join(roomName);
+    try {
+      const { token, friendId } = data;
+      const roomName = 'PVP' + client.id + 'vs' + friendId;
+      this.gameService.inviteFriend(
+        client,
+        this.server,
+        friendId,
+        token,
+        roomName,
+      );
+    } catch (error) {
+      // Handle error
+    }
   }
 }
