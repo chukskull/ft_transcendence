@@ -9,6 +9,7 @@ import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
+import { NotifGateway } from 'src/notifications.gateway';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 845;
@@ -36,6 +37,7 @@ export class GameService {
     private achievementService: AchievementService,
     private userService: UserService,
     private jwtService: JwtService,
+    private notifGateway: NotifGateway,
     @InjectRepository(Achievement)
     private achievementRepo: Repository<Achievement>,
     @InjectRepository(MatchHistory)
@@ -58,20 +60,30 @@ export class GameService {
       client.disconnect();
       return;
     }
-    this.privateQueue.push({ id: userId, socket: client, score: 0 });
+    console.log('invite friend');
     client.emit('changeState', { state: 'waitingForResponse' });
+    this.privateQueue.push({ id: userId, socket: client, score: 0 });
+    const userProfile = await this.userService.userProfile(userId);
+    this.notifGateway.sendPVPRequest(userProfile, friendId);
   }
-  async declineInvite(client: Socket) {
+  async declinePVP(client: Socket, token: string, friendId: number) {
+    const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (!myId) {
+      client.disconnect();
+      return;
+    }
     const inviter = this.privateQueue.shift();
-    inviter.socket.emit('changeState', {
-      state: 'failed',
-      message: 'opponent declined your invitation',
-    });
-    client.emit('changeState', { state: 'home' });
-    this.privateQueue.pop();
+    if (inviter.id == myId) {
+      inviter.socket.emit('changeState', {
+        state: 'decline',
+        message: 'opponent declined your invitation',
+      });
+      client.emit('changeState', { state: 'home' });
+      this.privateQueue.pop();
+    }
   }
 
-  async acceptInvite(client: Socket, server: Server, token: string) {
+  async acceptPVP(client: Socket, server: Server, token: string) {
     const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!myId) {
       client.disconnect();
@@ -100,7 +112,9 @@ export class GameService {
       match.player1.winsInARow = await this.matchHistory.trackWinsInARow(
         player1.id,
       );
-      match.player1.wins = await this.matchHistory.trackNumberOfWins(player1.id);
+      match.player1.wins = await this.matchHistory.trackNumberOfWins(
+        player1.id,
+      );
       if (match.player1.wins == 1) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: 'First Win' },
@@ -141,7 +155,9 @@ export class GameService {
       match.player2.winsInARow = await this.matchHistory.trackWinsInARow(
         player2.id,
       );
-      match.player2.wins = await this.matchHistory.trackNumberOfWins(player2.id);
+      match.player2.wins = await this.matchHistory.trackNumberOfWins(
+        player2.id,
+      );
       if (match.player2.wins == 1) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: 'First Win' },
@@ -244,8 +260,6 @@ export class GameService {
    * start game
    */
   async createGame(player1: any, player2: any, server: Server): Promise<void> {
-    player1.socket.join('gameStart' + player1.id);
-    player2.socket.join('gameStart' + player2.id);
     await this.userService.setStatus(player1.id, 'inGame');
     await this.userService.setStatus(player2.id, 'inGame');
     const matchHisto = this.matchHistory.create({
@@ -259,13 +273,14 @@ export class GameService {
       matchHisto,
       this.matchHistoryRepo,
     ); // take the entire player
-    server.to('gameStart' + player1.id).emit('gameStarted', {
+    player1.socket.emit('gameStarted', {
       MyId: player1.id,
       OpponentId: player2.id,
     });
-    server
-      .to('gameStart' + player2.id)
-      .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
+    player2.socket.emit('gameStarted', {
+      MyId: player2.id,
+      OpponentId: player1.id,
+    });
     game.startGame();
   }
 }

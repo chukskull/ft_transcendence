@@ -69,18 +69,7 @@ const UserMenu = ({
           <div
             className={style["menu-item"]}
             onClick={() => {
-              axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`,
-                  {},
-                  {
-                    withCredentials: true,
-                  }
-                )
-                .then((res) => {})
-                .catch((err) => {
-                  console.log(err);
-                });
+              router.push(`/game?inviteToGame=${id}`);
             }}
           >
             <BsController />

@@ -60,11 +60,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       token: string;
       friendId: number;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
     const { token, friendId } = data;
     this.gameService.inviteFriend(client, friendId, token);
   }
+
   @SubscribeMessage('acceptPVP')
   async acceptGameInvite(
     @MessageBody()
@@ -72,9 +73,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       token: string;
       friendId: number;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
     const { token, friendId } = data;
-    // this.gameService.acceptPVP(client, this.server, friendId, token, roomName);
+    this.gameService.acceptPVP(client, this.server, token);
+  }
+  @SubscribeMessage('declinePVP')
+  async declineGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.declinePVP(client, token, friendId);
   }
 }
