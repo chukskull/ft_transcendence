@@ -51,31 +51,39 @@ export class GameService {
    */
   async inviteFriend(
     client: Socket,
-    server: Server,
     friendId: number,
     token: string,
-    roomName: string,
   ): Promise<any> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!userId) {
       client.disconnect();
       return;
     }
-    
     this.privateQueue.push({ id: userId, socket: client, score: 0 });
-    // payload from frontend to be discussed
-    client.on('acceptInvite', (payload) => {
-      this.privateQueue.push({ id: friendId, socket: client, score: 0 });
-      if (this.privateQueue.length >= 2) {
-        const player1 = this.privateQueue.shift();
-        const player2 = this.privateQueue.shift();
-        this.createGame(player1, player2, server);
-      }
+    client.emit('changeState', { state: 'waitingForResponse' });
+  }
+  async declineInvite(client: Socket) {
+    const inviter = this.privateQueue.shift();
+    inviter.socket.emit('changeState', {
+      state: 'failed',
+      message: 'opponent declined your invitation',
     });
-    client.on('declineInvite', (payload) => {
-      client.emit('changeState', { state: 'home' });
-      this.privateQueue.pop();
-    });
+    client.emit('changeState', { state: 'home' });
+    this.privateQueue.pop();
+  }
+
+  async acceptInvite(client: Socket, server: Server, token: string) {
+    const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (!myId) {
+      client.disconnect();
+      return;
+    }
+    this.privateQueue.push({ id: myId, socket: client, score: 0 });
+    if (this.privateQueue.length >= 2) {
+      const player1 = this.privateQueue.shift();
+      const player2 = this.privateQueue.shift();
+      this.createGame(player1, player2, server);
+    }
   }
 
   async giveAchievement(
@@ -180,19 +188,18 @@ export class GameService {
       this.onlineUsers.set(userId, new Set<Socket>());
       this.onlineUsers.get(userId)?.add(client);
     }
-    client.join('MatchMakingQueue' + userId);
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
     });
     if (!isInQueue) {
       this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
       // empty the the queue on disconnect
-      server.to('MatchMakingQueue' + userId).emit('changeState', {
+      client.emit('changeState', {
         state: 'inQueue',
         message: 'waiting for other opponent to join',
       });
     } else {
-      server.to('MatchMakingQueue' + userId).emit('changeState', {
+      client.emit('changeState', {
         state: 'failed',
         message: 'already in queue/already in game',
       });
