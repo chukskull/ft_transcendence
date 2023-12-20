@@ -198,20 +198,13 @@ export class UserService {
     return conversation || null;
   }
 
-  async updateUserInfo(data): Promise<any> {
-    const { nickName, profilePicture, twoFa, id } = data;
-
-    const alreadyExists = await this.userRepository.findOne({
-      where: { id },
+  async updateUserInfo(data, userId): Promise<any> {
+    const { nickName, avatarUrl, twoFa } = data;
+    return this.userRepository.update(userId, {
+      nickName,
+      avatarUrl,
+      twoFactorAuthEnabled: twoFa,
     });
-    if (alreadyExists) {
-      await this.userRepository.update(id, {
-        nickName,
-        avatarUrl: profilePicture,
-        twoFactorAuthEnabled: twoFa,
-      });
-    }
-    return this.userRepository.update(id, data);
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {

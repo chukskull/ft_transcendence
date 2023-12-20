@@ -47,7 +47,10 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       avatarUrl: base64Image,
       twoFa: checked,
     };
-    console.log(formData);
+    if (formData.nickName == "") formData.nickName = myData.nickName;
+
+    if (formData.avatarUrl == null) formData.avatarUrl = myData.avatarUrl;
+
     axios
       .post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`,
@@ -57,8 +60,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         }
       )
       .then((res) => {
-        console.log(res.data);
-        // document.location.reload();
+        document.location.reload();
       })
       .catch((err) => {
         console.log(err);
@@ -68,7 +70,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   // 2fs on off
   const handle2Fa = () => {
     const endPoint = checked ? "disable" : "enable";
-    console.log("in 2fa", endPoint);
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
         withCredentials: true,
@@ -94,44 +95,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         console.log(err);
       });
   }, []);
-  // const func = (file: any) => {
-  //   return new Promise((resolve, reject) => {
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e: any) => {
-  //         const base64Image = e.target.result;
-  //         if (base64Image) {
-  //           const blob = new Blob([file], { type: file.type });
-  //           const base64URL = URL.createObjectURL(blob);
-  //           resolve(base64URL);
-  //         } else {
-  //           reject("Failed to convert file to base64");
-  //         }
-  //       };
-  //       reader.readAsDataURL(file);
-  //     } else {
-  //       reject("No file provided");
-  //     }
-  //   });
-  // };
-
-  // const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  // useEffect(() => {
-  //   if (file) {
-  //     console.log("File provided");
-  //     func(file)
-  //       .then((url: string) => {
-  //         console.log(url);
-  //         setImageUrl(url);
-  //       })
-  //       .catch((error: string) => {
-  //         console.error(error);
-  //       });
-  //   } else {
-  //     console.log("No file");
-  //   }
-  // }, [file]);
 
   return (
     <>

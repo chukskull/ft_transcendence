@@ -65,9 +65,9 @@ export class UserController {
   }
   @Post('/update')
   @UseGuards(JwtGuard)
-  async update(@Body() data: updateDto) {
+  async update(@Body() data: updateDto, @Req() req: any) {
     console.log('this is le data', data);
-    return this.usersService.updateUserInfo(data);
+    return this.usersService.updateUserInfo(data, req.user.id);
   }
 
   @Get('profile/:userId')
