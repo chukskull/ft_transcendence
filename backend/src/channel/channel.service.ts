@@ -190,11 +190,7 @@ export class ChannelService {
     await this.chanRepository.remove(channel);
   }
 
-  async joinChannel(
-    chanId: number,
-    password: string,
-    userId: number,
-  ): Promise<Channel> {
+  async joinChannel(chanId: number, password: string, userId: number) {
     const channel = await this.chanRepository.findOne({
       where: { id: chanId },
       relations: ['members', 'conversation', 'BannedUsers'],
@@ -213,11 +209,9 @@ export class ChannelService {
         'Channel is private you cant join without invite',
       );
 
-    // Check if the channel is protected and verify the password
-
     // Check if the user is already a member of the channel
     const isAlreadyMember = channel.members.some(
-      (member) => member.id === userId,
+      (member) => member.id == userId,
     );
     if (isAlreadyMember) throw new NotFoundException('User already in channel');
     if (channel.is_protected) {
@@ -227,13 +221,13 @@ export class ChannelService {
     }
 
     channel.members.push(user);
+    await this.chanRepository.save(channel);
     user.channels.push(channel);
+    await this.userRepository.save(user);
     await this.conversationService.joinConversation(
       channel.conversation.id,
       userId,
     );
-    this.userRepository.save(user);
-    return this.chanRepository.save(channel);
   }
 
   async leaveChannel(chanId: number, userId: number): Promise<Channel> {

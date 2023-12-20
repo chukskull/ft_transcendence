@@ -44,23 +44,21 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const updateUser = async () => {
     const formData = {
       nickName: name,
-      image: base64Image,
-      twoFactorAuthEnabled: checked,
+      avatarUrl: base64Image,
+      twoFa: checked,
     };
+    console.log(formData);
     axios
       .post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`,
         formData,
         {
           withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
         }
       )
       .then((res) => {
         console.log(res.data);
-        document.location.reload();
+        // document.location.reload();
       })
       .catch((err) => {
         console.log(err);
@@ -167,9 +165,11 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             <Input
               minLength={3}
               maxLength={12}
-              type="name"
+              type="text"
               aria-label="Name"
               className="bg-inherit text-fontlight"
+              placeholder="new username"
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
         </div>
