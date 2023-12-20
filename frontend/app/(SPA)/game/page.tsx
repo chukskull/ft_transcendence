@@ -25,14 +25,22 @@ const Game: React.FC = () => {
     setSocket(newSocket);
 
     newSocket.on("changeState", (data: any) => {
-      if (data.state == "inQueue") {
-        setJoinedQueue(true);
-      } else if (data.state == "failed") {
-        // popus that user is already in queue in another window
-      } else if (data.state == "declined") {
-        // popus that user you invited has declonend ur invite
-      } else if (data.state == "waitingForResponse") {
-        console.log("waitingForResponse");
+      const { state } = data;
+      switch (state) {
+        case "inQueue":
+          setJoinedQueue(true);
+          break;
+        case "failed":
+          break;
+        case "declined":
+          break;
+        case "waitingForResponse":
+          console.log("waitingForResponse");
+          break;
+        case "gameEnded":
+          break;
+        default:
+          break;
       }
     });
     const userId = window.location.search.split("=")[1];
