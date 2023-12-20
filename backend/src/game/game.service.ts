@@ -9,9 +9,10 @@ import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
+import { NotifGateway } from 'src/notifications.gateway';
 const jwt = require('jsonwebtoken');
 
-export const GAME_WIDTH = 860;
+export const GAME_WIDTH = 845;
 export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
 export const PADDLE_WIDTH = 13;
@@ -36,6 +37,7 @@ export class GameService {
     private achievementService: AchievementService,
     private userService: UserService,
     private jwtService: JwtService,
+    private notifGateway: NotifGateway,
     @InjectRepository(Achievement)
     private achievementRepo: Repository<Achievement>,
     @InjectRepository(MatchHistory)
@@ -50,10 +52,8 @@ export class GameService {
    */
   async inviteFriend(
     client: Socket,
-    server: Server,
     friendId: number,
     token: string,
-    roomName: string,
   ): Promise<any> {
     try {
       const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
@@ -81,6 +81,41 @@ export class GameService {
       console.log("Cannot invite friend", error);
       return;
     }
+    console.log('invite friend');
+    client.emit('changeState', { state: 'waitingForResponse' });
+    this.privateQueue.push({ id: userId, socket: client, score: 0 });
+    const userProfile = await this.userService.userProfile(userId);
+    this.notifGateway.sendPVPRequest(userProfile, friendId);
+  }
+  async declinePVP(client: Socket, token: string, friendId: number) {
+    const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (!myId) {
+      client.disconnect();
+      return;
+    }
+    const inviter = this.privateQueue.shift();
+    if (inviter.id == myId) {
+      inviter.socket.emit('changeState', {
+        state: 'decline',
+        message: 'opponent declined your invitation',
+      });
+      client.emit('changeState', { state: 'home' });
+      this.privateQueue.pop();
+    }
+  }
+
+  async acceptPVP(client: Socket, server: Server, token: string) {
+    const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (!myId) {
+      client.disconnect();
+      return;
+    }
+    this.privateQueue.push({ id: myId, socket: client, score: 0 });
+    if (this.privateQueue.length >= 2) {
+      const player1 = this.privateQueue.shift();
+      const player2 = this.privateQueue.shift();
+      this.createGame(player1, player2, server);
+    }
   }
 
   async giveAchievement(
@@ -98,7 +133,9 @@ export class GameService {
       match.player1.winsInARow = await this.matchHistory.trackWinsInARow(
         player1.id,
       );
-      match.player1.wins = await this.matchHistory.trackNumberOfWins(player1.id);
+      match.player1.wins = await this.matchHistory.trackNumberOfWins(
+        player1.id,
+      );
       if (match.player1.wins == 1) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: 'First Win' },
@@ -139,7 +176,9 @@ export class GameService {
       match.player2.winsInARow = await this.matchHistory.trackWinsInARow(
         player2.id,
       );
-      match.player2.wins = await this.matchHistory.trackNumberOfWins(player2.id);
+      match.player2.wins = await this.matchHistory.trackNumberOfWins(
+        player2.id,
+      );
       if (match.player2.wins == 1) {
         const achievement = await this.achievementRepo.findOne({
           where: { name: 'First Win' },
@@ -197,35 +236,29 @@ export class GameService {
     server: Server,
     token: string,
   ): Promise<boolean> {
-    try {
-      const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-      client.join('MatchMakingQueue' + userId);
-      const isInQueue = this.MatchMakingQueue.find((player) => {
-        return player.id == userId;
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    client.join('MatchMakingQueue' + userId);
+    const isInQueue = this.MatchMakingQueue.find((player) => {
+      return player.id == userId;
+    });
+    if (!isInQueue) {
+      this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
+      // empty the the queue on disconnect
+      client.emit('changeState', {
+        state: 'inQueue',
+        message: 'waiting for other opponent to join',
       });
-      if (!isInQueue) {
-        this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
-        // empty the the queue on disconnect
-        server.to('MatchMakingQueue' + userId).emit('changeState', {
-          state: 'inQueue',
-          message: 'waiting for other opponent to join',
-        });
-      } else {
-        server.to('MatchMakingQueue' + userId).emit('changeState', {
-          state: 'failed',
-          message: 'already in queue/already in game',
-        });
-      }
-      if (this.MatchMakingQueue.length >= 2) {
-        const player1 = this.MatchMakingQueue.shift();
-        const player2 = this.MatchMakingQueue.shift();
-        this.createGame(player1, player2, server);
-        return true;
-      }
-    } catch (error) {
-      // Handle error
-      console.log("Cannot join queue", error);
-      return false;
+    } else {
+      client.emit('changeState', {
+        state: 'failed',
+        message: 'already in queue/already in game',
+      });
+    }
+    if (this.MatchMakingQueue.length >= 2) {
+      const player1 = this.MatchMakingQueue.shift();
+      const player2 = this.MatchMakingQueue.shift();
+      this.createGame(player1, player2, server);
+      return true;
     }
   }
 
@@ -254,34 +287,27 @@ export class GameService {
    * start game
    */
   async createGame(player1: any, player2: any, server: Server): Promise<void> {
-    try {
-      player1.socket.join('gameStart' + player1.id);
-      player2.socket.join('gameStart' + player2.id);
-      await this.userService.setStatus(player1.id, 'inGame');
-      await this.userService.setStatus(player2.id, 'inGame');
-      const matchHisto = this.matchHistory.create({
-        player1ID: player1.id,
-        player2ID: player2.id,
-      });
-      const game = new GameInstance(
-        player1,
-        player2,
-        server,
-        matchHisto,
-        this.matchHistoryRepo,
-      ); // take the entire player
-      server.to('gameStart' + player1.id).emit('gameStarted', {
-        MyId: player1.id,
-        OpponentId: player2.id,
-      });
-      server
-        .to('gameStart' + player2.id)
-        .emit('gameStarted', { MyId: player2.id, OpponentId: player1.id });
-      game.startGame();
-    } catch (error) {
-      // Handle error
-      console.log("Cannot create game", error);
-      return;
-    }
+    await this.userService.setStatus(player1.id, 'inGame');
+    await this.userService.setStatus(player2.id, 'inGame');
+    const matchHisto = this.matchHistory.create({
+      player1ID: player1.id,
+      player2ID: player2.id,
+    });
+    const game = new GameInstance(
+      player1,
+      player2,
+      server,
+      matchHisto,
+      this.matchHistoryRepo,
+    ); // take the entire player
+    player1.socket.emit('gameStarted', {
+      MyId: player1.id,
+      OpponentId: player2.id,
+    });
+    player2.socket.emit('gameStarted', {
+      MyId: player2.id,
+      OpponentId: player1.id,
+    });
+    game.startGame();
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge, DropdownSection, badge } from "@nextui-org/react";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NotificationIcon } from "./NotificationIcon";
 import {
   Dropdown,
@@ -9,17 +9,17 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
-  cn,
 } from "@nextui-org/react";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
 import axios from "axios";
 import { useQuery } from "react-query";
+import io from "socket.io-client";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
   const [notifData, setNotifData] = useState<any>(null);
-
+  const [socket, setSocket] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -40,6 +40,23 @@ export const NotificationComp = ({}) => {
       setNotifCount(pendingFriendRequestsQuery.data.length);
     }
   }, [pendingFriendRequestsQuery.data]);
+  useEffect(() => {
+    const newSocket = io(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`,
+      {
+        query: {
+          token: document.cookie.split("=")[1],
+        },
+      }
+    );
+    newSocket.connect();
+    setSocket(newSocket);
+  }, []);
+  socket?.on("newPVPRequest", (data: any) => {
+    setNotifData((prev: any) => [...prev, data]);
+    setNotifCount((prev: any) => prev + 1);
+    console.log("newPVPRequest", data);
+  });
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
@@ -84,7 +101,7 @@ export const NotificationComp = ({}) => {
   };
   if (pendingFriendRequestsQuery.isLoading)
     return <NotificationIcon width={25} height={25} />;
-  if (pendingFriendRequestsQuery.error) return <div>{error}</div>;
+  if (pendingFriendRequestsQuery.error) return <div>error</div>;
 
   return (
     <>
