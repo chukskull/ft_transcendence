@@ -30,20 +30,26 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
 
   let bgStyle: string =
     MonStyle === "Home" ? "bg-friend" : "bg-purpleProfile border-none";
-  let colors: string[] = ["borderGold", "borderSilver", "borderBronze"];
+  let colors: string[] = ["border-Gold", "border-Silver", "border-Bronze"];
+  let textColors: string[] = ["text-Gold", "text-Silver", "text-Bronze"];
+
   let borderColor: string = "";
+  let textColor: string = "";
   return (
     <div className="flex flex-col items-center justify-center gap-4 w-full py-2">
       {data?.map(
         (user: any, index: any) => (
-          index < 3 ? (borderColor = colors[index]) : (borderColor = "white"),
+          index < 3
+            ? ((borderColor = colors[index]), (textColor = textColors[index]))
+            : ((borderColor = "border-white"), (textColor = "text-white")),
+          (console.log(borderColor),
           (
             <div
               key={user.id}
-              className={`border-1 rounded-2xl w-full ${bgStyle} border-${borderColor} h-20 flex justify-start items-center p-10 gap-6`}
+              className={`border-1 rounded-2xl w-full ${bgStyle} ${borderColor} h-20 flex justify-start items-center p-10 gap-6`}
             >
               <span
-                className={`font-ClashGrotesk-Semibold text-lg flex items-center text-${borderColor}`}
+                className={`font-ClashGrotesk-Semibold text-lg flex items-center ${textColor}`}
               >
                 {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
               </span>
@@ -58,7 +64,7 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
                 status={user.status}
               />
             </div>
-          )
+          ))
         )
       )}
     </div>
