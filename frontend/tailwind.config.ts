@@ -40,7 +40,7 @@ const config: Config = {
       },
       colors: {
         live: "#F417C4",
-        friend: "#000000E6", // Define your custom color here
+        friend: '#1F2937', // Define your custom color here
         customPink: "#F417C4",
         customPurple: "#270245",
         purpleProfile : "#15011EB3",
@@ -49,7 +49,10 @@ const config: Config = {
         bghover: "#fefcfc33",
         stats: "#851487",
         silver : "#C0C0C0",
-        fontlight: "#F5F5F5"
+        fontlight: "#F5F5F5",
+        borderGold : "#FFD700",
+        borderSilver : "#C0C0C0",
+        borderBronze : "#CD7F32",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

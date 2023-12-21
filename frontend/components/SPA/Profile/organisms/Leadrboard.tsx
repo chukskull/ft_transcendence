@@ -28,31 +28,39 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
     );
   }
 
-  let bgStyle: string = "bg-purpleProfile";
-  let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
+  let bgStyle: string =
+    MonStyle === "Home" ? "bg-friend" : "bg-purpleProfile border-none";
+  let colors: string[] = ["borderGold", "borderSilver", "borderBronze"];
+  let borderColor: string = "";
   return (
     <div className="flex flex-col items-center justify-center gap-4 w-full py-2">
-      {data?.map((user: any, index: any) => (
-        <div
-          key={user.id}
-          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-start items-center p-10 gap-6`}
-        >
-          <span className="text-fontlight font-ClashGrotesk-Semibold text-lg flex items-center">
-            {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
-          </span>
+      {data?.map(
+        (user: any, index: any) => (
+          index < 3 ? (borderColor = colors[index]) : (borderColor = "white"),
+          (
+            <div
+              key={user.id}
+              className={`border-1 rounded-2xl w-full ${bgStyle} border-${borderColor} h-20 flex justify-start items-center p-10 gap-6`}
+            >
+              <span
+                className={`font-ClashGrotesk-Semibold text-lg flex items-center text-${borderColor}`}
+              >
+                {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
+              </span>
 
-          <ProfileComp
-            img={user.avatarUrl}
-            nickName={user.nickName}
-            firstName={user.firstName}
-            lastName={user.lastName}
-            color={colors[index]}
-            id={user.id}
-            channelId={user.id}
-            status={user.status}
-          />
-        </div>
-      ))}
+              <ProfileComp
+                img={user.avatarUrl}
+                nickName={user.nickName}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                id={user.id}
+                channelId={user.id}
+                status={user.status}
+              />
+            </div>
+          )
+        )
+      )}
     </div>
   );
 };
