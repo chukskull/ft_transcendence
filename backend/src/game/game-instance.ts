@@ -8,7 +8,7 @@ import {
   DIST_WALL_TO_PADDLE,
 } from './game.service';
 
-const BASE_BALL_SPEED = 2;
+const BASE_BALL_SPEED = 4;
 const FRAME_RATE = 1000 / 20;
 const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
 
@@ -91,7 +91,7 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.addScoreToDB();
+      this.updateScoreInDB();
     });
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
@@ -109,7 +109,7 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.addScoreToDB();
+      this.updateScoreInDB();
     });
 
     this.gameLoop = setInterval(() => {
@@ -164,10 +164,16 @@ export class GameInstance {
     });
   }
 
+
   public resetBall(): boolean {
     this.player1.socket.emit('sendBallState', this.ball);
     this.player2.socket.emit('sendBallState', this.ball);
-    this.ball = { x: 417, y: 240, speedX: BALL_SPEED, speedY: BALL_SPEED };
+    this.ball = {
+      x: 417,
+      y: 240,
+      speedX: BALL_SPEED * (Math.random() > 0.5 ? 1 : -1),
+      speedY: BALL_SPEED * (Math.random() > 0.5 ? 1 : -1),
+    };
     return true;
   }
 
@@ -201,13 +207,17 @@ export class GameInstance {
         });
         this.gameEnded = true;
         this.gameRunning = false;
-        this.addScoreToDB();
+        this.updateScoreInDB();
         this.endGame();
       }
     }
   }
 
-  private addScoreToDB() {
+  private updateScoreInDB() {
+    this.matchHistory.player1Id = this.player1.id;
+    this.matchHistory.player2Id = this.player2.id;
+    console.log('player1Id: ', this.matchHistory.player1Id);
+    console.log('player1Id: ', this.matchHistory.player2Id);
     this.matchHistory.player1Score = this.player1Score;
     this.matchHistory.player2Score = this.player2Score;
     this.matchHistory.winner = this.winnerID;
