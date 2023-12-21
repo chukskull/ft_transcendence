@@ -35,7 +35,7 @@ export const SocialFeed = () => {
             Leaderboard
           </h1>
 
-          <div className="flex flex-col  gap-6 overflow-y-auto overflow-x-hidden mt-4">
+          <div className="flex flex-col  gap-6 overflow-y-auto overflow-x-hidden mt-4 p-5">
             <Leadrboard MonStyle="Home" />
           </div>
         </div>
@@ -43,7 +43,7 @@ export const SocialFeed = () => {
           <h1 className="text-fontlight text-xl lg:text-3xl font-semibold text-center">
             Invite Friends
           </h1>
-          <div className="flex flex-row  justify-start flex-wrap   max-h-[800px] overflow-x-hidden gap-3 mt-4 overflow-y-auto ">
+          <div className="flex flex-row  justify-start flex-wrap   max-h-[800px] overflow-x-hidden gap-3 mt-4 overflow-y-auto p-5">
             {Friends.length > 0 ? (
               Friends.map((friend: any) => (
                 <MiniProf

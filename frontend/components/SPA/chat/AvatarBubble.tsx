@@ -16,7 +16,7 @@ const AvatarBubble = ({ avatar, online, badge }: AvatarBubbleProps) => {
           alt="avatar"
           isBordered
           color={online ? "success" : "danger"}
-          className="h-9 w-9 ml-1 "
+          className="h-9 w-9 ml-1 cursor-pointer"
           // className={style["avatar"]}
         ></Avatar>
       </Badge>
