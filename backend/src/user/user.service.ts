@@ -198,13 +198,27 @@ export class UserService {
     return conversation || null;
   }
 
+  // async updateUserInfo(data, userId): Promise<any> {
+  //   const { nickName, avatarUrl, twoFa } = data;
+  //   return this.userRepository.update(userId, {
+  //     nickName,
+  //     avatarUrl,
+  //     twoFactorAuthEnabled: twoFa,
+  //   });
+  // }
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
-    return this.userRepository.update(userId, {
-      nickName,
-      avatarUrl,
-      twoFactorAuthEnabled: twoFa,
-    });
+    let updateData = {};
+
+    if (nickName) {
+      updateData = { ...updateData, nickName };
+    }
+
+    if (avatarUrl > 0) {
+      updateData = { ...updateData, avatarUrl: avatarUrl };
+    }
+    updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
+    return this.userRepository.update(userId, updateData);
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {
