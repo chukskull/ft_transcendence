@@ -55,10 +55,11 @@ export default function Profile({ id }: any) {
   const [myData, setMyData] = useState<any>(null);
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
-  const [userId, setUserId] = useState<number>(0);
   function isBlocked() {
+    console.log("this is the my Blockeddata", myData?.blockedUsers?.length);
     if (myData?.blockedUsers?.length > 0) {
-      let blocked = myData?.blockedUsers?.find((e: any) => e.nickName == id);
+      let blocked = myData?.blockedUsers?.find((e: any) => e.nickName === id);
+
       if (blocked) return true;
     }
     return false;
@@ -69,21 +70,11 @@ export default function Profile({ id }: any) {
   }
 
   function handleBlock(blockUnblock: number) {
-    if (blockUnblock == 1) {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${id}`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          setUserId(res.data.id);
-        });
-    } else {
-      setUserId(myData?.blockedUsers?.find((e: any) => e.nickName == id)?.id);
-    }
-    console.log("this is the user id", userId);
+    console.log("this is the block unblock, mnstr gaty", blockUnblock);
+    console.log("this is the id mntsr gay", id);
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${userId}/${blockUnblock}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data.id}/${blockUnblock}`,
         {
           withCredentials: true,
         }
@@ -93,19 +84,21 @@ export default function Profile({ id }: any) {
       })
       .catch((err) => console.log(err));
   }
-  useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+  const friends = useQuery("userFriends", async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+      {
         withCredentials: true,
-      })
-      .then((res) => {
-        setMyData(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
+      }
+    );
+    return response;
+  });
+  useEffect(() => {
+    if (friends.data) {
+      setMyData(friends.data.data);
+    }
+  }, [friends.data]);
+  console.log("this is the my data", myData);
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
@@ -114,7 +107,6 @@ export default function Profile({ id }: any) {
     return <Error statusCode={404} />;
   }
   if (isLoading) return "Loading...";
-
   return (
     <div className="Parent max-w-[1536px] m-auto">
       {id === "me" ? (
