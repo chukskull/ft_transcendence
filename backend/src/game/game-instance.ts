@@ -76,7 +76,6 @@ export class GameInstance {
 
     // handle disconnect
     this.player1.socket.on('disconnect', () => {
-      this.player1Score = 0;
       this.player2Score = 5;
       this.winnerID = this.player2.id;
       this.server.to('gameStart' + this.player2.id).emit('updateScore', {
@@ -96,7 +95,6 @@ export class GameInstance {
     });
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
-      this.player2Score = 0;
       this.winnerID = this.player1.id;
       this.server.to('gameStart' + this.player2.id).emit('updateScore', {
         player1: this.player2Score,

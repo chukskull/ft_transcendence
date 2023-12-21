@@ -55,30 +55,9 @@ export class GameService {
     friendId: number,
     token: string,
   ): Promise<any> {
-    try {
-      const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-      if (!userId) {
-        client.disconnect();
-        return;
-      }
-      
-      this.privateQueue.push({ id: userId, socket: client, score: 0 });
-      // payload from frontend to be discussed
-      client.on('acceptInvite', (payload) => {
-        this.privateQueue.push({ id: friendId, socket: client, score: 0 });
-        if (this.privateQueue.length >= 2) {
-          const player1 = this.privateQueue.shift();
-          const player2 = this.privateQueue.shift();
-          this.createGame(player1, player2, server);
-        }
-      });
-      client.on('declineInvite', (payload) => {
-        client.emit('changeState', { state: 'home' });
-        this.privateQueue.pop();
-      });
-    } catch (error) {
-      // Handle error
-      console.log("Cannot invite friend", error);
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    if (!userId) {
+      client.disconnect();
       return;
     }
     console.log('invite friend');
@@ -267,21 +246,15 @@ export class GameService {
    */
 
   async leaveQueue(client: Socket) {
-    try {
-      const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
-      if (!user) {
-        client.disconnect();
-        return;
-      }
-      this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
-        return player.id !== user.id;
-      });
-      client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
-    } catch (error) {
-      // Handle error
-      console.log("Cannot leave queue", error);
+    const user = await this.jwtService.verifyAsync(client.handshake.auth.token);
+    if (!user) {
+      client.disconnect();
       return;
     }
+    this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
+      return player.id !== user.id;
+    });
+    client.emit('changeState', { state: 'home' }); // i don't know what state to change to when leaving MatchMakingQueue
   }
   /*
    * start game
