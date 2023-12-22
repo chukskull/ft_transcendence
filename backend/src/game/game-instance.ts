@@ -1,4 +1,6 @@
 import { Server } from 'socket.io';
+import { UserService } from 'src/user/user.service';
+import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
   GAME_HEIGHT,
@@ -21,6 +23,8 @@ export class GameInstance {
     paddle1YPosition: number;
     paddle2YPosition: number;
   };
+  public userServ: UserService;
+  public achievementService: AchievementService;
   public player1: any;
   public player2: any;
   public player1Score: number;
@@ -31,19 +35,22 @@ export class GameInstance {
   private gameLoop: NodeJS.Timeout;
   public gameRunning: boolean;
   public gameEnded: boolean;
+
   public winnerID: number;
   private server: Server;
   public matchHistory: any;
   public matchHistoryRepo: any;
 
-  // first and second are taken from the queue (player: {id, socket}) and server is the socket server
   constructor(
     first: any,
     second: any,
     server: Server,
     matchHistory: any,
     matchHistoryRepo: any,
+    achievService: any,
   ) {
+    this.achievementService = achievService;
+
     this.matchHistory = matchHistory;
     this.matchHistoryRepo = matchHistoryRepo;
     this.player1 = first;
@@ -164,7 +171,6 @@ export class GameInstance {
     });
   }
 
-
   public resetBall(): boolean {
     this.player1.socket.emit('sendBallState', this.ball);
     this.player2.socket.emit('sendBallState', this.ball);
@@ -213,32 +219,39 @@ export class GameInstance {
     }
   }
 
-  private updateScoreInDB() {
-    this.matchHistoryRepo.update({
-      player1: this.player1.id,
-      player2: this.player2.id,
-    }, {
-      player1Score: this.player1Score,
-      player2Score: this.player2Score,
-      winner: this.winnerID,
-    });
-  }  
+  private async updateScoreInDB() {
+    const matchH = await this.matchHistoryRepo.update(
+      {
+        player1: this.player1.id,
+        player2: this.player2.id,
+      },
+      {
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
+        winner: this.winnerID,
+      },
+    );
+    await this.achievementService.calculateAchievement(
+      this.player1.id,
+      this.player2.id,
+      matchH.id,
+    );
+  }
 
   public bounceOffTopAndBottomWalls(): void {
     // check collision with top and bottom walls
-    if (
-      this.ball.y >= GAME_HEIGHT - 15 ||
-      this.ball.y <= 0
-    ) {
+    if (this.ball.y >= GAME_HEIGHT - 15 || this.ball.y <= 0) {
       this.ball.speedY = -this.ball.speedY;
     }
   }
 
   public bounceOffPaddles(): void {
     const hitRightPaddle =
-      this.ball.x >= GAME_WIDTH - (DIST_WALL_TO_PADDLE + PADDLE_WIDTH) && this.ball.y >= this.paddle2Position && this.ball.y <= this.paddle2Position + PADDLE_HEIGHT;
+      this.ball.x >= GAME_WIDTH - (DIST_WALL_TO_PADDLE + PADDLE_WIDTH) &&
+      this.ball.y >= this.paddle2Position &&
+      this.ball.y <= this.paddle2Position + PADDLE_HEIGHT;
     const hitLeftPaddle =
-      this.ball.x <= (DIST_WALL_TO_PADDLE + PADDLE_WIDTH) &&
+      this.ball.x <= DIST_WALL_TO_PADDLE + PADDLE_WIDTH &&
       this.ball.y >= this.paddle1Position &&
       this.ball.y <= this.paddle1Position + PADDLE_HEIGHT;
     if (
