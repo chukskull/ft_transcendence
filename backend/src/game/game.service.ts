@@ -29,8 +29,14 @@ export class GameService {
     id: number;
     socket: Socket;
     score: number;
+    nickName: string;
   }> = [];
-  public privateQueue = Array<{ id: number; socket: Socket; score: number }>();
+  public privateQueue = Array<{
+    id: number;
+    socket: Socket;
+    score: number;
+    nickName: string
+  }>();
 
   constructor(
     private matchHistory: MatchHistoryService,
@@ -62,8 +68,8 @@ export class GameService {
     }
     console.log('invite friend');
     client.emit('changeState', { state: 'waitingForResponse' });
-    this.privateQueue.push({ id: userId, socket: client, score: 0 });
     const userProfile = await this.userService.userProfile(userId);
+    this.privateQueue.push({ id: userId, socket: client, score: 0 , nickName: userProfile.nickName});
     this.notifGateway.sendPVPRequest(userProfile, friendId);
   }
   async declinePVP(client: Socket, token: string, friendId: number) {
@@ -89,7 +95,8 @@ export class GameService {
       client.disconnect();
       return;
     }
-    this.privateQueue.push({ id: myId, socket: client, score: 0 });
+    const userProfile = await this.userService.userProfile(myId);
+    this.privateQueue.push({ id: myId, socket: client, score: 0, nickName: userProfile.nickName });
     if (this.privateQueue.length >= 2) {
       const player1 = this.privateQueue.shift();
       const player2 = this.privateQueue.shift();
@@ -221,7 +228,8 @@ export class GameService {
       return player.id == userId;
     });
     if (!isInQueue) {
-      this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
+      const userProfile = await this.userService.userProfile(userId);
+      this.MatchMakingQueue.push({ id: userId, socket: client, score: 0, nickName: userProfile.nickName});
       // empty the the queue on disconnect
       client.emit('changeState', {
         state: 'inQueue',
@@ -275,11 +283,15 @@ export class GameService {
     ); // take the entire player
     player1.socket.emit('gameStarted', {
       MyId: player1.id,
+      myNickname: player1.nickName,
       OpponentId: player2.id,
+      OpponentNickname: player2.nickName,
     });
     player2.socket.emit('gameStarted', {
       MyId: player2.id,
+      myNickname: player2.nickName,
       OpponentId: player1.id,
+      OpponentNickname: player1.nickName,
     });
     game.startGame();
   }

@@ -53,11 +53,11 @@ const Game: React.FC = () => {
 
     newSocket.on("gameStarted", (data: any) => {
       setPlayersData(data);
-      console.log("gameStarted event received front", data);
+      console.log("gameStarted event hhhhh received front", data);
 
       axios
         .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${data.OpponentId}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${data.OpponentNickname}`,
           {
             withCredentials: true,
           }
