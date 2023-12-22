@@ -34,6 +34,10 @@ class fillDto {
   @IsNotEmpty()
   @Length(3, 20)
   lastName: string;
+
+  @IsString()
+  @IsOptional()
+  base64Image: string;
 }
 
 class updateDto {

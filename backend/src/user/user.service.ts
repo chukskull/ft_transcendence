@@ -146,7 +146,7 @@ export class UserService {
   }
 
   async fillData(data: any, id: number): Promise<any> {
-    const { nickName, firstName, lastName } = data;
+    const { nickName, firstName, lastName, base64Image } = data;
     const nickNameEx = await this.userRepository.findOne({
       where: { nickName },
     });
@@ -159,6 +159,7 @@ export class UserService {
       nickName,
       firstName,
       lastName,
+      avatarUrl: base64Image,
     });
 
     return useeer;
