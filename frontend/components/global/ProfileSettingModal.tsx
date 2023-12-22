@@ -44,11 +44,10 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     fileInput.click();
   };
 
-  const updateUser = async (moged: any) => {
-    console.log("whyyysss22", moged);
+  const updateUser = async (user: any) => {
     setValue("twoFa", checked);
     axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, moged, {
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
       .then((res) => {
