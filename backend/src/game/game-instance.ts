@@ -78,15 +78,15 @@ export class GameInstance {
     this.player1.socket.on('disconnect', () => {
       this.player2Score = 5;
       this.winnerID = this.player2.id;
-      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+      this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
       });
-      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+      this.player1.socket.emit('updateScore', {
         player1: this.player1Score,
         player2: this.player2Score,
       });
-      this.server.to('gameStart' + this.player2.id).emit('gameEnded', {
+      this.player2.socket.emit('gameEnded', {
         winner: this.winnerID,
       });
       this.gameRunning = false;
@@ -96,15 +96,15 @@ export class GameInstance {
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
       this.winnerID = this.player1.id;
-      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+      this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
       });
-      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+      this.player1.socket.emit('updateScore', {
         player1: this.player1Score,
         player2: this.player2Score,
       });
-      this.server.to('gameStart' + this.player1.id).emit('gameEnded', {
+      this.player1.socket.emit('gameEnded', {
         winner: this.winnerID,
       });
       this.gameRunning = false;
@@ -189,20 +189,20 @@ export class GameInstance {
     if (hitRightEdge || hitLeftEdge) {
       this.player1Score += hitRightEdge ? 1 : 0;
       this.player2Score += hitLeftEdge ? 1 : 0;
-      this.server.to('gameStart' + this.player1.id).emit('updateScore', {
+      this.player1.socket.emit('updateScore', {
         player1: this.player1Score,
         player2: this.player2Score,
       });
-      this.server.to('gameStart' + this.player2.id).emit('updateScore', {
+      this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
       });
       this.resetBall();
       if (this.checkGameEnd()) {
-        this.server.to('gameStart' + this.player1.id).emit('gameEnded', {
+        this.player1.socket.emit('gameEnded', {
           winner: this.winnerID,
         });
-        this.server.to('gameStart' + this.player2.id).emit('gameEnded', {
+        this.player2.socket.emit('gameEnded', {
           winner: this.winnerID,
         });
         this.gameEnded = true;
@@ -214,16 +214,15 @@ export class GameInstance {
   }
 
   private updateScoreInDB() {
-    this.matchHistory.player1Id = this.player1.id;
-    this.matchHistory.player2Id = this.player2.id;
-    console.log('player1Id: ', this.matchHistory.player1Id);
-    console.log('player1Id: ', this.matchHistory.player2Id);
-    this.matchHistory.player1Score = this.player1Score;
-    this.matchHistory.player2Score = this.player2Score;
-    this.matchHistory.winner = this.winnerID;
-    this.matchHistory.date = new Date();
-    this.matchHistoryRepo.save(this.matchHistory);
-  }
+    this.matchHistoryRepo.update({
+      player1: this.player1.id,
+      player2: this.player2.id,
+    }, {
+      player1Score: this.player1Score,
+      player2Score: this.player2Score,
+      winner: this.winnerID,
+    });
+  }  
 
   public bounceOffTopAndBottomWalls(): void {
     // check collision with top and bottom walls
