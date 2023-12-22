@@ -78,6 +78,13 @@ export class AchievementService {
     }
     return this.achievementRepository.remove(achievement);
   }
+  async calculateAchievement(
+    player1: any,
+    player2: any,
+    matchiHistoId: number,
+  ): Promise<void> {
+    console.log('give achievement---------- and add LEvelvelrkvoerjv');
+  }
 
   async giveAchievement(userId: number, achievementId: number): Promise<User> {
     const user = await this.userRepository.findOne({

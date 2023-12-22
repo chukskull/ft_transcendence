@@ -125,12 +125,16 @@ export default function Fill() {
                   required: "This field is required",
                   maxLength: 15,
                   minLength: 3,
+                  validate: {
+                    noSpaces: (value) =>
+                      !/\s/.test(value) || "No spaces are allowed",
+                  },
                 })}
                 type="firstName"
                 label="First Name"
                 variant="bordered"
                 isInvalid={errors.firstName ? true : false}
-                errorMessage={errors.firstName && "This field is required"}
+                errorMessage={errors.firstName && errors.firstName.message}
                 classNames={{
                   ...styles,
                 }}
@@ -143,6 +147,10 @@ export default function Fill() {
                   required: "This field is required",
                   maxLength: 20,
                   minLength: 3,
+                  validate: {
+                    noSpaces: (value) =>
+                      !/\s/.test(value) || "No spaces are allowed",
+                  },
                 })}
                 type="lastname"
                 label="Last Name"
@@ -161,6 +169,10 @@ export default function Fill() {
                   required: "This field is required",
                   maxLength: 15,
                   minLength: 3,
+                  validate: {
+                    noSpaces: (value) =>
+                      !/\s/.test(value) || "No spaces are allowed",
+                  },
                 })}
                 type="nickname"
                 label="Nickname"

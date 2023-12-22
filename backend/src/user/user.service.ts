@@ -198,6 +198,14 @@ export class UserService {
     return conversation || null;
   }
 
+  // async updateUserInfo(data, userId): Promise<any> {
+  //   const { nickName, avatarUrl, twoFa } = data;
+  //   return this.userRepository.update(userId, {
+  //     nickName,
+  //     avatarUrl,
+  //     twoFactorAuthEnabled: twoFa,
+  //   });
+  // }
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
     const nickNameEx = await this.userRepository.findOne({

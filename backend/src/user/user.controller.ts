@@ -39,7 +39,6 @@ class fillDto {
 class updateDto {
   @IsString()
   @IsOptional()
-  @Length(3, 15)
   nickName: string;
 
   @IsOptional()
@@ -66,7 +65,7 @@ export class UserController {
   @Post('/update')
   @UseGuards(JwtGuard)
   async update(@Body() data: updateDto, @Req() req: any) {
-    console.log('this is le data', data);
+    console.log('this sssss is le dataaa88888888888888', data);
     return this.usersService.updateUserInfo(data, req.user.id);
   }
 

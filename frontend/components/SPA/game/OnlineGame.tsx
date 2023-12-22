@@ -27,9 +27,9 @@ export default function OnlineGame({
       if (!socket) return;
       let newPaddlePosition = player1PaddleY;
       if (e.key === "ArrowDown") {
-        newPaddlePosition = player1PaddleY + 5;
+        newPaddlePosition = player1PaddleY + 8;
       } else if (e.key === "ArrowUp") {
-        newPaddlePosition = player1PaddleY - 5;
+        newPaddlePosition = player1PaddleY - 8;
       }
       if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
       setPlayer1PaddleY(newPaddlePosition);

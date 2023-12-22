@@ -8,6 +8,9 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
     "./frontend/app/(ClientLogin)/fill/page.tsx",
+    "./frontend/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/app/**/*.{js,ts,jsx,tsx,mdx}",
+    
     "./node_modules/@nextui-org/theme/dist/components/(button|snippet|code|input).js",
     "./node_modules/@nextui-org/theme/dist/components/input.js",
   ],
@@ -40,7 +43,7 @@ const config: Config = {
       },
       colors: {
         live: "#F417C4",
-        friend: "#000000E6", // Define your custom color here
+        friend: '#1F2937', // Define your custom color here
         customPink: "#F417C4",
         customPurple: "#270245",
         purpleProfile : "#15011EB3",
@@ -49,7 +52,10 @@ const config: Config = {
         bghover: "#fefcfc33",
         stats: "#851487",
         silver : "#C0C0C0",
-        fontlight: "#F5F5F5"
+        fontlight: "#F5F5F5",
+        Gold : "#FFD700",
+        Silver : "#C0C0C0",
+        Bronze : "#CD7F32",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

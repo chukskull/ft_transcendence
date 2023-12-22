@@ -29,8 +29,14 @@ export class GameService {
     id: number;
     socket: Socket;
     score: number;
+    nickName: string;
   }> = [];
-  public privateQueue = Array<{ id: number; socket: Socket; score: number }>();
+  public privateQueue = Array<{
+    id: number;
+    socket: Socket;
+    score: number;
+    nickName: string;
+  }>();
 
   constructor(
     private matchHistory: MatchHistoryService,
@@ -62,8 +68,13 @@ export class GameService {
     }
     console.log('invite friend');
     client.emit('changeState', { state: 'waitingForResponse' });
-    this.privateQueue.push({ id: userId, socket: client, score: 0 });
     const userProfile = await this.userService.userProfile(userId);
+    this.privateQueue.push({
+      id: userId,
+      socket: client,
+      score: 0,
+      nickName: userProfile.nickName,
+    });
     this.notifGateway.sendPVPRequest(userProfile, friendId);
   }
   async declinePVP(client: Socket, token: string, friendId: number) {
@@ -89,121 +100,17 @@ export class GameService {
       client.disconnect();
       return;
     }
-    this.privateQueue.push({ id: myId, socket: client, score: 0 });
+    const userProfile = await this.userService.userProfile(myId);
+    this.privateQueue.push({
+      id: myId,
+      socket: client,
+      score: 0,
+      nickName: userProfile.nickName,
+    });
     if (this.privateQueue.length >= 2) {
       const player1 = this.privateQueue.shift();
       const player2 = this.privateQueue.shift();
       this.createGame(player1, player2, server);
-    }
-  }
-
-  async giveAchievement(
-    player1: any,
-    player2: any,
-    client: Socket,
-    server: Server,
-    game: GameInstance,
-    matchiHistoId: number,
-  ): Promise<void> {
-    const match = await this.matchHistory.findOne({
-      where: { id: matchiHistoId },
-    });
-    if (match.winner == player1.id) {
-      match.player1.winsInARow = await this.matchHistory.trackWinsInARow(
-        player1.id,
-      );
-      match.player1.wins = await this.matchHistory.trackNumberOfWins(
-        player1.id,
-      );
-      if (match.player1.wins == 1) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: 'First Win' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-      if (match.player1.winsInARow == 3) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '3 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-      if (match.player1.winsInARow == 5) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '5 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-
-      if (match.player1.winsInARow == 10) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '10 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player1.id, achievement.id);
-        }
-      }
-    } else {
-      match.player1.winsInARow = 0;
-    }
-    if (match.winner == player2.id) {
-      match.player2.winsInARow = await this.matchHistory.trackWinsInARow(
-        player2.id,
-      );
-      match.player2.wins = await this.matchHistory.trackNumberOfWins(
-        player2.id,
-      );
-      if (match.player2.wins == 1) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: 'First Win' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player2.id, achievement.id);
-        }
-      }
-      if (match.player2.winsInARow == 3) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '3 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player2.id, achievement.id);
-        }
-      }
-      if (match.player2.winsInARow == 5) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '5 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player2.id, achievement.id);
-        }
-      }
-
-      if (match.player2.winsInARow == 10) {
-        const achievement = await this.achievementRepo.findOne({
-          where: { name: '10 in a row' },
-        });
-        if (achievement) {
-          this.achievementService.giveAchievement(player2.id, achievement.id);
-        }
-      }
-    } else {
-      match.player2.winsInARow = 0;
-    }
-
-    const achievement =
-      game.player2Score == 0
-        ? await this.achievementRepo.findOne({ where: { name: 'Ruthless!' } })
-        : null;
-    if (achievement) {
-      this.achievementService.giveAchievement(
-        game.player2Score == 0 ? player1.id : player2.id,
-        achievement.id,
-      );
     }
   }
 
@@ -221,7 +128,13 @@ export class GameService {
       return player.id == userId;
     });
     if (!isInQueue) {
-      this.MatchMakingQueue.push({ id: userId, socket: client, score: 0 });
+      const userProfile = await this.userService.userProfile(userId);
+      this.MatchMakingQueue.push({
+        id: userId,
+        socket: client,
+        score: 0,
+        nickName: userProfile.nickName,
+      });
       // empty the the queue on disconnect
       client.emit('changeState', {
         state: 'inQueue',
@@ -272,14 +185,19 @@ export class GameService {
       server,
       matchHisto,
       this.matchHistoryRepo,
+      this.achievementService,
     ); // take the entire player
     player1.socket.emit('gameStarted', {
       MyId: player1.id,
+      myNickname: player1.nickName,
       OpponentId: player2.id,
+      OpponentNickname: player2.nickName,
     });
     player2.socket.emit('gameStarted', {
       MyId: player2.id,
+      myNickname: player2.nickName,
       OpponentId: player1.id,
+      OpponentNickname: player1.nickName,
     });
     game.startGame();
   }
