@@ -200,6 +200,10 @@ export class UserService {
 
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
+    const nickNameEx = await this.userRepository.findOne({
+      where: { nickName },
+    });
+    if (nickNameEx) return { message: 'NickName already exists' };
     return this.userRepository.update(userId, {
       nickName,
       avatarUrl,

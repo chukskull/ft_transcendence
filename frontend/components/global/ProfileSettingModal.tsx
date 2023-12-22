@@ -35,7 +35,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         };
         reader.readAsDataURL(selectedFile);
       } else {
-        //alert("File too big!");
       }
     });
     fileInput.click();
@@ -167,7 +166,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             Cancel
           </Button>
           <Button
-            // type="submit"
             onClick={updateUser}
             className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >
