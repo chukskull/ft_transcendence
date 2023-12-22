@@ -283,15 +283,15 @@ export class GameService {
     ); // take the entire player
     player1.socket.emit('gameStarted', {
       MyId: player1.id,
-      myNickname: player1.nickname,
+      myNickname: player1.nickName,
       OpponentId: player2.id,
-      OpponentNickname: player2.nickname,
+      OpponentNickname: player2.nickName,
     });
     player2.socket.emit('gameStarted', {
       MyId: player2.id,
-      myNickname: player2.nickname,
+      myNickname: player2.nickName,
       OpponentId: player1.id,
-      OpponentNickname: player1.nickname,
+      OpponentNickname: player1.nickName,
     });
     game.startGame();
   }
