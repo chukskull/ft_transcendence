@@ -22,8 +22,6 @@ export class GameInstance {
     paddle1YPosition: number;
     paddle2YPosition: number;
   };
-  public userServ: UserService;
-  public achievementService: AchievementService;
   public player1: any;
   public player2: any;
   public player1Score: number;
@@ -46,10 +44,8 @@ export class GameInstance {
     server: Server,
     matchHistory: any,
     matchHistoryRepo: any,
-    achievService: any,
+    private achievementService: AchievementService
   ) {
-    this.achievementService = achievService;
-
     this.matchHistory = matchHistory;
     this.matchHistoryRepo = matchHistoryRepo;
     this.player1 = first;
@@ -97,7 +93,8 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.updateScoreInDB();
+      this.updateScoreAndAchievementsInDB();
+      this.endGame();
     });
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
@@ -115,7 +112,8 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.updateScoreInDB();
+      this.updateScoreAndAchievementsInDB();
+      this.endGame();
     });
 
     this.gameLoop = setInterval(() => {
@@ -143,7 +141,6 @@ export class GameInstance {
   }
 
   public endGame() {
-    this.updateScoreInDB();
     clearInterval(this.gameLoop);
     this.player1.socket.removeAllListeners();
     this.player2.socket.removeAllListeners();
@@ -237,15 +234,17 @@ export class GameInstance {
         }
         this.gameEnded = true;
         this.gameRunning = false;
+        this.updateScoreAndAchievementsInDB();
         this.endGame();
       }
     }
   }
 
-  private async updateScoreInDB() {
+  private async updateScoreAndAchievementsInDB() {
     try {
       const matchHistory = await this.matchHistory
       if (matchHistory) {
+        console.log('testing if achievement is given');
         await this.matchHistoryRepo.update(
           {
             id: matchHistory.id,
@@ -255,13 +254,13 @@ export class GameInstance {
             player2Score: this.player2Score,
             winner: this.winnerID,
           }
-        );
-  
+          );
         await this.achievementService.calculateAchievement(
           this.player1.id,
           this.player2.id,
           matchHistory.id
         );
+          
       } else {
         console.log('Match history not found');
       }
