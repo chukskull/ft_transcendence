@@ -45,32 +45,49 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
    *	create Game
    */
 
-  /* @SubscribeMessage('createGame')
+  @SubscribeMessage('createGame')
   async createGame(client: Socket) {
     const opponentId = this.gameService.MatchMakingQueue.find(
       (player) => player.socket !== client,
     )?.id;
     this.gameService.createGame(client, opponentId, this.server);
-  } */
+  }
 
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
     @MessageBody()
     data: {
       token: string;
-      friendIwantToInvite: number;
+      friendId: number;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
-    const { token, friendIwantToInvite } = data;
-    const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
-    this.gameService.inviteFriend(
-      client,
-      this.server,
-      friendIwantToInvite,
-      token,
-      roomName,
-    );
-    client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
+    const { token, friendId } = data;
+    this.gameService.inviteFriend(client, friendId, token);
+  }
+
+  @SubscribeMessage('acceptPVP')
+  async acceptGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.acceptPVP(client, this.server, token);
+  }
+  @SubscribeMessage('declinePVP')
+  async declineGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.declinePVP(client, token, friendId);
   }
 }

@@ -11,14 +11,12 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementModule } from 'src/achievement/achievement.module';
 import { NotifGateway } from 'src/notifications.gateway';
-import { MatchHistoryModule } from 'src/match-history/match-history.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, MatchHistory, Achievement]),
     UserModule,
     AchievementModule,
-    MatchHistoryModule,
   ],
   providers: [
     GameGateway,

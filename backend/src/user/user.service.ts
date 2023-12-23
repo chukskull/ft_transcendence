@@ -9,6 +9,7 @@ import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
 import { Achievement } from 'src/achievement/achievement.entity';
+import e from 'express';
 
 @Injectable()
 export class UserService {
@@ -51,6 +52,7 @@ export class UserService {
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
+    user.winsInARow = 0;
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
@@ -115,7 +117,6 @@ export class UserService {
               'channels',
               'conversations',
               'friends',
-              'matchHistory.winner',
               'matchHistory.player1',
               'pendingFriendRequests',
               'matchHistory.player2',
@@ -130,7 +131,6 @@ export class UserService {
               'conversations',
               'pendingFriendRequests',
               'friends',
-              'matchHistory.winner',
               'matchHistory.player1',
               'matchHistory.player2',
               'achievements',
@@ -199,20 +199,26 @@ export class UserService {
     return conversation || null;
   }
 
-  async updateUserInfo(data): Promise<any> {
-    const { nickName, profilePicture, twoFa, id } = data;
-
-    const alreadyExists = await this.userRepository.findOne({
-      where: { id },
-    });
-    if (alreadyExists) {
-      await this.userRepository.update(id, {
-        nickName,
-        avatarUrl: profilePicture,
-        twoFactorAuthEnabled: twoFa,
-      });
+  async updateUserInfo(data, userId): Promise<any> {
+    const { nickName, avatarUrl, twoFa } = data;
+    let updateData = {};
+    if (avatarUrl !== 'noChange') {
+      updateData = { ...updateData, avatarUrl: avatarUrl };
     }
-    return this.userRepository.update(id, data);
+    updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
+
+    if (nickName) {
+      const nickNameEx = await this.userRepository.findOne({
+        where: { nickName },
+      });
+      if (nickNameEx) {
+        return { message: 'NickName already exists' };
+      } else {
+        updateData = { ...updateData, nickName };
+      }
+    }
+    console.log('updateData here', updateData);
+    return this.userRepository.update(userId, updateData);
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {

@@ -1,9 +1,13 @@
+"use client";
 import React, { useState, useEffect } from "react";
-import { Avatar, Input, Skeleton } from "antd";
+import { Avatar, Skeleton } from "antd";
+import { Input } from "@nextui-org/react";
 import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
 import { SkeletonComp } from "./Skeleton";
+import { useForm } from "react-hook-form";
+import { set } from "lodash";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -31,46 +35,33 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         reader.onload = (event: any) => {
           const base64String = event.target.result;
           setFile(selectedFile);
-          setBase64Image(base64String);
+          setValue("avatarUrl", base64String);
         };
         reader.readAsDataURL(selectedFile);
       } else {
-        alert("File too big!");
       }
     });
     fileInput.click();
   };
 
-  const updateUser = async () => {
-    const formData = {
-      nickName: name,
-      image: base64Image,
-      twoFactorAuthEnabled: checked,
-    };
+  const updateUser = async (user: any) => {
+    setValue("twoFa", checked);
+    console.log(user, user.avatarUrl.length);
     axios
-      .post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
+        withCredentials: true,
+      })
       .then((res) => {
-        console.log(res.data);
-        document.location.reload();
+        // window.location.reload();
       })
       .catch((err) => {
-        console.log(err);
+        alert(err.response.data.message);
       });
   };
 
   // 2fs on off
   const handle2Fa = () => {
     const endPoint = checked ? "disable" : "enable";
-    console.log("in 2fa", endPoint);
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
         withCredentials: true,
@@ -96,45 +87,18 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         console.log(err);
       });
   }, []);
-  // const func = (file: any) => {
-  //   return new Promise((resolve, reject) => {
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onload = (e: any) => {
-  //         const base64Image = e.target.result;
-  //         if (base64Image) {
-  //           const blob = new Blob([file], { type: file.type });
-  //           const base64URL = URL.createObjectURL(blob);
-  //           resolve(base64URL);
-  //         } else {
-  //           reject("Failed to convert file to base64");
-  //         }
-  //       };
-  //       reader.readAsDataURL(file);
-  //     } else {
-  //       reject("No file provided");
-  //     }
-  //   });
-  // };
-
-  // const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  // useEffect(() => {
-  //   if (file) {
-  //     console.log("File provided");
-  //     func(file)
-  //       .then((url: string) => {
-  //         console.log(url);
-  //         setImageUrl(url);
-  //       })
-  //       .catch((error: string) => {
-  //         console.error(error);
-  //       });
-  //   } else {
-  //     console.log("No file");
-  //   }
-  // }, [file]);
-
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      nickName: "",
+      avatarUrl: "noChange",
+      twoFa: checked,
+    },
+  });
   return (
     <>
       <form className="flex flex-col  gap-3">
@@ -165,11 +129,20 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               Change UserName
             </h1>
             <Input
-              minLength={3}
-              maxLength={12}
-              type="name"
-              aria-label="Name"
+              {...register("nickName", {
+                maxLength: 15,
+                minLength: 3,
+                validate: {
+                  noSpace: (value) => !/\s/.test(value),
+                },
+              })}
               className="bg-inherit text-fontlight"
+              type="text"
+              size="sm"
+              isInvalid={errors.nickName ? true : false}
+              errorMessage={errors.nickName && errors.nickName.message}
+              // variant="bordered"
+              placeholder="new username"
             />
           </div>
         </div>
@@ -205,7 +178,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           </Button>
           <Button
             // type="submit"
-            onClick={updateUser}
+            onClick={handleSubmit(updateUser)}
             className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >
             Save

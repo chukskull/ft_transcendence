@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
-import { MatchHistoryDto } from './dto/match-history.dto';
+import { MatchHistoryDto } from './dto/match-history.dto'
 
 @Injectable()
 export class MatchHistoryService {
@@ -17,17 +17,15 @@ export class MatchHistoryService {
    * Creates a new match history entry in the database.
    * @param createMatchHistoryDto - The DTO containing the necessary data to create a new match history entry.
    */
-  async create(MatchHistoryDto: MatchHistoryDto): Promise<MatchHistory> {
+  async create(MatchHistoryDto: MatchHistoryDto) : Promise<MatchHistory> {
     const mh = this.matchHistoryRepo.create({
-      winner: null,
-      winsInARow: 0,
-      losesInARow: 0,
-      date: new Date(),
+      winner: 0,
       player1Score: 0,
       player2Score: 0,
     });
     mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
     mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
+    mh.date = new Date();
     await this.matchHistoryRepo.save(mh);
 
     return mh;
@@ -49,14 +47,21 @@ export class MatchHistoryService {
     return this.matchHistoryRepo.findOne(id);
   }
 
+  async trackNumberOfWins(playerID: number): Promise<number> {
+    const matchHistory = await this.matchHistoryRepo.find({
+      where: { winner: playerID },
+    });
+    return matchHistory.length;
+  }
+
   async trackWinsInARow(playerID: number): Promise<number> {
     const matchHistory = await this.matchHistoryRepo.find({
-      where: { winner: { id: playerID } },
+      where: { winner: playerID },
       order: { date: 'DESC' },
     });
     let winsInARow = 0;
     let i = 0;
-    while (matchHistory[i] && matchHistory[i].winner.id === playerID) {
+    while (matchHistory[i] && matchHistory[i].winner === playerID) {
       winsInARow++;
       i++;
     }

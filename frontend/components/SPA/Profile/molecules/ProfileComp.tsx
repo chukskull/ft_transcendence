@@ -14,7 +14,6 @@ interface ProfileCompProps {
   nickName?: string;
   firstName: string;
   lastName?: string;
-  color?: string;
   type?: "Protected" | "Public" | "achiv" | null;
   status?: string;
   inChannel?: boolean;
@@ -30,7 +29,6 @@ const ProfileComp = ({
   lastName,
   type,
   status,
-  color,
   inChannel,
   channelId,
   isMod,
@@ -100,7 +98,7 @@ const ProfileComp = ({
         })
         .catch((err) => {
           console.log(err);
-          alert(err);
+          //alert(err);
         });
     } else if (
       type === "achiv" ||
@@ -144,6 +142,7 @@ const ProfileComp = ({
       >
         {/* Use size="sm" for tablets and mobiles */}
         <Avatar
+          className="cursor-pointer"
           isBordered={status ? true : false}
           color={getActivityStatus(status)}
           src={img}

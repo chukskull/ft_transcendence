@@ -29,31 +29,44 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
   }
 
   let bgStyle: string =
-    MonStyle === "Profile" ? "bg-purpleProfile" : "bg-friend";
-  let colors: string[] = ["#ffc500", "#C0C0C0", "#cd7f32"];
+    MonStyle === "Home" ? "bg-friend" : "bg-purpleProfile border-none";
+  let colors: string[] = ["border-Gold", "border-Silver", "border-Bronze"];
+  let textColors: string[] = ["text-Gold", "text-Silver", "text-Bronze"];
+
+  let borderColor: string = "";
+  let textColor: string = "";
   return (
     <div className="flex flex-col items-center justify-center gap-4 w-full py-2">
-      {data?.map((user: any, index: any) => (
-        <div
-          key={user.id}
-          className={`border-1 border-none rounded-2xl w-full ${bgStyle}  h-20 flex justify-start items-center p-10 gap-6`}
-        >
-          <span className="text-fontlight font-ClashGrotesk-Semibold text-lg flex items-center">
-            {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
-          </span>
+      {data?.map(
+        (user: any, index: any) => (
+          index < 3
+            ? ((borderColor = colors[index]), (textColor = textColors[index]))
+            : ((borderColor = "border-white"), (textColor = "text-white")),
+          (console.log(borderColor),
+          (
+            <div
+              key={user.id}
+              className={`border-1 rounded-2xl w-full ${bgStyle} ${borderColor} h-20 flex justify-start items-center p-10 gap-6`}
+            >
+              <span
+                className={`font-ClashGrotesk-Semibold text-lg flex items-center ${textColor}`}
+              >
+                {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
+              </span>
 
-          <ProfileComp
-            img={user.avatarUrl}
-            nickName={user.nickName}
-            firstName={user.firstName}
-            lastName={user.lastName}
-            color={colors[index]}
-            id={user.id}
-            channelId={user.id}
-            status={user.status}
-          />
-        </div>
-      ))}
+              <ProfileComp
+                img={user.avatarUrl}
+                nickName={user.nickName}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                id={user.id}
+                channelId={user.id}
+                status={user.status}
+              />
+            </div>
+          ))
+        )
+      )}
     </div>
   );
 };

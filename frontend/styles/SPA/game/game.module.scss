@@ -1,16 +1,14 @@
 .gamePage {
-    
     width: 100%;
     height: 100vh;
     // background: linear-gradient(180deg, #35014d 0%, #000000 100%);
-    
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
+
     .gameHeader {
-        margin-top: -7rem;
         width: 100%;
         display: flex;
         align-items: center;
@@ -25,16 +23,19 @@
 
             width: 100%;
             margin-top: 20px;
+
             .vs {
                 font-size: 60px;
                 color: #8805d9;
                 filter: drop-shadow(0px 0px 1px #f417c4);
             }
+
             .player {
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 20px;
+
                 h3 {
                     font-size: 30px;
                     font-style: normal;
@@ -44,6 +45,7 @@
                     background-clip: text;
                     -webkit-text-fill-color: transparent;
                 }
+
                 .hexAvatar {
                     display: block;
                     margin: 0 0;
@@ -55,6 +57,7 @@
                     box-sizing: border-box;
                     -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
                     -moz-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
                     img {
                         position: absolute;
                         width: 95%;
@@ -68,6 +71,7 @@
             }
         }
     }
+
     .mapSelector {
         display: flex;
         align-items: center;
@@ -77,6 +81,7 @@
 
         width: 100%;
         height: 30px;
+
         .map {
             display: flex;
             align-items: center;
@@ -87,6 +92,7 @@
             border-radius: 10px;
             border: 1px solid #ff00e6;
             box-shadow: 0px 0px 6px rgba(255, 0, 230, 0.5);
+
             p {
                 position: absolute;
                 color: #fff;
@@ -99,6 +105,7 @@
                 word-spacing: 5px;
                 z-index: 1;
             }
+
             img {
                 border-radius: 10px;
 
@@ -110,11 +117,13 @@
                 border-radius: 10px;
                 filter: blur(2px);
             }
+
             &:hover {
                 transform: scale(1.05);
             }
         }
     }
+
     .gameBody {
         display: flex;
         align-items: center;
@@ -123,6 +132,7 @@
         gap: 200px;
         margin-top: 30px;
         outline: none;
+
         .game {
             outline: none;
             width: 860px;
@@ -131,17 +141,21 @@
             background: #35014d;
             position: relative;
             cursor: none;
-            border: 5px solid transparent; /* Set border color to transparent */
+            border: 5px solid transparent;
+            /* Set border color to transparent */
             animation: borderAnimation 1s infinite;
+
             @keyframes borderAnimation {
                 0% {
                     border-color: #f417c4;
                     box-shadow: 0px 0px 16px rgba(244, 23, 196, 0.5);
                 }
+
                 50% {
                     border-color: #8805d9;
                     box-shadow: 0px 0px 16px rgba(136, 5, 217, 0.5);
                 }
+
                 100% {
                     border-color: #f417c4;
                     box-shadow: 0px 0px 16px rgba(244, 23, 196, 0.5);
@@ -180,6 +194,7 @@
                 filter: drop-shadow(0px 0px 5px rgba(255, 254, 254, 0.887));
             }
         }
+
         .retro {
             @extend .game;
             background: #000;
@@ -192,12 +207,14 @@
                 box-shadow: none;
                 border-radius: 0px;
             }
+
             .ball {
                 background: #fff;
                 box-shadow: none;
                 border-radius: 0px;
                 filter: none;
             }
+
             .middleLine {
                 position: absolute;
                 width: 5px;
@@ -223,11 +240,13 @@
             background-image: url("https://w7.pngwing.com/pngs/487/704/png-transparent-football-pitch-graphy-american-football-football-field-text-photography-computer-wallpaper.png");
             background-size: cover;
             background-position: center;
+
             .player {
                 background: rgb(255, 255, 255);
                 box-shadow: none;
                 border-radius: 0px;
             }
+
             .ball {
                 background-image: url("https://w7.pngwing.com/pngs/248/249/png-transparent-american-football-football-team-football-sport-sports-equipment-football-team.png");
                 background-size: cover;
@@ -239,6 +258,7 @@
                 filter: none;
             }
         }
+
         p {
             color: #fff;
             font-size: 64px;
@@ -247,6 +267,7 @@
             line-height: normal;
             margin-top: -5rem;
         }
+
         h3 {
             color: #fff;
             font-size: 40px;
@@ -264,7 +285,6 @@
     }
 }
 
-
 .centeredContent {
     position: fixed;
     top: 50%;
@@ -275,4 +295,4 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+}

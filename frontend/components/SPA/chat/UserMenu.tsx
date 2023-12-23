@@ -69,18 +69,7 @@ const UserMenu = ({
           <div
             className={style["menu-item"]}
             onClick={() => {
-              axios
-                .post(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`,
-                  {},
-                  {
-                    withCredentials: true,
-                  }
-                )
-                .then((res) => {})
-                .catch((err) => {
-                  console.log(err);
-                });
+              router.push(`/game?inviteToGame=${id}`);
             }}
           >
             <BsController />
@@ -104,12 +93,12 @@ const UserMenu = ({
                       }
                     )
                     .then((res) => {
-                      alert(res.data.message);
+                      //alert(res.data.message);
                       document.location.reload();
                       console.log(res);
                     })
                     .catch((err) => {
-                      alert(err.response.data.message);
+                      //alert(err.response.data.message);
                       console.log(err);
                     });
                 }}
@@ -129,11 +118,11 @@ const UserMenu = ({
                       }
                     )
                     .then((res) => {
-                      alert(res.data.message);
+                      //alert(res.data.message);
                       console.log(res);
                     })
                     .catch((err) => {
-                      alert(err.response.data.message);
+                      //alert(err.response.data.message);
                       console.log(err);
                     });
                 }}
