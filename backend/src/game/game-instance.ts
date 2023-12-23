@@ -205,12 +205,36 @@ export class GameInstance {
       });
       this.resetBall();
       if (this.checkGameEnd()) {
-        this.player1.socket.emit('gameEnded', {
-          winner: this.winnerID,
-        });
-        this.player2.socket.emit('gameEnded', {
-          winner: this.winnerID,
-        });
+        if (this.player1Score === 5) {
+          this.winnerID = this.player1.id;
+          this.player1.socket.emit('gameEnded', {
+            winner: this.player1.nickName,
+            loser: this.player2.nickName,
+            player1Score: this.player1Score,
+            player2Score: this.player2Score,
+          });
+          this.player2.socket.emit('gameEnded', {
+            winner: this.player1.nickName,
+            loser: this.player2.nickName,
+            player1Score: this.player2Score,
+            player2Score: this.player1Score,
+          });
+        }
+        if (this.player2Score === 5) {
+          this.winnerID = this.player2.id;
+          this.player1.socket.emit('gameEnded', {
+            winner: this.player2.nickName,
+            loser: this.player1.nickName,
+            player1Score: this.player1Score,
+            player2Score: this.player2Score,
+          });
+          this.player2.socket.emit('gameEnded', {
+            winner: this.player2.nickName,
+            loser: this.player1.nickName,
+            player1Score: this.player2Score,
+            player2Score: this.player1Score,
+          });
+        }
         this.gameEnded = true;
         this.gameRunning = false;
         this.endGame();
@@ -220,9 +244,7 @@ export class GameInstance {
 
   private async updateScoreInDB() {
     try {
-      const matchHistory = await this.matchHistory; // Assuming this is the asynchronous operation that retrieves the match history
-      console.log('match history body:', matchHistory);
-  
+      const matchHistory = await this.matchHistory
       if (matchHistory) {
         await this.matchHistoryRepo.update(
           {
