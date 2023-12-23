@@ -1,9 +1,9 @@
 import { User } from 'src/user/user.entity';
-import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { Column, ManyToOne, PrimaryGeneratedColumn, Entity, PrimaryColumn } from 'typeorm';
 
   @Entity('match_history')
   export class MatchHistory {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     id: number;
     
     @ManyToOne( () => User, user => user.id)

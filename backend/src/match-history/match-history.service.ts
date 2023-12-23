@@ -17,8 +17,18 @@ export class MatchHistoryService {
    * Creates a new match history entry in the database.
    * @param createMatchHistoryDto - The DTO containing the necessary data to create a new match history entry.
    */
-  async create(MatchHistoryDto: MatchHistoryDto) : Promise<MatchHistory> {
+  async create(MatchHistoryDto: MatchHistoryDto): Promise<MatchHistory> {
+    let uniqueId = 0;
+    let isUnique = false;
+
+    while (!isUnique) {
+      uniqueId = Math.floor(Math.random() * 100000);
+      const existingMatchHistory = await this.matchHistoryRepo.findOne({ where: { id: uniqueId } });
+      isUnique = !existingMatchHistory; // Check if the id is unique
+    }
+
     const mh = this.matchHistoryRepo.create({
+      id: uniqueId,
       winner: 0,
       player1Score: 0,
       player2Score: 0,
@@ -44,7 +54,7 @@ export class MatchHistoryService {
   }
 
   async findOne(id: any): Promise<MatchHistory> {
-    return this.matchHistoryRepo.findOne(id);
+    return this.matchHistoryRepo.findOne({ where: id });
   }
 
   async trackNumberOfWins(playerID: number): Promise<number> {
