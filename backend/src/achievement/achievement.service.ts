@@ -16,7 +16,6 @@ import { UserService } from 'src/user/user.service';
 export const winXP = 369;
 export const loseXP = 121;
 
-
 @Injectable()
 export class AchievementService {
   constructor(
@@ -95,46 +94,54 @@ export class AchievementService {
     matchHistoId: number,
   ): Promise<void> {
     const matchH = await this.matchHistoryService.findOne(matchHistoId);
-    console.log('player1 : ', player1id);
-    console.log('player2 : ', player2id);
-    console.log('matchH : ', matchH.winner)
-    if (!matchH) {
-      throw new NotFoundException('Match history not found');
-    }
+    if (!matchH) throw new NotFoundException('Match history not found');
+
     await this.userService.setStatus(player1id, 'online');
     await this.userService.setStatus(player2id, 'online');
     if (matchH.winner == player1id) {
       await this.userService.updateExperience(player1id, winXP);
       await this.userService.updateExperience(player2id, loseXP);
-      const player1WinsInARow = await this.matchHistoryService.trackWinsInARow(
-        player1id,
-      );
+      const player1WinsInARow =
+        await this.matchHistoryService.trackWinsInARow(player1id);
       if (player1WinsInARow == 3) {
-        const achievement = await this.achievementRepository.findOne({ where: { name: '3 in a row' } });
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '3 in a row' },
+        });
         await this.giveAchievement(player1id, achievement.id);
       }
       if (player1WinsInARow == 5) {
-        const achievement = await this.achievementRepository.findOne({ where: { name: '5 in a row' } });
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '5 in a row' },
+        });
         await this.giveAchievement(player1id, achievement.id);
       }
       if (player1WinsInARow == 10) {
-        const achievement = await this.achievementRepository.findOne({ where: { name: '10 in a row' } });
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '10 in a row' },
+        });
         await this.giveAchievement(player1id, achievement.id);
       }
     } else if (matchH.winner == player2id) {
       await this.userService.updateExperience(player2id, winXP);
       await this.userService.updateExperience(player1id, loseXP);
-      const player2WinsInARow = await this.matchHistoryService.trackWinsInARow(player2id);
+      const player2WinsInARow =
+        await this.matchHistoryService.trackWinsInARow(player2id);
       if (player2WinsInARow == 3) {
-        const achievement = await this.achievementRepository.findOne({where: {name: '3 in a row'}});
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '3 in a row' },
+        });
         await this.giveAchievement(player2id, achievement.id);
       }
       if (player2WinsInARow == 5) {
-        const achievement = await this.achievementRepository.findOne({ where: { name: '5 in a row' } });
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '5 in a row' },
+        });
         await this.giveAchievement(player2id, achievement.id);
       }
       if (player2WinsInARow == 10) {
-        const achievement = await this.achievementRepository.findOne({ where: { name: '10 in a row' } });
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '10 in a row' },
+        });
         await this.giveAchievement(player2id, achievement.id);
       }
     }
@@ -153,7 +160,6 @@ export class AchievementService {
     if (!user || !achievement) {
       throw new NotFoundException('User or Achievement not found');
     }
-    console.log('achievement : ', achievement);
     user.experience += achievement.addedXp;
     user.achievements.push(achievement);
     const savedUser = await this.userRepository.save(user);
