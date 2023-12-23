@@ -143,6 +143,7 @@ export class GameInstance {
   }
 
   public endGame() {
+    this.updateScoreInDB();
     clearInterval(this.gameLoop);
     this.player1.socket.removeAllListeners();
     this.player2.socket.removeAllListeners();
@@ -212,29 +213,39 @@ export class GameInstance {
         });
         this.gameEnded = true;
         this.gameRunning = false;
-        this.updateScoreInDB();
         this.endGame();
       }
     }
   }
 
   private async updateScoreInDB() {
-    const matchH = await this.matchHistoryRepo.update(
-      {
-        player1: this.player1.id,
-        player2: this.player2.id,
-      },
-      {
-        player1Score: this.player1Score,
-        player2Score: this.player2Score,
-        winner: this.winnerID,
-      },
-    );
-    await this.achievementService.calculateAchievement(
-      this.player1.id,
-      this.player2.id,
-      matchH.id,
-    );
+    try {
+      const matchHistory = await this.matchHistory; // Assuming this is the asynchronous operation that retrieves the match history
+      console.log('match history body:', matchHistory);
+  
+      if (matchHistory) {
+        await this.matchHistoryRepo.update(
+          {
+            id: matchHistory.id,
+          },
+          {
+            player1Score: this.player1Score,
+            player2Score: this.player2Score,
+            winner: this.winnerID,
+          }
+        );
+  
+        await this.achievementService.calculateAchievement(
+          this.player1.id,
+          this.player2.id,
+          matchHistory.id
+        );
+      } else {
+        console.log('Match history not found');
+      }
+    } catch (error) {
+      console.error('Error updating score:', error);
+    }
   }
 
   public bounceOffTopAndBottomWalls(): void {

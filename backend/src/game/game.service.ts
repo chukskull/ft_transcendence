@@ -44,8 +44,6 @@ export class GameService {
     private userService: UserService,
     private jwtService: JwtService,
     private notifGateway: NotifGateway,
-    @InjectRepository(Achievement)
-    private achievementRepo: Repository<Achievement>,
     @InjectRepository(MatchHistory)
     private matchHistoryRepo: Repository<MatchHistory>,
   ) {}
