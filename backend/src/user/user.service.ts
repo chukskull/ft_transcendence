@@ -8,7 +8,6 @@ import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
-import { Achievement } from 'src/achievement/achievement.entity';
 
 @Injectable()
 export class UserService {
@@ -199,25 +198,26 @@ export class UserService {
     return conversation || null;
   }
 
-  // async updateUserInfo(data, userId): Promise<any> {
-  //   const { nickName, avatarUrl, twoFa } = data;
-  //   return this.userRepository.update(userId, {
-  //     nickName,
-  //     avatarUrl,
-  //     twoFactorAuthEnabled: twoFa,
-  //   });
-  // }
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
-    const nickNameEx = await this.userRepository.findOne({
-      where: { nickName },
-    });
-    if (nickNameEx) return { message: 'NickName already exists' };
-    return this.userRepository.update(userId, {
-      nickName,
-      avatarUrl,
-      twoFactorAuthEnabled: twoFa,
-    });
+    let updateData = {};
+    if (avatarUrl !== 'noChange') {
+      updateData = { ...updateData, avatarUrl: avatarUrl };
+    }
+    updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
+
+    if (nickName) {
+      const nickNameEx = await this.userRepository.findOne({
+        where: { nickName },
+      });
+      if (nickNameEx) {
+        return { message: 'NickName already exists' };
+      } else {
+        updateData = { ...updateData, nickName };
+      }
+    }
+    console.log('updateData here', updateData);
+    return this.userRepository.update(userId, updateData);
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {
@@ -520,6 +520,17 @@ export class UserService {
 
   private findFriend(client: User, friendID: number): User | undefined {
     return client.friends.find((user) => user.id === friendID);
+  }
+
+  async updateExperience(clientID: number, xp: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!user) throw new NotFoundException('User not found.');
+
+    user.experience += xp;
+    console.log('user experience:', user.experience);
+    return this.userRepository.save(user);
   }
 
   async updateLevel(xp: number, clientID: number): Promise<any> {

@@ -4,7 +4,6 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
   GAME_HEIGHT,
-  BALL_RADIUS,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   DIST_WALL_TO_PADDLE,
@@ -23,8 +22,6 @@ export class GameInstance {
     paddle1YPosition: number;
     paddle2YPosition: number;
   };
-  public userServ: UserService;
-  public achievementService: AchievementService;
   public player1: any;
   public player2: any;
   public player1Score: number;
@@ -47,10 +44,8 @@ export class GameInstance {
     server: Server,
     matchHistory: any,
     matchHistoryRepo: any,
-    achievService: any,
+    private achievementService: AchievementService
   ) {
-    this.achievementService = achievService;
-
     this.matchHistory = matchHistory;
     this.matchHistoryRepo = matchHistoryRepo;
     this.player1 = first;
@@ -98,7 +93,8 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.updateScoreInDB();
+      this.updateScoreAndAchievementsInDB();
+      this.endGame();
     });
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
@@ -116,7 +112,8 @@ export class GameInstance {
       });
       this.gameRunning = false;
       this.gameEnded = true;
-      this.updateScoreInDB();
+      this.updateScoreAndAchievementsInDB();
+      this.endGame();
     });
 
     this.gameLoop = setInterval(() => {
@@ -205,37 +202,71 @@ export class GameInstance {
       });
       this.resetBall();
       if (this.checkGameEnd()) {
-        this.player1.socket.emit('gameEnded', {
-          winner: this.winnerID,
-        });
-        this.player2.socket.emit('gameEnded', {
-          winner: this.winnerID,
-        });
+        if (this.player1Score === 5) {
+          this.winnerID = this.player1.id;
+          this.player1.socket.emit('gameEnded', {
+            winner: this.player1.nickName,
+            loser: this.player2.nickName,
+            player1Score: this.player1Score,
+            player2Score: this.player2Score,
+          });
+          this.player2.socket.emit('gameEnded', {
+            winner: this.player1.nickName,
+            loser: this.player2.nickName,
+            player1Score: this.player2Score,
+            player2Score: this.player1Score,
+          });
+        }
+        if (this.player2Score === 5) {
+          this.winnerID = this.player2.id;
+          this.player1.socket.emit('gameEnded', {
+            winner: this.player2.nickName,
+            loser: this.player1.nickName,
+            player1Score: this.player1Score,
+            player2Score: this.player2Score,
+          });
+          this.player2.socket.emit('gameEnded', {
+            winner: this.player2.nickName,
+            loser: this.player1.nickName,
+            player1Score: this.player2Score,
+            player2Score: this.player1Score,
+          });
+        }
         this.gameEnded = true;
         this.gameRunning = false;
-        this.updateScoreInDB();
+        this.updateScoreAndAchievementsInDB();
         this.endGame();
       }
     }
   }
 
-  private async updateScoreInDB() {
-    const matchH = await this.matchHistoryRepo.update(
-      {
-        player1: this.player1.id,
-        player2: this.player2.id,
-      },
-      {
-        player1Score: this.player1Score,
-        player2Score: this.player2Score,
-        winner: this.winnerID,
-      },
-    );
-    await this.achievementService.calculateAchievement(
-      this.player1.id,
-      this.player2.id,
-      matchH.id,
-    );
+  private async updateScoreAndAchievementsInDB() {
+    try {
+      const matchHistory = await this.matchHistory
+      if (matchHistory) {
+        console.log('testing if achievement is given');
+        await this.matchHistoryRepo.update(
+          {
+            id: matchHistory.id,
+          },
+          {
+            player1Score: this.player1Score,
+            player2Score: this.player2Score,
+            winner: this.winnerID,
+          }
+          );
+        await this.achievementService.calculateAchievement(
+          this.player1.id,
+          this.player2.id,
+          matchHistory.id
+        );
+          
+      } else {
+        console.log('Match history not found');
+      }
+    } catch (error) {
+      console.error('Error updating score:', error);
+    }
   }
 
   public bounceOffTopAndBottomWalls(): void {
