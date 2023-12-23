@@ -4,7 +4,6 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
   GAME_HEIGHT,
-  BALL_RADIUS,
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   DIST_WALL_TO_PADDLE,
