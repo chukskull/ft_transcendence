@@ -95,10 +95,15 @@ export class AchievementService {
     matchHistoId: number,
   ): Promise<void> {
     const matchH = await this.matchHistoryService.findOne(matchHistoId);
+    console.log('player1 : ', player1id);
+    console.log('player2 : ', player2id);
+    console.log('matchH : ', matchH.winner);
     if (!matchH) {
       throw new NotFoundException('Match history not found');
     }
     if (matchH.winner == player1id) {
+      // await this.userService.setStatus(player1id, 'online');
+      // await this.userService.setStatus(player2id, 'online');
       await this.userService.updateExperience(player1id, winXP);
       await this.userService.updateExperience(player2id, loseXP);
       const player1WinsInARow = await this.matchHistoryService.trackWinsInARow(
