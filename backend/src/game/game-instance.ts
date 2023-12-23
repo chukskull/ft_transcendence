@@ -244,11 +244,6 @@ export class GameInstance {
     try {
       const matchHistory = await this.matchHistory
       if (matchHistory) {
-        await this.achievementService.calculateAchievement(
-          this.player1.id,
-          this.player2.id,
-          matchHistory.id
-        );
         console.log('testing if achievement is given');
         await this.matchHistoryRepo.update(
           {
@@ -259,8 +254,13 @@ export class GameInstance {
             player2Score: this.player2Score,
             winner: this.winnerID,
           }
+          );
+        await this.achievementService.calculateAchievement(
+          this.player1.id,
+          this.player2.id,
+          matchHistory.id
         );
-  
+          
       } else {
         console.log('Match history not found');
       }
