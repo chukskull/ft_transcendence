@@ -7,6 +7,7 @@ import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
 import { SkeletonComp } from "./Skeleton";
 import { useForm } from "react-hook-form";
+import { set } from "lodash";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -34,11 +35,10 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         reader.onload = (event: any) => {
           const base64String = event.target.result;
           setFile(selectedFile);
-          setValue("base64Image", base64String);
+          setValue("avatarUrl", base64String);
         };
         reader.readAsDataURL(selectedFile);
       } else {
-        //alert("File too big!");
       }
     });
     fileInput.click();
@@ -46,12 +46,13 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
 
   const updateUser = async (user: any) => {
     setValue("twoFa", checked);
+    console.log(user, user.avatarUrl.length);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
       .then((res) => {
-        window.location.reload();
+        // window.location.reload();
       })
       .catch((err) => {
         alert(err.response.data.message);
@@ -94,7 +95,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   } = useForm({
     defaultValues: {
       nickName: "",
-      base64Image: "",
+      avatarUrl: "noChange",
       twoFa: checked,
     },
   });

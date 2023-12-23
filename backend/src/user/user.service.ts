@@ -197,26 +197,25 @@ export class UserService {
     return conversation || null;
   }
 
-  // async updateUserInfo(data, userId): Promise<any> {
-  //   const { nickName, avatarUrl, twoFa } = data;
-  //   return this.userRepository.update(userId, {
-  //     nickName,
-  //     avatarUrl,
-  //     twoFactorAuthEnabled: twoFa,
-  //   });
-  // }
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
     let updateData = {};
-
-    if (nickName) {
-      updateData = { ...updateData, nickName };
-    }
-
-    if (avatarUrl > 0) {
+    if (avatarUrl !== 'noChange') {
       updateData = { ...updateData, avatarUrl: avatarUrl };
     }
     updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
+
+    if (nickName) {
+      const nickNameEx = await this.userRepository.findOne({
+        where: { nickName },
+      });
+      if (nickNameEx) {
+        return { message: 'NickName already exists' };
+      } else {
+        updateData = { ...updateData, nickName };
+      }
+    }
+    console.log('updateData here', updateData);
     return this.userRepository.update(userId, updateData);
   }
 
