@@ -9,6 +9,7 @@ import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
 import { Achievement } from 'src/achievement/achievement.entity';
+import e from 'express';
 
 @Injectable()
 export class UserService {
@@ -198,25 +199,26 @@ export class UserService {
     return conversation || null;
   }
 
-  // async updateUserInfo(data, userId): Promise<any> {
-  //   const { nickName, avatarUrl, twoFa } = data;
-  //   return this.userRepository.update(userId, {
-  //     nickName,
-  //     avatarUrl,
-  //     twoFactorAuthEnabled: twoFa,
-  //   });
-  // }
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
-    const nickNameEx = await this.userRepository.findOne({
-      where: { nickName },
-    });
-    if (nickNameEx) return { message: 'NickName already exists' };
-    return this.userRepository.update(userId, {
-      nickName,
-      avatarUrl,
-      twoFactorAuthEnabled: twoFa,
-    });
+    let updateData = {};
+    if (avatarUrl !== 'noChange') {
+      updateData = { ...updateData, avatarUrl: avatarUrl };
+    }
+    updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
+
+    if (nickName) {
+      const nickNameEx = await this.userRepository.findOne({
+        where: { nickName },
+      });
+      if (nickNameEx) {
+        return { message: 'NickName already exists' };
+      } else {
+        updateData = { ...updateData, nickName };
+      }
+    }
+    console.log('updateData here', updateData);
+    return this.userRepository.update(userId, updateData);
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {
