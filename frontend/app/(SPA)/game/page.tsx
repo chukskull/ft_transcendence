@@ -131,7 +131,7 @@ const Game: React.FC = () => {
             <img src="https://i0.wp.com/mynintendonews.com/wp-content/uploads/2011/08/nes-controller.jpg" />
           </div>
           <div className={style.map} onClick={() => setMap("gym")}>
-            <p>Grizzly</p>
+            <p>Camp Nou</p>
             <img src="https://w7.pngwing.com/pngs/276/422/png-transparent-football-field-football-field-green-background-football.png" />
           </div>
         </div>
