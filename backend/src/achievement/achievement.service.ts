@@ -101,46 +101,46 @@ export class AchievementService {
     if (matchH.winner == player1id) {
       await this.userService.updateExperience(player1id, winXP);
       await this.userService.updateExperience(player2id, loseXP);
-      const player1WinsInARow =
-        await this.matchHistoryService.trackWinsInARow(player1id);
-      if (player1WinsInARow == 3) {
+      const player1Wins =
+        await this.matchHistoryService.trackWins(player1id);
+      if (player1Wins == 3) {
         const achievement = await this.achievementRepository.findOne({
-          where: { name: '3 in a row' },
+          where: { name: '3 wins' },
         });
         await this.giveAchievement(player1id, achievement.id);
       }
-      if (player1WinsInARow == 5) {
+      if (player1Wins == 5) {
         const achievement = await this.achievementRepository.findOne({
-          where: { name: '5 in a row' },
+          where: { name: '5 wins' },
         });
         await this.giveAchievement(player1id, achievement.id);
       }
-      if (player1WinsInARow == 10) {
+      if (player1Wins == 10) {
         const achievement = await this.achievementRepository.findOne({
-          where: { name: '10 in a row' },
+          where: { name: '10 wins' },
         });
         await this.giveAchievement(player1id, achievement.id);
       }
     } else if (matchH.winner == player2id) {
       await this.userService.updateExperience(player2id, winXP);
       await this.userService.updateExperience(player1id, loseXP);
-      const player2WinsInARow =
-        await this.matchHistoryService.trackWinsInARow(player2id);
-      if (player2WinsInARow == 3) {
+      const player2Wins =
+        await this.matchHistoryService.trackWins(player2id);
+      if (player2Wins == 3) {
         const achievement = await this.achievementRepository.findOne({
-          where: { name: '3 in a row' },
+          where: { name: '3 wins' },
         });
         await this.giveAchievement(player2id, achievement.id);
       }
-      if (player2WinsInARow == 5) {
+      if (player2Wins == 5) {
         const achievement = await this.achievementRepository.findOne({
-          where: { name: '5 in a row' },
+          where: { name: '5 wins' },
         });
         await this.giveAchievement(player2id, achievement.id);
       }
-      if (player2WinsInARow == 10) {
+      if (player2Wins == 10) {
         const achievement = await this.achievementRepository.findOne({
-          where: { name: '10 in a row' },
+          where: { name: '10 wins' },
         });
         await this.giveAchievement(player2id, achievement.id);
       }
@@ -163,7 +163,7 @@ export class AchievementService {
     user.experience += achievement.addedXp;
     user.achievements.push(achievement);
     const savedUser = await this.userRepository.save(user);
-    // this.notifGateway.newAchievement(achievement, user.id); send notification to the front
+    this.notifGateway.newAchievement(achievement, user.id);
     return savedUser;
   }
 }
