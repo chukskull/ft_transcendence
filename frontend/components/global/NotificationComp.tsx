@@ -108,6 +108,24 @@ export const NotificationComp = ({}) => {
     return <NotificationIcon width={25} height={25} />;
   if (pendingFriendRequestsQuery.error) return <div>error</div>;
 
+  const handlePVPRequest = (friendId: number, type: number) => {
+    // 1 acceptPVP 0 declinePVP
+    if (type == 1) {
+      socket.emit("acceptPVP", { 
+        token: document.cookie.split("=")[1],
+        friendId });
+    } else if (type == 0) {
+      socket.emit("declinePVP", {
+        token: document.cookie.split("=")[1],
+        friendId
+      });
+    }
+  }
+  
+  socket.on('newAchievement', (data: any) => {
+    console.log(data);
+  })
+
   return (
     <>
       <Dropdown

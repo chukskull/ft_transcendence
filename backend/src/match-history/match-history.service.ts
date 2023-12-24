@@ -64,7 +64,7 @@ export class MatchHistoryService {
     return matchHistory.length;
   }
 
-  async trackWinsInARow(playerID: number): Promise<number> {
+  async trackWins(playerID: number): Promise<number> {
     const matchHistory = await this.matchHistoryRepo.find({
       where: { winner: playerID },
       order: { date: 'DESC' },
