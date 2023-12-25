@@ -34,6 +34,7 @@ export class GameInstance {
   public gameEnded: boolean;
 
   public winnerID: number;
+  public loserID: number;
   private server: Server;
   public matchHistory: any;
   public matchHistoryRepo: any;
@@ -80,6 +81,7 @@ export class GameInstance {
     this.player1.socket.on('disconnect', () => {
       this.player2Score = 5;
       this.winnerID = this.player2.id;
+      this.loserID = this.player1.id;
       this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
@@ -99,6 +101,7 @@ export class GameInstance {
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
       this.winnerID = this.player1.id;
+      this.loserID = this.player2.id;
       this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
@@ -204,6 +207,7 @@ export class GameInstance {
       if (this.checkGameEnd()) {
         if (this.player1Score === 5) {
           this.winnerID = this.player1.id;
+          this.loserID = this.player2.id;
           this.player1.socket.emit('gameEnded', {
             winner: this.player1.nickName,
             loser: this.player2.nickName,
@@ -219,6 +223,7 @@ export class GameInstance {
         }
         if (this.player2Score === 5) {
           this.winnerID = this.player2.id;
+          this.loserID = this.player1.id;
           this.player1.socket.emit('gameEnded', {
             winner: this.player2.nickName,
             loser: this.player1.nickName,
@@ -253,6 +258,7 @@ export class GameInstance {
             player1Score: this.player1Score,
             player2Score: this.player2Score,
             winner: this.winnerID,
+            loser: this.loserID,
           }
           );
         await this.achievementService.calculateAchievement(
@@ -297,9 +303,11 @@ export class GameInstance {
   public checkGameEnd(): boolean {
     if (this.player1Score === 5) {
       this.winnerID = this.player1.id;
+      this.loserID = this.player2.id;
       return true;
     } else if (this.player2Score === 5) {
       this.winnerID = this.player2.id;
+      this.loserID = this.player1.id;
       return true;
     } else return false;
   }

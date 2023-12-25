@@ -529,7 +529,7 @@ export class UserService {
     if (!user) throw new NotFoundException('User not found.');
 
     user.experience += xp;
-    console.log('user experience:', user.experience);
+    console.log('userId:', user.id, 'given xp:', xp, 'new xp:', user.experience);
     return this.userRepository.save(user);
   }
 

@@ -15,6 +15,9 @@ import { Column, ManyToOne, PrimaryGeneratedColumn, Entity, PrimaryColumn } from
     @Column({ nullable: true })
     winner?: number;
 
+    @Column({ nullable: true })
+    loser?: number;
+
     @Column()
     player1Score: number;
     
