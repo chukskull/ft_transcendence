@@ -1,28 +1,43 @@
 import React, { useState, useEffect, useCallback, memo, use } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
+import Rectangle from "./Rectangle";
+import { info } from "console";
 
 type Score = {
   player1: number;
   player2: number;
 };
-
 type RoomPositionsData = {
   ballX: number;
   ballY: number;
-}
+};
+
+type InfoGame = {
+  loser: string;
+  player1Score: number;
+  player2Score: number;
+  winner: string;
+};
 
 export default function OnlineGame({
   map,
   socket,
-}: {
+}: // setShowRec,
+{
   map: string;
   socket: any;
+  // setShowRec: (_: boolean) => any;
 }) {
   const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
-  const [winner, setWinner] = useState<string>("");
-  const [loser, setLoser] = useState<string>("");
+  const [infoGame, setInfoGame] = useState<InfoGame>({
+    loser: "",
+    player1Score: 0,
+    player2Score: 0,
+    winner: "",
+  });
+  const [showRec, setshowRec] = useState<boolean>(false);
   const handleKeyboardEvent = useCallback(
     (e: KeyboardEvent) => {
       if (!socket) return;
@@ -61,9 +76,10 @@ export default function OnlineGame({
       setScore(data);
     });
     socket.on("gameEnded", (data: any) => {
-      console.log("game ended", data);
-      setWinner(data.winner);
-      setLoser(data.loser)
+      setshowRec(true);
+
+      console.log("gameEnded sure", data);
+      setInfoGame(data);
     });
 
     return () => {
@@ -73,7 +89,6 @@ export default function OnlineGame({
       socket.off("gameEnded");
     };
   }, []);
-
 
   return (
     <>
@@ -85,15 +100,18 @@ export default function OnlineGame({
           <Ball socket={socket} />
         </div>
         <p>{score.player2}</p>
-      </div >
+      </div>
+      <Rectangle
+        display={showRec}
+        leftScore={infoGame.player1Score}
+        rightScore={infoGame.player2Score}
+      />
     </>
   );
 }
 
 const PlayerPaddle = memo(({ player1PaddleY }: any) => {
-  return (
-    <div className={style.player} style={{ top: player1PaddleY }}></div>
-  );
+  return <div className={style.player} style={{ top: player1PaddleY }}></div>;
 });
 
 const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
@@ -116,6 +134,9 @@ const Ball = ({ socket }: any) => {
   }, []);
 
   return (
-    <div className={style.ball} style={{ top: position.y, left: position.x }}></div>
+    <div
+      className={style.ball}
+      style={{ top: position.y, left: position.x }}
+    ></div>
   );
 };

@@ -9,6 +9,7 @@ import Modal from "react-modal";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { App } from "antd";
+import { set } from "lodash";
 
 interface chatHeaderProps {
   isChannel: boolean;
@@ -26,7 +27,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         withCredentials: true,
       })
       .then((res) => {
-        window.location.href = "/chat/channels/1";
+        router.push("/chat/channels/1");
       })
       .catch((err) => {
         console.log(err);
@@ -63,6 +64,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           <ChannelMenu
             channel={chatHeaderProps?.dmOrChannel}
             currentUser={user}
+            onAction={setShow}
           />
         ) : (
           <UserMenu
@@ -71,6 +73,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
             nickName={chatHeaderProps?.dmOrChannel?.members[0].nickName}
             online={chatHeaderProps?.dmOrChannel?.members[0].online}
             channel={false}
+            onAction={setShow}
           />
         )}
       </Modal>

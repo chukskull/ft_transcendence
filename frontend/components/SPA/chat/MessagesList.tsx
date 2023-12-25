@@ -3,6 +3,7 @@ import AvatarBubble from "./AvatarBubble";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import UserMenu from "./UserMenu";
+import { set } from "lodash";
 
 const MsgsList = ({ chats, blockedList }: { chats: any; blockedList: any }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -42,6 +43,7 @@ const MsgsList = ({ chats, blockedList }: { chats: any; blockedList: any }) => {
           nickName={userInfo.nickName}
           avatarUrl={userInfo.avatarUrl}
           channel={false}
+          onAction={setShow}
         />
       </Modal>
       <div className={style["msgs-list"]}>
