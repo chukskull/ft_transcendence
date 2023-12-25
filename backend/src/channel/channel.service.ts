@@ -186,8 +186,8 @@ export class ChannelService {
     if (!isOwner) {
       throw new NotFoundException('User not owner of the channel');
     }
-    await this.conversationService.deleteConversation(channel.conversation.id);
     await this.chanRepository.remove(channel);
+    await this.conversationService.deleteConversation(channel.conversation.id);
   }
 
   async joinChannel(chanId: number, password: string, userId: number) {

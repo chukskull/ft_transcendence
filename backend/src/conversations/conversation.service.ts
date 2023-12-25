@@ -138,6 +138,5 @@ export class ConversationService {
     });
     if (!conv) throw new NotFoundException('Conversation not found');
     await this.conversationRepository.remove(conv);
-    return conv;
   }
 }
