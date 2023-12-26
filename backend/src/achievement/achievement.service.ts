@@ -121,6 +121,12 @@ export class AchievementService {
     await this.userService.setStatus(player2id, 'online');
     await this.userService.updateExperience(matchH.winner, winXP);
     await this.userService.updateExperience(matchH.loser, loseXP);
+    await this.userRepository.update({ id: player1id }, {
+      totalGames: () => 'totalGames + 1'
+    });
+    await this.userRepository.update({ id: player2id }, {
+      totalGames: () => 'totalGames + 1'
+    });
     switch (matchH.winner) {
       case player1id:
         await this.userRepository.update({ id: player1id }, {
