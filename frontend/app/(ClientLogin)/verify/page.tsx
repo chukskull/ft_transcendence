@@ -9,7 +9,7 @@ function doSubmit(submittedValues: string[]) {
 
   return new Promise((resolve): void => {
     setTimeout(() => {
-      resolve();
+      resolve(0);
     }, 1500);
   });
 }
@@ -180,7 +180,7 @@ function Input({
   onFocus,
   isDisabled,
 }: InputProps) {
-  const ref = useRef();
+  const ref: any = useRef();
   useEffect(() => {
     requestAnimationFrame(() => {
       if (ref.current !== document.activeElement && isFocused) {
@@ -203,7 +203,7 @@ function Input({
     }
   }
 
-  function handleFocus(e) {
+  function handleFocus(e: any) {
     e.target.setSelectionRange(0, 1);
     onFocus(index);
   }
@@ -217,7 +217,7 @@ function Input({
       onKeyDown={handleKeyDown}
       onChange={handleChange}
       onPaste={handlePaste}
-      maxLength={"1"}
+      maxLength={1}
       onFocus={handleFocus}
       disabled={isDisabled}
     />

@@ -23,7 +23,7 @@ const styles = {
   ],
 };
 
-const MyInput = forwardRef((props, ref) => {
+const MyInput = forwardRef((props:any, ref:any) => {
   const {
     Component,
     label,

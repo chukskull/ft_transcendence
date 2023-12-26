@@ -22,12 +22,8 @@ function friendStatus(
   userId: number,
   myId: number
 ) {
-  console.log("this is my id", myId);
-  console.log("this is the user id", userId);
-
   // if friend return 1 if pending return 2 if not return 0
   if (friendsList?.length > 0) {
-    console.log("this is the friends list", friendsList);
     let friend = friendsList?.find((e: any) => e.id == userId);
     if (friend) return 1;
   }
@@ -56,7 +52,6 @@ export default function Profile({ id }: any) {
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
   function isBlocked() {
-    console.log("this is the my Blockeddata", myData?.blockedUsers?.length);
     if (myData?.blockedUsers?.length > 0) {
       let blocked = myData?.blockedUsers?.find((e: any) => e.nickName === id);
 
@@ -70,8 +65,6 @@ export default function Profile({ id }: any) {
   }
 
   function handleBlock(blockUnblock: number) {
-    console.log("this is the block unblock, mnstr gaty", blockUnblock);
-    console.log("this is the id mntsr gay", id);
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data.id}/${blockUnblock}`,
@@ -98,7 +91,6 @@ export default function Profile({ id }: any) {
       setMyData(friends.data.data);
     }
   }, [friends.data]);
-  console.log("this is the my data", myData);
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
