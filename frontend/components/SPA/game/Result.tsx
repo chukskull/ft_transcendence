@@ -24,7 +24,7 @@ export const Result = ({
   const color = result === "You Won" ? "text-emerald-500" : "text-red-700";
   const router = useRouter();
   if (value === 100) {
-    router.back();
+    router.push("/home");
   }
   return (
     <div className="flex flex-col items-center justify-center bg-modalBackground  gap-4  p-10 rounded-[4rem] w-[312px]">
