@@ -20,6 +20,7 @@ interface StatsProps {
 }
 
 export const Stats = ({ perc, rank, matches }: StatsProps) => {
+  console.log("le rank", rank);
   const [IsDes, setIsDes] = React.useState<boolean>(window.innerWidth > 840);
   React.useEffect(() => {
     function handleResize() {

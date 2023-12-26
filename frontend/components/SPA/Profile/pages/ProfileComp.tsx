@@ -164,6 +164,7 @@ export default function Profile({ id }: any) {
             data?.totaxlames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
           }
           matches={data?.totalGames}
+          rank={data?.rank}
         />
       </div>
 

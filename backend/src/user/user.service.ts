@@ -530,29 +530,37 @@ export class UserService {
     }
     return user.matchHistory;
   }
-
-  async updateExperience(clientID: number, xp: number): Promise<any> {
+  async updateExperienceAndLevel(clientID: number, xp: number): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
     });
-    if (!user) throw new NotFoundException('User not found.');
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
 
     user.experience += xp;
-    this.updateLevel(user.experience, user);
-    return await this.userRepository.save(user);
-  }
 
-  async updateLevel(xp: number, user: any): Promise<any> {
-    const level = Math.floor(xp / (1098 + user.level * 100));
-    if (user.level < level) {
-      user.level = level;
-      user.experience = 0;
+    const MaxExp = 1098 + user.level * 100;
+    console.log("MaxExp ", MaxExp, "currentEx: ", user.experience);
+    if (user.experience >= MaxExp) {
+      console.log("here");
+      user.experience -= MaxExp;
+      user.level += 1;
+
+      if (user.level >= 10) {
+        user.rank = 'Gold';
+      } else if (user.level >= 5) {
+        user.rank = 'Silver';
+      } else if (user.level >= 2) {
+        user.rank = 'Bronze';
+      }
     }
-    if (user.level >= 1) 
-      user.rank = 'Bronze';
-    if (user.level >= 5)
-      user.rank = 'Silver';
-    if (user.level >= 10)
-      user.rank = 'Gold';
-  }
+    console.log(user.level);
+
+
+    return this.userRepository.save(user);
+}
+
+
 }

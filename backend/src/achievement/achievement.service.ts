@@ -192,8 +192,8 @@ export class AchievementService {
         }
         break;
     }
-    await this.userService.updateExperience(matchH.winner, winXP);
-    await this.userService.updateExperience(matchH.loser, loseXP);
+    await this.userService.updateExperienceAndLevel(matchH.winner, winXP);
+    await this.userService.updateExperienceAndLevel(matchH.loser, loseXP);
   }
 
   async giveAchievement(userId: number, achievementId: number): Promise<User> {
