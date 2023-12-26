@@ -404,7 +404,6 @@ export class ChannelService {
     const isOwner = channel.owner.id == mod;
     if (!isMod && !isOwner)
       throw new NotFoundException('User not mod from channel');
-
     if (channel.owner.id == userId)
       throw new NotFoundException('User is owner');
     if (action == 1) {
@@ -419,7 +418,6 @@ export class ChannelService {
 
       conversation.MutedUsers?.push(user);
       channel.MutedUsers?.push(user);
-      console.log('user muted from channel');
     } else {
       conversation.MutedUsers = conversation.MutedUsers.filter(
         (member) => member?.id != userId,
@@ -445,11 +443,18 @@ export class ChannelService {
       relations: ['Moderators', 'owner', 'members'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
-    console.log(chanId ,action ,'modding user id = ', owner, "channel owner =",channel.owner.id);
+    console.log(
+      chanId,
+      action,
+      'modding user id = ',
+      owner,
+      'channel owner =',
+      channel.owner.id,
+    );
     if (channel.owner.id !== owner)
       throw new NotFoundException('User isnt the owner');
     if (action === `mod`) {
-      console.log("modding user", userId);
+      console.log('modding user', userId);
       const isAlreadyMod = channel.Moderators.some(
         (member) => member.id == userId,
       );

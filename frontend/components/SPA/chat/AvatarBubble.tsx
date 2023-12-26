@@ -3,8 +3,8 @@ import { Avatar, Badge } from "@nextui-org/react";
 import { color, motion } from "framer-motion";
 
 interface AvatarBubbleProps {
-  avatar: string;
-  online: boolean;
+  avatar: any;
+  online: any;
   badge?: any;
 }
 const AvatarBubble = ({ avatar, online, badge }: AvatarBubbleProps) => {

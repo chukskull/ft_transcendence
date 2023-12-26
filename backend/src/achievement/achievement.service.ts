@@ -101,8 +101,7 @@ export class AchievementService {
     if (matchH.winner == player1id) {
       await this.userService.updateExperience(player1id, winXP);
       await this.userService.updateExperience(player2id, loseXP);
-      const player1Wins =
-        await this.matchHistoryService.trackWins(player1id);
+      const player1Wins = await this.matchHistoryService.trackWins(player1id);
       if (player1Wins == 3) {
         const achievement = await this.achievementRepository.findOne({
           where: { name: '3 wins' },
@@ -124,8 +123,7 @@ export class AchievementService {
     } else if (matchH.winner == player2id) {
       await this.userService.updateExperience(player2id, winXP);
       await this.userService.updateExperience(player1id, loseXP);
-      const player2Wins =
-        await this.matchHistoryService.trackWins(player2id);
+      const player2Wins = await this.matchHistoryService.trackWins(player2id);
       if (player2Wins == 3) {
         const achievement = await this.achievementRepository.findOne({
           where: { name: '3 wins' },
