@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import InFosPlayer from "../../Profile/atoms/InFosPlayer";
 import ChannelSettings from "./ChannelSettings";
 import axios from "axios";
+import { useQuery } from "react-query";
 
-const InviteSection = ({ chandId }: any) => {
+const InviteSection = ({ chandId, onAction }: any) => {
   const [friends, setFriends] = useState<any>([]);
   useEffect(() => {
     axios
@@ -28,7 +29,7 @@ const InviteSection = ({ chandId }: any) => {
       )
       .then((res) => {
         console.log(res.data);
-        document.location.reload();
+        onAction(false);
       })
       .catch((err) => console.log(err));
   };
@@ -62,7 +63,7 @@ const InviteSection = ({ chandId }: any) => {
               }}
             >
               <AiOutlineUserAdd />
-              Invite
+              ADD
             </button>
           </div>
         ))}
@@ -84,6 +85,7 @@ const AuthoritySection = ({ owner, mods, chanID }: any) => {
         inChannel={true}
         channelId={chanID}
         status={owner?.status}
+        isMod={true}
       />
       <h2>Moderators</h2>
       <div className={style["list"]}>
@@ -96,7 +98,7 @@ const AuthoritySection = ({ owner, mods, chanID }: any) => {
             firstName={e.firstName}
             lastName={e.lastName}
             inChannel={true}
-            channelId={e.id}
+            channelId={chanID}
             isMod={true}
             status={e.status}
           />
@@ -132,7 +134,7 @@ const MembersSection = ({ members, channelId }: any) => {
   );
 };
 
-const ChannelMenu = ({ channel, currentUser }: any) => {
+const ChannelMenu = ({ channel, currentUser, onAction }: any) => {
   const [activeSection, setActiveSection] = useState<string>("Invite");
   const [active, setActive] = useState(0);
   const [channelData, setChannelData] = useState<any>(null);
@@ -153,20 +155,30 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
   function handleActive(index: number) {
     setActive(index);
   }
-  useEffect(() => {
-    axios
-      .get(
+  const {
+    data: channelDatas,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery(
+    ["channel", channel.id],
+    async () => {
+      const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`,
         {
           withCredentials: true,
         }
-      )
-      .then((res) => {
-        setChannelData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+      );
+      return response.data;
+    },
+    {
+      refetchInterval: 1000, // Refetch every 1 second
+    }
+  );
+  useEffect(() => {
+    if (channelDatas) setChannelData(channelDatas);
+  }, [channelDatas]);
+
   return (
     <>
       <div className={style["menu-header"]}>
@@ -189,7 +201,9 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
         </div>
       </div>
       <div className={style["menu-body"]}>
-        {activeSection === "Invite" && <InviteSection chandId={channel?.id} />}
+        {activeSection === "Invite" && (
+          <InviteSection onAction={onAction} chandId={channel?.id} />
+        )}
         {activeSection === "Authority Hub" && (
           <AuthoritySection
             owner={channelData?.owner}
@@ -209,6 +223,7 @@ const ChannelMenu = ({ channel, currentUser }: any) => {
             muted={channelData?.MutedUsers}
             id={channel?.id}
             chPrivate={channelData?.is_private}
+            onAction={onAction}
           />
         )}
       </div>

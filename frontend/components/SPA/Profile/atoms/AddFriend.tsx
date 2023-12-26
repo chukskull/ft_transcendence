@@ -34,7 +34,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
       break;
     case 2:
       icon = <Check {...commonIconProps} />;
-      buttonText = "Friend Request Sent";
+      buttonText = "Pending Friend Request";
       break;
     case 1:
       icon = <Minus {...commonIconProps} color="red" />;
@@ -52,7 +52,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
         .then(() => {
           window.location.reload();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err.response.data.message));
     } else if (isFriend === 1) {
       axios
         .get(
@@ -62,7 +62,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
         .then(() => {
           window.location.reload();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err.response.data.message));
     }
   };
 

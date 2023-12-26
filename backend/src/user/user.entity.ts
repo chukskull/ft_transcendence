@@ -53,7 +53,7 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['online', 'offline', 'ingame'],
+    enum: ['online', 'offline', 'inGame'],
     default: 'offline',
     nullable: true,
   })
@@ -70,6 +70,9 @@ export class User {
 
   @Column({ default: 0 })
   wins: number;
+
+  @Column({ nullable: true })
+  winsInARow: number;
 
   @Column({ default: 0 })
   totalGames: number;

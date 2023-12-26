@@ -1,11 +1,8 @@
 import React, { forwardRef } from "react";
 import { useInput } from "@nextui-org/react";
 
-// import {SearchIcon} from "./SearchIcon";
-// import {CloseFilledIcon} from "./CloseFilledIcon";
-
 const styles = {
-  label: "text-black/50 dark:text-fontlight/90",
+  label: "text-black/50 ... ... dark:text-fontlight/90",
   input: [
     "bg-transparent",
     "text-black/90 dark:text-fontlight/90",
@@ -26,7 +23,7 @@ const styles = {
   ],
 };
 
-const MyInput = forwardRef((props, ref) => {
+const MyInput = forwardRef((props:any, ref:any) => {
   const {
     Component,
     label,
@@ -49,14 +46,9 @@ const MyInput = forwardRef((props, ref) => {
   } = useInput({
     ...props,
     ref,
-    // this is just for the example, the props bellow should be passed by the parent component
     label: "Search",
     type: "search",
     placeholder: "Type to search...",
-    // startContent: (
-    //   <SearchIcon className="text-black/50 dark:text-fontlight/90 text-slate-400 pointer-events-none flex-shrink-0" />
-    // ),
-    // custom styles
     classNames: {
       ...styles,
     },
@@ -66,15 +58,10 @@ const MyInput = forwardRef((props, ref) => {
 
   const end = React.useMemo(() => {
     if (isClearable) {
-      return (
-        // <span {...getClearButtonProps()}>
-        //   {endContent || <CloseFilledIcon />}
-        // </span>
-      );
+      return <span {...getClearButtonProps()}>{endContent}</span>;
     }
-
     return endContent;
-  }, [isClearable, getClearButtonProps]);
+  }, [isClearable, getClearButtonProps, endContent]);
 
   const innerWrapper = React.useMemo(() => {
     if (startContent || end) {
@@ -86,12 +73,11 @@ const MyInput = forwardRef((props, ref) => {
         </div>
       );
     }
-
     return <input {...getInputProps()} />;
   }, [startContent, end, getInputProps, getInnerWrapperProps]);
 
   return (
-    <div className="w-[340px] h-[300px] px-8 rounded-2xl flex justify-center items-center bg-gradient-to-tr from-pink-500 to-yellow-500 text-fontlight shadow-lg">
+    <div className="w-[340px] h-[300px] px-8 rounded-2xl ... flex ... justify-center items-center bg-gradient-to-tr from-pink-500 to-yellow-500 text-fontlight shadow-lg">
       <Component {...getBaseProps()}>
         {shouldLabelBeOutside ? labelContent : null}
         <div

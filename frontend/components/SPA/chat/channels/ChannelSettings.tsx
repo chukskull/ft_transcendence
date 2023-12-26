@@ -4,8 +4,12 @@ import { Switch } from "@nextui-org/react";
 import axios from "axios";
 import { AiOutlineIssuesClose, AiOutlineSound } from "react-icons/ai";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { on } from "events";
 
-const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
+const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
+  console.log("these are the muted user", muted);
+  const router = useRouter();
   const [is_private, setPrivate] = useState(chPrivate);
   const [password, setPassword] = useState("");
   const [formData, setFormData] = useState({ is_private, password, id: id });
@@ -22,6 +26,8 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
       )
       .then((res) => {
         console.log(res.data);
+        onAction(false);
+        router.back();
       })
       .catch((err) => {
         console.log(err);
@@ -39,7 +45,8 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       ) //0 to unban 1 to ban
       .then((res) => {
-        document.location.reload();
+        onAction(false);
+        router.back();
       })
       .catch((err) => console.log(err));
   };
@@ -65,9 +72,10 @@ const ChannelSettings = ({ banned, muted, id, chPrivate }: any) => {
         }
       )
       .then((res) => {
-        window.location.reload();
+        onAction(false);
+        router.back();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => alert(err.response.data));
   };
   return (
     <form onSubmit={handleFormSubmit}>

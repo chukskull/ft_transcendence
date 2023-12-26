@@ -1,5 +1,7 @@
 @import url("../../fonts.css");
 
+$background-color: -webkit-linear-gradient(-90deg, #160040, rgba(0, 0, 139, 0.5)),
+linear-gradient(-90deg, #160040, rgba(0, 0, 139, 0.5));
 .avatar-bubble {
     width: 46px;
     height: 46px;
@@ -55,7 +57,7 @@
     z-index: 100;
     width: 100vw;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(3px);
     display: flex;
     justify-content: center;
@@ -63,7 +65,7 @@
 }
 .addChanModal {
     border-radius: 40.326px;
-    background: #1d0229;
+    background: $background-color;
     width: 521.715px;
     height: 557px;
     color: #fff;
@@ -157,16 +159,16 @@
     width: 320px;
     height: 499px;
     border-radius: 14.537px;
-    background: #1d0229;
+    background: $background-color;
     display: flex;
     color: white;
     flex-direction: column;
     align-items: center;
     padding: 20px;
     h1 {
-        font-size: 32.765px;
+        font-size: 28px;
         font-style: normal;
-        font-family: ClashGrotesk-Semibold;
+        font-family: ClashGrotesk-Medium;
         line-height: normal;
         letter-spacing: 1px;
     }
@@ -200,8 +202,8 @@
 
 .chat-container {
     overflow: hidden;
-    margin-top: 60px;
-    margin-left: 60px;
+    padding-top: 60px;
+    padding-left: 60px;
     display: flex;
     color: white;
     
@@ -319,19 +321,23 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+        
         .chat {
             padding-inline: 32px;
             .msgs-list {
-                padding-block: 20px;
+                padding-block: 10px;
                 display: flex;
                 flex-direction: column;
                 gap: 30px;
                 overflow-y: scroll;
-                height: 82vh;
+                height: 79vh;
+                width: 100%;
 
                 .msg-item {
                     display: flex;
-                    align-items: center;
+                    align-items: flex-start;
+                    padding-right: 16px;
+                    
                     gap: 15px;
 
                     .msg-info {
@@ -352,13 +358,18 @@
 
                             font-family: ClashGrotesk-Regular;
                             line-height: 120.5%;
+                            white-space: pre-line;
+                            word-break: break-all;
+
+                        
+                            overflow-x: hidden;
                         }
 
-                        &:hover {
-                            ~ .msg-time {
-                                display: block;
-                            }
-                        }
+                        // &:hover {
+                        //     ~ .msg-time {
+                        //         display: block;
+                        //     }
+                        // }
                     }
 
                     .msg-time {
@@ -415,7 +426,7 @@
 .user-menu-modal {
     width: 550px;
     border-radius: 64px;
-    background: #1d0229;
+    background: $background-color;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -460,7 +471,7 @@
     width: 750px;
     height: 800px;
     border-radius: 32px;
-    background: #1d0229;
+    background: $background-color;
     display: flex;
     flex-direction: column;
     align-items: center;

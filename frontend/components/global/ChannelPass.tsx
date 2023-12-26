@@ -28,6 +28,7 @@ export const ProtectedModal = ({ channelId }: { channelId: any }) => {
       })
       .catch((err) => {
         console.log(err);
+        //alert(err);
       });
   };
 

@@ -57,11 +57,13 @@ export class ConversationService {
       relations: ['members', 'chats', 'MutedUsers'],
     });
     if (!conv) throw new NotFoundException('Conversation not found');
-    const user = conv.members.map((member) => member.id === senderId);
+    const user = conv.members.map((member) => member.id == senderId);
     if (!user)
       throw new NotFoundException('User not found in this conversation');
     const isMuted = conv.MutedUsers.find((member) => member.id == senderId);
-    if (isMuted) throw new NotFoundException('User is muted');
+    if (isMuted)
+      throw new NotFoundException('User is muted in this conversation');
+
     try {
       conv.chats.push(message);
       await this.conversationRepository.save(conv);
