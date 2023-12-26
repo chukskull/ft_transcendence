@@ -548,9 +548,9 @@ export class UserService {
       user.experience -= MaxExp;
       user.level += 1;
 
-      if (user.level >= 10) {
+      if (user.level >= 25) {
         user.rank = 'Gold';
-      } else if (user.level >= 5) {
+      } else if (user.level >= 10) {
         user.rank = 'Silver';
       } else if (user.level >= 2) {
         user.rank = 'Bronze';
