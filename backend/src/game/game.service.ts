@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getSqljsManager } from 'typeorm';
+import { Repository} from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
-import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
@@ -44,8 +43,6 @@ export class GameService {
     private userService: UserService,
     private jwtService: JwtService,
     private notifGateway: NotifGateway,
-    @InjectRepository(Achievement)
-    private achievementRepo: Repository<Achievement>,
     @InjectRepository(MatchHistory)
     private matchHistoryRepo: Repository<MatchHistory>,
   ) {}

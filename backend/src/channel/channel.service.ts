@@ -186,8 +186,8 @@ export class ChannelService {
     if (!isOwner) {
       throw new NotFoundException('User not owner of the channel');
     }
-    await this.conversationService.deleteConversation(channel.conversation.id);
     await this.chanRepository.remove(channel);
+    await this.conversationService.deleteConversation(channel.conversation.id);
   }
 
   async joinChannel(chanId: number, password: string, userId: number) {
@@ -437,7 +437,7 @@ export class ChannelService {
   async modUnmodFromChannel(
     chanId: number,
     userId: number,
-    action: number,
+    action: string,
     owner: number,
   ): Promise<Channel> {
     const channel = await this.chanRepository.findOne({
@@ -445,9 +445,11 @@ export class ChannelService {
       relations: ['Moderators', 'owner', 'members'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
-    if (channel.owner.id != owner)
+    console.log(chanId ,action ,'modding user id = ', owner, "channel owner =",channel.owner.id);
+    if (channel.owner.id !== owner)
       throw new NotFoundException('User isnt the owner');
-    if (action == 1) {
+    if (action === `mod`) {
+      console.log("modding user", userId);
       const isAlreadyMod = channel.Moderators.some(
         (member) => member.id == userId,
       );
@@ -456,6 +458,7 @@ export class ChannelService {
       const newMod = await this.userRepository.findOne({
         where: { id: userId },
       });
+      console.log('newMod', newMod);
       channel.Moderators.push(newMod);
     } else {
       channel.Moderators = channel.Moderators.filter((mod) => {

@@ -8,8 +8,6 @@ import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
-import { Achievement } from 'src/achievement/achievement.entity';
-import e from 'express';
 
 @Injectable()
 export class UserService {
@@ -147,7 +145,7 @@ export class UserService {
   }
 
   async fillData(data: any, id: number): Promise<any> {
-    const { nickName, firstName, lastName } = data;
+    const { nickName, firstName, lastName, base64Image } = data;
     const nickNameEx = await this.userRepository.findOne({
       where: { nickName },
     });
@@ -160,6 +158,7 @@ export class UserService {
       nickName,
       firstName,
       lastName,
+      avatarUrl: base64Image,
     });
 
     return useeer;
@@ -521,6 +520,17 @@ export class UserService {
 
   private findFriend(client: User, friendID: number): User | undefined {
     return client.friends.find((user) => user.id === friendID);
+  }
+
+  async updateExperience(clientID: number, xp: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!user) throw new NotFoundException('User not found.');
+
+    user.experience += xp;
+    console.log('user experience:', user.experience);
+    return this.userRepository.save(user);
   }
 
   async updateLevel(xp: number, clientID: number): Promise<any> {

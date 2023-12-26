@@ -3,20 +3,17 @@ import React, { useState, useEffect, use } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import GHeader from "@/components/SPA/game/Gmheader";
 import TheGame from "@/components/SPA/game/TheGame";
-import Result from "@/components/SPA/game/Result";
 import io from "socket.io-client";
-import { Button, user } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import OnlineGame from "@/components/SPA/game/OnlineGame";
 import axios from "axios";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
   const [onlineMode, setOnlineMode] = useState<boolean>(false);
-  const [showRec, setRec] = useState<boolean>(false);
-  const [value, setValue] = useState(0);
+
   const [socket, setSocket] = useState<any>(null);
-  const [joinedQueue, setJoinedQueue] = useState<boolean>(false);
-  const [playersData, setPlayersData] = useState<any>({});
+  const [gameStarted, setGameStarted] = useState<string>("initial");
   const [enemy, setEnemy] = useState<string>("");
 
   useEffect(() => {
@@ -26,9 +23,10 @@ const Game: React.FC = () => {
 
     newSocket.on("changeState", (data: any) => {
       const { state } = data;
+      console.log("state B", state);
       switch (state) {
         case "inQueue":
-          setJoinedQueue(true);
+          setGameStarted("inQueue");
           break;
         case "failed":
           break;
@@ -38,6 +36,10 @@ const Game: React.FC = () => {
           console.log("waitingForResponse");
           break;
         case "gameEnded":
+          console.log("93 mnx");
+          setGameStarted("gameEnded");
+          console.log("gameEnded", data);
+
           break;
         default:
           break;
@@ -52,7 +54,7 @@ const Game: React.FC = () => {
     }
 
     newSocket.on("gameStarted", (data: any) => {
-      setPlayersData(data);
+      setGameStarted("gameStarted");
       console.log("gameStarted event hhhhh received front", data);
 
       axios
@@ -66,13 +68,13 @@ const Game: React.FC = () => {
           setEnemy(res.data);
         })
         .catch((err) => console.log(err));
-      setJoinedQueue(false);
       setOnlineMode(true);
     });
     return () => {
       console.log("disconnecting socket", newSocket);
       newSocket.off("changeState");
       newSocket.off("gameStarted");
+      newSocket.off("gameEnded");
       newSocket.disconnect();
       newSocket.close();
     };
@@ -84,38 +86,6 @@ const Game: React.FC = () => {
       console.log("token: ", document.cookie.split("=")[1]);
     }
   }
-
-  const renderRectangle = () => {
-    if (showRec) {
-      return (
-        <div className={style.centeredContent}>
-          <div
-            style={{
-              opacity: 0.6,
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "black",
-              zIndex: 1,
-            }}
-          ></div>
-          <div className="" style={{ position: "relative", zIndex: 2 }}>
-            <Result
-              name={"hamze kornabi"}
-              img={"https://i.pravatar.cc/300?img=1"}
-              scoreleft={0}
-              scoreright={3}
-              result="You Lost"
-              value={value}
-            />
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className={style.gamePage}>
@@ -131,7 +101,7 @@ const Game: React.FC = () => {
             <img src="https://i0.wp.com/mynintendonews.com/wp-content/uploads/2011/08/nes-controller.jpg" />
           </div>
           <div className={style.map} onClick={() => setMap("gym")}>
-            <p>Grizzly</p>
+            <p>Camp Nou</p>
             <img src="https://w7.pngwing.com/pngs/276/422/png-transparent-football-field-football-field-green-background-football.png" />
           </div>
         </div>
@@ -148,6 +118,7 @@ const Game: React.FC = () => {
               className="bg-live text-fontlight font-semibold text-base max-w-[239px] transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
               data-hover
               data-focus
+              isLoading={gameStarted === "inQueue" ? true : false}
               onClick={() => {
                 handleJoinQueue();
               }}
@@ -157,7 +128,6 @@ const Game: React.FC = () => {
           </div>
         )}
       </div>
-      {/* {renderRectangle()} */}
     </div>
   );
 };

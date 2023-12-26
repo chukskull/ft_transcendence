@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import AvatarBubble from "./AvatarBubble";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { useQuery } from "react-query";
 
 interface FindFriendModalProps {
   whenFriendModal: (type: boolean) => void;
@@ -75,16 +76,27 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
     }
   }, [dmsList, params, sendDmOrChannel, getType]);
 
+  const { data: dmsListData, isLoading } = useQuery(
+    "conversations",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    {
+      refetchInterval: 1000, // Refetch every 1 second
+    }
+  );
+
   useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setDmsList(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    if (dmsListData) {
+      setDmsList(dmsListData);
+    }
+  }, [dmsListData]);
   return (
     <>
       <Modal

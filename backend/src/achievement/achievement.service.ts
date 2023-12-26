@@ -9,6 +9,12 @@ import { Repository } from 'typeorm';
 import { Achievement } from './achievement.entity';
 import { User } from '../user/user.entity';
 import { NotifGateway } from 'src/notifications.gateway';
+import { MatchHistory } from 'src/match-history/match-history.entity';
+import { MatchHistoryService } from 'src/match-history/match-history.service';
+import { UserService } from 'src/user/user.service';
+
+export const winXP = 369;
+export const loseXP = 121;
 
 @Injectable()
 export class AchievementService {
@@ -17,8 +23,12 @@ export class AchievementService {
     private achievementRepository: Repository<Achievement>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(MatchHistory)
+    private matchHistory: Repository<MatchHistory>,
     @Inject(NotifGateway)
     private notifGateway: NotifGateway,
+    private matchHistoryService: MatchHistoryService,
+    private userService: UserService,
   ) {}
 
   async findAll(): Promise<Achievement[]> {
@@ -79,11 +89,62 @@ export class AchievementService {
     return this.achievementRepository.remove(achievement);
   }
   async calculateAchievement(
-    player1: any,
-    player2: any,
-    matchiHistoId: number,
+    player1id: number,
+    player2id: number,
+    matchHistoId: number,
   ): Promise<void> {
-    console.log('give achievement---------- and add LEvelvelrkvoerjv');
+    const matchH = await this.matchHistoryService.findOne(matchHistoId);
+    if (!matchH) throw new NotFoundException('Match history not found');
+
+    await this.userService.setStatus(player1id, 'online');
+    await this.userService.setStatus(player2id, 'online');
+    if (matchH.winner == player1id) {
+      await this.userService.updateExperience(player1id, winXP);
+      await this.userService.updateExperience(player2id, loseXP);
+      const player1Wins =
+        await this.matchHistoryService.trackWins(player1id);
+      if (player1Wins == 3) {
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '3 wins' },
+        });
+        await this.giveAchievement(player1id, achievement.id);
+      }
+      if (player1Wins == 5) {
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '5 wins' },
+        });
+        await this.giveAchievement(player1id, achievement.id);
+      }
+      if (player1Wins == 10) {
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '10 wins' },
+        });
+        await this.giveAchievement(player1id, achievement.id);
+      }
+    } else if (matchH.winner == player2id) {
+      await this.userService.updateExperience(player2id, winXP);
+      await this.userService.updateExperience(player1id, loseXP);
+      const player2Wins =
+        await this.matchHistoryService.trackWins(player2id);
+      if (player2Wins == 3) {
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '3 wins' },
+        });
+        await this.giveAchievement(player2id, achievement.id);
+      }
+      if (player2Wins == 5) {
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '5 wins' },
+        });
+        await this.giveAchievement(player2id, achievement.id);
+      }
+      if (player2Wins == 10) {
+        const achievement = await this.achievementRepository.findOne({
+          where: { name: '10 wins' },
+        });
+        await this.giveAchievement(player2id, achievement.id);
+      }
+    }
   }
 
   async giveAchievement(userId: number, achievementId: number): Promise<User> {
@@ -102,7 +163,7 @@ export class AchievementService {
     user.experience += achievement.addedXp;
     user.achievements.push(achievement);
     const savedUser = await this.userRepository.save(user);
-    // this.notifGateway.newAchievement(achievement, user.id); send notification to the front
+    this.notifGateway.newAchievement(achievement, user.id);
     return savedUser;
   }
 }

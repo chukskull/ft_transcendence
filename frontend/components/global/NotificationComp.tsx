@@ -20,6 +20,7 @@ export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
   const [notifData, setNotifData] = useState<any>(null);
   const [socket, setSocket] = useState<any>(null);
+  const [receivedData, setReceivedData] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -34,6 +35,13 @@ export const NotificationComp = ({}) => {
       return response.data.pendingFriendRequests;
     }
   );
+  useEffect(() => {
+    if (receivedData) {
+      setNotifData((prev: any) => [...prev, receivedData]);
+      setNotifCount((prev: any) => prev + 1);
+      console.log("newPVPRequest", receivedData);
+    }
+  }, [receivedData]);
   useEffect(() => {
     if (pendingFriendRequestsQuery.data) {
       setNotifData(pendingFriendRequestsQuery.data);
@@ -52,11 +60,8 @@ export const NotificationComp = ({}) => {
     newSocket.connect();
     setSocket(newSocket);
   }, []);
-  socket?.on("newPVPRequest", (data: any) => {
-    setNotifData((prev: any) => [...prev, data]);
-    setNotifCount((prev: any) => prev + 1);
-    console.log("newPVPRequest", data);
-  });
+  if (!socket) return;
+  socket.on("newPVPRequest", (data: any) => setReceivedData(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
@@ -102,6 +107,24 @@ export const NotificationComp = ({}) => {
   if (pendingFriendRequestsQuery.isLoading)
     return <NotificationIcon width={25} height={25} />;
   if (pendingFriendRequestsQuery.error) return <div>error</div>;
+
+  const handlePVPRequest = (friendId: number, type: number) => {
+    // 1 acceptPVP 0 declinePVP
+    if (type == 1) {
+      socket.emit("acceptPVP", { 
+        token: document.cookie.split("=")[1],
+        friendId });
+    } else if (type == 0) {
+      socket.emit("declinePVP", {
+        token: document.cookie.split("=")[1],
+        friendId
+      });
+    }
+  }
+  
+  socket.on('newAchievement', (data: any) => {
+    console.log(data);
+  })
 
   return (
     <>
