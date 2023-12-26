@@ -61,9 +61,9 @@ export class ConversationService {
     if (!user)
       throw new NotFoundException('User not found in this conversation');
     const isMuted = conv.MutedUsers.find((member) => member.id == senderId);
-    if (isMuted) {
-      return null;
-    }
+    if (isMuted)
+      throw new NotFoundException('User is muted in this conversation');
+
     try {
       conv.chats.push(message);
       await this.conversationRepository.save(conv);

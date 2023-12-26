@@ -1,6 +1,5 @@
 import React, { useState, useEffect, use } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
-import io from "socket.io-client";
 
 type Score = {
   player: number;

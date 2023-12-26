@@ -56,9 +56,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
     const userId = getUserProfile(token)?.sub;
-    if (!userId) {
-      return;
-    }
+    if (!userId) return;
 
     const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;

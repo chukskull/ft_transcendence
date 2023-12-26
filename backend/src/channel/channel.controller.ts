@@ -130,7 +130,7 @@ export class ChannelController {
   mod(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
-    @Param('action') action: number,
+    @Param('action') action: string,
     @Req() req,
   ) {
     return this.channelService.modUnmodFromChannel(

@@ -130,6 +130,7 @@ const ProfileComp = ({
               chann={channelId}
               nickName={nickName}
               isMod={isMod}
+              onAction={setShow}
             />
           ))}
       </Modal>
