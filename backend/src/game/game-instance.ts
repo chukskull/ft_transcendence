@@ -205,38 +205,6 @@ export class GameInstance {
       });
       this.resetBall();
       if (this.checkGameEnd()) {
-        if (this.player1Score === 5) {
-          this.winnerID = this.player1.id;
-          this.loserID = this.player2.id;
-          this.player1.socket.emit('gameEnded', {
-            winner: this.player1.nickName,
-            loser: this.player2.nickName,
-            player1Score: this.player1Score,
-            player2Score: this.player2Score,
-          });
-          this.player2.socket.emit('gameEnded', {
-            winner: this.player1.nickName,
-            loser: this.player2.nickName,
-            player1Score: this.player2Score,
-            player2Score: this.player1Score,
-          });
-        }
-        if (this.player2Score === 5) {
-          this.winnerID = this.player2.id;
-          this.loserID = this.player1.id;
-          this.player1.socket.emit('gameEnded', {
-            winner: this.player2.nickName,
-            loser: this.player1.nickName,
-            player1Score: this.player1Score,
-            player2Score: this.player2Score,
-          });
-          this.player2.socket.emit('gameEnded', {
-            winner: this.player2.nickName,
-            loser: this.player1.nickName,
-            player1Score: this.player2Score,
-            player2Score: this.player1Score,
-          });
-        }
         this.gameEnded = true;
         this.gameRunning = false;
         this.updateScoreAndAchievementsInDB();
@@ -247,9 +215,8 @@ export class GameInstance {
 
   private async updateScoreAndAchievementsInDB() {
     try {
-      const matchHistory = await this.matchHistory
+      let matchHistory = await this.matchHistory
       if (matchHistory) {
-        console.log('testing if achievement is given');
         await this.matchHistoryRepo.update(
           {
             id: matchHistory.id,
@@ -260,7 +227,7 @@ export class GameInstance {
             winner: this.winnerID,
             loser: this.loserID,
           }
-          );
+        );
         await this.achievementService.calculateAchievement(
           this.player1.id,
           this.player2.id,
@@ -304,10 +271,34 @@ export class GameInstance {
     if (this.player1Score === 5) {
       this.winnerID = this.player1.id;
       this.loserID = this.player2.id;
+      this.player1.socket.emit('gameEnded', {
+        winner: this.player1.nickName,
+        loser: this.player2.nickName,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
+      });
+      this.player2.socket.emit('gameEnded', {
+        winner: this.player1.nickName,
+        loser: this.player2.nickName,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
+      });
       return true;
     } else if (this.player2Score === 5) {
       this.winnerID = this.player2.id;
       this.loserID = this.player1.id;
+      this.player1.socket.emit('gameEnded', {
+        winner: this.player2.nickName,
+        loser: this.player1.nickName,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
+      });
+      this.player2.socket.emit('gameEnded', {
+        winner: this.player2.nickName,
+        loser: this.player1.nickName,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
+      });
       return true;
     } else return false;
   }

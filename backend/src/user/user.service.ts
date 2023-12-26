@@ -8,6 +8,7 @@ import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
+import { MatchHistory } from 'src/match-history/match-history.entity';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,6 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
-
     private channelService: ChannelService,
     private readonly conversationService: ConversationService,
   ) {}
@@ -50,7 +50,6 @@ export class UserService {
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
-    user.winsInARow = 0;
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
@@ -521,6 +520,17 @@ export class UserService {
     return client.friends.find((user) => user.id === friendID);
   }
 
+  async getMyMatchHistory(clientID: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+      relations: ['matchHistory', 'matchHistory.player1', 'matchHistory.player2'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user.matchHistory;
+  }
+
   async updateExperience(clientID: number, xp: number): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
@@ -528,7 +538,7 @@ export class UserService {
     if (!user) throw new NotFoundException('User not found.');
 
     user.experience += xp;
-    console.log('userId:', user.id, 'given xp:', xp, 'new xp:', user.experience);
+    this.updateLevel(user.experience, clientID);
     return this.userRepository.save(user);
   }
 

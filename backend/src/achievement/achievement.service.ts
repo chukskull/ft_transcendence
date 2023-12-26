@@ -113,19 +113,23 @@ export class AchievementService {
     player1id: number,
     player2id: number,
     matchHistoId: number,
-  ): Promise<void> {
-    const matchH = await this.matchHistoryService.findOne(matchHistoId);
+    ): Promise<void> {
+    const matchH = await this.matchHistory.findOne( { where: { id: matchHistoId } });
     if (!matchH) throw new NotFoundException('Match history not found');
 
     await this.userService.setStatus(player1id, 'online');
     await this.userService.setStatus(player2id, 'online');
     await this.userService.updateExperience(matchH.winner, winXP);
     await this.userService.updateExperience(matchH.loser, loseXP);
-
     switch (matchH.winner) {
       case player1id:
-        const player1Wins = await this.matchHistoryService.trackWins(player1id);
-        switch (player1Wins) {
+        await this.userRepository.update({ id: player1id }, {
+          wins: () => 'wins + 1'
+        });
+        const player1Wins = await this.matchHistory.find({
+          where: { winner: player1id },
+        });
+        switch (player1Wins.length) {
           case 3:
             let achievement = await this.achievementRepository.findOne({
               where: { name: '3 wins' },
@@ -144,14 +148,20 @@ export class AchievementService {
             achievement = await this.achievementRepository.findOne({
               where: { name: '10 wins' },
             });
-            if (!achievement) achievement = await this.createAchievement(TenWinsData);
+            if (!achievement)
+              achievement = await this.createAchievement(TenWinsData);
             await this.giveAchievement(player1id, achievement.id);
             break;
         }
         break;
       case player2id:
-        const player2Wins = await this.matchHistoryService.trackWins(player2id);
-        switch (player2Wins) {
+        await this.userRepository.update({ id: player2id }, {
+          wins: () => 'wins + 1'
+        });
+        const player2Wins = await this.matchHistory.find({
+          where: { winner: player2id },
+        });
+        switch (player2Wins.length) {
           case 3:
             let achievement = await this.achievementRepository.findOne({
               where: { name: '3 wins' },
