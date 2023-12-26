@@ -52,10 +52,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const { conversationId, message, token } = data;
-    const userId = getUserProfile(token)?.sub;
-    if (!userId) {
+    if (message.length > 200) {
       return;
     }
+    const userId = getUserProfile(token)?.sub;
+    if (!userId) return;
 
     const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;

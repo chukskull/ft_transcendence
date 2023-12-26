@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
-import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
+import { MatchHistoryDto } from './dto/match-history.dto'
 
 @Injectable()
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
-    private matchHistory: Repository<MatchHistory>,
+    private matchHistoryRepo: Repository<MatchHistory>,
     private userService: UserService,
   ) {}
 
@@ -17,28 +17,32 @@ export class MatchHistoryService {
    * Creates a new match history entry in the database.
    * @param createMatchHistoryDto - The DTO containing the necessary data to create a new match history entry.
    */
-  async create(MatchHistoryDto: CreateMatchHistoryDto) {
-    const mh = new MatchHistory();
+  async create(MatchHistoryDto: MatchHistoryDto): Promise<MatchHistory> {
+    let uniqueId = 0;
+    let isUnique = false;
 
+    while (!isUnique) {
+      uniqueId = Math.floor(Math.random() * 100000);
+      const existingMatchHistory = await this.matchHistoryRepo.findOne({ where: { id: uniqueId } });
+      isUnique = !existingMatchHistory; // Check if the id is unique
+    }
+
+    const mh = this.matchHistoryRepo.create({
+      id: uniqueId,
+      winner: 0,
+      player1Score: 0,
+      player2Score: 0,
+    });
     mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
-
     mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
-
-    mh.winner = await this.userService.userProfile(MatchHistoryDto.winnerID);
-
-    mh.winsInARow = Number(MatchHistoryDto.winsInARow);
-
-    mh.losesInARow = Number(MatchHistoryDto.losesInARow);
-
     mh.date = new Date();
-
-    mh.player1Score = Number(MatchHistoryDto.player1score);
-
-    mh.player2Score = Number(MatchHistoryDto.player2score);
-
-    await this.matchHistory.save(mh);
+    await this.matchHistoryRepo.save(mh);
 
     return mh;
+  }
+
+  async update(mh: MatchHistory) {
+    await this.matchHistoryRepo.save(mh);
   }
 
   /*
@@ -46,21 +50,28 @@ export class MatchHistoryService {
    */
 
   async findAll(): Promise<MatchHistory[]> {
-    return this.matchHistory.find();
+    return this.matchHistoryRepo.find();
   }
 
   async findOne(id: any): Promise<MatchHistory> {
-    return this.matchHistory.findOne(id);
+    return this.matchHistoryRepo.findOne({ where: id });
   }
 
-  async trackWinsInARow(playerID: number): Promise<number> {
-    const matchHistory = await this.matchHistory.find({
-      where: { winner: { id: playerID } },
+  async trackNumberOfWins(playerID: number): Promise<number> {
+    const matchHistory = await this.matchHistoryRepo.find({
+      where: { winner: playerID },
+    });
+    return matchHistory.length;
+  }
+
+  async trackWins(playerID: number): Promise<number> {
+    const matchHistory = await this.matchHistoryRepo.find({
+      where: { winner: playerID },
       order: { date: 'DESC' },
     });
     let winsInARow = 0;
     let i = 0;
-    while (matchHistory[i] && matchHistory[i].winner.id === playerID) {
+    while (matchHistory[i] && matchHistory[i].winner === playerID) {
       winsInARow++;
       i++;
     }

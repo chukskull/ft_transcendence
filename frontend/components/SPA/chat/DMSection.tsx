@@ -6,8 +6,13 @@ import { useState, useEffect } from "react";
 import AvatarBubble from "./AvatarBubble";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { useQuery } from "react-query";
 
-const FindFriendModal = () => {
+interface FindFriendModalProps {
+  whenFriendModal: (type: boolean) => void;
+}
+
+const FindFriendModal = ({ whenFriendModal }: FindFriendModalProps) => {
   const router = useRouter();
   const [friendsList, setFriendsList] = useState<any>([]);
   useEffect(() => {
@@ -32,6 +37,7 @@ const FindFriendModal = () => {
             key={friend.id}
             onClick={() => {
               router.push(`/chat/users/${friend.nickName}`);
+              whenFriendModal(false);
             }}
           >
             <AvatarBubble avatar={friend.avatarUrl} online={friend.online} />
@@ -70,16 +76,27 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
     }
   }, [dmsList, params, sendDmOrChannel, getType]);
 
+  const { data: dmsListData, isLoading } = useQuery(
+    "conversations",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    {
+      refetchInterval: 1000, // Refetch every 1 second
+    }
+  );
+
   useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setDmsList(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    if (dmsListData) {
+      setDmsList(dmsListData);
+    }
+  }, [dmsListData]);
   return (
     <>
       <Modal
@@ -88,7 +105,7 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
         overlayClassName={style["modal-overlay"]}
         onRequestClose={() => setFindFriendModal(false)}
       >
-        <FindFriendModal />
+        <FindFriendModal whenFriendModal={setFindFriendModal} />
       </Modal>
       <div className={style["direct-msgs"]}>
         <div className={style["section-header"]}>

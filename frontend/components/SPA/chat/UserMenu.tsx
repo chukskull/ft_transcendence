@@ -14,7 +14,20 @@ import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import { on } from "events";
+import { useQuery } from "react-query";
+
+interface UserMenuProps {
+  id?: number;
+  nickName?: string;
+  avatarUrl?: string;
+  channel?: boolean;
+  online?: boolean;
+  chann?: number;
+  isMod?: boolean;
+  onAction: (action: any) => any;
+}
 
 const UserMenu = ({
   id,
@@ -24,29 +37,41 @@ const UserMenu = ({
   online,
   chann,
   isMod,
-}: any) => {
+  onAction,
+}: UserMenuProps) => {
   const router = useRouter();
   const [userInfos, setUserInfos] = useState<any>();
+  const {
+    data: infos,
+    isLoading,
+    isError,
+  } = useQuery(
+    "userFriends",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    {
+      refetchInterval: 1000, // Refetch every 1 second
+    }
+  );
+
   useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setUserInfos(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (infos) setUserInfos(infos);
+  }, [infos]);
 
   const isUserBlocked = () => {
     if (!userInfos) return false;
-    return userInfos.blockedUsers.some((e: any) => e.id === id);
+    return userInfos.blockedUsers?.some((e: any) => e.id === id);
   };
   const isFriend = () => {
     if (!userInfos) return false;
-    return userInfos.friends.some((e: any) => e.id === id);
+    return userInfos.friends?.some((e: any) => e.id === id);
   };
 
   return (
@@ -65,82 +90,87 @@ const UserMenu = ({
           <FaUser />
           View Profile
         </div>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            axios
-              .post(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/game/invite/${id}`,
-                {},
-                {
-                  withCredentials: true,
-                }
-              )
-              .then((res) => {})
-              .catch((err) => {
-                console.log(err);
-              });
-          }}
-        >
-          <BsController />
-          Invite To A Game
-        </div>
-
-        {isFriend() ? (
+        {!isUserBlocked() ? (
           <div
             className={style["menu-item"]}
             onClick={() => {
-              axios
-                .get(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
-                  {
-                    withCredentials: true,
-                  }
-                )
-                .then((res) => {
-                  console.log(res);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
+              router.push(`/game?inviteToGame=${id}`);
             }}
           >
-            <FaUserSlash />
-            Remove Friend
+            <BsController />
+            Invite To A Game
           </div>
         ) : (
+          <></>
+        )}
+
+        {!isUserBlocked() && (
+          <>
+            {isFriend() ? (
+              <div
+                className={style["menu-item"]}
+                onClick={() => {
+                  axios
+                    .get(
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
+                      {
+                        withCredentials: true,
+                      }
+                    )
+                    .then((res) => {
+                      onAction(false);
+                      console.log(res);
+                    })
+                    .catch((err) => {
+                      //alert(err.response.data.message);
+                      console.log(err);
+                    });
+                  onAction(false);
+                }}
+              >
+                <FaUserSlash />
+                Remove Friend
+              </div>
+            ) : (
+              <div
+                className={style["menu-item"]}
+                onClick={() => {
+                  axios
+                    .get(
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addFriend/${id}`,
+                      {
+                        withCredentials: true,
+                      }
+                    )
+                    .then((res) => {
+                      onAction(false);
+                      console.log(res);
+                    })
+                    .catch((err) => {
+                      //alert(err.response.data.message);
+                      console.log(err);
+                    });
+                }}
+              >
+                <FaUserPlus />
+                Add Friend
+              </div>
+            )}
+          </>
+        )}
+
+        {!isUserBlocked() && (
           <div
             className={style["menu-item"]}
             onClick={() => {
-              axios
-                .get(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/sendFriendRequest/${id}`,
-                  {
-                    withCredentials: true,
-                  }
-                )
-                .then(() => {
-                  document.location.reload();
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
+              onAction(false);
+              router.push(`/chat/users/${nickName}`);
             }}
           >
-            <FaUserPlus />
-            Add Friend
+            <BsChatLeftText />
+            Message
           </div>
         )}
-
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            router.push(`/chat/users/${nickName}`);
-          }}
-        >
-          <BsChatLeftText />
-          Message
-        </div>
         {isUserBlocked() ? (
           <div
             className={style["menu-item"]}
@@ -153,7 +183,7 @@ const UserMenu = ({
                   }
                 )
                 .then(() => {
-                  document.location.reload();
+                  onAction(false);
                 })
                 .catch((err) => {
                   console.log(err);
@@ -175,7 +205,7 @@ const UserMenu = ({
                   }
                 )
                 .then(() => {
-                  document.location.reload();
+                  onAction(false);
                 })
                 .catch((err) => {
                   console.log(err);
@@ -194,14 +224,14 @@ const UserMenu = ({
                 onClick={() => {
                   axios
                     .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/1`,
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/mod`,
                       {
                         withCredentials: true,
                       }
                     )
                     .then((res) => {
                       console.log(res);
-                      document.location.reload();
+                      onAction(false);
                     })
                     .catch((err) => {
                       console.log(err);
@@ -217,17 +247,17 @@ const UserMenu = ({
                 onClick={() => {
                   axios
                     .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/0`,
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/unmod`,
                       {
                         withCredentials: true,
                       }
                     )
                     .then((res) => {
                       console.log(res);
-                      document.location.reload();
+                      onAction(false);
                     })
                     .catch((err) => {
-                      console.log(err);
+                      console.log(err.response.data);
                     });
                 }}
               >
@@ -247,6 +277,7 @@ const UserMenu = ({
                     }
                   )
                   .then((res) => {
+                    onAction(false);
                     console.log(res);
                   })
                   .catch((err) => {
@@ -255,7 +286,7 @@ const UserMenu = ({
               }}
             >
               <FaVolumeMute />
-              Mute
+              Mute From Channel
             </div>
             <div
               className={style["menu-item"]}
@@ -269,7 +300,7 @@ const UserMenu = ({
                   )
                   .then((res) => {
                     console.log(res);
-                    document.location.reload();
+                    onAction(false);
                   })
                   .catch((err) => {
                     console.log(err);
@@ -291,7 +322,7 @@ const UserMenu = ({
                   )
                   .then((res) => {
                     console.log(res);
-                    document.location.reload();
+                    onAction(false);
                   })
                   .catch((err) => {
                     console.log(err);

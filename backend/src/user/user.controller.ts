@@ -34,12 +34,15 @@ class fillDto {
   @IsNotEmpty()
   @Length(3, 20)
   lastName: string;
+
+  @IsString()
+  @IsOptional()
+  base64Image: string;
 }
 
 class updateDto {
   @IsString()
   @IsOptional()
-  @Length(3, 15)
   nickName: string;
 
   @IsOptional()
@@ -65,8 +68,9 @@ export class UserController {
   }
   @Post('/update')
   @UseGuards(JwtGuard)
-  async update(@Body() data: updateDto) {
-    return this.usersService.updateUserInfo(data);
+  async update(@Body() data: updateDto, @Req() req: any) {
+    console.log('this sssss is le dataaa88888888888888', data);
+    return this.usersService.updateUserInfo(data, req.user.id);
   }
 
   @Get('profile/:userId')
@@ -117,15 +121,11 @@ export class UserController {
     return this.usersService.sendFriendRequest(req.user.id, frid);
   }
 
-  // @Post('/removeFriend/:friendId')
-  // @UseGuards(JwtGuard)
-  // async removeFriend(@Param('friendId') id: number, @Req() req: any) {
-  //   return this.usersService.removeFriend(req.user.id, id);
-  // }
-  // async addFriend(@Param('friendId') id: number, @Req() req: any) {
-  //   const myId = req.user.id;
-  //   return this.usersService.sendFriendRequest(myId, id);
-  // }
+  @Get('/removeFriend/:friendId')
+  @UseGuards(JwtGuard)
+  async removeFriend(@Param('friendId') friendId: number, @Req() req: any) {
+    return this.usersService.removeFriend(req.user.id, friendId);
+  }
 
   @Get('/FriendRequest/:friendId/:action') // 0 = decline, 1 = accept
   @UseGuards(JwtGuard)

@@ -2,12 +2,19 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import axios from "axios";
 import { BiLock } from "react-icons/bi";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { on } from "events";
 
-const CreateChannelModal = () => {
+interface CreateChannelModalProps {
+  onCreate: (create: boolean) => void;
+}
+
+const CreateChannelModal = ({ onCreate }: CreateChannelModalProps) => {
   const [name, setname] = useState("");
   const [password, setpassword] = useState("");
   const [is_private, setIsPrivate] = useState(false);
   const [error, setError] = useState<null | string>(null);
+  const router = useRouter();
 
   const handleCreateChannel = async () => {
     if (name.trim() === "") {
@@ -35,7 +42,8 @@ const CreateChannelModal = () => {
       )
       .then((res) => {
         console.log(res.data);
-        document.location.reload();
+        onCreate(false);
+        router.push(`/chat/channels/${res.data.id}`);
       })
       .catch((err) => {
         console.log(err);

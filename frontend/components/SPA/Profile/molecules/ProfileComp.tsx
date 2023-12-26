@@ -14,7 +14,6 @@ interface ProfileCompProps {
   nickName?: string;
   firstName: string;
   lastName?: string;
-  color?: string;
   type?: "Protected" | "Public" | "achiv" | null;
   status?: string;
   inChannel?: boolean;
@@ -30,7 +29,6 @@ const ProfileComp = ({
   lastName,
   type,
   status,
-  color,
   inChannel,
   channelId,
   isMod,
@@ -86,16 +84,21 @@ const ProfileComp = ({
     if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
+      console.log("public");
       axios
         .post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
+          {},
           {
             withCredentials: true,
           }
         )
-        .then((res) => {})
+        .then((res) => {
+          document.location.reload();
+        })
         .catch((err) => {
           console.log(err);
+          //alert(err);
         });
     } else if (
       type === "achiv" ||
@@ -127,6 +130,7 @@ const ProfileComp = ({
               chann={channelId}
               nickName={nickName}
               isMod={isMod}
+              onAction={setShow}
             />
           ))}
       </Modal>
@@ -139,6 +143,7 @@ const ProfileComp = ({
       >
         {/* Use size="sm" for tablets and mobiles */}
         <Avatar
+          className="cursor-pointer"
           isBordered={status ? true : false}
           color={getActivityStatus(status)}
           src={img}

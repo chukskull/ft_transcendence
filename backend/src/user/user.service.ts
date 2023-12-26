@@ -8,7 +8,6 @@ import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
-import { Achievement } from 'src/achievement/achievement.entity';
 
 @Injectable()
 export class UserService {
@@ -51,6 +50,7 @@ export class UserService {
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
+    user.winsInARow = 0;
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
@@ -115,8 +115,8 @@ export class UserService {
               'channels',
               'conversations',
               'friends',
-              'matchHistory.winner',
               'matchHistory.player1',
+              'pendingFriendRequests',
               'matchHistory.player2',
               'achievements',
             ],
@@ -127,8 +127,8 @@ export class UserService {
               'matchHistory',
               'channels',
               'conversations',
+              'pendingFriendRequests',
               'friends',
-              'matchHistory.winner',
               'matchHistory.player1',
               'matchHistory.player2',
               'achievements',
@@ -136,7 +136,6 @@ export class UserService {
           });
 
     if (!user) throw new NotFoundException('User not found.');
-
     return user;
   }
 
@@ -145,7 +144,7 @@ export class UserService {
   }
 
   async fillData(data: any, id: number): Promise<any> {
-    const { nickName, firstName, lastName } = data;
+    const { nickName, firstName, lastName, base64Image } = data;
     const nickNameEx = await this.userRepository.findOne({
       where: { nickName },
     });
@@ -158,6 +157,7 @@ export class UserService {
       nickName,
       firstName,
       lastName,
+      avatarUrl: base64Image,
     });
 
     return useeer;
@@ -197,20 +197,26 @@ export class UserService {
     return conversation || null;
   }
 
-  async updateUserInfo(data): Promise<any> {
-    const { nickName, profilePicture, twoFa, id } = data;
-
-    const alreadyExists = await this.userRepository.findOne({
-      where: { id },
-    });
-    if (alreadyExists) {
-      await this.userRepository.update(id, {
-        nickName,
-        avatarUrl: profilePicture,
-        twoFactorAuthEnabled: twoFa,
-      });
+  async updateUserInfo(data, userId): Promise<any> {
+    const { nickName, avatarUrl, twoFa } = data;
+    let updateData = {};
+    if (avatarUrl !== 'noChange') {
+      updateData = { ...updateData, avatarUrl: avatarUrl };
     }
-    return this.userRepository.update(id, data);
+    updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
+
+    if (nickName) {
+      const nickNameEx = await this.userRepository.findOne({
+        where: { nickName },
+      });
+      if (nickNameEx) {
+        return { message: 'NickName already exists' };
+      } else {
+        updateData = { ...updateData, nickName };
+      }
+    }
+    console.log('updateData here', updateData);
+    return this.userRepository.update(userId, updateData);
   }
 
   async setStatus(clientID: number, status: string): Promise<any> {
@@ -224,7 +230,7 @@ export class UserService {
   }
 
   async sendFriendRequest(myID: number, friendID: number): Promise<any> {
-    if (myID === friendID) {
+    if (myID == friendID) {
       return { message: 'Cannot send friend request to yourself' };
     }
     const client = await this.userRepository.findOne({
@@ -241,22 +247,19 @@ export class UserService {
       throw new NotFoundException('User not found.');
     }
 
-    if (this.isAlreadyFriend(client, friend)) {
+    if (this.isAlreadyFriend(client, friend))
       return { message: 'User already in friends' };
-    }
 
-    if (this.isBlocked(client, friend)) {
-      return { message: 'User is blocked' };
-    }
+    if (this.isBlocked(client, friend)) return { message: 'User is blocked' };
 
-    if (this.isAlreadyPending(client, friend)) {
+    if (this.isBlocked(friend, client))
+      return { message: 'You are blocked by this user' };
+
+    if (this.isAlreadyPending(client, friend))
       return { message: 'User already in pending' };
-    }
 
-    // Update pendingFriendRequests without saving immediately
     friend.pendingFriendRequests.push(client);
 
-    // Save the changes asynchronously
     await this.saveFriendRequests([client, friend]);
 
     return { message: 'Friend request sent' };
@@ -346,27 +349,48 @@ export class UserService {
     return { message: 'Friend request handeled' };
   }
 
+  async removeFriend(friendID: number, handlerId: number): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: handlerId },
+      relations: ['friends'],
+    });
+    const friend = await this.userRepository.findOne({
+      where: { id: friendID },
+      relations: ['friends'],
+    });
+    if (!client || !friend) throw new NotFoundException('User not found.');
+    const alreadyFriend = this.isAlreadyFriend(client, friend);
+    if (!alreadyFriend) return { message: 'User not in friends' };
+    client.friends = client.friends.filter((user) => user.id != friendID);
+    friend.friends = friend.friends.filter((user) => user.id != handlerId);
+    await this.userRepository.save(client);
+    await this.userRepository.save(friend);
+    return { message: 'Friend removed' };
+  }
+
   private isAlreadyFriend(client: User, friend: User): boolean {
-    return client.friends.some((f) => f.id === friend.id);
+    return client.friends.some((f) => f.id == friend.id);
   }
 
   private isBlocked(client: User, friend: User): boolean {
-    return client.blockedUsers.some((b) => b.id === friend.id);
+    return client.blockedUsers.some((b) => b.id == friend.id);
   }
 
   private isAlreadyPending(client: User, friend: User): boolean {
-    return friend.pendingFriendRequests.some((p) => p.id === client.id);
+    return friend.pendingFriendRequests.some((p) => p.id == client.id);
   }
 
   async handleBlock(blockedID: number, handlerId: number, action: number) {
-    if (blockedID === handlerId) {
-      return { message: 'Cannot block yourself' };
-    }
+    if (blockedID == handlerId) return { message: 'Cannot block yourself' };
+    console.log('blockedID', blockedID);
+    console.log('handlerId', handlerId);
+
     const client = await this.userRepository.findOne({
       where: { id: handlerId },
       relations: [
         'friends',
         'blockedUsers',
+        'pendingFriendRequests',
         'conversations',
         'conversations.members',
       ],
@@ -377,6 +401,7 @@ export class UserService {
         'friends',
         'blockedUsers',
         'conversations',
+        'pendingFriendRequests',
         'conversations.members',
       ],
     });
@@ -384,13 +409,10 @@ export class UserService {
     if (action == 1) {
       const alreadyBlocked = this.isAlreadyBlocked(client, friendUs);
       if (alreadyBlocked) return { message: 'User already blocked' };
-      const friend = this.findFriend(client, blockedID);
-      if (friend) {
-        client.friends = client.friends.filter((user) => user.id != blockedID);
-        friendUs.friends = friendUs.friends.filter(
-          (user) => user.id != handlerId,
-        );
-      }
+      client.friends = client.friends.filter((user) => user.id != blockedID);
+      friendUs.friends = friendUs.friends.filter(
+        (user) => user.id != handlerId,
+      );
       const conversation: any = client.conversations.find(
         (conv) =>
           conv.is_group === false &&
@@ -405,6 +427,12 @@ export class UserService {
         );
         this.conversationService.deleteConversation(conversation.id);
       }
+      client.pendingFriendRequests = client.pendingFriendRequests.filter(
+        (user) => user.id != blockedID,
+      );
+      friendUs.pendingFriendRequests = friendUs.pendingFriendRequests.filter(
+        (user) => user.id != handlerId,
+      );
       client.blockedUsers.push(friendUs);
     } else if (action == 0) {
       const alreadyBlocked = this.isAlreadyBlocked(client, friendUs);
@@ -491,6 +519,17 @@ export class UserService {
 
   private findFriend(client: User, friendID: number): User | undefined {
     return client.friends.find((user) => user.id === friendID);
+  }
+
+  async updateExperience(clientID: number, xp: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!user) throw new NotFoundException('User not found.');
+
+    user.experience += xp;
+    console.log('user experience:', user.experience);
+    return this.userRepository.save(user);
   }
 
   async updateLevel(xp: number, clientID: number): Promise<any> {

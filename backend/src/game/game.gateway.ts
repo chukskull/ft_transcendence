@@ -53,51 +53,41 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.gameService.createGame(client, opponentId, this.server);
   }
 
-  @SubscribeMessage('sendBallState')
-  async updateBall(client: Socket, @MessageBody() payload: any) {
-    this.gameService.updateBall(client, payload);
-  }
-
-  @SubscribeMessage('sendPaddleState')
-  async updatePaddle(client: Socket, @MessageBody() payload: any) {
-    this.gameService.updatePaddle(client, payload);
-  }
-
-  @SubscribeMessage('updateScore')
-  async updateScore(client: Socket, @MessageBody() payload: any) {
-    this.gameService.updateScore(client, payload);
-  }
-
-  /*
-   * handling invite friends
-   */
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
     @MessageBody()
     data: {
       token: string;
-      friendIwantToInvite: number;
+      friendId: number;
     },
-    client: Socket,
+    @ConnectedSocket() client: Socket,
   ) {
-    const { token, friendIwantToInvite } = data;
-    const roomName = 'ubgerhiougherpu' + client.id + ',' + friendIwantToInvite;
-    this.gameService.inviteFriend(client, friendIwantToInvite, token, roomName);
-    client.join('ubgerhiougherpu' + client.id + ',' + friendIwantToInvite);
+    const { token, friendId } = data;
+    this.gameService.inviteFriend(client, friendId, token);
   }
 
-  @SubscribeMessage('inviteResponse')
-  async inviteResponse(client: Socket, @MessageBody() payload: any) {
-    this.gameService.inviteResponse(client, payload);
+  @SubscribeMessage('acceptPVP')
+  async acceptGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.acceptPVP(client, this.server, token);
   }
-
-  @SubscribeMessage('acceptInvite')
-  async acceptInvite(client: Socket, @MessageBody() payload: any) {
-    this.gameService.acceptInvite(client, payload);
-  }
-
-  @SubscribeMessage('declineInvite')
-  async declineInvite(client: Socket, @MessageBody() payload: any) {
-    this.gameService.declineInvite(client, payload);
+  @SubscribeMessage('declinePVP')
+  async declineGameInvite(
+    @MessageBody()
+    data: {
+      token: string;
+      friendId: number;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { token, friendId } = data;
+    this.gameService.declinePVP(client, token, friendId);
   }
 }

@@ -71,6 +71,6 @@ export class AchievementController {
 
   @Post(':achievementId/give/:userId')
   give(@Param('id') achievementId: number, userId: number) {
-    return this.achievementService.giveAchievement(achievementId, userId);
+    return this.achievementService.giveAchievement(userId, achievementId);
   }
 }

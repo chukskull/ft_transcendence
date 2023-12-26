@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import CreateChannelModal from "./CreateChannel";
 import axios from "axios";
 import { useParams } from "next/navigation";
+import { useQuery } from "react-query";
 
 interface Channel {
   type: string;
@@ -43,16 +44,31 @@ const ChannelsSection = ({
     }
   }, [channelList, params.id, sendDmOrChannel, getType]);
 
+  const {
+    data: channelListData,
+    isLoading,
+    isError,
+  } = useQuery(
+    "myChannels",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/mychannels`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    {
+      refetchInterval: 1000,
+    }
+  );
+
   useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/mychannels`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setChannelList(res.data);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    if (channelListData) {
+      setChannelList(channelListData);
+    }
+  }, [channelListData]);
 
   const channelCategoriesOrder = [
     {
@@ -102,7 +118,7 @@ const ChannelsSection = ({
         overlayClassName={style["modal-overlay"]}
         onRequestClose={() => setAddChModal(false)}
       >
-        <CreateChannelModal />
+        <CreateChannelModal onCreate={setAddChModal} />
       </Modal>
       <div className={style["channels"]}>
         <div className={style["section-header"]}>

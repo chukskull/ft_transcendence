@@ -8,7 +8,6 @@
 /db
 /postgres-data
 /postgres_data
-/.env
 # testing
 /coverage
 

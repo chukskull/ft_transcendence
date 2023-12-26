@@ -7,6 +7,9 @@ import UserMenu from "@/components/SPA/chat/UserMenu";
 import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { App } from "antd";
+import { set } from "lodash";
 
 interface chatHeaderProps {
   isChannel: boolean;
@@ -16,6 +19,7 @@ interface chatHeaderProps {
 const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
   const [showModal, setShow] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
   const leaveGroup = (id: number) => {
     axios
@@ -23,12 +27,13 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
         withCredentials: true,
       })
       .then((res) => {
-        document.location.reload();
+        router.push("/chat/channels/1");
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
@@ -59,6 +64,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
           <ChannelMenu
             channel={chatHeaderProps?.dmOrChannel}
             currentUser={user}
+            onAction={setShow}
           />
         ) : (
           <UserMenu
@@ -67,6 +73,7 @@ const ChatHeader = (chatHeaderProps: chatHeaderProps) => {
             nickName={chatHeaderProps?.dmOrChannel?.members[0].nickName}
             online={chatHeaderProps?.dmOrChannel?.members[0].online}
             channel={false}
+            onAction={setShow}
           />
         )}
       </Modal>

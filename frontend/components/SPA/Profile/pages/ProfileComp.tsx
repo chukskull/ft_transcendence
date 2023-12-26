@@ -14,20 +14,31 @@ import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
 import { Button } from "@nextui-org/react";
-import { tree } from "next/dist/build/templates/app-page";
 
-function friendStatus(pendingFrReq: any, friendsList: any, userId: any) {
+function friendStatus(
+  theirpendingFrReq: any,
+  mypendingFrReq: any,
+  friendsList: any,
+  userId: number,
+  myId: number
+) {
   // if friend return 1 if pending return 2 if not return 0
   if (friendsList?.length > 0) {
-    let friend = friendsList?.find((e: any) => e.id === userId);
+    let friend = friendsList?.find((e: any) => e.id == userId);
     if (friend) return 1;
   }
-  if (pendingFrReq?.length > 0) {
-    let pending = pendingFrReq?.find((e: any) => e.id === userId);
+  if (mypendingFrReq?.length > 0) {
+    let pending = mypendingFrReq?.find((e: any) => e.id == userId);
     if (pending) return 2;
   }
+  if (theirpendingFrReq?.length > 0) {
+    let pending = theirpendingFrReq?.find((e: any) => e.id == myId);
+    if (pending) return 2;
+  }
+
   return 0;
 }
+
 const truncateText = (text: string, maxLength: number) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + "...";
@@ -36,41 +47,50 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 export default function Profile({ id }: any) {
+  console.log("this is the id", id);
   const [myData, setMyData] = useState<any>(null);
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
+  function isBlocked() {
+    if (myData?.blockedUsers?.length > 0) {
+      let blocked = myData?.blockedUsers?.find((e: any) => e.nickName === id);
+
+      if (blocked) return true;
+    }
+    return false;
+  }
 
   function handleActive(index: number) {
     setActive(index);
   }
 
-  function handleBlock() {
-    // axios
-    //   .get(
-    //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/blockUser/${id}`,
-    //     {
-    //       withCredentials: true,
-    //     }
-    //   )
-    //   .then((res) => {
-    //     console.log(res);
-    //     window.location.reload();
-    //   })
-    //   .catch((err) => console.log(err));
-  }
-  useEffect(() => {
+  function handleBlock(blockUnblock: number) {
     axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-        withCredentials: true,
-      })
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data.id}/${blockUnblock}`,
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
-        setMyData(res.data);
+        window.location.reload();
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
+      .catch((err) => console.log(err));
+  }
+  const friends = useQuery("userFriends", async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response;
+  });
+  useEffect(() => {
+    if (friends.data) {
+      setMyData(friends.data.data);
+    }
+  }, [friends.data]);
   const { isLoading, error, data } = useQuery("userList", async () => {
     return getUserProfile(id);
   });
@@ -79,7 +99,6 @@ export default function Profile({ id }: any) {
     return <Error statusCode={404} />;
   }
   if (isLoading) return "Loading...";
-
   return (
     <div className="Parent max-w-[1536px] m-auto">
       {id === "me" ? (
@@ -94,13 +113,14 @@ export default function Profile({ id }: any) {
       ) : (
         <div className="flex items-center justify-end">
           <Button
-            onClick={handleBlock}
+            onClick={() => handleBlock(isBlocked() ? 0 : 1)}
             color={"danger"}
             variant="bordered"
-            className="w-fit mt-4"
+            className="w-fit"
           >
             <span style={{ display: "flex", alignItems: "center" }}>
-              <FaUserAltSlash style={{ marginRight: "0.5rem" }} /> Block{" "}
+              <FaUserAltSlash style={{ marginRight: "0.5rem" }} />{" "}
+              {isBlocked() ? "Unblock" : "Block"}
             </span>
           </Button>
         </div>
@@ -125,14 +145,15 @@ export default function Profile({ id }: any) {
           <h1 className="font-ClashGrotesk-Medium text-fontlight opacity-80 text-center md:text-start">
             #{truncateText(data?.nickName, 10)}
           </h1>
-
           <AddFriend
             display={id == "me" ? true : false}
             userId={data?.id}
             isFriend={friendStatus(
+              data?.pendingFriendRequests,
               myData?.pendingFriendRequests,
               myData?.friends,
-              data?.id
+              data?.id,
+              myData?.id
             )}
           />
         </div>

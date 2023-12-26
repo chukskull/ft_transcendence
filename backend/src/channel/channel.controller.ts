@@ -63,7 +63,6 @@ export class ChannelController {
   @UseGuards(JwtGuard)
   join(@Body() data: any, @Req() req, @Param('chanId') chanId: number) {
     const { password } = data;
-    console.log('join channel', chanId, password);
     return this.channelService.joinChannel(chanId, password, req.user.id);
   }
 
@@ -131,7 +130,7 @@ export class ChannelController {
   mod(
     @Param('chandId') chanId: number,
     @Param('userId') userId: number,
-    @Param('action') action: number,
+    @Param('action') action: string,
     @Req() req,
   ) {
     return this.channelService.modUnmodFromChannel(

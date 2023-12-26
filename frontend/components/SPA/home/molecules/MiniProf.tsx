@@ -2,6 +2,7 @@
 
 import { Avatar, Button } from "@nextui-org/react";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 interface MiniProfProps {
   image: string;
@@ -10,12 +11,14 @@ interface MiniProfProps {
 }
 
 export const MiniProf = ({ image, name, id }: MiniProfProps) => {
+  const router = useRouter();
   const inviteToGame = (friendId: number) => {
-    console.log(friendId);
+    router.push(`/game?inviteToGame=${friendId}`);
   };
+
   return (
     <div>
-      <div className="flex flex-col justify-center h-[122px] items-center gap-1 w-[120px] bg-friend rounded-xl">
+      <div className="flex flex-col justify-center h-[122px] items-center gap-2 w-[120px] border-1 bg-friend rounded-xl">
         <Avatar isBordered color="success" src={image} />
         <h1 className="max-w-[8ch] text-fontlight text-base font-semibold truncate">
           {name}

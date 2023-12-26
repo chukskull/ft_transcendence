@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge, DropdownSection, badge } from "@nextui-org/react";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NotificationIcon } from "./NotificationIcon";
 import {
   Dropdown,
@@ -9,32 +9,59 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
-  cn,
 } from "@nextui-org/react";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import { Avatar } from "antd";
 import axios from "axios";
+import { useQuery } from "react-query";
+import io from "socket.io-client";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
   const [notifData, setNotifData] = useState<any>(null);
+  const [socket, setSocket] = useState<any>(null);
+  const [receivedData, setReceivedData] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
-  console.log("notifdata", notifData);
+
+  const pendingFriendRequestsQuery = useQuery(
+    "pendingFriendRequests",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+        { withCredentials: true }
+      );
+      return response.data.pendingFriendRequests;
+    }
+  );
   useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setNotifData(res.data.pendingFriendRequests);
-        setNotifCount(res.data.pendingFriendRequests.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (receivedData) {
+      setNotifData((prev: any) => [...prev, receivedData]);
+      setNotifCount((prev: any) => prev + 1);
+      console.log("newPVPRequest", receivedData);
+    }
+  }, [receivedData]);
+  useEffect(() => {
+    if (pendingFriendRequestsQuery.data) {
+      setNotifData(pendingFriendRequestsQuery.data);
+      setNotifCount(pendingFriendRequestsQuery.data.length);
+    }
+  }, [pendingFriendRequestsQuery.data]);
+  useEffect(() => {
+    const newSocket = io(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`,
+      {
+        query: {
+          token: document.cookie.split("=")[1],
+        },
+      }
+    );
+    newSocket.connect();
+    setSocket(newSocket);
   }, []);
+  if (!socket) return;
+  socket.on("newPVPRequest", (data: any) => setReceivedData(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
@@ -48,6 +75,9 @@ export const NotificationComp = ({}) => {
         )
         .then((res) => {
           console.log(res);
+          setNotifData((prev: any) =>
+            prev.filter((notif: any) => notif.id !== friendId)
+          );
         })
         .catch((err) => {
           console.log(err);
@@ -64,12 +94,38 @@ export const NotificationComp = ({}) => {
             withCredentials: true,
           }
         )
-        .then((res) => {})
+        .then((res) => {
+          setNotifData((prev: any) =>
+            prev.filter((notif: any) => notif.id !== friendId)
+          );
+        })
         .catch((err) => {
           console.log(err);
         });
     }
   };
+  if (pendingFriendRequestsQuery.isLoading)
+    return <NotificationIcon width={25} height={25} />;
+  if (pendingFriendRequestsQuery.error) return <div>error</div>;
+
+  const handlePVPRequest = (friendId: number, type: number) => {
+    // 1 acceptPVP 0 declinePVP
+    if (type == 1) {
+      socket.emit("acceptPVP", { 
+        token: document.cookie.split("=")[1],
+        friendId });
+    } else if (type == 0) {
+      socket.emit("declinePVP", {
+        token: document.cookie.split("=")[1],
+        friendId
+      });
+    }
+  }
+  
+  socket.on('newAchievement', (data: any) => {
+    console.log(data);
+  })
+
   return (
     <>
       <Dropdown
@@ -147,7 +203,6 @@ export const NotificationComp = ({}) => {
                         size="sm"
                         color="success"
                         onPress={() => {
-                          console.log("notif", notif);
                           handleAcceptReq(notif?.id, 1);
                         }}
                       >
