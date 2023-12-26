@@ -538,18 +538,21 @@ export class UserService {
     if (!user) throw new NotFoundException('User not found.');
 
     user.experience += xp;
-    this.updateLevel(user.experience, clientID);
-    return this.userRepository.save(user);
+    this.updateLevel(user.experience, user);
+    return await this.userRepository.save(user);
   }
 
-  async updateLevel(xp: number, clientID: number): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { id: clientID },
-    });
-    if (!user) throw new NotFoundException('User not found.');
-
+  async updateLevel(xp: number, user: any): Promise<any> {
     const level = Math.floor(xp / (1098 + user.level * 100));
-    user.level = level;
-    return this.userRepository.save(user);
+    if (user.level < level) {
+      user.level = level;
+      user.experience = 0;
+    }
+    if (user.level >= 1) 
+      user.rank = 'Bronze';
+    if (user.level >= 5)
+      user.rank = 'Silver';
+    if (user.level >= 10)
+      user.rank = 'Gold';
   }
 }
