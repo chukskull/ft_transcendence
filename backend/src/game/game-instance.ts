@@ -235,7 +235,7 @@ export class GameInstance {
         );
           
       } else {
-        console.log('Match history not found');
+        console.log('Match history not found, try again!');
       }
     } catch (error) {
       console.error('Error updating score:', error);
