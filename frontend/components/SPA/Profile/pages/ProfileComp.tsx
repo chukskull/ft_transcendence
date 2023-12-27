@@ -40,7 +40,7 @@ function friendStatus(
 }
 
 const truncateText = (text: string, maxLength: number) => {
-  if (text.length > maxLength) {
+  if (text?.length > maxLength) {
     return text.substring(0, maxLength) + "...";
   }
   return text;
@@ -67,7 +67,7 @@ export default function Profile({ id }: any) {
   function handleBlock(blockUnblock: number) {
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data.id}/${blockUnblock}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data?.id}/${blockUnblock}`,
         {
           withCredentials: true,
         }
@@ -88,10 +88,10 @@ export default function Profile({ id }: any) {
   });
   useEffect(() => {
     if (friends.data) {
-      setMyData(friends.data.data);
+      setMyData(friends.data?.data);
     }
   }, [friends.data]);
-  const { isLoading, error, data } = useQuery("userList", async () => {
+  const { isLoading, error, data }: any = useQuery("userList", async () => {
     return getUserProfile(id);
   });
   if (error) {
@@ -105,8 +105,8 @@ export default function Profile({ id }: any) {
         <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular truncate">
           <span style={{ display: "flex", alignItems: "center" }}>
             <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
-            {data.firstName && data.lastName
-              ? `${data.firstName} ${data.lastName}`
+            {data?.firstName && data?.lastName
+              ? `${data?.firstName} ${data?.lastName}`
               : ``}
           </span>
         </h1>
@@ -136,8 +136,8 @@ export default function Profile({ id }: any) {
         <div className="">
           <h1 className="text-fontlight xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl text-center md:text-start md:mt-10">
             {truncateText(
-              data.firstName && data.lastName
-                ? `${data.firstName} ${data.lastName}`
+              data?.firstName && data?.lastName
+                ? `${data?.firstName} ${data?.lastName}`
                 : `No One`,
               15
             )}
@@ -198,7 +198,7 @@ export default function Profile({ id }: any) {
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight text-center p-2 ">
             Archivements
           </h1>
-          <Achievement data={data.Achievement} />
+          <Achievement data={data?.Achievement} />
         </div>
       </div>
     </div>
