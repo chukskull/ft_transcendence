@@ -199,7 +199,7 @@ export default function Profile({ id }: any) {
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight text-center p-2 ">
             Archivements
           </h1>
-          <Achievement data={data.achievements} />
+          <Achievement data={data?.achievements} />
         </div>
       </div>
     </div>

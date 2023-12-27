@@ -113,41 +113,61 @@ export class AchievementService {
     player1id: number,
     player2id: number,
     matchHistoId: number,
-    ): Promise<void> {
-    const matchH = await this.matchHistory.findOne( { where: { id: matchHistoId } });
+  ): Promise<void> {
+    const matchH = await this.matchHistory.findOne({
+      where: { id: matchHistoId },
+    });
     if (!matchH) throw new NotFoundException('Match history not found');
-    await this.matchHistoryService.addMatchToUserMatchHistory(player1id, player2id, matchH);
+    await this.matchHistoryService.addMatchToUserMatchHistory(
+      player1id,
+      player2id,
+      matchH,
+    );
 
     await this.userService.setStatus(player1id, 'online');
     await this.userService.setStatus(player2id, 'online');
-    
-    await this.userRepository.update({ id: player1id }, {
-      totalGames: () => 'totalGames + 1'
-    });
-    await this.userRepository.update({ id: player2id }, {
-      totalGames: () => 'totalGames + 1'
-    });
+
+    await this.userRepository.update(
+      { id: player1id },
+      {
+        totalGames: () => 'totalGames + 1',
+      },
+    );
+    await this.userRepository.update(
+      { id: player2id },
+      {
+        totalGames: () => 'totalGames + 1',
+      },
+    );
     switch (matchH.winner) {
       case player1id:
-        await this.userRepository.update({ id: player1id }, {
-          wins: () => 'wins + 1'
-        });
+        await this.userRepository.update(
+          { id: player1id },
+          {
+            wins: () => 'wins + 1',
+          },
+        );
         const player1Wins = await this.matchHistory.find({
           where: { winner: player1id },
         });
         switch (player1Wins.length) {
           case 3:
-            let threeWinsAchievement = await this.achievementRepository.findOne({
-              where: { name: '3 wins' },
-            });
-            if (!threeWinsAchievement) threeWinsAchievement = await this.createAchievement(ThreeWinsData);
+            let threeWinsAchievement = await this.achievementRepository.findOne(
+              {
+                where: { name: '3 wins' },
+              },
+            );
+            if (!threeWinsAchievement)
+              threeWinsAchievement =
+                await this.createAchievement(ThreeWinsData);
             await this.giveAchievement(player1id, threeWinsAchievement.id);
             break;
           case 5:
             let fiveWinsAchievement = await this.achievementRepository.findOne({
               where: { name: '5 wins' },
             });
-            if (!fiveWinsAchievement) fiveWinsAchievement = await this.createAchievement(FiveWinsData);
+            if (!fiveWinsAchievement)
+              fiveWinsAchievement = await this.createAchievement(FiveWinsData);
             await this.giveAchievement(player1id, fiveWinsAchievement.id);
             break;
           case 10:
@@ -155,31 +175,39 @@ export class AchievementService {
               where: { name: '10 wins' },
             });
             if (!tenWinsAchievement)
-            tenWinsAchievement = await this.createAchievement(TenWinsData);
+              tenWinsAchievement = await this.createAchievement(TenWinsData);
             await this.giveAchievement(player1id, tenWinsAchievement.id);
             break;
         }
         break;
       case player2id:
-        await this.userRepository.update({ id: player2id }, {
-          wins: () => 'wins + 1'
-        });
+        await this.userRepository.update(
+          { id: player2id },
+          {
+            wins: () => 'wins + 1',
+          },
+        );
         const player2Wins = await this.matchHistory.find({
           where: { winner: player2id },
         });
         switch (player2Wins.length) {
           case 3:
-            let threeWinsAchievement = await this.achievementRepository.findOne({
-              where: { name: '3 wins' },
-            });
-            if (!threeWinsAchievement) threeWinsAchievement = await this.createAchievement(ThreeWinsData);
+            let threeWinsAchievement = await this.achievementRepository.findOne(
+              {
+                where: { name: '3 wins' },
+              },
+            );
+            if (!threeWinsAchievement)
+              threeWinsAchievement =
+                await this.createAchievement(ThreeWinsData);
             await this.giveAchievement(player2id, threeWinsAchievement.id);
             break;
           case 5:
             let fiveWinsAchievement = await this.achievementRepository.findOne({
               where: { name: '5 wins' },
             });
-            if (!fiveWinsAchievement) fiveWinsAchievement = await this.createAchievement(FiveWinsData);
+            if (!fiveWinsAchievement)
+              fiveWinsAchievement = await this.createAchievement(FiveWinsData);
             await this.giveAchievement(player2id, fiveWinsAchievement.id);
             break;
           case 10:
@@ -187,7 +215,7 @@ export class AchievementService {
               where: { name: '10 wins' },
             });
             if (!tenWinsAchievement)
-            tenWinsAchievement = await this.createAchievement(TenWinsData);
+              tenWinsAchievement = await this.createAchievement(TenWinsData);
             await this.giveAchievement(player2id, tenWinsAchievement.id);
             break;
         }
