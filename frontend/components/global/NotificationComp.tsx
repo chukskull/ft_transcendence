@@ -18,10 +18,7 @@ import io from "socket.io-client";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
-  const [notifData, setNotifData] = useState<any>({
-    data: {},
-    type: 0,
-  });
+  const [notifData, setNotifData] = useState<any[]>();
   const [socket, setSocket] = useState<any>(null);
   const [PVPrequest, setPVPrequest] = useState<any>(null);
   const [newAchievement, setNewAchievement] = useState<any>(null);
@@ -183,13 +180,13 @@ export const NotificationComp = ({}) => {
             title="Actions"
           >
             {notifData?.map((notif: any) =>
-              notif.icon ? (
+              notif.data.icon ? (
                 <DropdownItem key={notif.id}>
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex flex-row gap-4 items-center ">
-                      <Avatar src={notif?.icon} size={"large"} />
+                      <Avatar src={notif?.data.icon} size={"large"} />
                       <h6 className="text-base font-ClashGrotesk-Regular text-fontlight py-1">
-                        {`Congratulations ! ${notif?.description}`}
+                        {`Congratulations ! ${notif?.data.description}`}
                       </h6>
                     </div>
                   </div>
@@ -197,26 +194,26 @@ export const NotificationComp = ({}) => {
               ) : (
                 <DropdownItem key={notif.id}>
                   <div className="flex flex-col  gap-1 p-1">
-                    <div className="flex gap-2 " key={notif?.id}>
+                    <div className="flex gap-2 " key={notif?.data.id}>
                       <ProfileComp
-                        key={notif?.id}
-                        id={notif?.id}
-                        img={notif?.avatarUrl}
-                        firstName={notif?.firstName}
-                        lastName={notif?.lastName}
-                        nickName={notif?.nickName}
-                        status={notif?.status}
+                        key={notif?.data.id}
+                        id={notif?.data.id}
+                        img={notif?.data.avatarUrl}
+                        firstName={notif?.data.firstName}
+                        lastName={notif?.data.lastName}
+                        nickName={notif?.data.nickName}
+                        status={notif?.data.status}
                       />
                     </div>
                     <div
                       className="flex flex-row gap-1 justify-end"
-                      key={notif?.id}
+                      key={notif?.data.id}
                     >
                       <Button
                         size="sm"
                         color="success"
                         onPress={() => {
-                          handleAcceptReq(notif?.id, 1);
+                          handleAcceptReq(notif?.data.id, 1);
                         }}
                       >
                         Accept
@@ -225,7 +222,7 @@ export const NotificationComp = ({}) => {
                         size="sm"
                         color="danger"
                         onPress={() => {
-                          handleDeclineReq(notif?.id, 1);
+                          handleDeclineReq(notif?.data.id, 1);
                         }}
                       >
                         Decline
