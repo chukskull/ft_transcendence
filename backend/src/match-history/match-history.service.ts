@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
 import { MatchHistoryDto } from './dto/match-history.dto'
 import { User } from 'src/user/user.entity';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class MatchHistoryService {
@@ -59,5 +60,29 @@ export class MatchHistoryService {
 
   async findOne(id: any): Promise<MatchHistory> {
     return this.matchHistoryRepo.findOne({ where: id });
+  }
+
+  async addMatchToUserMatchHistory(player1id: number, player2id: number, matchData: MatchHistory) {
+    const user1 = await this.userRepo.findOne({
+      where: {
+        id: player1id
+      },
+      relations : ['matchHistory']
+    })
+
+    if (!user1) throw new NotFoundException('User not found')
+
+    const user2 = await this.userRepo.findOne({
+      where: {
+        id: player2id
+      },
+      relations : ['matchHistory']
+    })
+    if (!user2) throw new NotFoundException('User not found')
+    user1.matchHistory.push(matchData)
+    user2.matchHistory.push(matchData);
+
+    this.userRepo.save(user1);
+    this.userRepo.save(user2);
   }
 }

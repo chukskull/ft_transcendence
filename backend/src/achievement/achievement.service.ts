@@ -116,6 +116,7 @@ export class AchievementService {
     ): Promise<void> {
     const matchH = await this.matchHistory.findOne( { where: { id: matchHistoId } });
     if (!matchH) throw new NotFoundException('Match history not found');
+    await this.matchHistoryService.addMatchToUserMatchHistory(player1id, player2id, matchH);
 
     await this.userService.setStatus(player1id, 'online');
     await this.userService.setStatus(player2id, 'online');
