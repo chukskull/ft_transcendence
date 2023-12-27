@@ -30,12 +30,12 @@ export class GameService {
     score: number;
     nickName: string;
   }> = [];
-  public privateQueue = Array<{
+  public privateQueue: Array<{
     id: number;
     socket: Socket;
     score: number;
     nickName: string;
-  }>();
+  }> = [];
 
   constructor(
     private matchHistory: MatchHistoryService,
@@ -91,7 +91,7 @@ export class GameService {
     }
   }
 
-  async acceptPVP(client: Socket, server: Server, token: string) {
+  async acceptPVP(client: Socket, server: Server, inviterID: number ,token: string) {
     const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!myId) {
       client.disconnect();
@@ -104,8 +104,9 @@ export class GameService {
       score: 0,
       nickName: userProfile.nickName,
     });
-    if (this.privateQueue.length >= 2) {
-      const player1 = this.privateQueue.shift();
+
+    const player1 = this.privateQueue.shift();
+    if (player1.id == inviterID) {
       const player2 = this.privateQueue.shift();
       this.createGame(player1, player2, server);
     }
