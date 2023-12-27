@@ -71,6 +71,12 @@ export class GameService {
       score: 0,
       nickName: userProfile.nickName,
     });
+    client.on('disconnect', () => {
+      console.log('disconnected');
+      this.privateQueue = this.privateQueue.filter((player) => {
+        return player.id !== userId;
+      });
+    });
     this.notifGateway.sendPVPRequest(userProfile, friendId);
   }
   async declinePVP(client: Socket, token: string, friendId: number) {
@@ -90,7 +96,12 @@ export class GameService {
     }
   }
 
-  async acceptPVP(client: Socket, server: Server, token: string) {
+  async acceptPVP(
+    client: Socket,
+    server: Server,
+    token: string,
+    inviterId: number,
+  ) {
     const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!myId) {
       client.disconnect();
@@ -103,8 +114,10 @@ export class GameService {
       score: 0,
       nickName: userProfile.nickName,
     });
-    if (this.privateQueue.length >= 2) {
-      const player1 = this.privateQueue.shift();
+
+    const player1 = this.privateQueue.shift();
+    if (player1.id == inviterId) {
+      console.log('accepted');
       const player2 = this.privateQueue.shift();
       this.createGame(player1, player2, server);
     }
