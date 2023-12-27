@@ -124,7 +124,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
             <div className={style["list"]}>
               {banned?.map((e: any, index: number) => (
                 <div key={index} className={style["user"]}>
-                  <AvatarBubble avatar={e.avatarUrl} online />
+                  <AvatarBubble avatar={e.avatarUrl} online={e.status} />
                   <div className={style["friend-name"]}>{e.nickName}</div>
                   <button onClick={() => unban(e.id)}>
                     <AiOutlineIssuesClose />
@@ -138,7 +138,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
             <div className={style["list"]}>
               {muted?.map((e: any, index: number) => (
                 <div key={index} className={style["user"]}>
-                  <AvatarBubble avatar={e.avatarUrl} online />
+                  <AvatarBubble avatar={e.avatarUrl} online={e.status} />
                   <div className={style["friend-name"]}>{e.nickName}</div>
                   <button onClick={() => unmute(e.id)}>
                     <AiOutlineSound />

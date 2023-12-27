@@ -38,7 +38,7 @@ export const Stats = ({ perc, rank, matches }: StatsProps) => {
       <div className="flex flex-col items-center  justify-between  lg:w-[150px] lg:h-[150px]  w-[100px] h-[100px]">
         <Circle perc={perc ? perc : 0} size={IsDes ? 75 : 50} />
         <h1 className=" text-fontlight lg:font-ClashGrotesk-Medium lg:text-xl text-sm font-ClashGrotesk-Regular">
-          {perc ? perc : 0}%
+          {perc ? Math.round(perc) : 0}%
         </h1>
         <h1 className=" text-fontlight lg:font-ClashGrotesk-Regular lg:text-lg text-sm font-ClashGrotesk-Light">
           Win Rate

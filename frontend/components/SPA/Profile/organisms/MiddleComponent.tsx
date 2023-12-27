@@ -32,7 +32,7 @@ export const MiddleComponent = ({
       </div>
     );
   const Friends = data?.friends;
-  const Matches = data?.matches;
+  const Matches = data?.matchHistory;
   const Channels = data?.channels;
   return (
     <div className="flex flex-col items-center justify-center gap-4 flex-grow p-7">
@@ -73,8 +73,10 @@ export const MiddleComponent = ({
             key={index}
             LeftProf={match.player1.avatarUrl}
             RightProf={match.player2.avatarUrl}
-            scoreLeft={1}
-            scoreRight={2}
+            scoreLeft={match.player2Score}
+            scoreRight={match.player1Score}
+            onlineleft={match.player1.status}
+            onlineright={match.player2.status}
             boolBut={false}
           />
         ))}

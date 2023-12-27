@@ -9,5 +9,6 @@ export async function getUserProfile(id: string) {
   );
   const userData = response.data;
   console.log("this is the user profile data", userData);
+  
   return userData;
 }
