@@ -129,7 +129,7 @@ export const NotificationComp = ({}) => {
     // 1 acceptPVP 0 declinePVP
     setPvp((prev: any) => prev.filter((notif: any) => notif.id !== friendId));
     if (type == 1 && friendId) {
-      router.push(`/game?userId=${friendId}?accept`);
+      router.push(`/game?accept?userId=${friendId}`);
     } else if (type == 0) {
       const newSocket = io(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`
