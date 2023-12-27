@@ -18,9 +18,13 @@ import io from "socket.io-client";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
-  const [notifData, setNotifData] = useState<any>(null);
+  const [notifData, setNotifData] = useState<any>({
+    data: {},
+    type: 0,
+  });
   const [socket, setSocket] = useState<any>(null);
-  const [receivedData, setReceivedData] = useState<any>(null);
+  const [PVPrequest, setPVPrequest] = useState<any>(null);
+  const [newAchievement, setNewAchievement] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -35,19 +39,30 @@ export const NotificationComp = ({}) => {
       return response.data.pendingFriendRequests;
     }
   );
-  useEffect(() => {
-    if (receivedData) {
-      setNotifData((prev: any) => [...prev, receivedData]);
-      setNotifCount((prev: any) => prev + 1);
-      console.log("newPVPRequest", receivedData);
-    }
-  }, [receivedData]);
+
   useEffect(() => {
     if (pendingFriendRequestsQuery.data) {
-      setNotifData(pendingFriendRequestsQuery.data);
+      setNotifData((prev: any) => [
+        ...prev,
+        { data: pendingFriendRequestsQuery.data, type: 1 },
+      ]);
       setNotifCount(pendingFriendRequestsQuery.data.length);
     }
   }, [pendingFriendRequestsQuery.data]);
+  useEffect(() => {
+    if (newAchievement) {
+      setNotifData((prev: any) => [...prev, { data: newAchievement, type: 2 }]);
+      setNotifCount((prev: any) => prev + 1);
+      console.log("newAchievement", newAchievement);
+    }
+  }, [newAchievement]);
+  useEffect(() => {
+    if (PVPrequest) {
+      setNotifData((prev: any) => [...prev, { data: PVPrequest, type: 3 }]);
+      setNotifCount((prev: any) => prev + 1);
+      console.log("newPVPRequest", PVPrequest);
+    }
+  }, [PVPrequest]);
   useEffect(() => {
     const newSocket = io(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`,
@@ -61,7 +76,8 @@ export const NotificationComp = ({}) => {
     setSocket(newSocket);
   }, []);
   if (!socket) return;
-  socket.on("newPVPRequest", (data: any) => setReceivedData(data));
+  socket.on("newPVPRequest", (data: any) => setPVPrequest(data));
+  socket.on("newAchievement", (data: any) => setNewAchievement(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
@@ -111,26 +127,23 @@ export const NotificationComp = ({}) => {
   const handlePVPRequest = (friendId: number, type: number) => {
     // 1 acceptPVP 0 declinePVP
     if (type == 1) {
-      socket.emit("acceptPVP", { 
+      socket.emit("acceptPVP", {
         token: document.cookie.split("=")[1],
-        friendId });
+        friendId,
+      });
     } else if (type == 0) {
       socket.emit("declinePVP", {
         token: document.cookie.split("=")[1],
-        friendId
+        friendId,
       });
     }
-  }
-  
-  socket.on('newAchievement', (data: any) => {
-    console.log(data);
-  })
+  };
 
   return (
     <>
       <Dropdown
         classNames={{
-          content: "bg-black", // change arrow background
+          content: "bg-black",
         }}
       >
         <DropdownTrigger onClick={handleClick}>
