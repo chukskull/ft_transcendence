@@ -18,7 +18,7 @@ import io from "socket.io-client";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
-  const [notifData, setNotifData] = useState<any[]>();
+  const [notifData, setNotifData] = useState<any[]>([]);
   const [socket, setSocket] = useState<any>(null);
   const [PVPrequest, setPVPrequest] = useState<any>(null);
   const [newAchievement, setNewAchievement] = useState<any>(null);
