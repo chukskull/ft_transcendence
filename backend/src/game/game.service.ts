@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository} from 'typeorm';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { GameInstance } from './game-instance';
@@ -63,7 +63,6 @@ export class GameService {
       client.disconnect();
       return;
     }
-    console.log('invite friend');
     client.emit('changeState', { state: 'waitingForResponse' });
     const userProfile = await this.userService.userProfile(userId);
     this.privateQueue.push({

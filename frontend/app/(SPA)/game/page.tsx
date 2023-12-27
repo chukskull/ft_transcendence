@@ -47,7 +47,15 @@ const Game: React.FC = () => {
       }
     });
     const userId = window.location.search.split("=")[1];
-    if (userId && newSocket) {
+    const accept = window.location.search.split("?")[1];
+    if (userId && accept == "accept" && newSocket) {
+      newSocket.emit("acceptPVP", {
+        token: document.cookie.split("=")[1],
+        friendId: userId,
+      });
+      // clear query params
+      window.history.replaceState({}, document.title, "/game");
+    } else if (userId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
         friendId: userId,
