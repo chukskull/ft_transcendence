@@ -8,6 +8,7 @@ import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
+import { MatchHistory } from 'src/match-history/match-history.entity';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,6 @@ export class UserService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
-
     private channelService: ChannelService,
     private readonly conversationService: ConversationService,
   ) {}
@@ -50,7 +50,6 @@ export class UserService {
     user.lastName = '';
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
-    user.winsInARow = 0;
     user.friends = [];
     user.blockedUsers = [];
     user.matchHistory = [];
@@ -521,25 +520,47 @@ export class UserService {
     return client.friends.find((user) => user.id === friendID);
   }
 
-  async updateExperience(clientID: number, xp: number): Promise<any> {
+  async getMyMatchHistory(clientID: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+      relations: ['matchHistory', 'matchHistory.player1', 'matchHistory.player2'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user.matchHistory;
+  }
+  async updateExperienceAndLevel(clientID: number, xp: number): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
     });
-    if (!user) throw new NotFoundException('User not found.');
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
 
     user.experience += xp;
-    console.log('user experience:', user.experience);
-    return this.userRepository.save(user);
-  }
 
-  async updateLevel(xp: number, clientID: number): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { id: clientID },
-    });
-    if (!user) throw new NotFoundException('User not found.');
+    const MaxExp = 1098 + user.level * 100;
+    console.log("MaxExp ", MaxExp, "currentEx: ", user.experience);
+    if (user.experience >= MaxExp) {
+      console.log("here");
+      user.experience -= MaxExp;
+      user.level += 1;
 
-    const level = Math.floor(xp / (1098 + user.level * 100));
-    user.level = level;
+      if (user.level >= 25) {
+        user.rank = 'Gold';
+      } else if (user.level >= 10) {
+        user.rank = 'Silver';
+      } else if (user.level >= 2) {
+        user.rank = 'Bronze';
+      }
+    }
+    console.log(user.level);
+
+
     return this.userRepository.save(user);
-  }
+}
+
+
 }

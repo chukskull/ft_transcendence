@@ -158,12 +158,13 @@ export default function Profile({ id }: any) {
           />
         </div>
 
-        <ProgressBar lvl={data?.level} exp={data?.expersience} maxExp={1098} />
+        <ProgressBar lvl={data?.level} exp={data?.experience} maxExp={1098} />
         <Stats
           perc={
             data?.totaxlames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
           }
           matches={data?.totalGames}
+          rank={data?.rank}
         />
       </div>
 
@@ -198,9 +199,24 @@ export default function Profile({ id }: any) {
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight text-center p-2 ">
             Archivements
           </h1>
+<<<<<<< HEAD
           <Achievement data={data?.Achievement} />
+=======
+          <Achievement data={data.achievements} />
+>>>>>>> dev
         </div>
       </div>
     </div>
   );
 }
+
+// name: string;
+// @IsString()
+// @IsNotEmpty()
+// description: string;
+// @IsString()
+// @IsNotEmpty()
+// icon: string;
+// @IsNumber()
+// @IsNotEmpty()
+// addedXp: number;

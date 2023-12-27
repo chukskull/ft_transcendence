@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
 import { MatchHistoryDto } from './dto/match-history.dto'
+import { User } from 'src/user/user.entity';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class MatchHistoryService {
   constructor(
     @InjectRepository(MatchHistory)
     private matchHistoryRepo: Repository<MatchHistory>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
     private userService: UserService,
   ) {}
 
@@ -37,7 +41,8 @@ export class MatchHistoryService {
     mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
     mh.date = new Date();
     await this.matchHistoryRepo.save(mh);
-
+    mh.player1.matchHistory.push(mh);
+    mh.player2.matchHistory.push(mh);
     return mh;
   }
 
@@ -57,24 +62,27 @@ export class MatchHistoryService {
     return this.matchHistoryRepo.findOne({ where: id });
   }
 
-  async trackNumberOfWins(playerID: number): Promise<number> {
-    const matchHistory = await this.matchHistoryRepo.find({
-      where: { winner: playerID },
-    });
-    return matchHistory.length;
-  }
+  async addMatchToUserMatchHistory(player1id: number, player2id: number, matchData: MatchHistory) {
+    const user1 = await this.userRepo.findOne({
+      where: {
+        id: player1id
+      },
+      relations : ['matchHistory']
+    })
 
-  async trackWins(playerID: number): Promise<number> {
-    const matchHistory = await this.matchHistoryRepo.find({
-      where: { winner: playerID },
-      order: { date: 'DESC' },
-    });
-    let winsInARow = 0;
-    let i = 0;
-    while (matchHistory[i] && matchHistory[i].winner === playerID) {
-      winsInARow++;
-      i++;
-    }
-    return winsInARow;
+    if (!user1) throw new NotFoundException('User not found')
+
+    const user2 = await this.userRepo.findOne({
+      where: {
+        id: player2id
+      },
+      relations : ['matchHistory']
+    })
+    if (!user2) throw new NotFoundException('User not found')
+    user1.matchHistory.push(matchData)
+    user2.matchHistory.push(matchData);
+
+    this.userRepo.save(user1);
+    this.userRepo.save(user2);
   }
 }
