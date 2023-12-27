@@ -15,6 +15,7 @@ import { Avatar } from "antd";
 import axios from "axios";
 import { useQuery } from "react-query";
 import io from "socket.io-client";
+import { useRouter } from "next/navigation";
 import { set } from "lodash";
 
 export const NotificationComp = ({}) => {
@@ -25,6 +26,7 @@ export const NotificationComp = ({}) => {
   const [socket, setSocket] = useState<any>(null);
   const [PVPrequest, setPVPrequest] = useState<any>(null);
   const [newAchievement, setNewAchievement] = useState<any>(null);
+  const router = useRouter();
   //  const [receivedData, setReceivedData] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
@@ -48,25 +50,19 @@ export const NotificationComp = ({}) => {
     if (pendingFriendRequestsQuery.data) {
       setPending(pendingFriendRequestsQuery.data);
       setNotifCount(pendingFriendRequestsQuery.data.length);
-      console.log(
-        "pendingFriendRequestsQuery.data",
-        pendingFriendRequestsQuery.data
-      );
     }
   }, [pendingFriendRequestsQuery.data, Pending]);
 
   useEffect(() => {
     if (newAchievement) {
-      setPVPrequest((prev: any) => [...prev, newAchievement]);
+      setAchiv((prev: any) => [...prev, newAchievement]);
       setNotifCount((prev: any) => prev + 1);
-      console.log("newAchievement", newAchievement);
     }
   }, [newAchievement]);
   useEffect(() => {
     if (PVPrequest) {
       setPvp((prev: any) => [...prev, PVPrequest]);
       setNotifCount((prev: any) => prev + 1);
-      console.log("newPVPRequest", PVPrequest);
     }
   }, [PVPrequest]);
   useEffect(() => {
@@ -83,12 +79,10 @@ export const NotificationComp = ({}) => {
   }, []);
   if (!socket) return;
   socket.on("newPVPRequest", (data: any) => setPVPrequest(data));
-  console.log("PVPrequest", PVPrequest);
   socket.on("newAchievement", (data: any) => setNewAchievement(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
-      console.log("friendId", friendId);
       axios
         .get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/FriendRequest/${friendId}/1`,
@@ -133,17 +127,17 @@ export const NotificationComp = ({}) => {
 
   const handlePVPRequest = (friendId: number, type: number) => {
     // 1 acceptPVP 0 declinePVP
-    console.log("friendId", type);
     setPvp((prev: any) => prev.filter((notif: any) => notif.id !== friendId));
-    if (type == 1) {
-      socket.emit("acceptPVP", {
-        token: document.cookie.split("=")[1],
-        friendId,
-      });
+    if (type == 1 && friendId) {
+      router.push(`/game?accept?userId=${friendId}`);
     } else if (type == 0) {
-      socket.emit("declinePVP", {
+      const newSocket = io(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`
+      );
+      newSocket.connect();
+      newSocket.emit("declinePVP", {
         token: document.cookie.split("=")[1],
-        friendId,
+        friendId: friendId,
       });
     }
   };

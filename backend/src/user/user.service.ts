@@ -73,7 +73,6 @@ export class UserService {
         },
         savedUser.id,
       );
-      console.log('global channel created', globalChannel);
     } else {
       this.channelService.joinChannel(globalChannel.id, '', savedUser.id);
     }
@@ -214,7 +213,6 @@ export class UserService {
         updateData = { ...updateData, nickName };
       }
     }
-    console.log('updateData here', updateData);
     return this.userRepository.update(userId, updateData);
   }
 
@@ -286,7 +284,6 @@ export class UserService {
         'conversations.members',
       ],
     });
-    console.log('client', client);
 
     const friend = await this.userRepository.findOne({
       where: { id: friendID },
@@ -328,7 +325,6 @@ export class UserService {
       );
 
       if (conversation) {
-        console.log('conversation found');
         client.friends.push(friend);
         friend.friends.push(client);
       } else {
@@ -381,8 +377,6 @@ export class UserService {
 
   async handleBlock(blockedID: number, handlerId: number, action: number) {
     if (blockedID == handlerId) return { message: 'Cannot block yourself' };
-    console.log('blockedID', blockedID);
-    console.log('handlerId', handlerId);
 
     const client = await this.userRepository.findOne({
       where: { id: handlerId },
@@ -523,7 +517,11 @@ export class UserService {
   async getMyMatchHistory(clientID: number): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
-      relations: ['matchHistory', 'matchHistory.player1', 'matchHistory.player2'],
+      relations: [
+        'matchHistory',
+        'matchHistory.player1',
+        'matchHistory.player2',
+      ],
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -542,9 +540,9 @@ export class UserService {
     user.experience += xp;
 
     const MaxExp = 1098 + user.level * 100;
-    console.log("MaxExp ", MaxExp, "currentEx: ", user.experience);
+    console.log('MaxExp ', MaxExp, 'currentEx: ', user.experience);
     if (user.experience >= MaxExp) {
-      console.log("here");
+      console.log('here');
       user.experience -= MaxExp;
       user.level += 1;
 
@@ -558,9 +556,6 @@ export class UserService {
     }
     console.log(user.level);
 
-
     return this.userRepository.save(user);
-}
-
-
+  }
 }

@@ -47,7 +47,6 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 export default function Profile({ id }: any) {
-  console.log("this is the id", id);
   const [myData, setMyData] = useState<any>(null);
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
