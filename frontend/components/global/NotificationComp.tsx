@@ -15,13 +15,17 @@ import { Avatar } from "antd";
 import axios from "axios";
 import { useQuery } from "react-query";
 import io from "socket.io-client";
+import { set } from "lodash";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
-  const [notifData, setNotifData] = useState<any[]>([]);
+  const [Pending, setPending] = useState<any[]>([]);
+  const [Pvp, setPvp] = useState<any[]>([]);
+  const [Achiv, setAchiv] = useState<any[]>([]);
   const [socket, setSocket] = useState<any>(null);
   const [PVPrequest, setPVPrequest] = useState<any>(null);
   const [newAchievement, setNewAchievement] = useState<any>(null);
+  //  const [receivedData, setReceivedData] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -34,28 +38,33 @@ export const NotificationComp = ({}) => {
         { withCredentials: true }
       );
       return response.data.pendingFriendRequests;
+    },
+    {
+      refetchInterval: 500,
     }
   );
 
   useEffect(() => {
     if (pendingFriendRequestsQuery.data) {
-      setNotifData((prev: any) => [
-        ...prev,
-        { data: pendingFriendRequestsQuery.data, type: 1 },
-      ]);
+      setPending(pendingFriendRequestsQuery.data);
       setNotifCount(pendingFriendRequestsQuery.data.length);
+      console.log(
+        "pendingFriendRequestsQuery.data",
+        pendingFriendRequestsQuery.data
+      );
     }
-  }, [pendingFriendRequestsQuery.data]);
+  }, [pendingFriendRequestsQuery.data, Pending]);
+
   useEffect(() => {
     if (newAchievement) {
-      setNotifData((prev: any) => [...prev, { data: newAchievement, type: 2 }]);
+      setPVPrequest((prev: any) => [...prev, newAchievement]);
       setNotifCount((prev: any) => prev + 1);
       console.log("newAchievement", newAchievement);
     }
   }, [newAchievement]);
   useEffect(() => {
     if (PVPrequest) {
-      setNotifData((prev: any) => [...prev, { data: PVPrequest, type: 3 }]);
+      setPvp((prev: any) => [...prev, PVPrequest]);
       setNotifCount((prev: any) => prev + 1);
       console.log("newPVPRequest", PVPrequest);
     }
@@ -74,6 +83,7 @@ export const NotificationComp = ({}) => {
   }, []);
   if (!socket) return;
   socket.on("newPVPRequest", (data: any) => setPVPrequest(data));
+  console.log("PVPrequest", PVPrequest);
   socket.on("newAchievement", (data: any) => setNewAchievement(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
@@ -88,7 +98,7 @@ export const NotificationComp = ({}) => {
         )
         .then((res) => {
           console.log(res);
-          setNotifData((prev: any) =>
+          setPending((prev: any) =>
             prev.filter((notif: any) => notif.id !== friendId)
           );
         })
@@ -108,7 +118,7 @@ export const NotificationComp = ({}) => {
           }
         )
         .then((res) => {
-          setNotifData((prev: any) =>
+          setPending((prev: any) =>
             prev.filter((notif: any) => notif.id !== friendId)
           );
         })
@@ -123,6 +133,8 @@ export const NotificationComp = ({}) => {
 
   const handlePVPRequest = (friendId: number, type: number) => {
     // 1 acceptPVP 0 declinePVP
+    console.log("friendId", type);
+    setPvp((prev: any) => prev.filter((notif: any) => notif.id !== friendId));
     if (type == 1) {
       socket.emit("acceptPVP", {
         token: document.cookie.split("=")[1],
@@ -179,41 +191,43 @@ export const NotificationComp = ({}) => {
             }}
             title="Actions"
           >
-            {notifData?.map((notif: any) =>
-              notif.data.icon ? (
-                <DropdownItem key={notif.id}>
+            {Achiv?.length > 0 &&
+              Achiv?.map((notif: any) => (
+                <DropdownItem key={notif?.id}>
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex flex-row gap-4 items-center ">
-                      <Avatar src={notif?.data.icon} size={"large"} />
+                      <Avatar src={notif?.icon} size={"large"} />
                       <h6 className="text-base font-ClashGrotesk-Regular text-fontlight py-1">
-                        {`Congratulations ! ${notif?.data.description}`}
+                        {`Congratulations ! ${notif?.description}`}
                       </h6>
                     </div>
                   </div>
                 </DropdownItem>
-              ) : (
-                <DropdownItem key={notif.id}>
-                  <div className="flex flex-col  gap-1 p-1">
-                    <div className="flex gap-2 " key={notif?.data.id}>
+              ))}
+            {Pvp?.length > 0 &&
+              Pvp?.map((notif: any) => (
+                <DropdownItem key={notif?.id}>
+                  <div className="flex flex-col gap-1 p-1">
+                    <div className="flex gap-2" key={notif?.id}>
                       <ProfileComp
-                        key={notif?.data.id}
-                        id={notif?.data.id}
-                        img={notif?.data.avatarUrl}
-                        firstName={notif?.data.firstName}
-                        lastName={notif?.data.lastName}
-                        nickName={notif?.data.nickName}
-                        status={notif?.data.status}
+                        key={notif?.id}
+                        id={notif?.id}
+                        img={notif?.avatarUrl}
+                        firstName={notif?.firstName}
+                        lastName={notif?.lastName}
+                        invite={"sent you a game request"}
+                        status={notif?.status}
                       />
                     </div>
                     <div
                       className="flex flex-row gap-1 justify-end"
-                      key={notif?.data.id}
+                      key={notif?.id}
                     >
                       <Button
                         size="sm"
                         color="success"
                         onPress={() => {
-                          handleAcceptReq(notif?.data.id, 1);
+                          handlePVPRequest(notif?.id, 1);
                         }}
                       >
                         Accept
@@ -222,7 +236,7 @@ export const NotificationComp = ({}) => {
                         size="sm"
                         color="danger"
                         onPress={() => {
-                          handleDeclineReq(notif?.data.id, 1);
+                          handlePVPRequest(notif?.id, 0);
                         }}
                       >
                         Decline
@@ -230,8 +244,48 @@ export const NotificationComp = ({}) => {
                     </div>
                   </div>
                 </DropdownItem>
-              )
-            )}
+              ))}
+            {Pending?.length > 0 &&
+              Pending?.map((notif: any) => (
+                <DropdownItem key={notif?.id}>
+                  <div className="flex flex-col gap-1 p-1">
+                    <div className="flex gap-2" key={notif?.id}>
+                      <ProfileComp
+                        key={notif?.id}
+                        id={notif?.id}
+                        img={notif?.avatarUrl}
+                        firstName={notif?.firstName}
+                        lastName={notif?.lastName}
+                        invite={"sent you a friend request"}
+                        status={notif?.status}
+                      />
+                    </div>
+                    <div
+                      className="flex flex-row gap-1 justify-end"
+                      key={notif?.id}
+                    >
+                      <Button
+                        size="sm"
+                        color="success"
+                        onPress={() => {
+                          handleAcceptReq(notif?.id, 1);
+                        }}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="danger"
+                        onPress={() => {
+                          handleDeclineReq(notif?.id, 1);
+                        }}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </div>
+                </DropdownItem>
+              ))}
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>
