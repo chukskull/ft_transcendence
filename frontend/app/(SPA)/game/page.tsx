@@ -54,7 +54,6 @@ const Game: React.FC = () => {
         friendId: userId,
       });
       // clear query params
-      window.history.replaceState({}, document.title, "/game");
     } else if (userId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
