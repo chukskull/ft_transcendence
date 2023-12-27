@@ -48,25 +48,19 @@ export const NotificationComp = ({}) => {
     if (pendingFriendRequestsQuery.data) {
       setPending(pendingFriendRequestsQuery.data);
       setNotifCount(pendingFriendRequestsQuery.data.length);
-      console.log(
-        "pendingFriendRequestsQuery.data",
-        pendingFriendRequestsQuery.data
-      );
     }
   }, [pendingFriendRequestsQuery.data, Pending]);
 
   useEffect(() => {
     if (newAchievement) {
-      setPVPrequest((prev: any) => [...prev, newAchievement]);
+      setAchiv((prev: any) => [...prev, newAchievement]);
       setNotifCount((prev: any) => prev + 1);
-      console.log("newAchievement", newAchievement);
     }
   }, [newAchievement]);
   useEffect(() => {
     if (PVPrequest) {
       setPvp((prev: any) => [...prev, PVPrequest]);
       setNotifCount((prev: any) => prev + 1);
-      console.log("newPVPRequest", PVPrequest);
     }
   }, [PVPrequest]);
   useEffect(() => {
@@ -83,12 +77,10 @@ export const NotificationComp = ({}) => {
   }, []);
   if (!socket) return;
   socket.on("newPVPRequest", (data: any) => setPVPrequest(data));
-  console.log("PVPrequest", PVPrequest);
   socket.on("newAchievement", (data: any) => setNewAchievement(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
-      console.log("friendId", friendId);
       axios
         .get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/FriendRequest/${friendId}/1`,
@@ -133,7 +125,6 @@ export const NotificationComp = ({}) => {
 
   const handlePVPRequest = (friendId: number, type: number) => {
     // 1 acceptPVP 0 declinePVP
-    console.log("friendId", type);
     setPvp((prev: any) => prev.filter((notif: any) => notif.id !== friendId));
     if (type == 1) {
       socket.emit("acceptPVP", {

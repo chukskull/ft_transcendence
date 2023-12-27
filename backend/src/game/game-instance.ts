@@ -45,7 +45,7 @@ export class GameInstance {
     server: Server,
     matchHistory: any,
     matchHistoryRepo: any,
-    private achievementService: AchievementService
+    private achievementService: AchievementService,
   ) {
     this.matchHistory = matchHistory;
     this.matchHistoryRepo = matchHistoryRepo;
@@ -215,7 +215,7 @@ export class GameInstance {
 
   private async updateScoreAndAchievementsInDB() {
     try {
-      let matchHistory = await this.matchHistory
+      let matchHistory = await this.matchHistory;
       if (matchHistory) {
         await this.matchHistoryRepo.update(
           {
@@ -226,14 +226,13 @@ export class GameInstance {
             player2Score: this.player2Score,
             winner: this.winnerID,
             loser: this.loserID,
-          }
+          },
         );
         await this.achievementService.calculateAchievement(
           this.player1.id,
           this.player2.id,
-          matchHistory.id
+          matchHistory.id,
         );
-          
       } else {
         console.log('Match history not found, try again!');
       }

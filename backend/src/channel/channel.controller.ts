@@ -79,7 +79,6 @@ export class ChannelController {
     @Param('userId') userId: number,
     @Req() req,
   ) {
-    console.log('kick user why isnt it working');
     return this.channelService.kickFromChannel(chanId, userId, req.user.id);
   }
 
