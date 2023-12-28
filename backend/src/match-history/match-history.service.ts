@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
-import { MatchHistoryDto } from './dto/match-history.dto'
+import { MatchHistoryDto } from './dto/match-history.dto';
 import { User } from 'src/user/user.entity';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
@@ -27,7 +27,9 @@ export class MatchHistoryService {
 
     while (!isUnique) {
       uniqueId = Math.floor(Math.random() * 100000);
-      const existingMatchHistory = await this.matchHistoryRepo.findOne({ where: { id: uniqueId } });
+      const existingMatchHistory = await this.matchHistoryRepo.findOne({
+        where: { id: uniqueId },
+      });
       isUnique = !existingMatchHistory; // Check if the id is unique
     }
 
@@ -62,24 +64,28 @@ export class MatchHistoryService {
     return this.matchHistoryRepo.findOne({ where: id });
   }
 
-  async addMatchToUserMatchHistory(player1id: number, player2id: number, matchData: MatchHistory) {
+  async addMatchToUserMatchHistory(
+    player1id: number,
+    player2id: number,
+    matchData: MatchHistory,
+  ) {
     const user1 = await this.userRepo.findOne({
       where: {
-        id: player1id
+        id: player1id,
       },
-      relations : ['matchHistory']
-    })
+      relations: ['matchHistory'],
+    });
 
-    if (!user1) throw new NotFoundException('User not found')
+    if (!user1) throw new NotFoundException('User not found');
 
     const user2 = await this.userRepo.findOne({
       where: {
-        id: player2id
+        id: player2id,
       },
-      relations : ['matchHistory']
-    })
-    if (!user2) throw new NotFoundException('User not found')
-    user1.matchHistory.push(matchData)
+      relations: ['matchHistory'],
+    });
+    if (!user2) throw new NotFoundException('User not found');
+    user1.matchHistory.push(matchData);
     user2.matchHistory.push(matchData);
 
     this.userRepo.save(user1);
