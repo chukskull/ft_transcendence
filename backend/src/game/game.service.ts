@@ -101,9 +101,12 @@ export class GameService {
       return;
     }
     this.privateQueue = this.privateQueue.filter((lobby) => {
-      return lobby.player1.id !== myId;
+      return lobby.player1.id !== myId && lobby.player2.id !== friendId;
     });
-    client.emit('changeState', { state: 'home' });
+    client.emit('changeState', {
+      state: 'decline',
+      message: 'opponent declined your invitation',
+    });
   }
 
   async acceptPVP(
@@ -117,14 +120,9 @@ export class GameService {
       client.disconnect();
       return;
     }
-    console.log('inviterId: ', inviterId);
-    console.log('myId: ', myId);
     const userProfile = await this.userService.userProfile(myId);
-    console.log('from queue: ', this.privateQueue.find((players) => {
-      return players.player1.id == inviterId;
-    }));
     const lobby = this.privateQueue.find((players) => {
-      return players.player1.id == inviterId;
+      return players.player1.id == inviterId && players.player2.id == myId;
     });
     if (!lobby) {
       client.emit('changeState', { state: 'home' });
@@ -135,7 +133,7 @@ export class GameService {
     client.emit('changeState', { state: 'inGame' });
     const player1 = lobby.player1;
     const player2 = lobby.player2;
-    this.createGame(player1, player2, server);
+    await this.createGame(player1, player2, server);
   }
 
   /*
@@ -147,7 +145,6 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    client.join('MatchMakingQueue' + userId);
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
     });
@@ -199,7 +196,9 @@ export class GameService {
   async createGame(player1: any, player2: any, server: Server): Promise<void> {
     await this.userService.setStatus(player1.id, 'inGame');
     await this.userService.setStatus(player2.id, 'inGame');
-    const matchHisto = this.matchHistory.create({
+    console.log('player1id: ' + player1.id);
+    console.log('player2id: ' + player2.id);
+    const matchHisto = await this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,
     });
@@ -210,19 +209,19 @@ export class GameService {
       matchHisto,
       this.matchHistoryRepo,
       this.achievementService,
-    ); // take the entire player
-    player1.socket.emit('gameStarted', {
-      MyId: player1.id,
-      myNickname: player1.nickName,
-      OpponentId: player2.id,
-      OpponentNickname: player2.nickName,
-    });
-    player2.socket.emit('gameStarted', {
-      MyId: player2.id,
-      myNickname: player2.nickName,
-      OpponentId: player1.id,
-      OpponentNickname: player1.nickName,
-    });
+      ); // take the entire player
+      player1.socket.emit('gameStarted', {
+        MyId: player1.id,
+        myNickname: player1.nickName,
+        OpponentId: player2.id,
+        OpponentNickname: player2.nickName,
+      });
+      player2.socket.emit('gameStarted', {
+        MyId: player2.id,
+        myNickname: player2.nickName,
+        OpponentId: player1.id,
+        OpponentNickname: player1.nickName,
+      });
     game.startGame();
   }
 }
