@@ -140,13 +140,11 @@ export class GameService {
       client.disconnect();
       return;
     }
-    const userProfile = await this.userService.userProfile(myId);
     const pvpNotif = await this.pvpInviteRepo.findOne({
       where: { id: notifId },
       relations: ['inviter', 'friend'],
     });
-    if (!pvpNotif || pvpNotif.accepted) return;
-    if (pvpNotif.friend.id != myId) return;
+    if (!pvpNotif || pvpNotif.accepted || pvpNotif.friend.id != myId) return;
     const lobby = this.privateQueue.find((players) => {
       return (
         players.player1.id == pvpNotif.inviter.id && players.player2.id == myId
@@ -157,7 +155,7 @@ export class GameService {
       return;
     }
     lobby.player2.socket = client;
-    lobby.player2.nickName = userProfile.nickName;
+    lobby.player2.nickName = pvpNotif.friend.nickName;
     client.emit('changeState', { state: 'inGame' });
     const player1 = lobby.player1;
     const player2 = lobby.player2;

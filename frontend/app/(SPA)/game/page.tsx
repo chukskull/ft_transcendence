@@ -35,7 +35,6 @@ const Game: React.FC = () => {
           console.log("waitingForResponse");
           break;
         case "gameEnded":
-          console.log("93 mnx");
           setGameStarted("gameEnded");
           console.log("gameEnded", data);
 
@@ -49,13 +48,13 @@ const Game: React.FC = () => {
     if (notifId && accept == "accept" && newSocket) {
       newSocket.emit("acceptPVP", {
         token: document.cookie.split("=")[1],
-        notifId: Number(notifId),
+        notifId: notifId,
       });
       // clear query params
     } else if (notifId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
-        friendId: notifId,
+        friendId: Number(notifId),
       });
     }
 
