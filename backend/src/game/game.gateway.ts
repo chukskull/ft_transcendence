@@ -75,8 +75,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     @ConnectedSocket() client: Socket,
   ) {
-    const { token, friendId } = data;
-    this.gameService.acceptPVP(client, this.server, token, friendId);
+    this.gameService.acceptPVP(client, this.server, data.token, data.friendId as number);
   }
   @SubscribeMessage('declinePVP')
   async declineGameInvite(
@@ -87,9 +86,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
     @ConnectedSocket() client: Socket,
   ) {
-    const { token, friendId } = data;
-    console.log('declining pvp', friendId);
 
-    this.gameService.declinePVP(client, token, friendId);
+    this.gameService.declinePVP(client, data.token, data.friendId);
   }
 }

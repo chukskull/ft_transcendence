@@ -9,6 +9,7 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { NotifGateway } from 'src/notifications.gateway';
+import con from 'ormconfig';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 845;
@@ -30,12 +31,20 @@ export class GameService {
     score: number;
     nickName: string;
   }> = [];
-  public privateQueue = Array<{
-    id: number;
-    socket: Socket;
-    score: number;
-    nickName: string;
-  }>();
+  public privateQueue: Array<{
+    player1:{
+      id: number;
+      socket: Socket;
+      score: number;
+      nickName: string;
+    },
+    player2:{
+      id: number;
+      socket: Socket;
+      score: number;
+      nickName: string;
+    }
+  }> = [];
 
   constructor(
     private matchHistory: MatchHistoryService,
@@ -66,16 +75,22 @@ export class GameService {
     client.emit('changeState', { state: 'waitingForResponse' });
     const userProfile = await this.userService.userProfile(userId);
     this.privateQueue.push({
-      id: userId,
-      socket: client,
-      score: 0,
-      nickName: userProfile.nickName,
+      player1: {
+        id: userId,
+        socket: client,
+        score: 0,
+        nickName: userProfile.nickName,
+      },
+      player2: {
+        id: friendId,
+        socket: null,
+        score: 0,
+        nickName: null,
+      },
     });
     client.on('disconnect', () => {
       console.log('disconnected');
-      this.privateQueue = this.privateQueue.filter((player) => {
-        return player.id !== userId;
-      });
+      return;
     });
     this.notifGateway.sendPVPRequest(userProfile, friendId);
   }
@@ -85,15 +100,13 @@ export class GameService {
       client.disconnect();
       return;
     }
-    const inviter = this.privateQueue.shift();
-    if (inviter.id == myId) {
-      inviter.socket.emit('changeState', {
-        state: 'decline',
-        message: 'opponent declined your invitation',
-      });
-      client.emit('changeState', { state: 'home' });
-      this.privateQueue.pop();
-    }
+    this.privateQueue = this.privateQueue.filter((lobby) => {
+      return lobby.player1.id !== myId && lobby.player2.id !== friendId;
+    });
+    client.emit('changeState', {
+      state: 'decline',
+      message: 'opponent declined your invitation',
+    });
   }
 
   async acceptPVP(
@@ -108,19 +121,19 @@ export class GameService {
       return;
     }
     const userProfile = await this.userService.userProfile(myId);
-    this.privateQueue.push({
-      id: myId,
-      socket: client,
-      score: 0,
-      nickName: userProfile.nickName,
+    const lobby = this.privateQueue.find((players) => {
+      return players.player1.id == inviterId && players.player2.id == myId;
     });
-
-    const player1 = this.privateQueue.shift();
-    if (player1.id == inviterId) {
-      console.log('accepted');
-      const player2 = this.privateQueue.shift();
-      this.createGame(player1, player2, server);
+    if (!lobby) {
+      client.emit('changeState', { state: 'home' });
+      return;
     }
+    lobby.player2.socket = client;
+    lobby.player2.nickName = userProfile.nickName;
+    client.emit('changeState', { state: 'inGame' });
+    const player1 = lobby.player1;
+    const player2 = lobby.player2;
+    await this.createGame(player1, player2, server);
   }
 
   /*
@@ -132,7 +145,6 @@ export class GameService {
     token: string,
   ): Promise<boolean> {
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    client.join('MatchMakingQueue' + userId);
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
     });
@@ -184,7 +196,9 @@ export class GameService {
   async createGame(player1: any, player2: any, server: Server): Promise<void> {
     await this.userService.setStatus(player1.id, 'inGame');
     await this.userService.setStatus(player2.id, 'inGame');
-    const matchHisto = this.matchHistory.create({
+    console.log('player1id: ' + player1.id);
+    console.log('player2id: ' + player2.id);
+    const matchHisto = await this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,
     });
@@ -195,19 +209,19 @@ export class GameService {
       matchHisto,
       this.matchHistoryRepo,
       this.achievementService,
-    ); // take the entire player
-    player1.socket.emit('gameStarted', {
-      MyId: player1.id,
-      myNickname: player1.nickName,
-      OpponentId: player2.id,
-      OpponentNickname: player2.nickName,
-    });
-    player2.socket.emit('gameStarted', {
-      MyId: player2.id,
-      myNickname: player2.nickName,
-      OpponentId: player1.id,
-      OpponentNickname: player1.nickName,
-    });
+      ); // take the entire player
+      player1.socket.emit('gameStarted', {
+        MyId: player1.id,
+        myNickname: player1.nickName,
+        OpponentId: player2.id,
+        OpponentNickname: player2.nickName,
+      });
+      player2.socket.emit('gameStarted', {
+        MyId: player2.id,
+        myNickname: player2.nickName,
+        OpponentId: player1.id,
+        OpponentNickname: player1.nickName,
+      });
     game.startGame();
   }
 }

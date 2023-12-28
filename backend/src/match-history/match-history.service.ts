@@ -39,6 +39,8 @@ export class MatchHistoryService {
     });
     mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
     mh.player2 = await this.userService.userProfile(MatchHistoryDto.player2ID);
+    console.log(mh.player1);
+    console.log(mh.player2);
     mh.date = new Date();
     await this.matchHistoryRepo.save(mh);
     mh.player1.matchHistory.push(mh);
