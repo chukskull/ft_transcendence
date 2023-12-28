@@ -51,7 +51,7 @@ const Game: React.FC = () => {
     if (userId && accept == "accept" && newSocket) {
       newSocket.emit("acceptPVP", {
         token: document.cookie.split("=")[1],
-        friendId: userId,
+        friendId: Number(userId),
       });
       // clear query params
     } else if (userId && newSocket) {

@@ -46,7 +46,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
 
   const updateUser = async (user: any) => {
     setValue("twoFa", checked);
-    console.log(user, user.avatarUrl.length);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
@@ -60,7 +59,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   };
 
   // 2fs on off
-  const handle2Fa = () => {
+  const handle2Fa = (checked: boolean) => {
     const endPoint = checked ? "disable" : "enable";
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
@@ -68,6 +67,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       })
       .then((res) => {
         setQrCode(res.data);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -130,8 +130,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             </h1>
             <Input
               {...register("nickName", {
-                maxLength: 15,
-                minLength: 3,
                 validate: {
                   noSpace: (value) => !/\s/.test(value),
                 },
@@ -157,7 +155,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             aria-label="Automatic updates"
             onChange={() => {
               setChecked(!checked);
-              handle2Fa();
+              handle2Fa(checked);
             }}
           />
         </div>

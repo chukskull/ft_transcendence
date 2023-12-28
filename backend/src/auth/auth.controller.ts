@@ -105,10 +105,8 @@ export class AuthController {
     @Res() res,
   ) {
     console.log(pin);
-    const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(
-      pin,
-      req.user,
-    );
+    const isCodeValid =
+      await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
 
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong code');
@@ -120,7 +118,7 @@ export class AuthController {
 
   @Post('2fa/turn-off')
   @UseGuards(JwtGuard)
-  async turnOffTwofactor (@Req() req ) {
+  async turnOffTwofactor(@Req() req) {
     await this.userService.disableTwoFactor(req.user.id);
   }
 
