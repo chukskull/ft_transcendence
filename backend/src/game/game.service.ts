@@ -89,7 +89,6 @@ export class GameService {
       },
     });
     client.on('disconnect', () => {
-      console.log('disconnected');
       return;
     });
     this.notifGateway.sendPVPRequest(userProfile, friendId);
@@ -133,7 +132,15 @@ export class GameService {
     client.emit('changeState', { state: 'inGame' });
     const player1 = lobby.player1;
     const player2 = lobby.player2;
-    await this.createGame(player1, player2, server);
+    // remove all privateQueue that has the same inviterId
+    this.privateQueue = this.privateQueue.filter((lobby) => {
+      return lobby.player1.id != inviterId && lobby.player2.id != myId;
+    });
+    this.privateQueue = this.privateQueue.filter((lobby) => {
+      return lobby.player1.id != myId && lobby.player2.id != inviterId;
+    });
+    console.log('queue: ', this.privateQueue);
+    return await this.createGame(player1, player2, server);
   }
 
   /*
@@ -196,8 +203,6 @@ export class GameService {
   async createGame(player1: any, player2: any, server: Server): Promise<void> {
     await this.userService.setStatus(player1.id, 'inGame');
     await this.userService.setStatus(player2.id, 'inGame');
-    console.log('player1id: ' + player1.id);
-    console.log('player2id: ' + player2.id);
     const matchHisto = await this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,
