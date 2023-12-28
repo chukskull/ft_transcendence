@@ -75,7 +75,6 @@ export class GameService {
       client.disconnect();
       return;
     }
-    client.emit('changeState', { state: 'waitingForResponse' });
     const userProfile = await this.userService.userProfile(userId);
     const friendProfile = await this.userService.userProfile(Number(friendId));
     this.privateQueue.push({
@@ -106,15 +105,24 @@ export class GameService {
 
     this.notifGateway.sendPVPRequest(newInvite, friendId);
   }
-  async declinePVP(client: Socket, token: string, friendId: number) {
+  async declinePVP(client: Socket, token: string, notifId: string) {
     const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!myId) {
       client.disconnect();
       return;
     }
-    this.privateQueue = this.privateQueue.filter((lobby) => {
-      return lobby.player1.id !== myId && lobby.player2.id !== friendId;
+    const pvpNotif = await this.pvpInviteRepo.findOne({
+      where: { id: notifId },
+      relations: ['inviter', 'friend'],
     });
+    this.privateQueue = this.privateQueue.filter((lobby) => {
+      return (
+        lobby.player1.id !== myId && lobby.player2.id !== pvpNotif.inviter.id
+      );
+    });
+    pvpNotif.accepted = false;
+    pvpNotif.declined = true;
+    await this.pvpInviteRepo.save(pvpNotif);
     client.emit('changeState', {
       state: 'decline',
       message: 'opponent declined your invitation',
@@ -125,18 +133,24 @@ export class GameService {
     client: Socket,
     server: Server,
     token: string,
-    inviterId: number,
+    notifId: string,
   ) {
     const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!myId) {
       client.disconnect();
       return;
     }
-    // console log the type of myId and inviterId
     const userProfile = await this.userService.userProfile(myId);
-
+    const pvpNotif = await this.pvpInviteRepo.findOne({
+      where: { id: notifId },
+      relations: ['inviter', 'friend'],
+    });
+    if (!pvpNotif || pvpNotif.accepted) return;
+    if (pvpNotif.friend.id != myId) return;
     const lobby = this.privateQueue.find((players) => {
-      return players.player1.id == inviterId && players.player2.id == myId;
+      return (
+        players.player1.id == pvpNotif.inviter.id && players.player2.id == myId
+      );
     });
     if (!lobby) {
       client.emit('changeState', { state: 'home' });
@@ -149,12 +163,17 @@ export class GameService {
     const player2 = lobby.player2;
     // remove all privateQueue that has the same inviterId
     this.privateQueue = this.privateQueue.filter((lobby) => {
-      return lobby.player1.id != inviterId && lobby.player2.id != myId;
+      return (
+        lobby.player1.id != pvpNotif.inviter.id && lobby.player2.id != myId
+      );
     });
     this.privateQueue = this.privateQueue.filter((lobby) => {
-      return lobby.player1.id != myId && lobby.player2.id != inviterId;
+      return (
+        lobby.player1.id != myId && lobby.player2.id != pvpNotif.inviter.id
+      );
     });
-    console.log('queue: ', this.privateQueue);
+    pvpNotif.accepted = true;
+    await this.pvpInviteRepo.save(pvpNotif);
     return await this.createGame(player1, player2, server);
   }
 

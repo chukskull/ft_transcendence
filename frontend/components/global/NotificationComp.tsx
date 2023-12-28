@@ -126,11 +126,10 @@ export const NotificationComp = ({}) => {
     return <NotificationIcon width={25} height={25} />;
   if (pendingFriendRequestsQuery.error) return <div>error</div>;
 
-  const handlePVPRequest = (friendId: number, type: number) => {
+  const handlePVPRequest = (PvPnotifId: number, type: number) => {
     // 1 acceptPVP 0 declinePVP
-    setPvp((prev: any) => prev.filter((notif: any) => notif.id !== friendId));
-    if (type == 1 && friendId) {
-      router.push(`/game?accept?userId=${friendId}`);
+    if (type == 1 && PvPnotifId) {
+      router.push(`/game?accept?notifId=${PvPnotifId}`);
     } else if (type == 0) {
       const newSocket = io(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`
@@ -138,7 +137,7 @@ export const NotificationComp = ({}) => {
       newSocket.connect();
       newSocket.emit("declinePVP", {
         token: document.cookie.split("=")[1],
-        friendId: friendId,
+        notifId: PvPnotifId,
       });
     }
   };
@@ -207,11 +206,11 @@ export const NotificationComp = ({}) => {
                       <ProfileComp
                         key={notif?.id}
                         id={notif?.id}
-                        img={notif?.avatarUrl}
-                        firstName={notif?.firstName}
-                        lastName={notif?.lastName}
+                        img={notif?.inviter.avatarUrl}
+                        firstName={notif?.inviter.firstName}
+                        lastName={notif?.inviter.lastName}
                         invite={"sent you a game request"}
-                        status={notif?.status}
+                        status={notif?.inviter.status}
                       />
                     </div>
                     <div
