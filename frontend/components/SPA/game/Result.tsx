@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Avatar, Progress } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 interface ResultProps {
   name: string;
@@ -19,11 +20,12 @@ export const Result = ({
   value,
 }: ResultProps) => {
   const color = result === "You Won" ? "text-emerald-500" : "text-red-700";
+  const router = useRouter();
   useEffect(() => {
     if (value === 100) {
-      window.location.reload();
+      router.push("/home");
     }
-  }, [value]);
+  }, [value, router]);
 
   return (
     <div className="flex flex-col items-center justify-center bg-modalBackground  gap-4  p-10 rounded-[4rem] w-[312px]">
