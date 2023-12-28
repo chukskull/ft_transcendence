@@ -39,11 +39,8 @@ export class MatchHistoryService {
       player1Score: 0,
       player2Score: 0,
     });
-    const p2 = Number(MatchHistoryDto.player2ID);
     mh.player1 = await this.userService.userProfile(MatchHistoryDto.player1ID);
-    mh.player2 = await this.userService.userProfile(p2);
-    console.log(mh.player1);
-    console.log(mh.player2);
+    mh.player2 = await this.userService.userProfile(Number(MatchHistoryDto.player2ID));
     mh.date = new Date();
     await this.matchHistoryRepo.save(mh);
     mh.player1.matchHistory.push(mh);
