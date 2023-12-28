@@ -9,6 +9,7 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { NotifGateway } from 'src/notifications.gateway';
+import con from 'ormconfig';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 845;
@@ -31,10 +32,18 @@ export class GameService {
     nickName: string;
   }> = [];
   public privateQueue: Array<{
-    id: number;
-    socket: Socket;
-    score: number;
-    nickName: string;
+    player1:{
+      id: number;
+      socket: Socket;
+      score: number;
+      nickName: string;
+    },
+    player2:{
+      id: number;
+      socket: Socket;
+      score: number;
+      nickName: string;
+    }
   }> = [];
 
   constructor(
@@ -66,16 +75,22 @@ export class GameService {
     client.emit('changeState', { state: 'waitingForResponse' });
     const userProfile = await this.userService.userProfile(userId);
     this.privateQueue.push({
-      id: userId,
-      socket: client,
-      score: 0,
-      nickName: userProfile.nickName,
+      player1: {
+        id: userId,
+        socket: client,
+        score: 0,
+        nickName: userProfile.nickName,
+      },
+      player2: {
+        id: friendId,
+        socket: null,
+        score: 0,
+        nickName: null,
+      },
     });
     client.on('disconnect', () => {
       console.log('disconnected');
-      this.privateQueue = this.privateQueue.filter((player) => {
-        return player.id !== userId;
-      });
+      return;
     });
     this.notifGateway.sendPVPRequest(userProfile, friendId);
   }
@@ -85,15 +100,10 @@ export class GameService {
       client.disconnect();
       return;
     }
-    const inviter = this.privateQueue.shift();
-    if (inviter.id == myId) {
-      inviter.socket.emit('changeState', {
-        state: 'decline',
-        message: 'opponent declined your invitation',
-      });
-      client.emit('changeState', { state: 'home' });
-      this.privateQueue.pop();
-    }
+    this.privateQueue = this.privateQueue.filter((lobby) => {
+      return lobby.player1.id !== myId;
+    });
+    client.emit('changeState', { state: 'home' });
   }
 
   async acceptPVP(
@@ -107,20 +117,25 @@ export class GameService {
       client.disconnect();
       return;
     }
+    console.log('inviterId: ', inviterId);
+    console.log('myId: ', myId);
     const userProfile = await this.userService.userProfile(myId);
-    this.privateQueue.push({
-      id: myId,
-      socket: client,
-      score: 0,
-      nickName: userProfile.nickName,
+    console.log('from queue: ', this.privateQueue.find((players) => {
+      return players.player1.id == inviterId;
+    }));
+    const lobby = this.privateQueue.find((players) => {
+      return players.player1.id == inviterId;
     });
-
-    const player1 = this.privateQueue.shift();
-    if (player1.id == inviterId) {
-      console.log('accepted');
-      const player2 = this.privateQueue.shift();
-      this.createGame(player1, player2, server);
+    if (!lobby) {
+      client.emit('changeState', { state: 'home' });
+      return;
     }
+    lobby.player2.socket = client;
+    lobby.player2.nickName = userProfile.nickName;
+    client.emit('changeState', { state: 'inGame' });
+    const player1 = lobby.player1;
+    const player2 = lobby.player2;
+    this.createGame(player1, player2, server);
   }
 
   /*
