@@ -9,6 +9,7 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { NotifGateway } from 'src/notifications.gateway';
+import { pvpInvite } from './pvp.entity';
 import con from 'ormconfig';
 const jwt = require('jsonwebtoken');
 
@@ -54,6 +55,8 @@ export class GameService {
     private notifGateway: NotifGateway,
     @InjectRepository(MatchHistory)
     private matchHistoryRepo: Repository<MatchHistory>,
+    @InjectRepository(pvpInvite)
+    private pvpInviteRepo: Repository<pvpInvite>,
   ) {}
 
   /**
@@ -74,6 +77,7 @@ export class GameService {
     }
     client.emit('changeState', { state: 'waitingForResponse' });
     const userProfile = await this.userService.userProfile(userId);
+    const friendProfile = await this.userService.userProfile(Number(friendId));
     this.privateQueue.push({
       player1: {
         id: userId,
@@ -91,7 +95,16 @@ export class GameService {
     client.on('disconnect', () => {
       return;
     });
-    this.notifGateway.sendPVPRequest(userProfile, friendId);
+    const newInvite = await this.pvpInviteRepo.create({
+      inviter: userProfile,
+      friend: friendProfile,
+      notifSent: true,
+    });
+    if (!newInvite) return;
+
+    await this.pvpInviteRepo.save(newInvite);
+
+    this.notifGateway.sendPVPRequest(newInvite, friendId);
   }
   async declinePVP(client: Socket, token: string, friendId: number) {
     const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;

@@ -60,6 +60,7 @@ export const NotificationComp = ({}) => {
     }
   }, [newAchievement]);
   useEffect(() => {
+    console.log("new invitation occovoe icp requerst", PVPrequest);
     if (PVPrequest) {
       setPvp((prev: any) => [...prev, PVPrequest]);
       setNotifCount((prev: any) => prev + 1);
