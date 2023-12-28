@@ -32,18 +32,18 @@ export class GameService {
     nickName: string;
   }> = [];
   public privateQueue: Array<{
-    player1:{
+    player1: {
       id: number;
       socket: Socket;
       score: number;
       nickName: string;
-    },
-    player2:{
+    };
+    player2: {
       id: number;
       socket: Socket;
       score: number;
       nickName: string;
-    }
+    };
   }> = [];
 
   constructor(
@@ -120,7 +120,9 @@ export class GameService {
       client.disconnect();
       return;
     }
+    // console log the type of myId and inviterId
     const userProfile = await this.userService.userProfile(myId);
+
     const lobby = this.privateQueue.find((players) => {
       return players.player1.id == inviterId && players.player2.id == myId;
     });
@@ -196,8 +198,6 @@ export class GameService {
   async createGame(player1: any, player2: any, server: Server): Promise<void> {
     await this.userService.setStatus(player1.id, 'inGame');
     await this.userService.setStatus(player2.id, 'inGame');
-    console.log('player1id: ' + player1.id);
-    console.log('player2id: ' + player2.id);
     const matchHisto = await this.matchHistory.create({
       player1ID: player1.id,
       player2ID: player2.id,
@@ -209,19 +209,19 @@ export class GameService {
       matchHisto,
       this.matchHistoryRepo,
       this.achievementService,
-      ); // take the entire player
-      player1.socket.emit('gameStarted', {
-        MyId: player1.id,
-        myNickname: player1.nickName,
-        OpponentId: player2.id,
-        OpponentNickname: player2.nickName,
-      });
-      player2.socket.emit('gameStarted', {
-        MyId: player2.id,
-        myNickname: player2.nickName,
-        OpponentId: player1.id,
-        OpponentNickname: player1.nickName,
-      });
+    ); // take the entire player
+    player1.socket.emit('gameStarted', {
+      MyId: player1.id,
+      myNickname: player1.nickName,
+      OpponentId: player2.id,
+      OpponentNickname: player2.nickName,
+    });
+    player2.socket.emit('gameStarted', {
+      MyId: player2.id,
+      myNickname: player2.nickName,
+      OpponentId: player1.id,
+      OpponentNickname: player1.nickName,
+    });
     game.startGame();
   }
 }
