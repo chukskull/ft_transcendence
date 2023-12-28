@@ -7,6 +7,7 @@ import io from "socket.io-client";
 import { Button } from "@nextui-org/react";
 import OnlineGame from "@/components/SPA/game/OnlineGame";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -15,7 +16,7 @@ const Game: React.FC = () => {
   const [socket, setSocket] = useState<any>(null);
   const [gameStarted, setGameStarted] = useState<string>("initial");
   const [enemy, setEnemy] = useState<string>("");
-
+  const router = useRouter();
   useEffect(() => {
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
     newSocket.connect();
@@ -46,7 +47,14 @@ const Game: React.FC = () => {
       }
     });
     const userId = window.location.search.split("=")[1];
-    if (userId && newSocket) {
+    const accept = window.location.search.split("?")[1];
+    if (userId && accept == "accept" && newSocket) {
+      newSocket.emit("acceptPVP", {
+        token: document.cookie.split("=")[1],
+        friendId: userId,
+      });
+      // clear query params
+    } else if (userId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
         friendId: userId,
@@ -55,7 +63,6 @@ const Game: React.FC = () => {
 
     newSocket.on("gameStarted", (data: any) => {
       setGameStarted("gameStarted");
-      console.log("gameStarted event hhhhh received front", data);
 
       axios
         .get(
@@ -67,7 +74,7 @@ const Game: React.FC = () => {
         .then((res) => {
           setEnemy(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => router.push("/login"));
       setOnlineMode(true);
     });
     return () => {

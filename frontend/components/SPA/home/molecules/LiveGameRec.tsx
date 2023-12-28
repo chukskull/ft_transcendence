@@ -8,6 +8,8 @@ interface LiveGameRecProps {
   scoreLeft: number;
   scoreRight: number;
   boolBut?: boolean;
+  onlineleft?: string;
+  onlineright?: string;
 }
 
 export const LiveGameRec = ({
@@ -15,6 +17,8 @@ export const LiveGameRec = ({
   RightProf,
   scoreLeft,
   scoreRight,
+  onlineleft,
+  onlineright,
   boolBut,
 }: LiveGameRecProps) => {
   return (
@@ -38,14 +42,22 @@ export const LiveGameRec = ({
         </div>
       ) : (
         <div className="flex items-center justify-around flex-grow px-8 border-1 border-none rounded-2xl w-full bg-purpleProfile h-20">
-          <Avatar isBordered color="success" src={LeftProf} />
+          <Avatar
+            isBordered
+            color={onlineleft === "online" ? "success" : "danger"}
+            src={LeftProf}
+          />
           <div className="flex flex-col items-center justify-center  py-1">
             <h1 className="text-fontlight ">
               {scoreLeft} - {scoreRight}
             </h1>
             <h1 className="text-fontlight font-extrabold text-lg"> VS </h1>
           </div>
-          <Avatar isBordered color="success" src={RightProf} />
+          <Avatar
+            isBordered
+            color={onlineright === "online" ? "success" : "danger"}
+            src={RightProf}
+          />
         </div>
       )}
     </>

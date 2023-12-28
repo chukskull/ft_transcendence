@@ -15,12 +15,19 @@ import { Avatar } from "antd";
 import axios from "axios";
 import { useQuery } from "react-query";
 import io from "socket.io-client";
+import { useRouter } from "next/navigation";
+import { set } from "lodash";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
-  const [notifData, setNotifData] = useState<any>(null);
+  const [Pending, setPending] = useState<any[]>([]);
+  const [Pvp, setPvp] = useState<any[]>([]);
+  const [Achiv, setAchiv] = useState<any[]>([]);
   const [socket, setSocket] = useState<any>(null);
-  const [receivedData, setReceivedData] = useState<any>(null);
+  const [PVPrequest, setPVPrequest] = useState<any>(null);
+  const [newAchievement, setNewAchievement] = useState<any>(null);
+  const router = useRouter();
+  //  const [receivedData, setReceivedData] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -33,21 +40,31 @@ export const NotificationComp = ({}) => {
         { withCredentials: true }
       );
       return response.data.pendingFriendRequests;
+    },
+    {
+      refetchInterval: 500,
     }
   );
-  useEffect(() => {
-    if (receivedData) {
-      setNotifData((prev: any) => [...prev, receivedData]);
-      setNotifCount((prev: any) => prev + 1);
-      console.log("newPVPRequest", receivedData);
-    }
-  }, [receivedData]);
+
   useEffect(() => {
     if (pendingFriendRequestsQuery.data) {
-      setNotifData(pendingFriendRequestsQuery.data);
+      setPending(pendingFriendRequestsQuery.data);
       setNotifCount(pendingFriendRequestsQuery.data.length);
     }
-  }, [pendingFriendRequestsQuery.data]);
+  }, [pendingFriendRequestsQuery.data, Pending]);
+
+  useEffect(() => {
+    if (newAchievement) {
+      setAchiv((prev: any) => [...prev, newAchievement]);
+      setNotifCount((prev: any) => prev + 1);
+    }
+  }, [newAchievement]);
+  useEffect(() => {
+    if (PVPrequest) {
+      setPvp((prev: any) => [...prev, PVPrequest]);
+      setNotifCount((prev: any) => prev + 1);
+    }
+  }, [PVPrequest]);
   useEffect(() => {
     const newSocket = io(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`,
@@ -61,11 +78,11 @@ export const NotificationComp = ({}) => {
     setSocket(newSocket);
   }, []);
   if (!socket) return;
-  socket.on("newPVPRequest", (data: any) => setReceivedData(data));
+  socket.on("newPVPRequest", (data: any) => setPVPrequest(data));
+  socket.on("newAchievement", (data: any) => setNewAchievement(data));
   const handleAcceptReq = (friendId: number, type: number) => {
     // 1 friendRequest 2 gameRequest
     if (type === 1) {
-      console.log("friendId", friendId);
       axios
         .get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/FriendRequest/${friendId}/1`,
@@ -75,7 +92,7 @@ export const NotificationComp = ({}) => {
         )
         .then((res) => {
           console.log(res);
-          setNotifData((prev: any) =>
+          setPending((prev: any) =>
             prev.filter((notif: any) => notif.id !== friendId)
           );
         })
@@ -95,7 +112,7 @@ export const NotificationComp = ({}) => {
           }
         )
         .then((res) => {
-          setNotifData((prev: any) =>
+          setPending((prev: any) =>
             prev.filter((notif: any) => notif.id !== friendId)
           );
         })
@@ -110,27 +127,26 @@ export const NotificationComp = ({}) => {
 
   const handlePVPRequest = (friendId: number, type: number) => {
     // 1 acceptPVP 0 declinePVP
-    if (type == 1) {
-      socket.emit("acceptPVP", { 
-        token: document.cookie.split("=")[1],
-        friendId });
+    setPvp((prev: any) => prev.filter((notif: any) => notif.id !== friendId));
+    if (type == 1 && friendId) {
+      router.push(`/game?accept?userId=${friendId}`);
     } else if (type == 0) {
-      socket.emit("declinePVP", {
+      const newSocket = io(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`
+      );
+      newSocket.connect();
+      newSocket.emit("declinePVP", {
         token: document.cookie.split("=")[1],
-        friendId
+        friendId: friendId,
       });
     }
-  }
-  
-  socket.on('newAchievement', (data: any) => {
-    console.log(data);
-  })
+  };
 
   return (
     <>
       <Dropdown
         classNames={{
-          content: "bg-black", // change arrow background
+          content: "bg-black",
         }}
       >
         <DropdownTrigger onClick={handleClick}>
@@ -169,9 +185,9 @@ export const NotificationComp = ({}) => {
             }}
             title="Actions"
           >
-            {notifData?.map((notif: any) =>
-              notif.icon ? (
-                <DropdownItem key={notif.id}>
+            {Achiv?.length > 0 &&
+              Achiv?.map((notif: any) => (
+                <DropdownItem key={notif?.id}>
                   <div className="flex flex-col  gap-1 p-1">
                     <div className="flex flex-row gap-4 items-center ">
                       <Avatar src={notif?.icon} size={"large"} />
@@ -181,17 +197,60 @@ export const NotificationComp = ({}) => {
                     </div>
                   </div>
                 </DropdownItem>
-              ) : (
-                <DropdownItem key={notif.id}>
-                  <div className="flex flex-col  gap-1 p-1">
-                    <div className="flex gap-2 " key={notif?.id}>
+              ))}
+            {Pvp?.length > 0 &&
+              Pvp?.map((notif: any) => (
+                <DropdownItem key={notif?.id}>
+                  <div className="flex flex-col gap-1 p-1">
+                    <div className="flex gap-2" key={notif?.id}>
                       <ProfileComp
                         key={notif?.id}
                         id={notif?.id}
                         img={notif?.avatarUrl}
                         firstName={notif?.firstName}
                         lastName={notif?.lastName}
-                        nickName={notif?.nickName}
+                        invite={"sent you a game request"}
+                        status={notif?.status}
+                      />
+                    </div>
+                    <div
+                      className="flex flex-row gap-1 justify-end"
+                      key={notif?.id}
+                    >
+                      <Button
+                        size="sm"
+                        color="success"
+                        onPress={() => {
+                          handlePVPRequest(notif?.id, 1);
+                        }}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="danger"
+                        onPress={() => {
+                          handlePVPRequest(notif?.id, 0);
+                        }}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </div>
+                </DropdownItem>
+              ))}
+            {Pending?.length > 0 &&
+              Pending?.map((notif: any) => (
+                <DropdownItem key={notif?.id}>
+                  <div className="flex flex-col gap-1 p-1">
+                    <div className="flex gap-2" key={notif?.id}>
+                      <ProfileComp
+                        key={notif?.id}
+                        id={notif?.id}
+                        img={notif?.avatarUrl}
+                        firstName={notif?.firstName}
+                        lastName={notif?.lastName}
+                        invite={"sent you a friend request"}
                         status={notif?.status}
                       />
                     </div>
@@ -220,8 +279,7 @@ export const NotificationComp = ({}) => {
                     </div>
                   </div>
                 </DropdownItem>
-              )
-            )}
+              ))}
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>

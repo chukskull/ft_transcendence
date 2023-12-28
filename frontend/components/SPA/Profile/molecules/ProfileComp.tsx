@@ -19,6 +19,7 @@ interface ProfileCompProps {
   inChannel?: boolean;
   channelId?: number;
   isMod?: boolean;
+  invite?: string;
 }
 
 const ProfileComp = ({
@@ -32,6 +33,7 @@ const ProfileComp = ({
   inChannel,
   channelId,
   isMod,
+  invite,
 }: ProfileCompProps) => {
   const { isLoading, data, error } = useQuery("getSession", async () => {
     const res = await axios.get(
@@ -84,7 +86,6 @@ const ProfileComp = ({
     if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
-      console.log("public");
       axios
         .post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
@@ -165,7 +166,8 @@ const ProfileComp = ({
               isTabletOrMobile ? "sm:text-xs" : ""
             }`}
           >
-            {nickName ? "#" : ""}
+            {invite && !nickName ? invite : "#"}
+
             {nickName && nickName.length > 10
               ? `${nickName.slice(0, 12)}...`
               : nickName}

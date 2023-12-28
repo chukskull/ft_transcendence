@@ -1,8 +1,5 @@
-import React from "react";
-import { ProgressBar } from "../Profile/molecules/ProgressBar";
+import React, { useEffect } from "react";
 import { Avatar, Progress } from "@nextui-org/react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 interface ResultProps {
   name: string;
@@ -22,10 +19,12 @@ export const Result = ({
   value,
 }: ResultProps) => {
   const color = result === "You Won" ? "text-emerald-500" : "text-red-700";
-  const router = useRouter();
-  if (value === 100) {
-    router.back();
-  }
+  useEffect(() => {
+    if (value === 100) {
+      window.location.reload();
+    }
+  }, [value]);
+
   return (
     <div className="flex flex-col items-center justify-center bg-modalBackground  gap-4  p-10 rounded-[4rem] w-[312px]">
       <h1 className={`text-3xl font-ClashGrotesk-Medium ${color} mb-5`}>

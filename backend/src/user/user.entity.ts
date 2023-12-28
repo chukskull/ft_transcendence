@@ -71,9 +71,6 @@ export class User {
   @Column({ default: 0 })
   wins: number;
 
-  @Column({ nullable: true })
-  winsInARow: number;
-
   @Column({ default: 0 })
   totalGames: number;
 
