@@ -167,7 +167,6 @@ export const NotificationComp = ({}) => {
       });
     }
   };
-  console.log("receivedData", receivedData);
   return (
     <>
       <Dropdown

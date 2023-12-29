@@ -94,6 +94,8 @@ export class GameInstance {
       this.player2.socket.emit('gameEnded', {
         winner: this.winnerID,
         loser: this.loserID,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -116,6 +118,8 @@ export class GameInstance {
       this.player1.socket.emit('gameEnded', {
         winner: this.winnerID,
         loser: this.loserID,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
