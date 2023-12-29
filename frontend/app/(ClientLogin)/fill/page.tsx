@@ -66,7 +66,6 @@ export default function Fill() {
   };
 
   const addNewUser = async (user: any) => {
-    console.log("filldata",user);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/fill`, user, {
         withCredentials: true,
@@ -92,7 +91,7 @@ export default function Fill() {
       firstName: "",
       lastName: "",
       nickName: "",
-      base64Image: "",
+      base64Image: "empty",
     },
   });
 

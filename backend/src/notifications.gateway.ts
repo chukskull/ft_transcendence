@@ -32,9 +32,9 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(`userNotif-${userId}`).emit('newAchievement', achievement);
   }
 
-  sendPVPRequest(inviter: User, userId: number) {
-    console.log('sending pvp request');
-    this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviter);
+  sendPVPRequest(inviteRequest: any, userId: number) {
+    inviteRequest.inviterObject = null;
+    this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviteRequest);
   }
 
   handleDisconnect(client: Socket) {}

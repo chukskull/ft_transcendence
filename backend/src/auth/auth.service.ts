@@ -41,9 +41,16 @@ export class AuthService {
     twoFactorAuthCode: string,
     user: User,
   ) {
-    return authenticator.verify({
-      token: twoFactorAuthCode,
-      secret: user.twoFactorSecret,
-    });
+    try {
+      const isValid = authenticator.verify({
+        token: twoFactorAuthCode,
+        secret: user.twoFactorSecret,
+      });
+      console.log(isValid);
+      return (isValid);
+    }
+    catch(err) {
+      return false;
+    }
   }
 }

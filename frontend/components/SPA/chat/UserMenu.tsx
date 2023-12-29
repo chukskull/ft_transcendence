@@ -26,7 +26,7 @@ interface UserMenuProps {
   online?: boolean;
   chann?: number;
   isMod?: boolean;
-  onAction?: (action: boolean) => void;
+  onAction: (action: any) => any;
 }
 
 const UserMenu = ({
@@ -67,11 +67,11 @@ const UserMenu = ({
 
   const isUserBlocked = () => {
     if (!userInfos) return false;
-    return userInfos.blockedUsers.some((e: any) => e.id === id);
+    return userInfos.blockedUsers?.some((e: any) => e.id === id);
   };
   const isFriend = () => {
     if (!userInfos) return false;
-    return userInfos.friends.some((e: any) => e.id === id);
+    return userInfos.friends?.some((e: any) => e.id === id);
   };
 
   return (
@@ -271,7 +271,7 @@ const UserMenu = ({
               onClick={() => {
                 axios
                   .get(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/muting/${id}/unmod`,
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/muting/${id}/1`,
                     {
                       withCredentials: true,
                     }

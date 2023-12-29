@@ -1,13 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Avatar, Skeleton } from "antd";
+import { Avatar } from "antd";
 import { Input } from "@nextui-org/react";
 import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
-import { SkeletonComp } from "./Skeleton";
 import { useForm } from "react-hook-form";
-import { set } from "lodash";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -19,9 +17,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const [checked, setChecked] = useState(false);
   const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [base64Image, setBase64Image] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
-  const [name, setName] = useState("");
 
   const handleClick = () => {
     const fileInput = document.createElement("input");
@@ -46,21 +42,18 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
 
   const updateUser = async (user: any) => {
     setValue("twoFa", checked);
-    console.log(user, user.avatarUrl.length);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
-      .then((res) => {
-        // window.location.reload();
-      })
+      .then((res) => {})
       .catch((err) => {
-        alert(err.response.data.message);
+        console.log(err);
       });
   };
 
   // 2fs on off
-  const handle2Fa = () => {
+  const handle2Fa = (checked: boolean) => {
     const endPoint = checked ? "disable" : "enable";
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
@@ -68,6 +61,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       })
       .then((res) => {
         setQrCode(res.data);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -94,7 +88,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      nickName: "",
+      nickName: myData?.nickName,
       avatarUrl: "noChange",
       twoFa: checked,
     },
@@ -130,8 +124,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             </h1>
             <Input
               {...register("nickName", {
-                maxLength: 15,
-                minLength: 3,
                 validate: {
                   noSpace: (value) => !/\s/.test(value),
                 },
@@ -140,7 +132,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               type="text"
               size="sm"
               isInvalid={errors.nickName ? true : false}
-              errorMessage={errors.nickName && errors.nickName.message}
               // variant="bordered"
               placeholder="new username"
             />
@@ -157,7 +148,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             aria-label="Automatic updates"
             onChange={() => {
               setChecked(!checked);
-              handle2Fa();
+              handle2Fa(checked);
             }}
           />
         </div>
@@ -177,7 +168,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             Cancel
           </Button>
           <Button
-            // type="submit"
+            type="submit"
             onClick={handleSubmit(updateUser)}
             className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >

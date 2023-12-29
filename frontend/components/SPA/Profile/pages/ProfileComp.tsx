@@ -22,12 +22,8 @@ function friendStatus(
   userId: number,
   myId: number
 ) {
-  console.log("this is my id", myId);
-  console.log("this is the user id", userId);
-
   // if friend return 1 if pending return 2 if not return 0
   if (friendsList?.length > 0) {
-    console.log("this is the friends list", friendsList);
     let friend = friendsList?.find((e: any) => e.id == userId);
     if (friend) return 1;
   }
@@ -44,19 +40,17 @@ function friendStatus(
 }
 
 const truncateText = (text: string, maxLength: number) => {
-  if (text.length > maxLength) {
+  if (text?.length > maxLength) {
     return text.substring(0, maxLength) + "...";
   }
   return text;
 };
 
 export default function Profile({ id }: any) {
-  console.log("this is the id", id);
   const [myData, setMyData] = useState<any>(null);
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
   function isBlocked() {
-    console.log("this is the my Blockeddata", myData?.blockedUsers?.length);
     if (myData?.blockedUsers?.length > 0) {
       let blocked = myData?.blockedUsers?.find((e: any) => e.nickName === id);
 
@@ -70,11 +64,9 @@ export default function Profile({ id }: any) {
   }
 
   function handleBlock(blockUnblock: number) {
-    console.log("this is the block unblock, mnstr gaty", blockUnblock);
-    console.log("this is the id mntsr gay", id);
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data.id}/${blockUnblock}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data?.id}/${blockUnblock}`,
         {
           withCredentials: true,
         }
@@ -95,11 +87,10 @@ export default function Profile({ id }: any) {
   });
   useEffect(() => {
     if (friends.data) {
-      setMyData(friends.data.data);
+      setMyData(friends.data?.data);
     }
   }, [friends.data]);
-  console.log("this is the my data", myData);
-  const { isLoading, error, data } = useQuery("userList", async () => {
+  const { isLoading, error, data }: any = useQuery("userList", async () => {
     return getUserProfile(id);
   });
   if (error) {
@@ -113,8 +104,8 @@ export default function Profile({ id }: any) {
         <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular truncate">
           <span style={{ display: "flex", alignItems: "center" }}>
             <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
-            {data.firstName && data.lastName
-              ? `${data.firstName} ${data.lastName}`
+            {data?.firstName && data?.lastName
+              ? `${data?.firstName} ${data?.lastName}`
               : ``}
           </span>
         </h1>
@@ -144,8 +135,8 @@ export default function Profile({ id }: any) {
         <div className="">
           <h1 className="text-fontlight xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl text-center md:text-start md:mt-10">
             {truncateText(
-              data.firstName && data.lastName
-                ? `${data.firstName} ${data.lastName}`
+              data?.firstName && data?.lastName
+                ? `${data?.firstName} ${data?.lastName}`
                 : `No One`,
               15
             )}
@@ -166,12 +157,13 @@ export default function Profile({ id }: any) {
           />
         </div>
 
-        <ProgressBar lvl={data?.level} exp={data?.expersience} maxExp={1098} />
+        <ProgressBar lvl={data?.level} exp={data?.experience} maxExp={1098} />
         <Stats
           perc={
             data?.totaxlames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
           }
           matches={data?.totalGames}
+          rank={data?.rank}
         />
       </div>
 
@@ -206,9 +198,21 @@ export default function Profile({ id }: any) {
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight text-center p-2 ">
             Archivements
           </h1>
-          <Achievement data={data.Achievement} />
+
+          <Achievement data={data?.achievements} />
         </div>
       </div>
     </div>
   );
 }
+
+// name: string;
+// @IsString()
+// @IsNotEmpty()
+// description: string;
+// @IsString()
+// @IsNotEmpty()
+// icon: string;
+// @IsNumber()
+// @IsNotEmpty()
+// addedXp: number;

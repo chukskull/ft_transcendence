@@ -13,9 +13,7 @@ export const NotificationIcon = ({
   click,
   ...props
 }: NotificationIconProps) => {
-  const handleClick = (comp: string) => {
-    // console.log(comp);
-  };
+  const handleClick = (comp: string) => {};
   return (
     <svg
       onClick={() => click}

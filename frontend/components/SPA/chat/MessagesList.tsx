@@ -14,19 +14,19 @@ const MsgsList = ({ chats, blockedList }: { chats: any; blockedList: any }) => {
     avatarUrl: "",
   });
 
+  chats?.forEach((chat: any) => {
+    blockedList?.forEach((blockedUser: any) => {
+      if (chat?.sender?.id == blockedUser?.id) {
+        chat.message = "This User is blocked !";
+      }
+      1;
+    });
+  });
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
     // remove blocked users from chats
-    chats?.forEach((chat: any) => {
-      blockedList?.forEach((blockedUser: any) => {
-        if (chat?.sender?.id == blockedUser?.id) {
-          chat.message = "This User is blocked !";
-        }
-        1;
-      });
-    });
   }, [chats, blockedList]);
   return (
     <>
