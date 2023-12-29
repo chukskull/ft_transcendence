@@ -50,8 +50,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
-      .then((res) => {
-      })
+      .then((res) => {})
       .catch((err) => {
         console.log(err);
       });
@@ -137,7 +136,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               type="text"
               size="sm"
               isInvalid={errors.nickName ? true : false}
-              errorMessage={errors.nickName && errors.nickName.message}
               // variant="bordered"
               placeholder="new username"
             />

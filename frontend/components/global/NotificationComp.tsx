@@ -186,105 +186,102 @@ export const NotificationComp = ({}) => {
             }}
             title="Actions"
           >
-            {Achiv?.length > 0 &&
-              Achiv?.map((notif: any) => (
-                <DropdownItem key={notif?.id}>
-                  <div className="flex flex-col  gap-1 p-1">
-                    <div className="flex flex-row gap-4 items-center ">
-                      <Avatar src={notif?.icon} size={"large"} />
-                      <h6 className="text-base font-ClashGrotesk-Regular text-fontlight py-1">
-                        {`Congratulations ! ${notif?.description}`}
-                      </h6>
-                    </div>
+            {Achiv?.map((notif: any) => (
+              <DropdownItem key={notif?.id}>
+                <div className="flex flex-col  gap-1 p-1">
+                  <div className="flex flex-row gap-4 items-center ">
+                    <Avatar src={notif?.icon} size={"large"} />
+                    <h6 className="text-base font-ClashGrotesk-Regular text-fontlight py-1">
+                      {`Congratulations ! ${notif?.description}`}
+                    </h6>
                   </div>
-                </DropdownItem>
-              ))}
-            {Pvp?.length > 0 &&
-              Pvp?.map(
-                (notif: any) =>
-                  notif.accepted == false &&
-                  notif.declined == false && (
-                    <DropdownItem key={notif?.id}>
-                      <div className="flex flex-col gap-1 p-1">
-                        <div className="flex gap-2" key={notif?.id}>
-                          <ProfileComp
-                            key={notif?.id}
-                            id={notif?.id}
-                            img={notif?.inviter.avatarUrl}
-                            firstName={notif?.inviter.firstName}
-                            lastName={notif?.inviter.lastName}
-                            invite={"sent you a game request"}
-                            status={notif?.inviter.status}
-                          />
-                        </div>
-                        <div
-                          className="flex flex-row gap-1 justify-end"
+                </div>
+              </DropdownItem>
+            ))}
+            {Pvp?.map(
+              (notif: any) =>
+                notif.accepted == false &&
+                notif.declined == false && (
+                  <DropdownItem key={notif?.id}>
+                    <div className="flex flex-col gap-1 p-1">
+                      <div className="flex gap-2" key={notif?.id}>
+                        <ProfileComp
                           key={notif?.id}
-                        >
-                          <Button
-                            size="sm"
-                            color="success"
-                            onPress={() => {
-                              handlePVPRequest(notif?.id, 1);
-                            }}
-                          >
-                            Accept
-                          </Button>
-                          <Button
-                            size="sm"
-                            color="danger"
-                            onPress={() => {
-                              handlePVPRequest(notif?.id, 0);
-                            }}
-                          >
-                            Decline
-                          </Button>
-                        </div>
+                          id={notif?.id}
+                          img={notif?.inviter.avatarUrl}
+                          firstName={notif?.inviter.firstName}
+                          lastName={notif?.inviter.lastName}
+                          invite={"sent you a game request"}
+                          status={notif?.inviter.status}
+                        />
                       </div>
-                    </DropdownItem>
-                  )
-              )}
-            {Pending?.length > 0 &&
-              Pending?.map((notif: any) => (
-                <DropdownItem key={notif?.id}>
-                  <div className="flex flex-col gap-1 p-1">
-                    <div className="flex gap-2" key={notif?.id}>
-                      <ProfileComp
+                      <div
+                        className="flex flex-row gap-1 justify-end"
                         key={notif?.id}
-                        id={notif?.id}
-                        img={notif?.avatarUrl}
-                        firstName={notif?.firstName}
-                        lastName={notif?.lastName}
-                        invite={"sent you a friend request"}
-                        status={notif?.status}
-                      />
+                      >
+                        <Button
+                          size="sm"
+                          color="success"
+                          onPress={() => {
+                            handlePVPRequest(notif?.id, 1);
+                          }}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          size="sm"
+                          color="danger"
+                          onPress={() => {
+                            handlePVPRequest(notif?.id, 0);
+                          }}
+                        >
+                          Decline
+                        </Button>
+                      </div>
                     </div>
-                    <div
-                      className="flex flex-row gap-1 justify-end"
+                  </DropdownItem>
+                )
+            )}
+            {Pending?.map((notif: any) => (
+              <DropdownItem key={notif?.id}>
+                <div className="flex flex-col gap-1 p-1">
+                  <div className="flex gap-2" key={notif?.id}>
+                    <ProfileComp
                       key={notif?.id}
-                    >
-                      <Button
-                        size="sm"
-                        color="success"
-                        onPress={() => {
-                          handleAcceptReq(notif?.id, 1);
-                        }}
-                      >
-                        Accept
-                      </Button>
-                      <Button
-                        size="sm"
-                        color="danger"
-                        onPress={() => {
-                          handleDeclineReq(notif?.id, 1);
-                        }}
-                      >
-                        Decline
-                      </Button>
-                    </div>
+                      id={notif?.id}
+                      img={notif?.avatarUrl}
+                      firstName={notif?.firstName}
+                      lastName={notif?.lastName}
+                      invite={"sent you a friend request"}
+                      status={notif?.status}
+                    />
                   </div>
-                </DropdownItem>
-              ))}
+                  <div
+                    className="flex flex-row gap-1 justify-end"
+                    key={notif?.id}
+                  >
+                    <Button
+                      size="sm"
+                      color="success"
+                      onPress={() => {
+                        handleAcceptReq(notif?.id, 1);
+                      }}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      color="danger"
+                      onPress={() => {
+                        handleDeclineReq(notif?.id, 1);
+                      }}
+                    >
+                      Decline
+                    </Button>
+                  </div>
+                </div>
+              </DropdownItem>
+            ))}
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>
