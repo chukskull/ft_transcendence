@@ -43,7 +43,6 @@ class fillDto {
 class SettingsDto {
   @IsString()
   @IsOptional()
-  @Length(3, 15)
   nickName: string;
 
   @IsOptional()

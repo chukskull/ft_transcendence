@@ -51,10 +51,9 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         withCredentials: true,
       })
       .then((res) => {
-        // window.location.reload();
       })
       .catch((err) => {
-        alert(err.response.data.message);
+        console.log(err);
       });
   };
 
@@ -94,7 +93,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      nickName: "",
+      nickName: myData?.nickName,
       avatarUrl: "noChange",
       twoFa: checked,
     },
