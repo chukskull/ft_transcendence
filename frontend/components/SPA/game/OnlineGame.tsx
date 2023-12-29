@@ -21,11 +21,9 @@ type InfoGame = {
 export default function OnlineGame({
   map,
   socket,
-}: // setShowRec,
-{
+}: {
   map: string;
   socket: any;
-  // setShowRec: (_: boolean) => any;
 }) {
   const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
@@ -63,6 +61,9 @@ export default function OnlineGame({
   }, [handleKeyboardEvent]);
 
   useEffect(() => {
+    socket.emit("positionUpdate", {
+      player1PaddleY: 210,
+    });
     socket.on("enemyPositionUpdate", (data: any) => {
       setEnemyPaddleY(data.enemyY);
     });
@@ -108,14 +109,6 @@ export default function OnlineGame({
     </>
   );
 }
-
-// const PlayerPaddle = memo(({ player1PaddleY }: any) => {
-//   return;
-// });
-
-// const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
-//   return;
-// });
 
 const Ball = ({ socket }: any) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
