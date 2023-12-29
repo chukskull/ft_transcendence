@@ -93,6 +93,7 @@ export class GameInstance {
       });
       this.player2.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -114,6 +115,7 @@ export class GameInstance {
       });
       this.player1.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
       });
       this.gameRunning = false;
       this.gameEnded = true;
