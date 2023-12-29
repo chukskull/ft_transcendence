@@ -50,11 +50,9 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
-      .then((res) => {
-        // window.location.reload();
-      })
+      .then((res) => {})
       .catch((err) => {
-        alert(err.response.data.message);
+        console.log(err);
       });
   };
 
@@ -94,7 +92,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      nickName: "",
+      nickName: myData?.nickName,
       avatarUrl: "noChange",
       twoFa: checked,
     },
@@ -138,7 +136,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               type="text"
               size="sm"
               isInvalid={errors.nickName ? true : false}
-              errorMessage={errors.nickName && errors.nickName.message}
               // variant="bordered"
               placeholder="new username"
             />

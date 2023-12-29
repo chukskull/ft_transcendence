@@ -9,9 +9,10 @@ import {
 import { User } from '../user/user.entity';
 
 @Entity()
+@Entity()
 export class pvpInvite {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ default: false })
   notifSent: boolean;
