@@ -29,10 +29,10 @@ export default function OnlineGame({
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
   const [infoGame, setInfoGame] = useState<InfoGame>({
+    winner: "",
     loser: "",
     player1Score: 0,
     player2Score: 0,
-    winner: "",
   });
   const [showRec, setshowRec] = useState<boolean>(false);
   const handleKeyboardEvent = useCallback(
@@ -76,10 +76,7 @@ export default function OnlineGame({
       setScore(data);
     });
     socket.on("gameEnded", (data: any) => {
-      console.log("data from fem", data);
       setshowRec(true);
-
-      console.log("gameEnded sure", data);
       setInfoGame(data);
     });
 
