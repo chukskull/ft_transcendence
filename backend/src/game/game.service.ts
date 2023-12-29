@@ -93,8 +93,15 @@ export class GameService {
       },
     });
     client.on('disconnect', () => {
-      return;
+      this.privateQueue = this.privateQueue.filter((lobby) => {
+        return lobby.player1.id !== userId;
+      });
     });
+    setTimeout(() => {
+      this.privateQueue = this.privateQueue.filter((lobby) => {
+        return lobby.player1.id !== userId;
+      });
+    }, 10000);
     const newInvite = await this.pvpInviteRepo.create({
       inviter: userProfile,
       friend: friendProfile,
