@@ -70,6 +70,7 @@ export class GameService {
     friendId: number,
     token: string,
   ): Promise<any> {
+    console.log('inviting friend this is my client', client.id);
     const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     if (!userId) {
       client.disconnect();

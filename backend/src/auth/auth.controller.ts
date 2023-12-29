@@ -43,7 +43,6 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
-    console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
@@ -54,11 +53,11 @@ export class AuthController {
   @Get('/logout')
   @UseGuards(JwtGuard)
   async logout42(@Res() res: Response, @Req() req) {
-    // await this.userRepository.update(req.user.id, {firstTimeLogiIn: false});
     await this.userRepository.update(req.user.id, { authenticated: false });
     await this.userService.setStatus(req.user.id, 'offline');
     res.clearCookie('token');
     res.sendStatus(HttpStatus.OK);
+    res.redirect(process.env.frontendUrl);
   }
 
   @Get('/google')
@@ -73,9 +72,7 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
-    console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
-      console.log(req.user.id);
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     } else res.redirect(process.env.frontendUrl + '/home');
