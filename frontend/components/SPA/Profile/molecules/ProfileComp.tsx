@@ -42,7 +42,6 @@ const ProfileComp = ({
         withCredentials: true,
       }
     );
-
     return res.data;
   });
 

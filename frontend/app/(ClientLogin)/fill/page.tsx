@@ -91,7 +91,7 @@ export default function Fill() {
       firstName: "",
       lastName: "",
       nickName: "",
-      base64Image: "",
+      base64Image: "empty",
     },
   });
 

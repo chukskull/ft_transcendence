@@ -152,14 +152,15 @@ export class UserService {
       where: { id },
     });
     if (user.firstName.length > 2) return { message: 'data already filled' };
-    const useeer = this.userRepository.update(id, {
+    const updateData: any = {
       nickName,
       firstName,
       lastName,
-      avatarUrl: base64Image,
-    });
-
-    return useeer;
+    };
+    if (base64Image !== 'empty') {
+      updateData.avatarUrl = base64Image;
+    }
+    return this.userRepository.update(id, updateData);
   }
 
   async getFriends(userId: number): Promise<User> {

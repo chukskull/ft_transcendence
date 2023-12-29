@@ -76,6 +76,7 @@ export default function OnlineGame({
       setScore(data);
     });
     socket.on("gameEnded", (data: any) => {
+      console.log("data from fem", data);
       setshowRec(true);
 
       console.log("gameEnded sure", data);
