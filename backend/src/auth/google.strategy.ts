@@ -27,7 +27,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   ): Promise<any> {
     try {
       const data = profile._json;
-
+      console.log(data);
       const intrLogin = generateFromEmail(data.email, 3);
       let user = await this.authService.checkUser(null, data.email);
       if (!user)
@@ -35,6 +35,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
           intrLogin,
           data.picture,
           data.email,
+          data.given_name,
+          data.family_name,
         );
       this.userService.setStatus(user.id, 'online');
       done(null, user);

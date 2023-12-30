@@ -34,6 +34,9 @@ export class User {
   @Column()
   lastName: string;
 
+  @Column({ default: false })
+  filledInfo: boolean;
+
   @Column()
   avatarUrl: string;
 

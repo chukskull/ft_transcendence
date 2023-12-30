@@ -26,6 +26,8 @@ export class UserService {
     intraLogin: string,
     avatarUrl: string,
     email: string,
+    fN: string,
+    lN: string,
   ): Promise<User> {
     let alreadyExists;
     try {
@@ -49,9 +51,9 @@ export class UserService {
       return null;
     }
     const user = this.userRepository.create({ intraLogin, avatarUrl, email });
-    user.nickName = '';
-    user.firstName = '';
-    user.lastName = '';
+    user.nickName = intraLogin ? intraLogin : email.split('@')[0];
+    user.firstName = fN;
+    user.lastName = lN;
     user.twoFactorAuthEnabled = false;
     user.twoFactorSecret = '';
     user.friends = [];
@@ -155,12 +157,13 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { id },
     });
-    if (user.firstName.length > 2) return { message: 'data already filled' };
+    if (user.filledInfo) return { message: 'data already filled' };
     const useeer = this.userRepository.update(id, {
       nickName,
       firstName,
       lastName,
       avatarUrl: base64Image || user.avatarUrl,
+      filledInfo: true,
     });
 
     return useeer;
