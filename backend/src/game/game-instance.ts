@@ -269,7 +269,8 @@ export class GameInstance {
 
   // check game end
   public checkGameEnd(): boolean {
-    if (this.player1Score === 5) {
+    const endingValue = 5;
+    if (this.player1Score === endingValue) {
       this.winnerID = this.player1.id;
       this.loserID = this.player2.id;
       this.player1.socket.emit('gameEnded', {
@@ -285,7 +286,7 @@ export class GameInstance {
         player2Score: this.player1Score,
       });
       return true;
-    } else if (this.player2Score === 5) {
+    } else if (this.player2Score === endingValue) {
       this.winnerID = this.player2.id;
       this.loserID = this.player1.id;
       this.player1.socket.emit('gameEnded', {

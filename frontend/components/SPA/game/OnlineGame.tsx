@@ -92,8 +92,8 @@ export default function OnlineGame({
       <div className={style.gameBody} tabIndex={0}>
         <p>{score.player1}</p>
         <div className={style[`${map}`]} tabIndex={0}>
-          <div className={style.player} style={{ top: player1PaddleY }}></div>;
-          <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
+          <div className={style.player} style={{ top: player1PaddleY }}></div>
+          <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
           <Ball socket={socket} />
         </div>
         <p>{score.player2}</p>
