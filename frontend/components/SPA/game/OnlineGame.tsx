@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, memo, useMemo } from "react";
 
 import style from "@/styles/SPA/game/game.module.scss";
@@ -47,7 +46,6 @@ export default function OnlineGame({
         player1PaddleY: player1PaddleY,
       });
     };
-
   }, [player1PaddleY]);
 
   useEffect(() => {
