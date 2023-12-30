@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback, memo, use } from "react";
+
+import React, { useState, useEffect, memo, useMemo } from "react";
+
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
 export const PADDLESPEED = 12;
-
 
 type Score = {
   player1: number;
@@ -13,7 +14,7 @@ type Score = {
 type RoomPositionsData = {
   ballX: number;
   ballY: number;
-}
+};
 
 export default function OnlineGame({
   map,
@@ -31,21 +32,22 @@ export default function OnlineGame({
     player1Score: 0,
     player2Score: 0,
   });
-  const [showRec, setShowRec] = useState<boolean>(false);
 
-  const handleKeyboardEvent = useCallback((e: KeyboardEvent) => {
-    if (!socket) return;
-    let newPaddlePosition = player1PaddleY;
-    if (e.key === "ArrowDown") {
-      newPaddlePosition = player1PaddleY + PADDLESPEED;
-    } else if (e.key === "ArrowUp") {
-      newPaddlePosition = player1PaddleY - PADDLESPEED;
-    }
-    if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
-    setPlayer1PaddleY(newPaddlePosition);
-    socket.emit("positionUpdate", {
-      player1PaddleY: newPaddlePosition,
-    });
+  const [showRec, setshowRec] = useState<boolean>(false);
+
+  const handleKeyboardEvent = useMemo(() => {
+    return (e: KeyboardEvent) => {
+      if (!socket) return;
+      if (e.key == "ArrowDown" && player1PaddleY + 110 + 8 < 500) {
+        setPlayer1PaddleY((prev) => prev + 8);
+      } else if (e.key == "ArrowUp" && player1PaddleY - 8 > 0) {
+        setPlayer1PaddleY((prev) => prev - 8);
+      }
+      socket.emit("positionUpdate", {
+        player1PaddleY: player1PaddleY,
+      });
+    };
+
   }, [player1PaddleY]);
 
   useEffect(() => {
@@ -68,19 +70,17 @@ export default function OnlineGame({
       setScore(data);
     });
 
-    socket.on('gameEnded', (data: any) => {
-      setShowRec(true);
+    socket.on("gameEnded", (data: any) => {
       setInfoGame(data);
-    })
+    });
 
     return () => {
       socket.off("enemyPositionUpdate");
       socket.off("changeState");
       socket.off("updateScore");
-      socket.off("gameEnded")
+      socket.off("gameEnded");
     };
   }, []);
-
 
   return (
     <>
@@ -92,7 +92,7 @@ export default function OnlineGame({
           <Ball socket={socket} />
         </div>
         <p>{score.player2}</p>
-      </div >
+      </div>
       <Rectangle
         display={showRec}
         leftScore={infoGame.player1Score}
@@ -103,15 +103,11 @@ export default function OnlineGame({
 }
 
 const PlayerPaddle = memo(({ player1PaddleY }: any) => {
-  return (
-    <div className={style.player} style={{ top: player1PaddleY }}></div>
-  );
+  return <div className={style.player} style={{ top: player1PaddleY }}></div>;
 });
 
 const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
-  return (
-    <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
-  );
+  return <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
 });
 
 const Ball = ({ socket }: any) => {
@@ -130,6 +126,9 @@ const Ball = ({ socket }: any) => {
   }, []);
 
   return (
-    <div className={style.ball} style={{ top: position.y, left: position.x }}></div>
+    <div
+      className={style.ball}
+      style={{ top: position.y, left: position.x }}
+    ></div>
   );
 };
