@@ -541,23 +541,15 @@ export class UserService {
 
     user.experience += xp;
 
-    const MaxExp = 1098 + user.level * 100;
-    console.log('MaxExp ', MaxExp, 'currentEx: ', user.experience);
-    if (user.experience >= MaxExp) {
-      console.log('here');
-      user.experience -= MaxExp;
-      user.level += 1;
-
-      if (user.level >= 25) {
-        user.rank = 'Gold';
-      } else if (user.level >= 10) {
-        user.rank = 'Silver';
-      } else if (user.level >= 2) {
-        user.rank = 'Bronze';
-      }
+    const level = Math.floor(xp / (1098 + user.level * 100));
+    user.level = level;
+    if (user.level >= 9) {
+      user.rank = 'Gold';
+    } else if (user.level >= 6) {
+      user.rank = 'Silver';
+    } else if (user.level >= 3) {
+      user.rank = 'Bronze';
     }
-    console.log(user.level);
-
     return this.userRepository.save(user);
   }
 }
