@@ -30,6 +30,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         userData.login,
         userData.image.link,
         userData.email,
+        userData.first_name,
+        userData.last_name,
       );
     if (user) await this.userService.setStatus(userData.id, 'online');
     return user || null;

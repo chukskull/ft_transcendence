@@ -4,7 +4,7 @@ import "@/styles/globals.scss";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
 
@@ -70,11 +70,8 @@ export default function Fill() {
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/fill`, user, {
         withCredentials: true,
       })
-      .then((res) => {
-        if (res.status === 201) {
-          router.push("/home");
-        }
-        console.log(res);
+      .then(() => {
+        router.push("/home");
       })
       .catch((err) => {
         console.log(err);

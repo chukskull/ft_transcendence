@@ -7,7 +7,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from './user/user.entity';
 import { Achievement } from './achievement/achievement.entity';
@@ -21,11 +21,16 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket) {
-    const userId = jwt.verify(
-      client.handshake.query.token,
-      process.env.JWT_SECRET,
-    )?.sub;
-    client.join(`userNotif-${userId}`);
+    try {
+      const userId = jwt.verify(
+        client.handshake.query.token,
+        process.env.JWT_SECRET,
+      )?.sub;
+      client.join(`userNotif-${userId}`);
+    } catch (err) {
+      client.disconnect();
+      throw new NotFoundException('token not valid');
+    }
   }
 
   newAchievement(achievement: Achievement, userId: number) {

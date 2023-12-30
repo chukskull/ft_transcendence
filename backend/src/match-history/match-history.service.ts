@@ -5,7 +5,6 @@ import { MatchHistory } from './match-history.entity';
 import { UserService } from 'src/user/user.service';
 import { MatchHistoryDto } from './dto/match-history.dto';
 import { User } from 'src/user/user.entity';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class MatchHistoryService {
