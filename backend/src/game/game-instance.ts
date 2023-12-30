@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import { UserService } from 'src/user/user.service';
 import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
@@ -9,7 +8,7 @@ import {
   DIST_WALL_TO_PADDLE,
 } from './game.service';
 
-const BASE_BALL_SPEED = 4;
+const BASE_BALL_SPEED = 7;
 const FRAME_RATE = 1000 / 20;
 const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
 
