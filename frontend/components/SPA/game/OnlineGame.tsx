@@ -45,7 +45,6 @@ export default function OnlineGame({
         player1PaddleY: player1PaddleY,
       });
     };
-
   }, [player1PaddleY]);
 
   useEffect(() => {
