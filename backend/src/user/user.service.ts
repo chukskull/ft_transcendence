@@ -22,7 +22,11 @@ export class UserService {
     private readonly conversationService: ConversationService,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
+  async createNewUser(
+    intraLogin: string,
+    avatarUrl: string,
+    email: string,
+  ): Promise<User> {
     let alreadyExists;
     try {
       if (!intraLogin) {
@@ -156,7 +160,7 @@ export class UserService {
       nickName,
       firstName,
       lastName,
-      avatarUrl: base64Image,
+      avatarUrl: base64Image || user.avatarUrl,
     });
 
     return useeer;

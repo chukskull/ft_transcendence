@@ -6,23 +6,26 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import { UserService } from 'src/user/user.service';
-import { GoogleGuard } from './google.guard';
-import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { TwoFactorAuthenticationCodeDto } from './TwoFactorDto';
+import { Length, IsNotEmpty, IsString } from 'class-validator';
 
+class TwoFactorAuthenticationCodeDto {
+  @Length(6, 6)
+  @IsNotEmpty()
+  @IsString()
+  pin: string;
+}
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -102,14 +105,8 @@ export class AuthController {
     @Res() res,
   ) {
     console.log(pin);
-    const isCodeValid =
-      await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
-
-    if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong code');
-    } else {
-      res.redirect(process.env.frontendUrl + '/home');
-    }
+    await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
+    res.redirect(process.env.frontendUrl + '/home');
     await this.userService.enableTwoFactor(req.user.id);
   }
 

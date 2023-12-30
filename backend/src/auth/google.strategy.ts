@@ -12,10 +12,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private readonly userService: UserService,
   ) {
     super({
-      clientID:
-        '723893977587-p0f8s49oqskb0753kg9gaa6a05hqmh41.apps.googleusercontent.com',
-      clientSecret: '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',
-      callbackURL: 'http://localhost:1337/api/auth/google/callback',
+      clientID: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK,
       scope: ['profile', 'email'],
     });
   }
@@ -27,7 +26,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     try {
-      // const { id, name, emails, photos } = profile;
       const data = profile._json;
 
       const intrLogin = generateFromEmail(data.email, 3);
@@ -39,15 +37,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
           data.email,
         );
       this.userService.setStatus(user.id, 'online');
-
-      // if (user) await this.userService.setStatusByNick(nickName, 'ONLINE');
-      // const userData = {
-      //     provider: 'google',
-      //     providerId: id,
-      //     email: emails[0].value,
-      //     name: `${name.givenName} ${name.familyName}`,
-      //     picture: photos[0].value,
-      // };
       done(null, user);
     } catch (error) {
       done(error, false);
