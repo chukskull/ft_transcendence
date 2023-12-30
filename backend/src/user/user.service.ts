@@ -1,9 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { Conversation, Chat } from '../conversations/conversation.entity';
-import { NotFoundException } from '@nestjs/common';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
@@ -152,12 +155,12 @@ export class UserService {
     const nickNameEx = await this.userRepository.findOne({
       where: { nickName },
     });
-    if (nickNameEx) return { message: 'NickName already exists' };
+    if (nickNameEx) throw new NotAcceptableException('NickName already exists');
     const user = await this.userRepository.findOne({
       where: { id },
     });
-    if (user.filledInfo) return { message: 'data already filled' };
-    const useeer = this.userRepository.update(id, {
+    if (user.filledInfo) return { message: 'User already filled info' };
+    const updatedUser = this.userRepository.update(id, {
       nickName,
       firstName,
       lastName,
@@ -165,7 +168,7 @@ export class UserService {
       filledInfo: true,
     });
 
-    return useeer;
+    return updatedUser;
   }
 
   async getFriends(userId: number): Promise<User> {
