@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, memo, use } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
@@ -31,22 +31,21 @@ export default function OnlineGame({
     player1Score: 0,
     player2Score: 0,
   });
+  const [showRec, setShowRec] = useState<boolean>(false);
 
-  const [showRec, setshowRec] = useState<boolean>(false);
-
-  const handleKeyboardEvent = useMemo(() => {
-    return (e: KeyboardEvent) => {
-      if (!socket) return;
-      if (e.key == "ArrowDown" && player1PaddleY + 110 + 8 < 500) {
-        setPlayer1PaddleY((prev) => prev + 8);
-      } else if (e.key == "ArrowUp" && player1PaddleY - 8 > 0) {
-        setPlayer1PaddleY((prev) => prev - 8);
-      }
-      socket.emit("positionUpdate", {
-        player1PaddleY: player1PaddleY,
-      });
-    };
-
+  const handleKeyboardEvent = useCallback((e: KeyboardEvent) => {
+    if (!socket) return;
+    let newPaddlePosition = player1PaddleY;
+    if (e.key === "ArrowDown") {
+      newPaddlePosition = player1PaddleY + PADDLESPEED;
+    } else if (e.key === "ArrowUp") {
+      newPaddlePosition = player1PaddleY - PADDLESPEED;
+    }
+    if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
+    setPlayer1PaddleY(newPaddlePosition);
+    socket.emit("positionUpdate", {
+      player1PaddleY: newPaddlePosition,
+    });
   }, [player1PaddleY]);
 
   useEffect(() => {
@@ -88,7 +87,6 @@ export default function OnlineGame({
       <div className={style.gameBody} tabIndex={0}>
         <p>{score.player1}</p>
         <div className={style[`${map}`]} tabIndex={0}>
-
           <PlayerPaddle player1PaddleY={player1PaddleY} />
           <EnemyPaddle EnemyPaddleY={EnemyPaddleY} />
           <Ball socket={socket} />
