@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect} from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 
 type Score = {
@@ -73,8 +73,8 @@ export default function TheGame({ map }: { map: string }) {
         setBall({
           x: 417,
           y: 240,
-          speedX: 3,
-          speedY: 3,
+          speedX: 7,
+          speedY: 7,
         });
         if (score.player === 5 || score.ai === 5) {
           setScore({ player: 0, ai: 0 });

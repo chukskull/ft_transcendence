@@ -1,6 +1,4 @@
-
 import React, { useState, useEffect, memo, useMemo } from "react";
-
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
