@@ -7,7 +7,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Server, Socket } from 'socket.io';
@@ -15,11 +15,6 @@ import { ConversationService } from './conversation.service';
 import { Chat } from './conversation.entity';
 import { User } from '../user/user.entity';
 const jwt = require('jsonwebtoken');
-
-function getUserProfile(token: string) {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  return decoded;
-}
 
 @Injectable()
 @WebSocketGateway({ namespace: 'chatSocket', cors: true })
@@ -54,8 +49,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (message.length > 200) {
       return;
     }
-    const userId = getUserProfile(token)?.sub;
-    if (!userId) return;
+    let userId;
+    try {
+      userId = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      client.disconnect();
+      throw new NotFoundException('token not valid');
+    }
 
     const chatMessage = this.ChatRepository.create();
     chatMessage.message = message;

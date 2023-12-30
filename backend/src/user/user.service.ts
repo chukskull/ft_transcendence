@@ -8,7 +8,6 @@ import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
-import { MatchHistory } from 'src/match-history/match-history.entity';
 
 @Injectable()
 export class UserService {

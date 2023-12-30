@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo, use } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
@@ -35,23 +35,20 @@ export default function OnlineGame({
     winner: "",
   });
   const [showRec, setshowRec] = useState<boolean>(false);
-  const handleKeyboardEvent = useCallback(
-    (e: KeyboardEvent) => {
+
+  const handleKeyboardEvent = useMemo(() => {
+    return (e: KeyboardEvent) => {
       if (!socket) return;
-      let newPaddlePosition = player1PaddleY;
-      if (e.key === "ArrowDown") {
-        newPaddlePosition = player1PaddleY + 8;
-      } else if (e.key === "ArrowUp") {
-        newPaddlePosition = player1PaddleY - 8;
+      if (e.key == "ArrowDown" && player1PaddleY + 110 + 8 < 500) {
+        setPlayer1PaddleY((prev) => prev + 8);
+      } else if (e.key == "ArrowUp" && player1PaddleY - 8 > 0) {
+        setPlayer1PaddleY((prev) => prev - 8);
       }
-      if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
-      setPlayer1PaddleY(newPaddlePosition);
       socket.emit("positionUpdate", {
-        player1PaddleY: newPaddlePosition,
+        player1PaddleY: player1PaddleY,
       });
-    },
-    [player1PaddleY]
-  );
+    };
+  }, [player1PaddleY]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyboardEvent);
