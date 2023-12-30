@@ -16,7 +16,6 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import io from "socket.io-client";
 import { useRouter } from "next/navigation";
-import { set } from "lodash";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
@@ -130,7 +129,7 @@ export const NotificationComp = ({}) => {
     // 1 acceptPVP 0 declinePVP
     setPvp((prev: any) => prev.filter((notif: any) => notif.id !== PvPnotifId));
     if (type == 1 && PvPnotifId) {
-      router.push(`/game?accept?notifId=${PvPnotifId}`);
+      window.location.href = `/game?accept?notifId=${PvPnotifId}`;
     } else if (type == 0) {
       const newSocket = io(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`

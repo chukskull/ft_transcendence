@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { GiSwordsEmblem } from "react-icons/gi";
 export default function GHeader({ isONline, enemy }: any) {
   const [myProfile, setMyProfile] = useState<any>({});
+
   useEffect(() => {
     console.log("refetching data");
     axios
