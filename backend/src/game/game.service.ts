@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -10,7 +10,6 @@ import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { NotifGateway } from 'src/notifications.gateway';
 import { pvpInvite } from './pvp.entity';
-import con from 'ormconfig';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 845;
@@ -70,12 +69,14 @@ export class GameService {
     friendId: number,
     token: string,
   ): Promise<any> {
-    console.log('inviting friend this is my client', client.id);
-    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    if (!userId) {
+    let userId;
+    try {
+      userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    } catch (err) {
       client.disconnect();
-      return;
+      throw new NotFoundException('token not valid');
     }
+
     const userProfile = await this.userService.userProfile(userId);
     const friendProfile = await this.userService.userProfile(Number(friendId));
     this.privateQueue.push({
@@ -114,11 +115,14 @@ export class GameService {
     this.notifGateway.sendPVPRequest(newInvite, friendId);
   }
   async declinePVP(client: Socket, token: string, notifId: string) {
-    const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    if (!myId) {
+    let myId;
+    try {
+      myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    } catch (err) {
       client.disconnect();
-      return;
+      throw new NotFoundException('token not valid');
     }
+
     const pvpNotif = await this.pvpInviteRepo.findOne({
       where: { id: notifId },
       relations: ['inviter', 'friend'],
@@ -143,11 +147,14 @@ export class GameService {
     token: string,
     notifId: string,
   ) {
-    const myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    if (!myId) {
+    let myId;
+    try {
+      myId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    } catch (err) {
       client.disconnect();
-      return;
+      throw new NotFoundException('token not valid');
     }
+
     const pvpNotif = await this.pvpInviteRepo.findOne({
       where: { id: notifId },
       relations: ['inviter', 'friend'],
@@ -191,7 +198,13 @@ export class GameService {
     server: Server,
     token: string,
   ): Promise<boolean> {
-    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    let userId;
+    try {
+      userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    } catch (err) {
+      client.disconnect();
+      throw new NotFoundException('token not valid');
+    }
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
     });
