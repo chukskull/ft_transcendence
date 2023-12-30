@@ -155,7 +155,11 @@ export const NotificationComp = ({}) => {
       prev.filter((notif: any) => notif.id !== PvPnotifId)
     );
     if (type == 1 && PvPnotifId) {
-      window.location.href = `/game?accept?notifId=${PvPnotifId}`;
+      if (window.location.pathname == "/game") {
+        window.location.href = `/game?accept?notifId=${PvPnotifId}`;
+      } else {
+        router.push(`/game?accept?notifId=${PvPnotifId}`);
+      }
     } else if (type == 0) {
       const newSocket = io(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`
