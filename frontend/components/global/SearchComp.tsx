@@ -98,7 +98,6 @@ const SearchComp = () => {
 
     debouncedSearch(e.target.value);
   };
-
   return (
     <>
       <div className={style["top_search"]}>
