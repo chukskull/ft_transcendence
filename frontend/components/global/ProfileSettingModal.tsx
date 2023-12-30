@@ -1,13 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Avatar, Skeleton } from "antd";
+import { Avatar } from "antd";
 import { Input } from "@nextui-org/react";
 import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
-import { SkeletonComp } from "./Skeleton";
 import { useForm } from "react-hook-form";
-import { set } from "lodash";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -19,9 +17,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const [checked, setChecked] = useState(false);
   const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [base64Image, setBase64Image] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
-  const [name, setName] = useState("");
 
   const handleClick = () => {
     const fileInput = document.createElement("input");
@@ -172,7 +168,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             Cancel
           </Button>
           <Button
-            // type="submit"
+            type="submit"
             onClick={handleSubmit(updateUser)}
             className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >

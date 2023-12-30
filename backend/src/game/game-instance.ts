@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import { UserService } from 'src/user/user.service';
 import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
@@ -9,7 +8,7 @@ import {
   DIST_WALL_TO_PADDLE,
 } from './game.service';
 
-const BASE_BALL_SPEED = 4;
+const BASE_BALL_SPEED = 7;
 const FRAME_RATE = 1000 / 20;
 const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
 
@@ -93,6 +92,9 @@ export class GameInstance {
       });
       this.player2.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -114,6 +116,9 @@ export class GameInstance {
       });
       this.player1.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
