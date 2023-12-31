@@ -24,6 +24,9 @@ export default function OnlineGame({
   const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
+  socket.on('enemyPositionUpdate', (data: any) => {
+    setEnemyPaddleY(data.enemyY);
+  });
   const [infoGame, setInfoGame] = useState<any>({
     winner: "",
     loser: "",

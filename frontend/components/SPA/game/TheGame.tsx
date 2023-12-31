@@ -86,8 +86,8 @@ export default function TheGame({ map }: { map: string }) {
       }
       // Ball collisions with top and bottom walls
       if (
-        ball.y + ball.speedY > canvasHeight - 15 ||
-        ball.y + ball.speedY < -3
+        ball.y + 10 > canvasHeight - 10||
+        ball.y + 10 < 0
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
