@@ -174,10 +174,7 @@ export default function Profile({ id }: any) {
       </div>
 
       <div className={`${id === "me" ? "item-2-me" : "item-2"}`}>
-        <div
-          className="C-1"
-          style={{ overflow: "auto", paddingInline: "40px" }}
-        >
+        <div className="C-1" style={{ paddingInline: "40px" }}>
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight  p-2 text-center">
             Leaderboard
           </h1>
@@ -185,7 +182,7 @@ export default function Profile({ id }: any) {
           <Leadrboard MonStyle="Profile" />
         </div>
 
-        <div className="C-2 " style={{ overflow: "auto" }}>
+        <div className="C-2 overflow-y-auto">
           <div className="flex item-center justify-evenly">
             {names.map((name, index) => (
               <InFosPlayer
