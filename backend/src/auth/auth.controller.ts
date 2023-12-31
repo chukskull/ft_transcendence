@@ -82,7 +82,7 @@ export class AuthController {
     await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
-  @Get('/2fa/generate')
+  @Get('2fa/generate')
   @UseGuards(JwtGuard)
   async TwoFactorHandler(
     @Req() req: any,
@@ -106,11 +106,11 @@ export class AuthController {
   ) {
     console.log(pin);
     await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
-    res.redirect(process.env.frontendUrl + '/home');
     await this.userService.enableTwoFactor(req.user.id);
+    res.redirect(process.env.frontendUrl + '/home');
   }
 
-  @Post('2fa/turn-off')
+  @Get('2fa/turn-off')
   @UseGuards(JwtGuard)
   async turnOffTwofactor(@Req() req) {
     await this.userService.disableTwoFactor(req.user.id);
