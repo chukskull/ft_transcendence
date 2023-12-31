@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo, useMemo } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
-export const PADDLESPEED = 12;
+export const PADDLESPEED = 8;
 
 type Score = {
   player1: number;
@@ -38,7 +38,7 @@ export default function OnlineGame({
       if (!socket) return;
       if (e.key == "ArrowDown" && player1PaddleY + 110 + PADDLESPEED < 500) {
         setPlayer1PaddleY((prev) => prev + PADDLESPEED);
-      } else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED> 0) {
+      } else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED > 0) {
         setPlayer1PaddleY((prev) => prev - PADDLESPEED);
       }
       socket.emit("positionUpdate", {
@@ -59,9 +59,7 @@ export default function OnlineGame({
       setEnemyPaddleY(data.enemyY);
     });
 
-    socket.on("changeState", (data: any) => {
-      console.log("this is event on joinmatchmaking ", data);
-    });
+    socket.on("changeState", (data: any) => {});
 
     socket.on("updateScore", (data: any) => {
       setScore(data);
@@ -78,7 +76,7 @@ export default function OnlineGame({
       socket.off("updateScore");
       socket.off("gameEnded");
     };
-  }, []);
+  }, [socket]);
 
   return (
     <>
