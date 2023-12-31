@@ -14,6 +14,7 @@ import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 function friendStatus(
   theirpendingFrReq: any,
@@ -72,25 +73,32 @@ export default function Profile({ id }: any) {
         }
       )
       .then((res) => {
-        window.location.reload();
+        router.refresh();
       })
       .catch((err) => console.log(err));
   }
-  const friends = useQuery("userFriends", async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
-      {
-        withCredentials: true,
-      }
-    );
-    return response;
-  });
+  const friends = useQuery(
+    "userFriends",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response;
+    },
+    {
+      refetchInterval: 1000,
+    }
+  );
   useEffect(() => {
     if (friends.data) {
       setMyData(friends.data?.data);
     }
   }, [friends.data]);
   const { data, isLoading, error } = useUserProfile(id);
+  const router = useRouter();
   if (error) {
     console.log("ihave an error for sure");
     return <Error statusCode={404} />;
