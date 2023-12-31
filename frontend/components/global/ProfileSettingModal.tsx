@@ -6,6 +6,7 @@ import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
+import { on } from "events";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -46,7 +47,9 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
-      .then((res) => {})
+      .then((res) => {
+        onClose();
+      })
       .catch((err) => {
         console.log(err);
       });
@@ -138,6 +141,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             </h1>
             <Input
               {...register("nickName", {
+                maxLength: 8,
                 validate: {
                   noSpace: (value) => !/\s/.test(value),
                 },

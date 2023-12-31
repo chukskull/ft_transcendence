@@ -8,9 +8,6 @@ import ChannelMenu from "@/components/SPA/chat/channels/ChannelMenu";
 import Modal from "react-modal";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { App } from "antd";
-import { set } from "lodash";
-
 interface chatHeaderProps {
   isChannel: boolean;
   dmOrChannel: any;

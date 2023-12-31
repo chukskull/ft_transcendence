@@ -1,8 +1,5 @@
 import Image from "next/image";
 import ButtonNav from "@/components/main/atoms/ButtonNav";
-import Link from "next/link";
-import { time } from "console";
-import AnchorLink from "antd/es/anchor/AnchorLink";
 import { useEffect, useRef } from "react";
 
 // import CustomButton from "./CustomButton";

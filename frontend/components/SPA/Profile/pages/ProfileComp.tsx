@@ -8,12 +8,13 @@ import Achievement from "@/components/SPA/Profile/organisms/Achievement";
 import React, { useState, useEffect } from "react";
 import { FaUser, FaUserAltSlash } from "react-icons/fa";
 import { useQuery } from "react-query";
-import { getUserProfile } from "@/utils/getUserProfile";
+import { useUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 function friendStatus(
   theirpendingFrReq: any,
@@ -72,27 +73,32 @@ export default function Profile({ id }: any) {
         }
       )
       .then((res) => {
-        window.location.reload();
+        router.refresh();
       })
       .catch((err) => console.log(err));
   }
-  const friends = useQuery("userFriends", async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
-      {
-        withCredentials: true,
-      }
-    );
-    return response;
-  });
+  const friends = useQuery(
+    "userFriends",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response;
+    },
+    {
+      refetchInterval: 1000,
+    }
+  );
   useEffect(() => {
     if (friends.data) {
       setMyData(friends.data?.data);
     }
   }, [friends.data]);
-  const { isLoading, error, data }: any = useQuery("userList", async () => {
-    return getUserProfile(id);
-  });
+  const { data, isLoading, error } = useUserProfile(id);
+  const router = useRouter();
   if (error) {
     console.log("ihave an error for sure");
     return <Error statusCode={404} />;
@@ -168,10 +174,7 @@ export default function Profile({ id }: any) {
       </div>
 
       <div className={`${id === "me" ? "item-2-me" : "item-2"}`}>
-        <div
-          className="C-1"
-          style={{ overflow: "auto", paddingInline: "40px" }}
-        >
+        <div className="C-1" style={{ paddingInline: "40px" }}>
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight  p-2 text-center">
             Leaderboard
           </h1>
@@ -179,7 +182,7 @@ export default function Profile({ id }: any) {
           <Leadrboard MonStyle="Profile" />
         </div>
 
-        <div className="C-2 " style={{ overflow: "auto" }}>
+        <div className="C-2 overflow-y-auto">
           <div className="flex item-center justify-evenly">
             {names.map((name, index) => (
               <InFosPlayer
