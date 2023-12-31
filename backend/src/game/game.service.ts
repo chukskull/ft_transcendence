@@ -162,7 +162,8 @@ export class GameService {
     if (!pvpNotif || pvpNotif.accepted || pvpNotif.friend.id != myId) return;
     const lobby = this.privateQueue.find((players) => {
       return (
-        players.player1.id == pvpNotif.inviter.id && players.player2.id == myId
+        (players.player1.id == pvpNotif.inviter.id && players.player2.id == myId)
+        // || (players.player1.id == myId && players.player2.id == pvpNotif.inviter.id)
       );
     });
     if (!lobby) {
@@ -177,12 +178,8 @@ export class GameService {
     // remove all privateQueue that has the same inviterId
     this.privateQueue = this.privateQueue.filter((lobby) => {
       return (
-        lobby.player1.id != pvpNotif.inviter.id && lobby.player2.id != myId
-      );
-    });
-    this.privateQueue = this.privateQueue.filter((lobby) => {
-      return (
-        lobby.player1.id != myId && lobby.player2.id != pvpNotif.inviter.id
+        (lobby.player1.id != pvpNotif.inviter.id && lobby.player2.id != myId)
+        || (lobby.player1.id != myId && lobby.player2.id != pvpNotif.inviter.id)
       );
     });
     pvpNotif.accepted = true;
