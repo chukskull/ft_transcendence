@@ -8,7 +8,7 @@ import Achievement from "@/components/SPA/Profile/organisms/Achievement";
 import React, { useState, useEffect } from "react";
 import { FaUser, FaUserAltSlash } from "react-icons/fa";
 import { useQuery } from "react-query";
-import { getUserProfile } from "@/utils/getUserProfile";
+import { useUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
@@ -90,9 +90,7 @@ export default function Profile({ id }: any) {
       setMyData(friends.data?.data);
     }
   }, [friends.data]);
-  const { isLoading, error, data }: any = useQuery("userList", async () => {
-    return getUserProfile(id);
-  });
+  const { data, isLoading, error } = useUserProfile(id);
   if (error) {
     console.log("ihave an error for sure");
     return <Error statusCode={404} />;
