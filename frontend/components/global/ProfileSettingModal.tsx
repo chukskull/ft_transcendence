@@ -54,18 +54,32 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
 
   // 2fs on off
   const handle2Fa = (checked: boolean) => {
-    const endPoint = checked ? "disable" : "enable";
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setQrCode(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    console.log("2fa is ", !checked);
+    if (!checked) {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/generate`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setQrCode(res.data);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/turn-off`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setQrCode(null);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   useEffect(() => {

@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import { UserService } from 'src/user/user.service';
 import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
@@ -9,7 +8,7 @@ import {
   DIST_WALL_TO_PADDLE,
 } from './game.service';
 
-const BASE_BALL_SPEED = 4;
+const BASE_BALL_SPEED = 5;
 const FRAME_RATE = 1000 / 20;
 const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
 
@@ -58,7 +57,6 @@ export class GameInstance {
     this.gameEnded = false;
     this.server = server;
     this.positionsStruct = {
-      //starting data
       ballx: this.ball.x,
       bally: this.ball.y,
       player1Score: 0,
@@ -93,6 +91,9 @@ export class GameInstance {
       });
       this.player2.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -114,6 +115,9 @@ export class GameInstance {
       });
       this.player1.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -269,7 +273,8 @@ export class GameInstance {
 
   // check game end
   public checkGameEnd(): boolean {
-    if (this.player1Score === 5) {
+    const endingValue = 5;
+    if (this.player1Score === endingValue) {
       this.winnerID = this.player1.id;
       this.loserID = this.player2.id;
       this.player1.socket.emit('gameEnded', {
@@ -285,7 +290,7 @@ export class GameInstance {
         player2Score: this.player1Score,
       });
       return true;
-    } else if (this.player2Score === 5) {
+    } else if (this.player2Score === endingValue) {
       this.winnerID = this.player2.id;
       this.loserID = this.player1.id;
       this.player1.socket.emit('gameEnded', {
