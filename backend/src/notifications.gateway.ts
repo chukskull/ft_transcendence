@@ -22,6 +22,7 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(client: Socket) {
     try {
+      console.log('token: ',client.handshake.query.token);
       const userId = jwt.verify(
         client.handshake.query.token,
         process.env.JWT_SECRET,

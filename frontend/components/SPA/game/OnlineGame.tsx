@@ -1,5 +1,4 @@
 import React, { useState, useEffect, memo, useMemo } from "react";
-
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
@@ -104,9 +103,13 @@ const PlayerPaddle = memo(({ player1PaddleY }: any) => {
   return <div className={style.player} style={{ top: player1PaddleY }}></div>;
 });
 
+PlayerPaddle.displayName = "PlayerPaddle";
+
 const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
   return <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
 });
+
+EnemyPaddle.displayName = "EnemyPaddle";
 
 const Ball = ({ socket }: any) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
