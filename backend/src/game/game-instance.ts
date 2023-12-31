@@ -8,7 +8,7 @@ import {
   DIST_WALL_TO_PADDLE,
 } from './game.service';
 
-const BASE_BALL_SPEED = 7;
+const BASE_BALL_SPEED = 5;
 const FRAME_RATE = 1000 / 20;
 const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
 
@@ -57,7 +57,6 @@ export class GameInstance {
     this.gameEnded = false;
     this.server = server;
     this.positionsStruct = {
-      //starting data
       ballx: this.ball.x,
       bally: this.ball.y,
       player1Score: 0,
