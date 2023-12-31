@@ -6,6 +6,7 @@ import {
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   DIST_WALL_TO_PADDLE,
+  BALL_RADIUS,
 } from './game.service';
 
 const BASE_BALL_SPEED = 5;
@@ -195,8 +196,8 @@ export class GameInstance {
   }
   public updateScore(): void {
     // check collision with right and left walls
-    const hitRightEdge = this.ball.x > GAME_WIDTH - PADDLE_WIDTH;
-    const hitLeftEdge = this.ball.x <= 5;
+    const hitRightEdge = this.ball.x >= GAME_WIDTH - BALL_RADIUS - 5;
+    const hitLeftEdge = this.ball.x <= -5;
 
     if (hitRightEdge || hitLeftEdge) {
       this.player1Score += hitRightEdge ? 1 : 0;

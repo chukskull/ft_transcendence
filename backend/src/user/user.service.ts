@@ -549,8 +549,9 @@ export class UserService {
 
     user.experience += xp;
 
-    const level = Math.floor(xp / (1098 + user.level * 100));
-    user.level = level;
+    const level = Math.floor(user.experience / (1098 + user.level * 100));
+    if (level > user.level)
+      user.level = level;
     if (user.level >= 9) {
       user.rank = 'Gold';
     } else if (user.level >= 6) {
