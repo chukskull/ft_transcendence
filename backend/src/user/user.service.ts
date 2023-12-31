@@ -548,8 +548,7 @@ export class UserService {
     }
 
     user.experience += xp;
-
-    const level = Math.floor(user.experience / (1098 + user.level * 100));
+    const level = user.level + Math.floor(user.experience / ((1098 * (user.level + 1)) + user.level * 100));
     if (level > user.level)
       user.level = level;
     if (user.level >= 9) {
