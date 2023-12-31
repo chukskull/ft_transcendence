@@ -36,10 +36,10 @@ export default function OnlineGame({
   const handleKeyboardEvent = useMemo(() => {
     return (e: KeyboardEvent) => {
       if (!socket) return;
-      if (e.key == "ArrowDown" && player1PaddleY + 110 + 8 < 500) {
-        setPlayer1PaddleY((prev) => prev + 8);
-      } else if (e.key == "ArrowUp" && player1PaddleY - 8 > 0) {
-        setPlayer1PaddleY((prev) => prev - 8);
+      if (e.key == "ArrowDown" && player1PaddleY + 110 + PADDLESPEED < 500) {
+        setPlayer1PaddleY((prev) => prev + PADDLESPEED);
+      } else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED> 0) {
+        setPlayer1PaddleY((prev) => prev - PADDLESPEED);
       }
       socket.emit("positionUpdate", {
         player1PaddleY: player1PaddleY,
@@ -68,6 +68,7 @@ export default function OnlineGame({
     });
 
     socket.on("gameEnded", (data: any) => {
+      setshowRec(true);
       setInfoGame(data);
     });
 
