@@ -7,27 +7,24 @@ import { Button } from "@nextui-org/react";
 function doSubmit(submittedValues: string[]) {
   return new Promise((resolve): void => {
     setTimeout(() => {
+      console.log(submittedValues.join(""));
       resolve(0);
     }, 1500);
   });
 }
 
-function clampIndex(index: number) {
-  if (index > 6) {
-    return 6;
-  } else if (index < 0) {
-    return 0;
-  } else {
-    return index;
-  }
-}
-interface PayloadTyep {
+interface PayloadType {
   index: number;
-  value: string;
+  value: any;
 }
-interface actionType {
+
+interface ActionType {
   type: string;
-  payload: PayloadTyep;
+  payload: PayloadType;
+}
+
+function clampIndex(index: number, min: number = 0, max: number = 10): number {
+  return Math.max(Math.min(index, max), min);
 }
 
 function reducer(state: any, action: any) {
@@ -124,9 +121,9 @@ export default function VerifyPage() {
       <div
         className={`${style["rectangle"]} flex flex-col items-center justify-center gap-7   `}
       >
-        <h1 className="text-center text-fontlight font-ClashGrotesk-Medium text-3xl">
-          Authenricate Your Account
-        </h1>
+        {/* <h1 className="text-center text-fontlight font-ClashGrotesk-Medium text-3xl">
+          Authenticate Your Account
+        </h1> */}
         <form className={style["form"]} onSubmit={handleSubmit}>
           <div className={style["inputs"]}>
             {inputValues.map((value: any, index: any) => {
@@ -146,10 +143,11 @@ export default function VerifyPage() {
             })}
           </div>
           <Button
+            type="submit"
             className={`w-full  text-base text-fontlight font-ClashGrotesk-Medium h-12 ${style["button"]}`}
             disabled={status === "pending"}
           >
-            {status === "pending" ? "Verifying..." : "Verify"}
+            {status === "pending" ? "Verifying..." : "Verify Code"}
           </Button>
         </form>
       </div>
