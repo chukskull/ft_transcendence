@@ -106,6 +106,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   } = useForm({
     defaultValues: {
       nickName: myData?.nickName,
+      qrCode: null,
       avatarUrl: "noChange",
       twoFa: checked,
     },
@@ -176,6 +177,20 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               Scan QR Code
             </h1>
             <img src={qrCode} alt="qr code" />
+            <Input
+              {...register("qrCode", {
+                maxLength: 6,
+                validate: {
+                  noSpace: (value: any) => !/\s/.test(value),
+                },
+              })}
+              className="bg-inherit text-fontlight"
+              type="text"
+              size="sm"
+              isInvalid={errors.qrCode ? true : false}
+              // variant="bordered"
+              placeholder="Enter 6 digit code"
+            />
           </div>
         )}
         <div className="flex items-center justify-between gap-8">

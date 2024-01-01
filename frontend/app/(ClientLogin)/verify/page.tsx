@@ -1,5 +1,5 @@
 "use client";
-import { promises } from "dns";
+
 import style from "@/styles/components/TwoFa.module.scss";
 import React, { useEffect, useRef, useReducer, Key } from "react";
 import { Button } from "@nextui-org/react";
@@ -16,11 +16,6 @@ function doSubmit(submittedValues: string[]) {
 interface PayloadType {
   index: number;
   value: any;
-}
-
-interface ActionType {
-  type: string;
-  payload: PayloadType;
 }
 
 function clampIndex(index: number, min: number = 0, max: number = 10): number {
@@ -121,9 +116,6 @@ export default function VerifyPage() {
       <div
         className={`${style["rectangle"]} flex flex-col items-center justify-center gap-7   `}
       >
-        {/* <h1 className="text-center text-fontlight font-ClashGrotesk-Medium text-3xl">
-          Authenticate Your Account
-        </h1> */}
         <form className={style["form"]} onSubmit={handleSubmit}>
           <div className={style["inputs"]}>
             {inputValues.map((value: any, index: any) => {
