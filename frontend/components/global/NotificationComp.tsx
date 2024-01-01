@@ -98,9 +98,13 @@ export const NotificationComp = ({}) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("newPVPRequest", (data: any) => setReceivedDatarequest(data));
-
+    socket.on("notAuth", () => {
+      console.log("notAuth");
+      router.push("/login");
+    });
     return () => {
       socket.off("newPVPRequest");
+      socket.off("notAuth");
     };
   }, [socket]);
 
