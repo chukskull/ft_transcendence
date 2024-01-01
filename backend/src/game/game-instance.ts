@@ -274,7 +274,7 @@ export class GameInstance {
 
   // check game end
   public checkGameEnd(): boolean {
-    const endingValue = 5;
+    const endingValue = 50;
     if (this.player1Score === endingValue) {
       this.winnerID = this.player1.id;
       this.loserID = this.player2.id;
