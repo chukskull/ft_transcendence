@@ -16,6 +16,7 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import io from "socket.io-client";
 import { useRouter } from "next/navigation";
+import { set } from "lodash";
 
 export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
@@ -72,13 +73,14 @@ export const NotificationComp = ({}) => {
     }
   }, [pendingFriendRequestsQuery.data, setReceivedData]);
 
-  useEffect(() => {
-    setNotifCount(receivedData.length);
-  }, [receivedData]);
+  // useEffect(() => {
+  //   setNotifCount(receivedData.length);
+  // }, [receivedData]);
 
   useEffect(() => {
     if (PVPrequest) {
       setReceivedData((prev: any[]) => [...prev, PVPrequest]);
+      setNotifCount((prev: any) => prev + 1);
     }
   }, [PVPrequest, setReceivedData]);
 
@@ -98,10 +100,13 @@ export const NotificationComp = ({}) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("newPVPRequest", (data: any) => setReceivedDatarequest(data));
-    socket.on("notAuth", () => {
-      console.log("notAuth");
-      router.push("/login");
+    socket.on("newAchievement", () => {
+      setNotifCount((prev: any) => prev + 1);
     });
+    // socket.on("notAuth", () => {
+    //   console.log("notAuth");
+    //   router.push("/login");
+    // });
     return () => {
       socket.off("newPVPRequest");
       socket.off("notAuth");
@@ -221,7 +226,7 @@ export const NotificationComp = ({}) => {
             title="Actions"
             aria-label="Dynamic Actions"
           >
-            {receivedData?.map((notif: any, index) =>
+            {receivedData?.reverse().map((notif: any, index) =>
               notif?.icon ? (
                 <DropdownItem key={index}>
                   <div className="flex flex-col  gap-1 p-1">
