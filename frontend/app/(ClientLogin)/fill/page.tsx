@@ -88,7 +88,7 @@ export default function Fill() {
       firstName: "",
       lastName: "",
       nickName: "",
-      base64Image: "empty",
+      base64Image: null,
     },
   });
 
@@ -103,7 +103,7 @@ export default function Fill() {
                   src={
                     file
                       ? URL.createObjectURL(file)
-                      : "https://i.pravatar.cc/300?img=1"
+                      : "https://shorturl.at/djENR"
                   }
                   size={120}
                   className="relative"

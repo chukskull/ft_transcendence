@@ -52,17 +52,11 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
+    const user = this.userRepository.create({ intraLogin, email, avatarUrl });
     user.nickName = intraLogin ? intraLogin : email.split('@')[0];
     user.firstName = fN;
     user.lastName = lN;
-    user.twoFactorAuthEnabled = false;
-    user.twoFactorSecret = '';
-    user.friends = [];
-    user.blockedUsers = [];
-    user.matchHistory = [];
     user.firstTimeLogiIn = true;
-    user.conversations = [];
 
     // check if the global channel exists
     const savedUser = await this.userRepository.save(user);
@@ -548,9 +542,12 @@ export class UserService {
     }
 
     user.experience += xp;
-    const level = user.level + Math.floor(user.experience / ((1098 * (user.level + 1)) + user.level * 100));
-    if (level > user.level)
-      user.level = level;
+    const level =
+      user.level +
+      Math.floor(
+        user.experience / (1098 * (user.level + 1) + user.level * 100),
+      );
+    if (level > user.level) user.level = level;
     if (user.level >= 9) {
       user.rank = 'Gold';
     } else if (user.level >= 6) {
@@ -563,14 +560,12 @@ export class UserService {
 
   async isInGame(clientID: number): Promise<boolean> {
     const user = await this.userRepository.findOne({
-      where: { id: clientID }
+      where: { id: clientID },
     });
     if (!user) {
       throw new NotFoundException('User not found.');
     }
-    if (user.status == 'inGame')
-      return true;
-    else
-      return false;
+    if (user.status == 'inGame') return true;
+    else return false;
   }
 }
