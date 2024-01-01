@@ -10,7 +10,6 @@ import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { NotifGateway } from 'src/notifications.gateway';
 import { pvpInvite } from './pvp.entity';
-import { isIn } from 'class-validator';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 845;
@@ -110,7 +109,11 @@ export class GameService {
       this.privateQueue = this.privateQueue.filter((lobby) => {
         return lobby.player1.id !== userId;
       });
-    }, 10000);
+      client.emit('changeState', {
+        state: 'failed',
+        message: 'friend did not respond',
+      });
+    }, 15000);
     const newInvite = await this.pvpInviteRepo.create({
       inviter: userProfile,
       friend: friendProfile,
@@ -171,7 +174,6 @@ export class GameService {
     const lobby = this.privateQueue.find((players) => {
       return (
         players.player1.id == pvpNotif.inviter.id && players.player2.id == myId
-        // || (players.player1.id == myId && players.player2.id == pvpNotif.inviter.id)
       );
     });
     if (!lobby) {
@@ -186,8 +188,8 @@ export class GameService {
     // remove all privateQueue that has the same inviterId
     this.privateQueue = this.privateQueue.filter((lobby) => {
       return (
-        (lobby.player1.id != pvpNotif.inviter.id && lobby.player2.id != myId) ||
-        (lobby.player1.id != myId && lobby.player2.id != pvpNotif.inviter.id)
+        (lobby.player1.id != pvpNotif.inviter.id && lobby.player2.id) ||
+        (lobby.player2.id != pvpNotif.inviter.id && lobby.player1.id)
       );
     });
     pvpNotif.accepted = true;

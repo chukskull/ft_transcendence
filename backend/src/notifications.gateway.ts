@@ -22,7 +22,7 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(client: Socket) {
     const token = client?.handshake?.query?.token;
-    if (token) {
+    if (!token) {
       client.emit('notAuth');
       return;
     }
