@@ -163,7 +163,7 @@ export default function Fill() {
               <Input
                 {...register("nickName", {
                   required: "This field is required",
-                  maxLength: 15,
+                  maxLength: 8,
                   minLength: 3,
                   validate: {
                     noSpaces: (value) =>

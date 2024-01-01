@@ -548,9 +548,9 @@ export class UserService {
     }
 
     user.experience += xp;
-
-    const level = Math.floor(xp / (1098 + user.level * 100));
-    user.level = level;
+    const level = user.level + Math.floor(user.experience / ((1098 * (user.level + 1)) + user.level * 100));
+    if (level > user.level)
+      user.level = level;
     if (user.level >= 9) {
       user.rank = 'Gold';
     } else if (user.level >= 6) {
@@ -559,5 +559,18 @@ export class UserService {
       user.rank = 'Bronze';
     }
     return this.userRepository.save(user);
+  }
+
+  async isInGame(clientID: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID }
+    });
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+    if (user.status == 'inGame')
+      return true;
+    else
+      return false;
   }
 }

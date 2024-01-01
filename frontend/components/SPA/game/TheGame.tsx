@@ -11,7 +11,7 @@ const PADDLE_HEIGHT = 110;
 const PADDLE_WIDTH = 13;
 const BALL_RADIUS = 16;
 const PLAYER_PADDLE_SPEED = 16;
-const BALL_SPEED = 7;
+const BALL_SPEED = 6;
 
 const useKeyHandler = () => {
   const [keys, setKeys] = useState<Record<string, boolean>>({});
@@ -62,7 +62,7 @@ export default function TheGame({ map }: { map: string }) {
     const gameLoop = () => {
       // Check for ball going out of left/right walls
       const hitRightEdge = ball.x > canvasWidth - PADDLE_WIDTH;
-      const hitLeftEdge = ball.x <= 5;
+      const hitLeftEdge = ball.x < 0;
 
       if (hitRightEdge || hitLeftEdge) {
         setScore((prev) => ({
@@ -86,8 +86,8 @@ export default function TheGame({ map }: { map: string }) {
       }
       // Ball collisions with top and bottom walls
       if (
-        ball.y + ball.speedY > canvasHeight - 15 ||
-        ball.y + ball.speedY < -3
+        ball.y + 10 > canvasHeight - 10||
+        ball.y + 10 < 0
       ) {
         setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
       }
@@ -95,7 +95,7 @@ export default function TheGame({ map }: { map: string }) {
       // Ball collisions with paddle
       const hitRightPaddle =
         ball.x >=
-        canvasWidth - (PADDLE_WIDTH + DIST_WALL_TO_PADDLE + BALL_RADIUS);
+        canvasWidth - DIST_WALL_TO_PADDLE;
       const hitLeftPaddle =
         ball.x <= DIST_WALL_TO_PADDLE &&
         ball.y >= playerPaddleY &&
@@ -114,7 +114,7 @@ export default function TheGame({ map }: { map: string }) {
         x:
           prevBall.x +
           (hitLeftPaddle || hitRightPaddle
-            ? (hitLeftPaddle ? 0.3 : -0.3) * BALL_RADIUS
+            ? (hitLeftPaddle ? 1 : -1) * BALL_RADIUS
             : prevBall.speedX),
         y: prevBall.y + prevBall.speedY,
       }));
@@ -150,7 +150,7 @@ export default function TheGame({ map }: { map: string }) {
     }
 
     // handle player paddle
-    if (keys["ArrowDown"] && playerPaddleY + PADDLE_HEIGHT < canvasHeight) {
+    if (keys["ArrowDown"] && playerPaddleY + (PADDLE_HEIGHT + 5) < canvasHeight) {
       setPlayerPaddleY(playerPaddleY + PLAYER_PADDLE_SPEED);
     } else if (keys["ArrowUp"] && playerPaddleY > 5) {
       setPlayerPaddleY(playerPaddleY - PLAYER_PADDLE_SPEED);

@@ -43,8 +43,6 @@ export const NotificationComp = ({}) => {
 
   useEffect(() => {
     if (newAchivQuery.data) {
-      setNotifCount((prev: any) => prev + 1);
-
       setReceivedData((prev: any) => [...prev, ...newAchivQuery.data]);
       console.log("newAchivQuery.data", newAchivQuery.data);
     }
@@ -70,17 +68,19 @@ export const NotificationComp = ({}) => {
         ...prev,
         ...pendingFriendRequestsQuery.data,
       ]);
-      setNotifCount(pendingFriendRequestsQuery.data.length);
     }
-  }, [pendingFriendRequestsQuery.data, setReceivedData, setNotifCount]);
+  }, [pendingFriendRequestsQuery.data, setReceivedData]);
+
+  useEffect(() => {
+    setNotifCount(receivedData.length);
+  }, [receivedData]);
 
   useEffect(() => {
     console.log("new invitation occovoe icp requerst", PVPrequest);
     if (PVPrequest) {
       setReceivedData((prev: any[]) => [...prev, PVPrequest]);
-      setNotifCount((prev: any) => prev + 1);
     }
-  }, [PVPrequest, setReceivedData, setNotifCount]);
+  }, [PVPrequest, setReceivedData]);
 
   useEffect(() => {
     const newSocket = io(
@@ -98,6 +98,7 @@ export const NotificationComp = ({}) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("newPVPRequest", (data: any) => setReceivedDatarequest(data));
+
     return () => {
       socket.off("newPVPRequest");
     };
@@ -177,6 +178,7 @@ export const NotificationComp = ({}) => {
         classNames={{
           content: "bg-black",
         }}
+        onClose={() => setReceivedData([])}
       >
         <DropdownTrigger onClick={handleClick}>
           <div>

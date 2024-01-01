@@ -10,6 +10,7 @@ import { UserService } from 'src/user/user.service';
 import { MatchHistory } from 'src/match-history/match-history.entity';
 import { NotifGateway } from 'src/notifications.gateway';
 import { pvpInvite } from './pvp.entity';
+import { isIn } from 'class-validator';
 const jwt = require('jsonwebtoken');
 
 export const GAME_WIDTH = 845;
@@ -205,7 +206,8 @@ export class GameService {
     const isInQueue = this.MatchMakingQueue.find((player) => {
       return player.id == userId;
     });
-    if (!isInQueue) {
+    const inGame = await this.userService.isInGame(userId);
+    if (!isInQueue && !inGame) {
       const userProfile = await this.userService.userProfile(userId);
       this.MatchMakingQueue.push({
         id: userId,
@@ -214,6 +216,11 @@ export class GameService {
         nickName: userProfile.nickName,
       });
       // empty the the queue on disconnect
+      client.on('disconnect', () => {
+        this.MatchMakingQueue = this.MatchMakingQueue.filter((player) => {
+          return player.id !== userId;
+        });
+      });
       client.emit('changeState', {
         state: 'inQueue',
         message: 'waiting for other opponent to join',
