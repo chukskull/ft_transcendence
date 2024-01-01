@@ -560,4 +560,17 @@ export class UserService {
     }
     return this.userRepository.save(user);
   }
+
+  async isInGame(clientID: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID }
+    });
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+    if (user.status == 'inGame')
+      return true;
+    else
+      return false;
+  }
 }
