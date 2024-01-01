@@ -5,8 +5,6 @@ import React, { useEffect, useRef, useReducer, Key } from "react";
 import { Button } from "@nextui-org/react";
 
 function doSubmit(submittedValues: string[]) {
-  console.log(`Submitted: ${submittedValues.join("")}`);
-
   return new Promise((resolve): void => {
     setTimeout(() => {
       resolve(0);

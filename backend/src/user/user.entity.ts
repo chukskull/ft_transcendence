@@ -28,10 +28,10 @@ export class User {
   @Column({ nullable: true })
   intraLogin: string;
 
-  @Column( { nullable: true })
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   lastName: string;
 
   @Column({ default: false })
@@ -40,7 +40,7 @@ export class User {
   @Column()
   avatarUrl: string;
 
-  @Column()
+  @Column({default: false})
   twoFactorAuthEnabled: boolean;
 
   @Column({ nullable: true })

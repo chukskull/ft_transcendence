@@ -23,6 +23,7 @@ export const NotificationComp = ({}) => {
   const [PVPrequest, setReceivedDatarequest] = useState<any>(null);
   const router = useRouter();
   const [receivedData, setReceivedData] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const handleClick = () => {
     setNotifCount(0);
   };
@@ -34,13 +35,13 @@ export const NotificationComp = ({}) => {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`,
         { withCredentials: true }
       );
+      setUserProfile(response.data);
       return response.data.achievements;
     },
     {
       refetchInterval: 500,
     }
   );
-
   useEffect(() => {
     if (newAchivQuery.data) {
       setReceivedData((prev: any) => [...prev, ...newAchivQuery.data]);
@@ -76,7 +77,6 @@ export const NotificationComp = ({}) => {
   }, [receivedData]);
 
   useEffect(() => {
-    console.log("new invitation occovoe icp requerst", PVPrequest);
     if (PVPrequest) {
       setReceivedData((prev: any[]) => [...prev, PVPrequest]);
     }
@@ -98,9 +98,13 @@ export const NotificationComp = ({}) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("newPVPRequest", (data: any) => setReceivedDatarequest(data));
-
+    socket.on("notAuth", () => {
+      console.log("notAuth");
+      router.push("/login");
+    });
     return () => {
       socket.off("newPVPRequest");
+      socket.off("notAuth");
     };
   }, [socket]);
 
@@ -155,7 +159,7 @@ export const NotificationComp = ({}) => {
     setReceivedData((prev: any) =>
       prev.filter((notif: any) => notif.id !== PvPnotifId)
     );
-    if (type == 1 && PvPnotifId) {
+    if (type == 1 && PvPnotifId && userProfile.status != "inGame") {
       if (window.location.pathname == "/game") {
         window.location.href = `/game?accept?notifId=${PvPnotifId}`;
       } else {

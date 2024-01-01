@@ -21,16 +21,13 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket) {
-    try {
-      const userId = jwt.verify(
-        client.handshake.query.token,
-        process.env.JWT_SECRET,
-      )?.sub;
-      client.join(`userNotif-${userId}`);
-    } catch (err) {
-      client.disconnect();
-      throw new NotFoundException('token not valid');
+    const token = client?.handshake?.query?.token;
+    if (token) {
+      client.emit('notAuth');
+      return;
     }
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    client.join(`userNotif-${userId}`);
   }
 
   newAchievement(achievement: Achievement, userId: number) {
