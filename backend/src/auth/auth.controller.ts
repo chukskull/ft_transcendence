@@ -61,9 +61,9 @@ export class AuthController {
   @UseGuards(JwtGuard)
   async logout(@Res() res: Response, @Req() req) {
     await this.userRepository.update(req.user.id, { authenticated: false });
-    console.log('logout');
     await this.userService.setStatus(req.user.id, 'offline');
     res.clearCookie('token').redirect(process.env.frontendUrl);
+    res.redirect(process.env.frontendurl + 'login');
   }
 
   @Get('/google')
