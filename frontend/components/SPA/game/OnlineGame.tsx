@@ -1,59 +1,54 @@
-import React, { useState, useEffect, useCallback, memo, use } from "react";
+import React, { useState, useEffect, memo, useMemo } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
+
+export const PADDLESPEED = 8;
 
 type Score = {
   player1: number;
   player2: number;
 };
+
 type RoomPositionsData = {
   ballX: number;
   ballY: number;
 };
 
-type InfoGame = {
-  loser: string;
-  player1Score: number;
-  player2Score: number;
-  winner: string;
-};
-
 export default function OnlineGame({
   map,
   socket,
-}: // setShowRec,
-{
+}: {
   map: string;
   socket: any;
-  // setShowRec: (_: boolean) => any;
 }) {
   const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
-  const [infoGame, setInfoGame] = useState<InfoGame>({
+  socket.on('enemyPositionUpdate', (data: any) => {
+    setEnemyPaddleY(data.enemyY);
+  });
+  const [infoGame, setInfoGame] = useState<any>({
+    winner: "",
     loser: "",
     player1Score: 0,
     player2Score: 0,
-    winner: "",
   });
+
   const [showRec, setshowRec] = useState<boolean>(false);
-  const handleKeyboardEvent = useCallback(
-    (e: KeyboardEvent) => {
+
+  const handleKeyboardEvent = useMemo(() => {
+    return (e: KeyboardEvent) => {
       if (!socket) return;
-      let newPaddlePosition = player1PaddleY;
-      if (e.key === "ArrowDown") {
-        newPaddlePosition = player1PaddleY + 8;
-      } else if (e.key === "ArrowUp") {
-        newPaddlePosition = player1PaddleY - 8;
+      if (e.key == "ArrowDown" && player1PaddleY + 110 + PADDLESPEED < 500) {
+        setPlayer1PaddleY((prev) => prev + PADDLESPEED);
+      } else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED > 0) {
+        setPlayer1PaddleY((prev) => prev - PADDLESPEED);
       }
-      if (newPaddlePosition + 110 >= 500 || newPaddlePosition <= 0) return;
-      setPlayer1PaddleY(newPaddlePosition);
       socket.emit("positionUpdate", {
-        player1PaddleY: newPaddlePosition,
+        player1PaddleY: player1PaddleY,
       });
-    },
-    [player1PaddleY]
-  );
+    };
+  }, [player1PaddleY]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyboardEvent);
@@ -67,17 +62,14 @@ export default function OnlineGame({
       setEnemyPaddleY(data.enemyY);
     });
 
-    socket.on("changeState", (data: any) => {
-      console.log("this is event on joinmatchmaking ", data);
-    });
+    socket.on("changeState", (data: any) => {});
 
     socket.on("updateScore", (data: any) => {
       setScore(data);
     });
+
     socket.on("gameEnded", (data: any) => {
       setshowRec(true);
-
-      console.log("gameEnded sure", data);
       setInfoGame(data);
     });
 
@@ -87,15 +79,15 @@ export default function OnlineGame({
       socket.off("updateScore");
       socket.off("gameEnded");
     };
-  }, []);
+  }, [socket]);
 
   return (
     <>
       <div className={style.gameBody} tabIndex={0}>
         <p>{score.player1}</p>
         <div className={style[`${map}`]} tabIndex={0}>
-          <div className={style.player} style={{ top: player1PaddleY }}></div>;
-          <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
+          <PlayerPaddle player1PaddleY={player1PaddleY} />
+          <EnemyPaddle EnemyPaddleY={EnemyPaddleY} />
           <Ball socket={socket} />
         </div>
         <p>{score.player2}</p>
@@ -109,13 +101,17 @@ export default function OnlineGame({
   );
 }
 
-// const PlayerPaddle = memo(({ player1PaddleY }: any) => {
-//   return;
-// });
+const PlayerPaddle = memo(({ player1PaddleY }: any) => {
+  return <div className={style.player} style={{ top: player1PaddleY }}></div>;
+});
 
-// const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
-//   return;
-// });
+PlayerPaddle.displayName = "PlayerPaddle";
+
+const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
+  return <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
+});
+
+EnemyPaddle.displayName = "EnemyPaddle";
 
 const Ball = ({ socket }: any) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });

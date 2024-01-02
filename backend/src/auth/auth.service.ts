@@ -21,10 +21,14 @@ export class AuthService {
   }
 
   async generateNewToken(user: User) {
-    return this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-    });
+    try {
+      return this.jwtService.sign({
+        sub: user.id,
+        email: user.email,
+      });
+    } catch (err) {
+      throw new UnauthorizedException('failed to generate token');
+    }
   }
 
   async verifyToken(token: string) {
@@ -47,10 +51,9 @@ export class AuthService {
         secret: user.twoFactorSecret,
       });
       console.log(isValid);
-      return (isValid);
-    }
-    catch(err) {
-      return false;
+      return isValid;
+    } catch (err) {
+      throw new UnauthorizedException('2fa code is invalid');
     }
   }
 }

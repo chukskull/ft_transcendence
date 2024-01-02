@@ -5,10 +5,8 @@ import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import * as passport from 'passport';
 import * as bodyParser from 'body-parser';
-import { serialize } from 'v8';
 
-
-async function bootstrap() {
+async function motherFunction() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.setGlobalPrefix('/api');
@@ -22,4 +20,4 @@ async function bootstrap() {
   });
   await app.listen(1337);
 }
-bootstrap();
+motherFunction();

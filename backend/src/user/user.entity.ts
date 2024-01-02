@@ -28,16 +28,19 @@ export class User {
   @Column({ nullable: true })
   intraLogin: string;
 
-  @Column()
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
+
+  @Column({ default: false })
+  filledInfo: boolean;
 
   @Column()
   avatarUrl: string;
 
-  @Column()
+  @Column({default: false})
   twoFactorAuthEnabled: boolean;
 
   @Column({ nullable: true })

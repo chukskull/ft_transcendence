@@ -1,6 +1,7 @@
 import React from "react";
 import { Plus, Check, Minus } from "lucide-react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface AddFriendProps {
   display: boolean;
@@ -13,6 +14,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
   userId,
   isFriend,
 }) => {
+  const router = useRouter();
   if (display) {
     return null;
   }
@@ -41,7 +43,6 @@ export const AddFriend: React.FC<AddFriendProps> = ({
       buttonText = "Remove Friend";
       borderColor = "border-red-500";
   }
-
   const handleRequest = () => {
     if (isFriend === 0) {
       axios
@@ -50,7 +51,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
           { withCredentials: true }
         )
         .then(() => {
-          window.location.reload();
+          router.refresh();
         })
         .catch((err) => console.log(err.response.data.message));
     } else if (isFriend === 1) {
@@ -60,7 +61,7 @@ export const AddFriend: React.FC<AddFriendProps> = ({
           { withCredentials: true }
         )
         .then(() => {
-          window.location.reload();
+          router.refresh();
         })
         .catch((err) => console.log(err.response.data.message));
     }

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import ProfileComp from "../molecules/ProfileComp";
 import LiveGameRec from "../../home/molecules/LiveGameRec";
-import { useQuery } from "react-query";
-import { Skeleton } from "antd";
 import { SkeletonComp } from "@/components/global/Skeleton";
 
 interface MiddleComponentProps {
@@ -68,16 +66,17 @@ export const MiddleComponent = ({
 
       {index === 1 &&
         data &&
-        Matches?.map((match: any) => (
+        Matches?.reverse().map((match: any) => (
           <LiveGameRec
             key={index}
             LeftProf={match.player1.avatarUrl}
             RightProf={match.player2.avatarUrl}
+            nickLeft={match.player1.nickName}
+            nickRight={match.player2.nickName}
             scoreLeft={match.player1Score}
             scoreRight={match.player2Score}
             onlineleft={match.player1.status}
             onlineright={match.player2.status}
-            boolBut={false}
           />
         ))}
 

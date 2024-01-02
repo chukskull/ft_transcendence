@@ -7,7 +7,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from './user/user.entity';
 import { Achievement } from './achievement/achievement.entity';
@@ -21,10 +21,12 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket) {
-    const userId = jwt.verify(
-      client.handshake.query.token,
-      process.env.JWT_SECRET,
-    )?.sub;
+    const token = client?.handshake?.query?.token;
+    if (!token) {
+      client.emit('notAuth');
+      return;
+    }
+    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     client.join(`userNotif-${userId}`);
   }
 
@@ -32,8 +34,9 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(`userNotif-${userId}`).emit('newAchievement', achievement);
   }
 
-  sendPVPRequest(inviter: User, userId: number) {
-    this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviter);
+  sendPVPRequest(inviteRequest: any, userId: number) {
+    inviteRequest.inviterObject = null;
+    this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviteRequest);
   }
 
   handleDisconnect(client: Socket) {}

@@ -6,23 +6,26 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { JwtGuard } from 'src/auth/Jwt.guard';
 import { UserService } from 'src/user/user.service';
-import { GoogleGuard } from './google.guard';
-import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { TwoFactorAuthenticationCodeDto } from './TwoFactorDto';
+import { Length, IsNotEmpty, IsString } from 'class-validator';
 
+class TwoFactorAuthenticationCodeDto {
+  @Length(6, 6)
+  @IsNotEmpty()
+  @IsString()
+  pin: string;
+}
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -43,7 +46,6 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
-    console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
@@ -53,12 +55,11 @@ export class AuthController {
 
   @Get('/logout')
   @UseGuards(JwtGuard)
-  async logout42(@Res() res: Response, @Req() req) {
-    // await this.userRepository.update(req.user.id, {firstTimeLogiIn: false});
+  async logout(@Res() res: Response, @Req() req) {
     await this.userRepository.update(req.user.id, { authenticated: false });
+    console.log('logout');
     await this.userService.setStatus(req.user.id, 'offline');
-    res.clearCookie('token');
-    res.sendStatus(HttpStatus.OK);
+    res.clearCookie('token').redirect(process.env.frontendUrl);
   }
 
   @Get('/google')
@@ -73,16 +74,14 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
-    console.log(req.user.firstTimeLogiIn);
     if (req.user.firstTimeLogiIn) {
-      console.log(req.user.id);
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
     } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
-  @Get('/2fa/generate')
+  @Get('2fa/generate')
   @UseGuards(JwtGuard)
   async TwoFactorHandler(
     @Req() req: any,
@@ -105,22 +104,14 @@ export class AuthController {
     @Res() res,
   ) {
     console.log(pin);
-    const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(
-      pin,
-      req.user,
-    );
-
-    if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong code');
-    } else {
-      res.redirect(process.env.frontendUrl + '/home');
-    }
+    await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
     await this.userService.enableTwoFactor(req.user.id);
+    res.redirect(process.env.frontendUrl + '/home');
   }
 
-  @Post('2fa/turn-off')
+  @Get('2fa/turn-off')
   @UseGuards(JwtGuard)
-  async turnOffTwofactor (@Req() req ) {
+  async turnOffTwofactor(@Req() req) {
     await this.userService.disableTwoFactor(req.user.id);
   }
 

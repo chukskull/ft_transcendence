@@ -1,14 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { Conversation, Chat } from '../conversations/conversation.entity';
-import { NotFoundException } from '@nestjs/common';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
-import { MatchHistory } from 'src/match-history/match-history.entity';
 
 @Injectable()
 export class UserService {
@@ -22,7 +24,13 @@ export class UserService {
     private readonly conversationService: ConversationService,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
+  async createNewUser(
+    intraLogin: string,
+    avatarUrl: string,
+    email: string,
+    fN: string,
+    lN: string,
+  ): Promise<User> {
     let alreadyExists;
     try {
       if (!intraLogin) {
@@ -44,17 +52,11 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
-    user.nickName = '';
-    user.firstName = '';
-    user.lastName = '';
-    user.twoFactorAuthEnabled = false;
-    user.twoFactorSecret = '';
-    user.friends = [];
-    user.blockedUsers = [];
-    user.matchHistory = [];
+    const user = this.userRepository.create({ intraLogin, email, avatarUrl });
+    user.nickName = intraLogin ? intraLogin : email.split('@')[0];
+    user.firstName = fN;
+    user.lastName = lN;
     user.firstTimeLogiIn = true;
-    user.conversations = [];
 
     // check if the global channel exists
     const savedUser = await this.userRepository.save(user);
@@ -133,7 +135,8 @@ export class UserService {
             ],
           });
 
-    if (!user) throw new NotFoundException('User not found.');
+    if (!user) throw new NotFoundException('User not found');
+
     return user;
   }
 
@@ -146,19 +149,20 @@ export class UserService {
     const nickNameEx = await this.userRepository.findOne({
       where: { nickName },
     });
-    if (nickNameEx) return { message: 'NickName already exists' };
+    if (nickNameEx) throw new NotAcceptableException('NickName already exists');
     const user = await this.userRepository.findOne({
       where: { id },
     });
-    if (user.firstName.length > 2) return { message: 'data already filled' };
-    const useeer = this.userRepository.update(id, {
+    if (user.filledInfo) return { message: 'User already filled info' };
+    const updatedUser = this.userRepository.update(id, {
       nickName,
       firstName,
       lastName,
-      avatarUrl: base64Image,
+      avatarUrl: base64Image || user.avatarUrl,
+      filledInfo: true,
     });
 
-    return useeer;
+    return updatedUser;
   }
 
   async getFriends(userId: number): Promise<User> {
@@ -538,24 +542,30 @@ export class UserService {
     }
 
     user.experience += xp;
-
-    const MaxExp = 1098 + user.level * 100;
-    console.log('MaxExp ', MaxExp, 'currentEx: ', user.experience);
-    if (user.experience >= MaxExp) {
-      console.log('here');
-      user.experience -= MaxExp;
-      user.level += 1;
-
-      if (user.level >= 25) {
-        user.rank = 'Gold';
-      } else if (user.level >= 10) {
-        user.rank = 'Silver';
-      } else if (user.level >= 2) {
-        user.rank = 'Bronze';
-      }
+    const level =
+      user.level +
+      Math.floor(
+        user.experience / (1098 * (user.level + 1) + user.level * 100),
+      );
+    if (level > user.level) user.level = level;
+    if (user.level >= 9) {
+      user.rank = 'Gold';
+    } else if (user.level >= 6) {
+      user.rank = 'Silver';
+    } else if (user.level >= 3) {
+      user.rank = 'Bronze';
     }
-    console.log(user.level);
-
     return this.userRepository.save(user);
+  }
+
+  async isInGame(clientID: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+    if (user.status == 'inGame') return true;
+    else return false;
   }
 }

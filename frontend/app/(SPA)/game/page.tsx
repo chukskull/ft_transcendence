@@ -21,10 +21,8 @@ const Game: React.FC = () => {
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
     newSocket.connect();
     setSocket(newSocket);
-
     newSocket.on("changeState", (data: any) => {
       const { state } = data;
-      console.log("state B", state);
       switch (state) {
         case "inQueue":
           setGameStarted("inQueue");
@@ -37,7 +35,6 @@ const Game: React.FC = () => {
           console.log("waitingForResponse");
           break;
         case "gameEnded":
-          console.log("93 mnx");
           setGameStarted("gameEnded");
           console.log("gameEnded", data);
 
@@ -46,18 +43,18 @@ const Game: React.FC = () => {
           break;
       }
     });
-    const userId = window.location.search.split("=")[1];
+    const notifId = window.location.search.split("=")[1];
     const accept = window.location.search.split("?")[1];
-    if (userId && accept == "accept" && newSocket) {
+    if (notifId && accept == "accept" && newSocket) {
       newSocket.emit("acceptPVP", {
         token: document.cookie.split("=")[1],
-        friendId: userId,
+        notifId: notifId,
       });
       // clear query params
-    } else if (userId && newSocket) {
+    } else if (notifId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
-        friendId: userId,
+        friendId: Number(notifId),
       });
     }
 

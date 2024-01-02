@@ -1,17 +1,20 @@
-import axios from "axios";
+import { useQuery } from 'react-query';
+import axios from 'axios';
 
-export async function getUserProfile(id: string) {
-  try {
+export function useUserProfile(id: string) {
+  return useQuery(['userProfile', id], async () => {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/${id}`,
       {
         withCredentials: true,
       }
     );
-    const userData = response.data;
-    return userData;
-  } catch (error) {
-    console.error("Error getting user profile:", error);
-    throw error;
-  }
+    return response.data;
+},
+{
+    refetchInterval: 1000,
+    onError: (error: Error) => {
+      console.error("Error getting user profile:", error);
+    }
+  });
 }
