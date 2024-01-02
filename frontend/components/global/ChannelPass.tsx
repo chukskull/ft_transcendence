@@ -6,7 +6,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
-export const ProtectedModal = ({ channelId }: { channelId: any }) => {
+export const ProtectedModal = ({
+  channelId,
+  showModal,
+}: {
+  channelId: any;
+  showModal: (s: boolean) => any;
+}) => {
   const {
     register,
     handleSubmit,
@@ -22,13 +28,12 @@ export const ProtectedModal = ({ channelId }: { channelId: any }) => {
         { withCredentials: true }
       )
       .then((res) => {
-        if (res.data.success) {
-          router.push(`/chat/channels/${channelId}`);
-        }
+        router.push(`/chat/channels/${channelId}`);
+        showModal(false);
       })
       .catch((err) => {
-        console.log(err);
-        //alert(err);
+        // console.log(err);
+        alert(err.response.data.message);
       });
   };
 

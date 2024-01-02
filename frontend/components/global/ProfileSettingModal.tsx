@@ -6,7 +6,6 @@ import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
-import { on } from "events";
 
 interface ProfileSettingModalProps {
   onClose: any;

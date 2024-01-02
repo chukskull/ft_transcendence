@@ -6,7 +6,8 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { stat } from "fs";
+import { useRouter } from "next/navigation";
+import { Router } from "lucide-react";
 
 interface ProfileCompProps {
   id?: number;
@@ -44,7 +45,7 @@ const ProfileComp = ({
     );
     return res.data;
   });
-
+  const router = useRouter();
   const [showModal, setShow] = React.useState(false);
   const [isTabletOrMobile, setIsTabletOrMobile] = React.useState(false);
   useEffect(() => {
@@ -94,7 +95,7 @@ const ProfileComp = ({
           }
         )
         .then((res) => {
-          document.location.reload();
+          router.push(`/chat/${channelId}`);
         })
         .catch((err) => {
           console.log(err);
@@ -121,7 +122,7 @@ const ProfileComp = ({
       >
         {showModal &&
           (type === "Protected" ? (
-            <ProtectedModal channelId={channelId} />
+            <ProtectedModal channelId={channelId} showModal={setShow} />
           ) : (
             <UserMenu
               id={id}
