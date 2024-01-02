@@ -1,6 +1,7 @@
 "use client";
 
-import { Badge, DropdownSection, badge } from "@nextui-org/react";
+import { Badge } from "@nextui-org/badge";
+import { DropdownSection } from "@nextui-org/react";
 import React, { use, useEffect, useState } from "react";
 import { NotificationIcon } from "./NotificationIcon";
 import {

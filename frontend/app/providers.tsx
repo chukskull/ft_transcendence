@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useState } from "react";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function NextProviders({ children }: { children: React.ReactNode }) {
   return <NextUIProvider>{children}</NextUIProvider>;
 }
 

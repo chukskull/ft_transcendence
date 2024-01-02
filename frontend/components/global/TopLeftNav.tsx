@@ -2,7 +2,8 @@
 import style from "@/styles/components/TopLeftNav.module.scss";
 
 import Image from "next/image";
-import { Badge, Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import { Badge } from "@nextui-org/badge";
 import GlobalModalComp from "./GlobalModalComp";
 import { useState } from "react";
 import Link from "next/link";
