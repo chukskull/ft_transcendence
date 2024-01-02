@@ -18,12 +18,16 @@ export class JwtGuard implements CanActivate {
     const res: any = context.switchToHttp().getResponse();
 
     if (!req.cookies.token) {
-      throw new UnauthorizedException('Please log in to continue');
+      res.redirect(process.env.frontendUrl + 'login');
+      return;
     }
     try {
       const decode = await this.authService.verifyToken(req.cookies.token);
       const user = await this.userService.findOne(decode.email);
-      if (!user) throw new UnauthorizedException('Please log in to continue');
+      if (!user) {
+        res.redirect(process.env.frontendUrl + 'login');
+        return;
+      }
       req.user = user;
     } catch {
       throw new UnauthorizedException('Invalid Token');
