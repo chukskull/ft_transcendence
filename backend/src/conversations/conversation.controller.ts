@@ -7,8 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 @Controller('conversations')
 export class ConversationController {
   constructor(
-    private readonly conversationService: ConversationService,
-    private readonly authService: AuthService,
+    private conversationService: ConversationService,
   ) {}
 
   @Get(':convId')

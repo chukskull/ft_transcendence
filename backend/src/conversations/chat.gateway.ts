@@ -8,24 +8,14 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
-import { Chat } from './conversation.entity';
-import { User } from '../user/user.entity';
 const jwt = require('jsonwebtoken');
 
 @Injectable()
 @WebSocketGateway({ namespace: 'chatSocket', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(
-    private conversationService: ConversationService,
-    @InjectRepository(User)
-    private UserRepository: Repository<User>,
-    @InjectRepository(Chat)
-    private ChatRepository: Repository<Chat>,
-  ) {}
+  constructor(private conversationService: ConversationService) {}
   handleDisconnect(client: Socket) {}
 
   @WebSocketServer() server: Server;
@@ -51,31 +41,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     let userId;
     try {
-      userId = jwt.verify(token, process.env.JWT_SECRET);
+      userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
     } catch (err) {
       client.disconnect();
       throw new NotFoundException('token not valid');
     }
 
-    const chatMessage = this.ChatRepository.create();
-    chatMessage.message = message;
-    chatMessage.time = new Date();
-    chatMessage.sender = await this.UserRepository.findOne({
-      where: { id: userId },
-    });
-
     try {
-      await this.ChatRepository.save(chatMessage);
-      await this.conversationService.addMessageToConversation(
-        conversationId,
-        chatMessage,
-        userId,
-      );
-
+      const chatMessage =
+        await this.conversationService.addMessageToConversation(
+          conversationId,
+          message,
+          userId,
+        );
+      console.log('tjos is the message the user returened', chatMessage);
       const roomName = `conversation_${conversationId}_chatRoom`;
       this.server.to(roomName).emit('messageReceived', chatMessage);
     } catch (error) {
-      this.server.emit('connect_error', error.message || 'Unknown error');
+      this.server.emit('connectionErr', error.message || 'Unknown error');
       console.error('Error saving and broadcasting the message:', error);
     }
   }

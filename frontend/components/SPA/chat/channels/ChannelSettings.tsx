@@ -34,7 +34,6 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
       });
   };
 
-  console.log("these are the muted user", muted);
   const unban = (userId: number) => {
     console.log("unban", userId);
     axios
@@ -126,7 +125,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
                 <div key={index} className={style["user"]}>
                   <AvatarBubble avatar={e.avatarUrl} online={e.status} />
                   <div className={style["friend-name"]}>{e.nickName}</div>
-                  <button onClick={() => unban(e.id)}>
+                  <button onClick={() => unban(e.id)} type="button">
                     <AiOutlineIssuesClose />
                   </button>
                 </div>
@@ -140,7 +139,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
                 <div key={index} className={style["user"]}>
                   <AvatarBubble avatar={e.avatarUrl} online={e.status} />
                   <div className={style["friend-name"]}>{e.nickName}</div>
-                  <button onClick={() => unmute(e.id)}>
+                  <button onClick={() => unmute(e.id)} type="button">
                     <AiOutlineSound />
                   </button>
                 </div>
@@ -149,7 +148,10 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
           </div>
         </div>
         <div className={style["btns"]}>
-          <button onClick={() => deleteChannel(id)}>Delete Channel</button>
+          <button onClick={() => deleteChannel(id)} type="button">
+            Delete Channel
+          </button>
+
           <button type="submit">Save Changes</button>
         </div>
       </div>
