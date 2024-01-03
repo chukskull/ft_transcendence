@@ -28,7 +28,6 @@ const InviteSection = ({ chandId, onAction }: any) => {
         }
       )
       .then((res) => {
-        console.log(res.data);
         onAction(false);
       })
       .catch((err) => console.log(err));

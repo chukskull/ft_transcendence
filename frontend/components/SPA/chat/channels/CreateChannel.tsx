@@ -41,7 +41,6 @@ const CreateChannelModal = ({ onCreate }: CreateChannelModalProps) => {
         }
       )
       .then((res) => {
-        console.log(res.data);
         onCreate(false);
         router.push(`/chat/channels/${res.data.id}`);
       })

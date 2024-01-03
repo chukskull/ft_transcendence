@@ -56,10 +56,7 @@ class SettingsDto {
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly usersService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly usersService: UserService) {}
 
   @Get()
   @UseGuards(JwtGuard)

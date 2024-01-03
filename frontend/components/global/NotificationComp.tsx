@@ -47,7 +47,6 @@ export const NotificationComp = ({}) => {
   useEffect(() => {
     if (newAchivQuery.data) {
       setReceivedData((prev: any) => [...prev, ...newAchivQuery.data]);
-      console.log("newAchivQuery.data", newAchivQuery.data);
     }
   }, [newAchivQuery.data]);
 
@@ -102,10 +101,7 @@ export const NotificationComp = ({}) => {
     socket.on("newAchievement", () => {
       setNotifCount((prev: any) => prev + 1);
     });
-    // socket.on("notAuth", () => {
-    //   console.log("notAuth");
-    //   router.push("/login");
-    // });
+
     return () => {
       socket.off("newPVPRequest");
       socket.off("notAuth");

@@ -176,8 +176,6 @@ export class ChannelService {
       throw new NotFoundException("You can't delete this channel");
 
     if (channel.owner.id != mod) {
-      console.log('this is the channel owner', channel.owner.id);
-      console.log('this is the mod', mod);
       return;
     }
     await this.chanRepository.remove(channel);

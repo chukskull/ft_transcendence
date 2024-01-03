@@ -5,10 +5,8 @@ import axios from "axios";
 import { AiOutlineIssuesClose, AiOutlineSound } from "react-icons/ai";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { on } from "events";
 
 const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
-  console.log("these are the muted user", muted);
   const router = useRouter();
   const [is_private, setPrivate] = useState(chPrivate);
   const [password, setPassword] = useState("");
@@ -35,7 +33,6 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
   };
 
   const unban = (userId: number) => {
-    console.log("unban", userId);
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`,
