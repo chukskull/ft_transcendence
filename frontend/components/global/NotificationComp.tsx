@@ -74,10 +74,6 @@ export const NotificationComp = ({}) => {
     }
   }, [pendingFriendRequestsQuery.data, setReceivedData]);
 
-  // useEffect(() => {
-  //   setNotifCount(receivedData.length);
-  // }, [receivedData]);
-
   useEffect(() => {
     if (PVPrequest) {
       setReceivedData((prev: any[]) => [...prev, PVPrequest]);
@@ -87,15 +83,17 @@ export const NotificationComp = ({}) => {
 
   useEffect(() => {
     const newSocket = io(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`,
-      {
-        query: {
-          token: document.cookie.split("=")[1],
-        },
-      }
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`
     );
     newSocket.connect();
+    newSocket.emit("joinRoom", {
+      token: document.cookie.split("=")[1],
+    });
     setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
   useEffect(() => {

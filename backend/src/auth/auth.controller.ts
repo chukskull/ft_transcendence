@@ -49,11 +49,10 @@ export class AuthController {
     if (req.user.firstTimeLogiIn) {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
-    } 
-    if (req.user.twoFactorAuthEnabled){
-      res.redirect(process.env.frontendUrl + 'verify');
     }
-    else res.redirect(process.env.frontendUrl + 'home');
+    if (req.user.twoFactorAuthEnabled) {
+      res.redirect(process.env.frontendUrl + 'verify');
+    } else res.redirect(process.env.frontendUrl + 'home');
     await this.userRepository.update(req.user.id, { authenticated: true });
   }
 
@@ -81,11 +80,10 @@ export class AuthController {
     if (req.user.firstTimeLogiIn) {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
-    } 
-    if (req.user.twoFactorAuthEnabled){
-      res.redirect(process.env.frontendUrl + 'verify');
     }
-    else res.redirect(process.env.frontendUrl + '/home');
+    if (req.user.twoFactorAuthEnabled) {
+      res.redirect(process.env.frontendUrl + 'verify');
+    } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
   }
 

@@ -5,7 +5,7 @@ import { User } from 'src/user/user.entity';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Channel } from '../channel/channel.entity';
-import { Conversation } from '../conversations/conversation.entity';
+import { Conversation, Chat } from '../conversations/conversation.entity';
 import { Achievement } from '../achievement/achievement.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { ChannelService } from 'src/channel/channel.service';
@@ -13,7 +13,7 @@ import { ConversationService } from '../conversations/conversation.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Channel, Conversation, Achievement]),
+    TypeOrmModule.forFeature([User, Channel, Conversation, Achievement, Chat]),
   ],
   controllers: [UserController],
   providers: [

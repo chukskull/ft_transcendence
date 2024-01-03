@@ -41,6 +41,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   };
 
   const updateUser = async (user: any) => {
+    console.log("üser Settings", user);
     setValue("twoFa", checked);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
