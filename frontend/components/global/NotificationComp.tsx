@@ -71,6 +71,9 @@ export const NotificationComp = ({}) => {
         ...prev,
         ...pendingFriendRequestsQuery.data,
       ]);
+      setNotifCount(
+        (prev: any) => prev + pendingFriendRequestsQuery.data.length
+      );
     }
   }, [pendingFriendRequestsQuery.data, setReceivedData]);
 
