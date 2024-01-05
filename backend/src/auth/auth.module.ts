@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+require('dotenv').config();
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     UserModule,
     PassportModule.register({ defaultStrategy: '42' }),
     JwtModule.register({
-      secret: 'f439843--213+@y4t34u',
+      secret: process.env.JWT_SECRET || 'f439843--213+@y4t34u',
       signOptions: { expiresIn: '1d' },
     }),
   ],

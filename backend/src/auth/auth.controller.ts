@@ -27,10 +27,6 @@ class TwoFactorAuthenticationCodeDto {
   @IsNotEmpty()
   @IsString()
   pin: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  settings: boolean;
 }
 @Controller('auth')
 export class AuthController {
@@ -60,20 +56,18 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'verify');
     } else res.redirect(process.env.frontendUrl + 'home');
     await this.userRepository.update(req.user.id, { authenticated: true });
-    await this.userRepository.update(req.user.id, { PinValid: false});
+    await this.userRepository.update(req.user.id, { PinValid: false });
   }
 
   @Get('/logout')
   @UseGuards(JwtGuard)
-  async logout(
-    @Res({ passthrough: true }) res: Response,
-    @Req() req: any) {
-    console.log("lllll")
+  async logout(@Res({ passthrough: true }) res: Response, @Req() req: any) {
+    console.log('lllll');
     await this.userRepository.update(req.user.id, { authenticated: false });
     await this.userService.setStatus(req.user.id, 'offline');
     await this.userService.ValidPin(req.user.id, false);
     res.clearCookie('token');
-    return ("Logout");
+    return 'Logout';
     // res.redirect(process.env.frontendurl + 'login');
   }
 
@@ -97,7 +91,7 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'verify');
     } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
-    await this.userRepository.update(req.user.id, { PinValid: false});
+    await this.userRepository.update(req.user.id, { PinValid: false });
   }
 
   @Get('2fa/generate')
@@ -122,8 +116,12 @@ export class AuthController {
     @Body() { pin }: TwoFactorAuthenticationCodeDto,
     @Res() res,
   ) {
-    const validCode = await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
-    if (!validCode) throw new UnauthorizedException("Wrong Code");
+    console.log('this is the pen from ', pin);
+    const validCode = await this.authService.isTwoFactorAuthenticationCodeValid(
+      pin,
+      req.user,
+    );
+    if (!validCode) throw new UnauthorizedException('Wrong Code');
     await this.userService.ValidPin(req.user.id, true);
     res.redirect(process.env.frontendUrl + '/home');
   }
@@ -132,13 +130,12 @@ export class AuthController {
   @UseGuards(TwoFactorGuard)
   async turnOn2fa(
     @Req() req,
-    @Body() { pin, settings }: TwoFactorAuthenticationCodeDto,
+    @Body() { pin }: TwoFactorAuthenticationCodeDto,
     @Res() res,
   ) {
-    console.log('this is the pen from ', settings, pin);
     await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
     await this.userService.enableTwoFactor(req.user.id);
-    if (!settings) res.redirect(process.env.frontendUrl + '/home');
+    res.redirect(process.env.frontendUrl + '/home');
   }
 
   @Get('2fa/turn-off')
@@ -146,13 +143,13 @@ export class AuthController {
   async turnOffTwofactor(@Req() req) {
     await this.userService.disableTwoFactor(req.user.id);
     await this.userService.ValidPin(req.user.id, false);
-    return ("2FA Off");
+    return '2FA Off';
   }
 
   @Get('verifyUser')
   @UseGuards(JwtGuard)
   async verifyUser(@Req() req: any, @Res() res: Response): Promise<any> {
-    console.log("jjjjjjjjjjjjjj");
+    console.log('jjjjjjjjjjjjjj');
     res.sendStatus(200);
   }
 }
