@@ -10,8 +10,15 @@ import {
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
+import { IsString, Length, validateOrReject } from 'class-validator';
 const jwt = require('jsonwebtoken');
+import { plainToClass } from 'class-transformer';
 
+export class MessageDto {
+  @IsString()
+  @Length(1, 200)
+  message: string;
+}
 @Injectable()
 @WebSocketGateway({ namespace: 'chatSocket', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -36,9 +43,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const { conversationId, message, token } = data;
-    if (message.length > 200) {
-      return;
-    }
+
     let userId;
     try {
       userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
@@ -48,17 +53,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     try {
+      const messageDto = plainToClass(MessageDto, { message });
+      await validateOrReject(messageDto);
       const chatMessage =
         await this.conversationService.addMessageToConversation(
           conversationId,
           message,
           userId,
         );
-      console.log('tjos is the message the user returened', chatMessage);
       const roomName = `conversation_${conversationId}_chatRoom`;
       this.server.to(roomName).emit('messageReceived', chatMessage);
     } catch (error) {
-      this.server.emit('connectionErr', error.message || 'Unknown error');
       console.error('Error saving and broadcasting the message:', error);
     }
   }

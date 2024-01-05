@@ -95,7 +95,7 @@ const ProfileComp = ({
           }
         )
         .then((res) => {
-          router.push(`/chat/${channelId}`);
+          router.push(`/chat/channels/${channelId}`);
         })
         .catch((err) => {
           console.log(err);

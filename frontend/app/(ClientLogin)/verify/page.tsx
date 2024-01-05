@@ -3,8 +3,25 @@
 import style from "@/styles/components/TwoFa.module.scss";
 import React, { useEffect, useRef, useReducer, Key } from "react";
 import { Button } from "@nextui-org/react";
+import axios from "axios";
 
 function doSubmit(submittedValues: string[]) {
+  axios
+    .post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/authenticate`,
+      {
+        pin: submittedValues.join(""),
+      },
+      {
+        withCredentials: true,
+      }
+    )
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   return new Promise((resolve): void => {
     setTimeout(() => {
       console.log(submittedValues.join(""));
