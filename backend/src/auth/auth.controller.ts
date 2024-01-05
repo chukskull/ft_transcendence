@@ -20,13 +20,17 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { Length, IsNotEmpty, IsString } from 'class-validator';
+import { Length, IsNotEmpty, IsString, IsBoolean } from 'class-validator';
 
 class TwoFactorAuthenticationCodeDto {
   @Length(6, 6)
   @IsNotEmpty()
   @IsString()
   pin: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  settings: boolean;
 }
 @Controller('auth')
 export class AuthController {
@@ -51,11 +55,10 @@ export class AuthController {
     if (req.user.firstTimeLogiIn) {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
-    } 
-    if (req.user.twoFactorAuthEnabled){
-      res.redirect(process.env.frontendUrl + 'verify');
     }
-    else res.redirect(process.env.frontendUrl + 'home');
+    if (req.user.twoFactorAuthEnabled) {
+      res.redirect(process.env.frontendUrl + 'verify');
+    } else res.redirect(process.env.frontendUrl + 'home');
     await this.userRepository.update(req.user.id, { authenticated: true });
     await this.userRepository.update(req.user.id, { PinValid: false});
   }
@@ -89,11 +92,10 @@ export class AuthController {
     if (req.user.firstTimeLogiIn) {
       res.redirect(process.env.frontendUrl + 'fill');
       await this.userRepository.update(req.user.id, { firstTimeLogiIn: false });
-    } 
-    if (req.user.twoFactorAuthEnabled){
-      res.redirect(process.env.frontendUrl + 'verify');
     }
-    else res.redirect(process.env.frontendUrl + '/home');
+    if (req.user.twoFactorAuthEnabled) {
+      res.redirect(process.env.frontendUrl + 'verify');
+    } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
     await this.userRepository.update(req.user.id, { PinValid: false});
   }
@@ -130,14 +132,21 @@ export class AuthController {
   @UseGuards(TwoFactorGuard)
   async turnOn2fa(
     @Req() req,
-    @Body() { pin }: TwoFactorAuthenticationCodeDto,
+    @Body() { pin, settings }: TwoFactorAuthenticationCodeDto,
     @Res() res,
   ) {
+<<<<<<< HEAD
       const validCode = await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
       if (!validCode) throw new UnauthorizedException("Wrong Code");
       await this.userService.enableTwoFactor(req.user.id);
       await this.userService.ValidPin(req.user.id, true);
       res.redirect(process.env.frontendUrl + '/home');
+=======
+    console.log('this is the pen from ', settings, pin);
+    await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
+    await this.userService.enableTwoFactor(req.user.id);
+    if (!settings) res.redirect(process.env.frontendUrl + '/home');
+>>>>>>> 9a28796ba6947c9bafb00ca05c87e35f55d344c7
   }
 
   @Get('2fa/turn-off')

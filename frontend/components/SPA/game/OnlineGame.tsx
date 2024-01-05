@@ -1,8 +1,8 @@
-import React, { useState, useEffect, memo, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
-export const PADDLESPEED = 8;
+export const PADDLESPEED = 11;
 
 type Score = {
   player1: number;
@@ -24,9 +24,7 @@ export default function OnlineGame({
   const [score, setScore] = useState<Score>({ player1: 0, player2: 0 });
   const [player1PaddleY, setPlayer1PaddleY] = useState<number>(210);
   const [EnemyPaddleY, setEnemyPaddleY] = useState<number>(210);
-  socket.on('enemyPositionUpdate', (data: any) => {
-    setEnemyPaddleY(data.enemyY);
-  });
+
   const [infoGame, setInfoGame] = useState<any>({
     winner: "",
     loser: "",
@@ -36,19 +34,20 @@ export default function OnlineGame({
 
   const [showRec, setshowRec] = useState<boolean>(false);
 
-  const handleKeyboardEvent = useMemo(() => {
-    return (e: KeyboardEvent) => {
+  const handleKeyboardEvent = useCallback(
+    (e: KeyboardEvent) => {
       if (!socket) return;
-      if (e.key == "ArrowDown" && player1PaddleY + 110 + PADDLESPEED < 500) {
+      if (e.key == "ArrowDown" && player1PaddleY + 110 + PADDLESPEED < 500)
         setPlayer1PaddleY((prev) => prev + PADDLESPEED);
-      } else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED > 0) {
+      else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED > 0)
         setPlayer1PaddleY((prev) => prev - PADDLESPEED);
-      }
+
       socket.emit("positionUpdate", {
         player1PaddleY: player1PaddleY,
       });
-    };
-  }, [player1PaddleY]);
+    },
+    [player1PaddleY]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyboardEvent);
@@ -86,8 +85,8 @@ export default function OnlineGame({
       <div className={style.gameBody} tabIndex={0}>
         <p>{score.player1}</p>
         <div className={style[`${map}`]} tabIndex={0}>
-          <PlayerPaddle player1PaddleY={player1PaddleY} />
-          <EnemyPaddle EnemyPaddleY={EnemyPaddleY} />
+          <div className={style.player} style={{ top: player1PaddleY }}></div>;
+          <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
           <Ball socket={socket} />
         </div>
         <p>{score.player2}</p>
@@ -100,19 +99,6 @@ export default function OnlineGame({
     </>
   );
 }
-
-const PlayerPaddle = memo(({ player1PaddleY }: any) => {
-  return <div className={style.player} style={{ top: player1PaddleY }}></div>;
-});
-
-PlayerPaddle.displayName = "PlayerPaddle";
-
-const EnemyPaddle = memo(({ EnemyPaddleY }: any) => {
-  return <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
-});
-
-EnemyPaddle.displayName = "EnemyPaddle";
-
 const Ball = ({ socket }: any) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 

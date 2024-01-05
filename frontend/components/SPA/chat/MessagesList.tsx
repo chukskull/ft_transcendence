@@ -3,7 +3,6 @@ import AvatarBubble from "./AvatarBubble";
 import style from "@/styles/SPA/chat/chat.module.scss";
 import Modal from "react-modal";
 import UserMenu from "./UserMenu";
-import { set } from "lodash";
 
 const MsgsList = ({ chats, blockedList }: { chats: any; blockedList: any }) => {
   const bottomRef = useRef<HTMLDivElement>(null);

@@ -9,7 +9,7 @@ import {
   BALL_RADIUS,
 } from './game.service';
 
-const BASE_BALL_SPEED = 5;
+const BASE_BALL_SPEED = 4;
 const FRAME_RATE = 1000 / 20;
 const BALL_SPEED = Math.floor((BASE_BALL_SPEED * FRAME_RATE) / 16.66666);
 

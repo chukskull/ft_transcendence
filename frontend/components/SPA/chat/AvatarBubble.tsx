@@ -1,7 +1,8 @@
 "use client";
-import { Avatar, Badge } from "@nextui-org/react";
+import { Avatar } from "@nextui-org/react";
 import { color, motion } from "framer-motion";
 
+import { Badge } from "@nextui-org/badge";
 interface AvatarBubbleProps {
   avatar: any;
   online: any;

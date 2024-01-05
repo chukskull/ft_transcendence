@@ -165,26 +165,18 @@ export class ChannelService {
     return this.chanRepository.save(channel);
   }
 
-  async deleteChannel(id: number, mod: number): Promise<void> {
+  async deleteChannel(id: number, mod: number) {
     const channel = await this.chanRepository.findOne({
       where: { id },
       relations: ['owner', 'conversation'],
     });
-    if (!channel) {
-      throw new NotFoundException('Channel not found');
-    }
-    if (channel.name === 'Welcome/Global channel') {
+    if (!channel) throw new NotFoundException('Channel not found');
+
+    if (channel.name == 'Welcome/Global channel')
       throw new NotFoundException("You can't delete this channel");
-    }
-    const requestMaker = await this.userRepository.findOne({
-      where: { id: mod },
-    });
-    if (!requestMaker) {
-      throw new NotFoundException('User not found');
-    }
-    const isOwner = channel.owner.id === requestMaker.id;
-    if (!isOwner) {
-      throw new NotFoundException('User not owner of the channel');
+
+    if (channel.owner.id != mod) {
+      return;
     }
     await this.chanRepository.remove(channel);
     await this.conversationService.deleteConversation(channel.conversation.id);

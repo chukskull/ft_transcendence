@@ -6,7 +6,6 @@ import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
-import { on } from "events";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -19,7 +18,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
-
+  const [pin, setPin] = useState<string | null>(null);
   const handleClick = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -84,7 +83,25 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         });
     }
   };
-
+  const activate2Fa = () => {
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/turn-on`,
+        {
+          pin,
+          settings: true,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
@@ -176,7 +193,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             <h1 className="text-fontlight font-ClashGrotesk-Regular text-base">
               Scan QR Code
             </h1>
-            <img src={qrCode} alt="qr code" />
+            <img src={qrCode} alt="qr code" className="rounded-lg" />
             <Input
               {...register("qrCode", {
                 maxLength: 6,
@@ -190,7 +207,19 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               isInvalid={errors.qrCode ? true : false}
               // variant="bordered"
               placeholder="Enter 6 digit code"
+              onChange={(e) => {
+                setPin(e.target.value);
+              }}
             />
+            <Button
+              type="button"
+              onClick={() => {
+                activate2Fa();
+              }}
+              className="bg-green-500 text-fontlight font-ClashGrotesk-Medium text-base rounded-md text-center relative mt-[-3.2rem] z-100 mr-[-19rem]"
+            >
+              2fa on
+            </Button>
           </div>
         )}
         <div className="flex items-center justify-between gap-8">

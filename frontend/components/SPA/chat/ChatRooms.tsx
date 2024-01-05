@@ -77,7 +77,7 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   if (!socket) return;
 
   socket.on("messageReceived", (data: any) => setReceivedData(data));
-  socket.on("connect_error", (err: any) => {
+  socket.on("connectionErr", (err: any) => {
     console.error(err.message);
     socket.close();
   });

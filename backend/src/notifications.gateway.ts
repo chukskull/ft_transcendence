@@ -19,15 +19,24 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor() {}
 
   @WebSocketServer() server: Server;
+  handleConnection(client: Socket) {}
 
-  handleConnection(client: Socket) {
-    const token = client?.handshake?.query?.token;
-    if (!token) {
-      client.emit('notAuth');
-      return;
+  handleDisconnect(client: Socket) {}
+
+  @SubscribeMessage('joinRoom')
+  async registerClient(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { token: string },
+  ) {
+    try {
+      const token = data?.token;
+      if (token) {
+        const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+        client.join(`userNotif-${userId}`);
+      }
+    } catch (err) {
+      throw new NotFoundException('token not valid');
     }
-    const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
-    client.join(`userNotif-${userId}`);
   }
 
   newAchievement(achievement: Achievement, userId: number) {
@@ -39,5 +48,5 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviteRequest);
   }
 
-  handleDisconnect(client: Socket) {}
+  s;
 }

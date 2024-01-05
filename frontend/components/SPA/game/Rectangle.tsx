@@ -35,7 +35,6 @@ const Rectangle: React.FC<RectangleProps> = ({
       .then((res) => {
         setAvatar(res.data.avatarUrl);
         setName(`${res.data.firstName} ${res.data.lastName}`);
-        console.log(res.data);
       })
       .catch((err) => {
         console.log(err.response.data);

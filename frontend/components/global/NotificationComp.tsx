@@ -1,6 +1,7 @@
 "use client";
 
-import { Badge, DropdownSection, badge } from "@nextui-org/react";
+import { Badge } from "@nextui-org/badge";
+import { DropdownSection } from "@nextui-org/react";
 import React, { use, useEffect, useState } from "react";
 import { NotificationIcon } from "./NotificationIcon";
 import {
@@ -46,7 +47,6 @@ export const NotificationComp = ({}) => {
   useEffect(() => {
     if (newAchivQuery.data) {
       setReceivedData((prev: any) => [...prev, ...newAchivQuery.data]);
-      console.log("newAchivQuery.data", newAchivQuery.data);
     }
   }, [newAchivQuery.data]);
 
@@ -70,12 +70,11 @@ export const NotificationComp = ({}) => {
         ...prev,
         ...pendingFriendRequestsQuery.data,
       ]);
+      setNotifCount(
+        (prev: any) => prev + pendingFriendRequestsQuery.data.length
+      );
     }
   }, [pendingFriendRequestsQuery.data, setReceivedData]);
-
-  // useEffect(() => {
-  //   setNotifCount(receivedData.length);
-  // }, [receivedData]);
 
   useEffect(() => {
     if (PVPrequest) {
@@ -86,15 +85,17 @@ export const NotificationComp = ({}) => {
 
   useEffect(() => {
     const newSocket = io(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`,
-      {
-        query: {
-          token: document.cookie.split("=")[1],
-        },
-      }
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/notifications`
     );
     newSocket.connect();
+    newSocket.emit("joinRoom", {
+      token: document.cookie.split("=")[1],
+    });
     setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -103,10 +104,7 @@ export const NotificationComp = ({}) => {
     socket.on("newAchievement", () => {
       setNotifCount((prev: any) => prev + 1);
     });
-    // socket.on("notAuth", () => {
-    //   console.log("notAuth");
-    //   router.push("/login");
-    // });
+
     return () => {
       socket.off("newPVPRequest");
       socket.off("notAuth");
