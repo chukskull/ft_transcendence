@@ -6,12 +6,14 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { JwtGuard } from 'src/auth/Jwt.guard';
+import { TwoFactorGuard } from './TwoFactorGuard.guard';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -58,15 +60,21 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'verify');
     } else res.redirect(process.env.frontendUrl + 'home');
     await this.userRepository.update(req.user.id, { authenticated: true });
+    await this.userRepository.update(req.user.id, { PinValid: false});
   }
 
   @Get('/logout')
   @UseGuards(JwtGuard)
-  async logout(@Res() res: Response, @Req() req) {
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: any) {
+    console.log("lllll")
     await this.userRepository.update(req.user.id, { authenticated: false });
     await this.userService.setStatus(req.user.id, 'offline');
-    res.clearCookie('token').redirect(process.env.frontendUrl);
-    res.redirect(process.env.frontendurl + 'login');
+    await this.userService.ValidPin(req.user.id, false);
+    res.clearCookie('token');
+    return ("Logout");
+    // res.redirect(process.env.frontendurl + 'login');
   }
 
   @Get('/google')
@@ -89,10 +97,11 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'verify');
     } else res.redirect(process.env.frontendUrl + '/home');
     await this.userRepository.update(req.user.id, { authenticated: true });
+    await this.userRepository.update(req.user.id, { PinValid: false});
   }
 
   @Get('2fa/generate')
-  @UseGuards(JwtGuard)
+  @UseGuards(TwoFactorGuard)
   async TwoFactorHandler(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
@@ -106,28 +115,52 @@ export class AuthController {
     return toDataURL(otpUri);
   }
 
+  @Post('/2fa/authenticate')
+  @UseGuards(TwoFactorGuard)
+  async authenticate(
+    @Req() req,
+    @Body() { pin }: TwoFactorAuthenticationCodeDto,
+    @Res() res,
+  ) {
+    const validCode = await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
+    if (!validCode) throw new UnauthorizedException("Wrong Code");
+    await this.userService.ValidPin(req.user.id, true);
+    res.redirect(process.env.frontendUrl + '/home');
+  }
+
   @Post('/2fa/turn-on')
-  @UseGuards(JwtGuard)
+  @UseGuards(TwoFactorGuard)
   async turnOn2fa(
     @Req() req,
     @Body() { pin, settings }: TwoFactorAuthenticationCodeDto,
     @Res() res,
   ) {
+<<<<<<< HEAD
+      const validCode = await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
+      if (!validCode) throw new UnauthorizedException("Wrong Code");
+      await this.userService.enableTwoFactor(req.user.id);
+      await this.userService.ValidPin(req.user.id, true);
+      res.redirect(process.env.frontendUrl + '/home');
+=======
     console.log('this is the pen from ', settings, pin);
     await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
     await this.userService.enableTwoFactor(req.user.id);
     if (!settings) res.redirect(process.env.frontendUrl + '/home');
+>>>>>>> 9a28796ba6947c9bafb00ca05c87e35f55d344c7
   }
 
   @Get('2fa/turn-off')
-  @UseGuards(JwtGuard)
+  @UseGuards(TwoFactorGuard)
   async turnOffTwofactor(@Req() req) {
     await this.userService.disableTwoFactor(req.user.id);
+    await this.userService.ValidPin(req.user.id, false);
+    return ("2FA Off");
   }
 
   @Get('verifyUser')
   @UseGuards(JwtGuard)
   async verifyUser(@Req() req: any, @Res() res: Response): Promise<any> {
+    console.log("jjjjjjjjjjjjjj");
     res.sendStatus(200);
   }
 }

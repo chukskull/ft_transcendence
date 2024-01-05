@@ -53,7 +53,7 @@ export class AuthService {
       console.log(isValid);
       return isValid;
     } catch (err) {
-      throw new UnauthorizedException('2fa code is invalid');
+      return false;
     }
   }
 }
