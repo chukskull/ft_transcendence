@@ -6,7 +6,6 @@ export default function GHeader({ isONline, enemy }: any) {
   const [myProfile, setMyProfile] = useState<any>({});
 
   useEffect(() => {
-    console.log("refetching data");
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
         withCredentials: true,

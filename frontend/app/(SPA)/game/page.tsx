@@ -87,7 +87,6 @@ const Game: React.FC = () => {
   function handleJoinQueue() {
     if (socket) {
       socket?.emit("joinQueue", { token: document.cookie.split("=")[1] });
-      console.log("token: ", document.cookie.split("=")[1]);
     }
   }
 

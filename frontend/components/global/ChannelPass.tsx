@@ -32,7 +32,6 @@ export const ProtectedModal = ({
         showModal(false);
       })
       .catch((err) => {
-        // console.log(err);
         alert(err.response.data.message);
       });
   };

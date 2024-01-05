@@ -18,13 +18,17 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { Length, IsNotEmpty, IsString } from 'class-validator';
+import { Length, IsNotEmpty, IsString, IsBoolean } from 'class-validator';
 
 class TwoFactorAuthenticationCodeDto {
   @Length(6, 6)
   @IsNotEmpty()
   @IsString()
   pin: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  settings: boolean;
 }
 @Controller('auth')
 export class AuthController {
@@ -106,13 +110,13 @@ export class AuthController {
   @UseGuards(JwtGuard)
   async turnOn2fa(
     @Req() req,
-    @Body() { pin }: TwoFactorAuthenticationCodeDto,
+    @Body() { pin, settings }: TwoFactorAuthenticationCodeDto,
     @Res() res,
   ) {
-    console.log(pin);
+    console.log('this is the pen from ', settings, pin);
     await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
     await this.userService.enableTwoFactor(req.user.id);
-    res.redirect(process.env.frontendUrl + '/home');
+    if (!settings) res.redirect(process.env.frontendUrl + '/home');
   }
 
   @Get('2fa/turn-off')

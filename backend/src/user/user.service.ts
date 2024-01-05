@@ -6,22 +6,21 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { Conversation, Chat } from '../conversations/conversation.entity';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
+import { AuthService } from 'src/auth/auth.service';
+import { Inject } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Conversation)
-    private conversationRepository: Repository<Conversation>,
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
     private channelService: ChannelService,
-    private readonly conversationService: ConversationService,
+    private conversationService: ConversationService,
   ) {}
 
   async createNewUser(
@@ -202,9 +201,9 @@ export class UserService {
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
     let updateData = {};
-    if (avatarUrl !== 'noChange') {
+    if (avatarUrl !== 'noChange')
       updateData = { ...updateData, avatarUrl: avatarUrl };
-    }
+
     updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
 
     if (nickName) {
@@ -216,6 +215,13 @@ export class UserService {
       } else {
         updateData = { ...updateData, nickName };
       }
+    }
+    if (!twoFa) {
+      updateData = {
+        ...updateData,
+        twoFactorAuthEnabled: twoFa,
+        twoFactorSecret: null,
+      };
     }
     return this.userRepository.update(userId, updateData);
   }

@@ -163,7 +163,11 @@ export default function Profile({ id }: any) {
           />
         </div>
 
-        <ProgressBar lvl={data?.level} exp={data?.experience} maxExp={1098*(data?.level + 1) + data?.level * 100} />
+        <ProgressBar
+          lvl={data?.level}
+          exp={data?.experience}
+          maxExp={1098 * (data?.level + 1) + data?.level * 100}
+        />
         <Stats
           perc={
             data?.totalGames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
