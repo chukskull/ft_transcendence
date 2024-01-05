@@ -135,18 +135,10 @@ export class AuthController {
     @Body() { pin, settings }: TwoFactorAuthenticationCodeDto,
     @Res() res,
   ) {
-<<<<<<< HEAD
-      const validCode = await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
-      if (!validCode) throw new UnauthorizedException("Wrong Code");
-      await this.userService.enableTwoFactor(req.user.id);
-      await this.userService.ValidPin(req.user.id, true);
-      res.redirect(process.env.frontendUrl + '/home');
-=======
     console.log('this is the pen from ', settings, pin);
     await this.authService.isTwoFactorAuthenticationCodeValid(pin, req.user);
     await this.userService.enableTwoFactor(req.user.id);
     if (!settings) res.redirect(process.env.frontendUrl + '/home');
->>>>>>> 9a28796ba6947c9bafb00ca05c87e35f55d344c7
   }
 
   @Get('2fa/turn-off')
