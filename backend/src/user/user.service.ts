@@ -478,6 +478,16 @@ export class UserService {
     return this.userRepository.save(client);
   }
 
+  async ValidPin(clientID: number, status: boolean): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID},
+    });
+    if (!client) throw new NotFoundException('User not found.');
+    client.PinValid = status;
+    return this.userRepository.save(client);
+
+  }
+
   async disableTwoFactor(clientID: number): Promise<any> {
     const client = await this.userRepository.findOne({
       where: { id: clientID },

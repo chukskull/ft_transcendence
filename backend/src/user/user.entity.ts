@@ -43,6 +43,9 @@ export class User {
   @Column({default: false})
   twoFactorAuthEnabled: boolean;
 
+  @Column({default: false})
+  PinValid: boolean;
+
   @Column({ nullable: true })
   twoFactorSecret: string;
 
