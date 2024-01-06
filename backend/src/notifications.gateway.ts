@@ -47,6 +47,4 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
     inviteRequest.inviterObject = null;
     this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviteRequest);
   }
-
-  s;
 }

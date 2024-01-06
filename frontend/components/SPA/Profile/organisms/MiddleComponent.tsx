@@ -66,7 +66,7 @@ export const MiddleComponent = ({
 
       {index === 1 &&
         data &&
-        Matches?.reverse().map((match: any) => (
+        Matches?.toReversed().map((match: any) => (
           <LiveGameRec
             key={index}
             LeftProf={match.player1.avatarUrl}

@@ -17,9 +17,9 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import io from "socket.io-client";
 import { useRouter } from "next/navigation";
-import { set } from "lodash";
+import { reverse, set } from "lodash";
 
-export const NotificationComp = ({}) => {
+export const NotificationComp = ({ }) => {
   const [notifCount, setNotifCount] = useState<number>(0);
   const [socket, setSocket] = useState<any>(null);
   const [PVPrequest, setReceivedDatarequest] = useState<any>(null);
@@ -224,7 +224,7 @@ export const NotificationComp = ({}) => {
             title="Actions"
             aria-label="Dynamic Actions"
           >
-            {receivedData?.reverse().map((notif: any, index) =>
+            {receivedData?.toReversed().map((notif: any, index) =>
               notif?.icon ? (
                 <DropdownItem key={index}>
                   <div className="flex flex-col  gap-1 p-1">

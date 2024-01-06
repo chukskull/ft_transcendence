@@ -35,6 +35,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         };
         reader.readAsDataURL(selectedFile);
       } else {
+        alert("File too large");
       }
     });
     fileInput.click();

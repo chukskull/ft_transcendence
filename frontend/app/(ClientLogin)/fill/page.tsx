@@ -59,7 +59,7 @@ export default function Fill() {
         };
         reader.readAsDataURL(selectedFile);
       } else {
-        //alert("File too big!");
+        alert("File too big!");
       }
     });
     fileInput.click();
@@ -134,8 +134,8 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-                // value={name}
-                // onChange={(e) => setName(e.target.value)}
+              // value={name}
+              // onChange={(e) => setName(e.target.value)}
               />
 
               <Input
@@ -156,8 +156,8 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-                // value={lastName}
-                // onChange={(e) => setLastName(e.target.value)}
+              // value={lastName}
+              // onChange={(e) => setLastName(e.target.value)}
               />
 
               <Input
@@ -178,8 +178,8 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-                // value={nickName}
-                // onChange={(e) => setNickName(e.target.value)}
+              // value={nickName}
+              // onChange={(e) => setNickName(e.target.value)}
               />
 
               <Button
