@@ -91,16 +91,17 @@ const SearchComp = () => {
     });
 
     setActiveSearch(filteredUsers.slice(0, 8));
-  }, 300); // Debounce for 300 milliseconds
+  }, 100); // Debounce for 300 milliseconds
 
   const handleSearch = (e: any) => {
-    if (e.target.value === "") {
+    if (e.target.value.length === 0) {
       setActiveSearch([]);
       return false;
+    } else {
+      debouncedSearch(e.target.value);
     }
-
-    debouncedSearch(e.target.value);
   };
+
   return (
     <>
       <div className={style["top_search"]}>
@@ -109,7 +110,6 @@ const SearchComp = () => {
           type="text"
           placeholder="Search for players, channels..."
           onChange={(e) => handleSearch(e)}
-          onClick={fetchData}
         />
       </div>
       {activeSearch.length > 0 && (
