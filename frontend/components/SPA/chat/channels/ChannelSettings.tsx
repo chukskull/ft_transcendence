@@ -5,10 +5,8 @@ import axios from "axios";
 import { AiOutlineIssuesClose, AiOutlineSound } from "react-icons/ai";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { on } from "events";
 
 const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
-  console.log("these are the muted user", muted);
   const router = useRouter();
   const [is_private, setPrivate] = useState(chPrivate);
   const [password, setPassword] = useState("");
@@ -34,9 +32,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
       });
   };
 
-  console.log("these are the muted user", muted);
   const unban = (userId: number) => {
-    console.log("unban", userId);
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${id}/banning/${userId}/0`,
@@ -124,9 +120,9 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
             <div className={style["list"]}>
               {banned?.map((e: any, index: number) => (
                 <div key={index} className={style["user"]}>
-                  <AvatarBubble avatar={e.avatarUrl} online />
+                  <AvatarBubble avatar={e.avatarUrl} online={e.status} />
                   <div className={style["friend-name"]}>{e.nickName}</div>
-                  <button onClick={() => unban(e.id)}>
+                  <button onClick={() => unban(e.id)} type="button">
                     <AiOutlineIssuesClose />
                   </button>
                 </div>
@@ -138,9 +134,9 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
             <div className={style["list"]}>
               {muted?.map((e: any, index: number) => (
                 <div key={index} className={style["user"]}>
-                  <AvatarBubble avatar={e.avatarUrl} online />
+                  <AvatarBubble avatar={e.avatarUrl} online={e.status} />
                   <div className={style["friend-name"]}>{e.nickName}</div>
-                  <button onClick={() => unmute(e.id)}>
+                  <button onClick={() => unmute(e.id)} type="button">
                     <AiOutlineSound />
                   </button>
                 </div>
@@ -149,7 +145,10 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
           </div>
         </div>
         <div className={style["btns"]}>
-          <button onClick={() => deleteChannel(id)}>Delete Channel</button>
+          <button onClick={() => deleteChannel(id)} type="button">
+            Delete Channel
+          </button>
+
           <button type="submit">Save Changes</button>
         </div>
       </div>

@@ -21,10 +21,14 @@ export class AuthService {
   }
 
   async generateNewToken(user: User) {
-    return this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-    });
+    try {
+      return this.jwtService.sign({
+        sub: user.id,
+        email: user.email,
+      });
+    } catch (err) {
+      throw new UnauthorizedException('failed to generate token');
+    }
   }
 
   async verifyToken(token: string) {
@@ -41,9 +45,15 @@ export class AuthService {
     twoFactorAuthCode: string,
     user: User,
   ) {
-    return authenticator.verify({
-      token: twoFactorAuthCode,
-      secret: user.twoFactorSecret,
-    });
+    try {
+      const isValid = authenticator.verify({
+        token: twoFactorAuthCode,
+        secret: user.twoFactorSecret,
+      });
+      console.log(isValid);
+      return isValid;
+    } catch (err) {
+      return false;
+    }
   }
 }

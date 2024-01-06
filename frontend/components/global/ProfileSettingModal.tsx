@@ -1,13 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Avatar, Skeleton } from "antd";
+import { Avatar } from "antd";
 import { Input } from "@nextui-org/react";
 import { BsFillCameraFill } from "react-icons/bs";
 import axios from "axios";
 import { Button, Switch } from "@nextui-org/react";
-import { SkeletonComp } from "./Skeleton";
 import { useForm } from "react-hook-form";
-import { set } from "lodash";
 
 interface ProfileSettingModalProps {
   onClose: any;
@@ -19,10 +17,8 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
   const [checked, setChecked] = useState(false);
   const [myData, setMyData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [base64Image, setBase64Image] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
-  const [name, setName] = useState("");
-
+  const [pin, setPin] = useState<string | null>(null);
   const handleClick = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -39,6 +35,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         };
         reader.readAsDataURL(selectedFile);
       } else {
+        alert("File too large");
       }
     });
     fileInput.click();
@@ -46,34 +43,66 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
 
   const updateUser = async (user: any) => {
     setValue("twoFa", checked);
-    console.log(user, user.avatarUrl.length);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/update`, user, {
         withCredentials: true,
       })
       .then((res) => {
-        // window.location.reload();
-      })
-      .catch((err) => {
-        alert(err.response.data.message);
-      });
-  };
-
-  // 2fs on off
-  const handle2Fa = () => {
-    const endPoint = checked ? "disable" : "enable";
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setQrCode(res.data);
+        onClose();
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
+  // 2fs on off
+  const handle2Fa = (checked: boolean) => {
+    console.log("2fa is ", !checked);
+    if (!checked) {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/generate`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setQrCode(res.data);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/turn-off`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          setQrCode(null);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+  const activate2Fa = () => {
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/turn-on`,
+        {
+          pin,
+          settings: true,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {
@@ -94,7 +123,8 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      nickName: "",
+      nickName: myData?.nickName,
+      qrCode: null,
       avatarUrl: "noChange",
       twoFa: checked,
     },
@@ -130,8 +160,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             </h1>
             <Input
               {...register("nickName", {
-                maxLength: 15,
-                minLength: 3,
+                maxLength: 8,
                 validate: {
                   noSpace: (value) => !/\s/.test(value),
                 },
@@ -140,7 +169,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
               type="text"
               size="sm"
               isInvalid={errors.nickName ? true : false}
-              errorMessage={errors.nickName && errors.nickName.message}
               // variant="bordered"
               placeholder="new username"
             />
@@ -157,7 +185,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             aria-label="Automatic updates"
             onChange={() => {
               setChecked(!checked);
-              handle2Fa();
+              handle2Fa(checked);
             }}
           />
         </div>
@@ -166,7 +194,33 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             <h1 className="text-fontlight font-ClashGrotesk-Regular text-base">
               Scan QR Code
             </h1>
-            <img src={qrCode} alt="qr code" />
+            <img src={qrCode} alt="qr code" className="rounded-lg" />
+            <Input
+              {...register("qrCode", {
+                maxLength: 6,
+                validate: {
+                  noSpace: (value: any) => !/\s/.test(value),
+                },
+              })}
+              className="bg-inherit text-fontlight"
+              type="text"
+              size="sm"
+              isInvalid={errors.qrCode ? true : false}
+              // variant="bordered"
+              placeholder="Enter 6 digit code"
+              onChange={(e) => {
+                setPin(e.target.value);
+              }}
+            />
+            <Button
+              type="button"
+              onClick={() => {
+                activate2Fa();
+              }}
+              className="bg-green-500 text-fontlight font-ClashGrotesk-Medium text-base rounded-md text-center relative mt-[-3.2rem] z-100 mr-[-19rem]"
+            >
+              2fa on
+            </Button>
           </div>
         )}
         <div className="flex items-center justify-between gap-8">
@@ -177,7 +231,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             Cancel
           </Button>
           <Button
-            // type="submit"
+            type="submit"
             onClick={handleSubmit(updateUser)}
             className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >

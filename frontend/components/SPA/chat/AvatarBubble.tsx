@@ -1,7 +1,8 @@
 "use client";
-import { Avatar, Badge } from "@nextui-org/react";
+import { Avatar } from "@nextui-org/react";
 import { color, motion } from "framer-motion";
 
+import { Badge } from "@nextui-org/badge";
 interface AvatarBubbleProps {
   avatar: any;
   online: any;
@@ -15,7 +16,7 @@ const AvatarBubble = ({ avatar, online, badge }: AvatarBubbleProps) => {
           src={avatar}
           alt="avatar"
           isBordered
-          color={online ? "success" : "danger"}
+          color={online === "online" ? "success" : "danger"}
           className="h-9 w-9 ml-1 cursor-pointer"
           // className={style["avatar"]}
         ></Avatar>

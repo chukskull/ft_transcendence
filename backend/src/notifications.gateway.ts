@@ -7,7 +7,7 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { User } from './user/user.entity';
 import { Achievement } from './achievement/achievement.entity';
@@ -19,23 +19,32 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor() {}
 
   @WebSocketServer() server: Server;
+  handleConnection(client: Socket) {}
 
-  handleConnection(client: Socket) {
-    const userId = jwt.verify(
-      client.handshake.query.token,
-      process.env.JWT_SECRET,
-    )?.sub;
-    client.join(`userNotif-${userId}`);
+  handleDisconnect(client: Socket) {}
+
+  @SubscribeMessage('joinRoom')
+  async registerClient(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { token: string },
+  ) {
+    try {
+      const token = data?.token;
+      if (token) {
+        const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+        client.join(`userNotif-${userId}`);
+      }
+    } catch (err) {
+      throw new NotFoundException('token not valid');
+    }
   }
 
   newAchievement(achievement: Achievement, userId: number) {
     this.server.to(`userNotif-${userId}`).emit('newAchievement', achievement);
   }
 
-  sendPVPRequest(inviter: User, userId: number) {
-    console.log('sending pvp request');
-    this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviter);
+  sendPVPRequest(inviteRequest: any, userId: number) {
+    inviteRequest.inviterObject = null;
+    this.server.to(`userNotif-${userId}`).emit('newPVPRequest', inviteRequest);
   }
-
-  handleDisconnect(client: Socket) {}
 }

@@ -42,29 +42,29 @@ export const Leadrboard = ({ MonStyle }: LeaderboardProps) => {
           index < 3
             ? ((borderColor = colors[index]), (textColor = textColors[index]))
             : ((borderColor = "border-white"), (textColor = "text-white")),
-          (console.log(borderColor),
           (
-            <div
-              key={user.id}
-              className={`border-1 rounded-2xl w-full ${bgStyle} ${borderColor} h-20 flex justify-start items-center p-10 gap-6`}
-            >
-              <span
-                className={`font-ClashGrotesk-Semibold text-lg flex items-center ${textColor}`}
+            (
+              <div
+                key={user.id}
+                className={`border-1 rounded-2xl w-full ${bgStyle} ${borderColor} h-20 flex justify-start items-center p-10 gap-6`}
               >
-                {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
-              </span>
+                <span
+                  className={`font-ClashGrotesk-Semibold text-lg flex items-center ${textColor}`}
+                >
+                  {index < 9 ? `#0${index + 1}` : `#${index + 1}`}
+                </span>
 
-              <ProfileComp
-                img={user.avatarUrl}
-                nickName={user.nickName}
-                firstName={user.firstName}
-                lastName={user.lastName}
-                id={user.id}
-                channelId={user.id}
-                status={user.status}
-              />
-            </div>
-          ))
+                <ProfileComp
+                  img={user.avatarUrl}
+                  nickName={user.nickName}
+                  firstName={user.firstName}
+                  lastName={user.lastName}
+                  id={user.id}
+                  channelId={user.id}
+                  status={user.status}
+                />
+              </div>
+            ))
         )
       )}
     </div>

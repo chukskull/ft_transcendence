@@ -13,6 +13,27 @@ import { MatchHistory } from 'src/match-history/match-history.entity';
 import { MatchHistoryService } from 'src/match-history/match-history.service';
 import { UserService } from 'src/user/user.service';
 
+export const ThreeWinsData = {
+  name: '3 wins',
+  description: 'Win 3 games',
+  icon: 'https://i.imgur.com/YKmHpYD.png',
+  addedXp: 300,
+};
+
+export const FiveWinsData = {
+  name: '5 wins',
+  description: 'Win 5 games',
+  icon: 'https://i.imgur.com/3788ZGE.png',
+  addedXp: 500,
+};
+
+export const TenWinsData = {
+  name: '10 wins',
+  description: 'Win 10 games',
+  icon: 'https://i.imgur.com/ZWNSYyK.png',
+  addedXp: 900,
+};
+
 export const winXP = 369;
 export const loseXP = 121;
 
@@ -93,56 +114,115 @@ export class AchievementService {
     player2id: number,
     matchHistoId: number,
   ): Promise<void> {
-    const matchH = await this.matchHistoryService.findOne(matchHistoId);
+    const matchH = await this.matchHistory.findOne({
+      where: { id: matchHistoId },
+    });
     if (!matchH) throw new NotFoundException('Match history not found');
+    await this.matchHistoryService.addMatchToUserMatchHistory(
+      player1id,
+      player2id,
+      matchH,
+    );
 
     await this.userService.setStatus(player1id, 'online');
     await this.userService.setStatus(player2id, 'online');
-    if (matchH.winner == player1id) {
-      await this.userService.updateExperience(player1id, winXP);
-      await this.userService.updateExperience(player2id, loseXP);
-      const player1Wins = await this.matchHistoryService.trackWins(player1id);
-      if (player1Wins == 3) {
-        const achievement = await this.achievementRepository.findOne({
-          where: { name: '3 wins' },
+
+    await this.userRepository.update(
+      { id: player1id },
+      {
+        totalGames: () => 'totalGames + 1',
+      },
+    );
+    await this.userRepository.update(
+      { id: player2id },
+      {
+        totalGames: () => 'totalGames + 1',
+      },
+    );
+    switch (matchH.winner) {
+      case player1id:
+        await this.userRepository.update(
+          { id: player1id },
+          {
+            wins: () => 'wins + 1',
+          },
+        );
+        const player1Wins = await this.matchHistory.find({
+          where: { winner: player1id },
         });
-        await this.giveAchievement(player1id, achievement.id);
-      }
-      if (player1Wins == 5) {
-        const achievement = await this.achievementRepository.findOne({
-          where: { name: '5 wins' },
+        switch (player1Wins.length) {
+          case 3:
+            let threeWinsAchievement = await this.achievementRepository.findOne(
+              {
+                where: { name: '3 wins' },
+              },
+            );
+            if (!threeWinsAchievement)
+              threeWinsAchievement =
+                await this.createAchievement(ThreeWinsData);
+            await this.giveAchievement(player1id, threeWinsAchievement.id);
+            break;
+          case 5:
+            let fiveWinsAchievement = await this.achievementRepository.findOne({
+              where: { name: '5 wins' },
+            });
+            if (!fiveWinsAchievement)
+              fiveWinsAchievement = await this.createAchievement(FiveWinsData);
+            await this.giveAchievement(player1id, fiveWinsAchievement.id);
+            break;
+          case 10:
+            let tenWinsAchievement = await this.achievementRepository.findOne({
+              where: { name: '10 wins' },
+            });
+            if (!tenWinsAchievement)
+              tenWinsAchievement = await this.createAchievement(TenWinsData);
+            await this.giveAchievement(player1id, tenWinsAchievement.id);
+            break;
+        }
+        break;
+      case player2id:
+        await this.userRepository.update(
+          { id: player2id },
+          {
+            wins: () => 'wins + 1',
+          },
+        );
+        const player2Wins = await this.matchHistory.find({
+          where: { winner: player2id },
         });
-        await this.giveAchievement(player1id, achievement.id);
-      }
-      if (player1Wins == 10) {
-        const achievement = await this.achievementRepository.findOne({
-          where: { name: '10 wins' },
-        });
-        await this.giveAchievement(player1id, achievement.id);
-      }
-    } else if (matchH.winner == player2id) {
-      await this.userService.updateExperience(player2id, winXP);
-      await this.userService.updateExperience(player1id, loseXP);
-      const player2Wins = await this.matchHistoryService.trackWins(player2id);
-      if (player2Wins == 3) {
-        const achievement = await this.achievementRepository.findOne({
-          where: { name: '3 wins' },
-        });
-        await this.giveAchievement(player2id, achievement.id);
-      }
-      if (player2Wins == 5) {
-        const achievement = await this.achievementRepository.findOne({
-          where: { name: '5 wins' },
-        });
-        await this.giveAchievement(player2id, achievement.id);
-      }
-      if (player2Wins == 10) {
-        const achievement = await this.achievementRepository.findOne({
-          where: { name: '10 wins' },
-        });
-        await this.giveAchievement(player2id, achievement.id);
-      }
+        switch (player2Wins.length) {
+          case 3:
+            let threeWinsAchievement = await this.achievementRepository.findOne(
+              {
+                where: { name: '3 wins' },
+              },
+            );
+            if (!threeWinsAchievement)
+              threeWinsAchievement =
+                await this.createAchievement(ThreeWinsData);
+            await this.giveAchievement(player2id, threeWinsAchievement.id);
+            break;
+          case 5:
+            let fiveWinsAchievement = await this.achievementRepository.findOne({
+              where: { name: '5 wins' },
+            });
+            if (!fiveWinsAchievement)
+              fiveWinsAchievement = await this.createAchievement(FiveWinsData);
+            await this.giveAchievement(player2id, fiveWinsAchievement.id);
+            break;
+          case 10:
+            let tenWinsAchievement = await this.achievementRepository.findOne({
+              where: { name: '10 wins' },
+            });
+            if (!tenWinsAchievement)
+              tenWinsAchievement = await this.createAchievement(TenWinsData);
+            await this.giveAchievement(player2id, tenWinsAchievement.id);
+            break;
+        }
+        break;
     }
+    await this.userService.updateExperienceAndLevel(matchH.winner, winXP);
+    await this.userService.updateExperienceAndLevel(matchH.loser, loseXP);
   }
 
   async giveAchievement(userId: number, achievementId: number): Promise<User> {
@@ -160,8 +240,7 @@ export class AchievementService {
     }
     user.experience += achievement.addedXp;
     user.achievements.push(achievement);
-    const savedUser = await this.userRepository.save(user);
     this.notifGateway.newAchievement(achievement, user.id);
-    return savedUser;
+    return await this.userRepository.save(user);
   }
 }

@@ -11,10 +11,11 @@ import { AchievementService } from 'src/achievement/achievement.service';
 import { Achievement } from 'src/achievement/achievement.entity';
 import { AchievementModule } from 'src/achievement/achievement.module';
 import { NotifGateway } from 'src/notifications.gateway';
+import { pvpInvite } from './pvp.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, MatchHistory, Achievement]),
+    TypeOrmModule.forFeature([User, MatchHistory, Achievement, pvpInvite]),
     UserModule,
     AchievementModule,
   ],

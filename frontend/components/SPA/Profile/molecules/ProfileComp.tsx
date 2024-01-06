@@ -6,7 +6,8 @@ import style from "@/styles/SPA/chat/chat.module.scss";
 import { ProtectedModal } from "@/components/global/ChannelPass";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { stat } from "fs";
+import { useRouter } from "next/navigation";
+import { Router } from "lucide-react";
 
 interface ProfileCompProps {
   id?: number;
@@ -19,6 +20,7 @@ interface ProfileCompProps {
   inChannel?: boolean;
   channelId?: number;
   isMod?: boolean;
+  invite?: string;
 }
 
 const ProfileComp = ({
@@ -32,6 +34,7 @@ const ProfileComp = ({
   inChannel,
   channelId,
   isMod,
+  invite,
 }: ProfileCompProps) => {
   const { isLoading, data, error } = useQuery("getSession", async () => {
     const res = await axios.get(
@@ -40,10 +43,9 @@ const ProfileComp = ({
         withCredentials: true,
       }
     );
-
     return res.data;
   });
-
+  const router = useRouter();
   const [showModal, setShow] = React.useState(false);
   const [isTabletOrMobile, setIsTabletOrMobile] = React.useState(false);
   useEffect(() => {
@@ -84,7 +86,6 @@ const ProfileComp = ({
     if (type === "Protected") {
       setShow(true);
     } else if (type === "Public") {
-      console.log("public");
       axios
         .post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channelId}/join`,
@@ -94,11 +95,10 @@ const ProfileComp = ({
           }
         )
         .then((res) => {
-          document.location.reload();
+          router.push(`/chat/channels/${channelId}`);
         })
         .catch((err) => {
           console.log(err);
-          //alert(err);
         });
     } else if (
       type === "achiv" ||
@@ -121,7 +121,7 @@ const ProfileComp = ({
       >
         {showModal &&
           (type === "Protected" ? (
-            <ProtectedModal channelId={channelId} />
+            <ProtectedModal channelId={channelId} showModal={setShow} />
           ) : (
             <UserMenu
               id={id}
@@ -165,7 +165,8 @@ const ProfileComp = ({
               isTabletOrMobile ? "sm:text-xs" : ""
             }`}
           >
-            {nickName ? "#" : ""}
+            {invite && !nickName ? invite : "#"}
+
             {nickName && nickName.length > 10
               ? `${nickName.slice(0, 12)}...`
               : nickName}

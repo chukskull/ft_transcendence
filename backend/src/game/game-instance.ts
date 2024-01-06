@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import { UserService } from 'src/user/user.service';
 import { AchievementService } from 'src/achievement/achievement.service';
 import {
   GAME_WIDTH,
@@ -7,6 +6,7 @@ import {
   PADDLE_HEIGHT,
   PADDLE_WIDTH,
   DIST_WALL_TO_PADDLE,
+  BALL_RADIUS,
 } from './game.service';
 
 const BASE_BALL_SPEED = 4;
@@ -34,6 +34,7 @@ export class GameInstance {
   public gameEnded: boolean;
 
   public winnerID: number;
+  public loserID: number;
   private server: Server;
   public matchHistory: any;
   public matchHistoryRepo: any;
@@ -44,7 +45,7 @@ export class GameInstance {
     server: Server,
     matchHistory: any,
     matchHistoryRepo: any,
-    private achievementService: AchievementService
+    private achievementService: AchievementService,
   ) {
     this.matchHistory = matchHistory;
     this.matchHistoryRepo = matchHistoryRepo;
@@ -57,7 +58,6 @@ export class GameInstance {
     this.gameEnded = false;
     this.server = server;
     this.positionsStruct = {
-      //starting data
       ballx: this.ball.x,
       bally: this.ball.y,
       player1Score: 0,
@@ -79,7 +79,9 @@ export class GameInstance {
     // handle disconnect
     this.player1.socket.on('disconnect', () => {
       this.player2Score = 5;
+      this.player2Score;
       this.winnerID = this.player2.id;
+      this.loserID = this.player1.id;
       this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
@@ -90,6 +92,9 @@ export class GameInstance {
       });
       this.player2.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -98,7 +103,9 @@ export class GameInstance {
     });
     this.player2.socket.on('disconnect', () => {
       this.player1Score = 5;
+      this.player2Score;
       this.winnerID = this.player1.id;
+      this.loserID = this.player2.id;
       this.player2.socket.emit('updateScore', {
         player1: this.player2Score,
         player2: this.player1Score,
@@ -109,6 +116,9 @@ export class GameInstance {
       });
       this.player1.socket.emit('gameEnded', {
         winner: this.winnerID,
+        loser: this.loserID,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
       });
       this.gameRunning = false;
       this.gameEnded = true;
@@ -162,9 +172,11 @@ export class GameInstance {
   public emitEnemyPaddlePosition(): void {
     this.player1.socket.emit('enemyPositionUpdate', {
       enemyY: this.paddle2Position,
+      myposition: this.paddle1Position,
     });
     this.player2.socket.emit('enemyPositionUpdate', {
       enemyY: this.paddle1Position,
+      myposition: this.paddle2Position,
     });
   }
 
@@ -186,8 +198,8 @@ export class GameInstance {
   }
   public updateScore(): void {
     // check collision with right and left walls
-    const hitRightEdge = this.ball.x > GAME_WIDTH - PADDLE_WIDTH;
-    const hitLeftEdge = this.ball.x <= 5;
+    const hitRightEdge = this.ball.x >= GAME_WIDTH - BALL_RADIUS - 5;
+    const hitLeftEdge = this.ball.x <= -10;
 
     if (hitRightEdge || hitLeftEdge) {
       this.player1Score += hitRightEdge ? 1 : 0;
@@ -202,36 +214,6 @@ export class GameInstance {
       });
       this.resetBall();
       if (this.checkGameEnd()) {
-        if (this.player1Score === 5) {
-          this.winnerID = this.player1.id;
-          this.player1.socket.emit('gameEnded', {
-            winner: this.player1.nickName,
-            loser: this.player2.nickName,
-            player1Score: this.player1Score,
-            player2Score: this.player2Score,
-          });
-          this.player2.socket.emit('gameEnded', {
-            winner: this.player1.nickName,
-            loser: this.player2.nickName,
-            player1Score: this.player2Score,
-            player2Score: this.player1Score,
-          });
-        }
-        if (this.player2Score === 5) {
-          this.winnerID = this.player2.id;
-          this.player1.socket.emit('gameEnded', {
-            winner: this.player2.nickName,
-            loser: this.player1.nickName,
-            player1Score: this.player1Score,
-            player2Score: this.player2Score,
-          });
-          this.player2.socket.emit('gameEnded', {
-            winner: this.player2.nickName,
-            loser: this.player1.nickName,
-            player1Score: this.player2Score,
-            player2Score: this.player1Score,
-          });
-        }
         this.gameEnded = true;
         this.gameRunning = false;
         this.updateScoreAndAchievementsInDB();
@@ -242,9 +224,8 @@ export class GameInstance {
 
   private async updateScoreAndAchievementsInDB() {
     try {
-      const matchHistory = await this.matchHistory
+      let matchHistory = await this.matchHistory;
       if (matchHistory) {
-        console.log('testing if achievement is given');
         await this.matchHistoryRepo.update(
           {
             id: matchHistory.id,
@@ -253,16 +234,16 @@ export class GameInstance {
             player1Score: this.player1Score,
             player2Score: this.player2Score,
             winner: this.winnerID,
-          }
-          );
+            loser: this.loserID,
+          },
+        );
         await this.achievementService.calculateAchievement(
           this.player1.id,
           this.player2.id,
-          matchHistory.id
+          matchHistory.id,
         );
-          
       } else {
-        console.log('Match history not found');
+        console.log('Match history not found, try again!');
       }
     } catch (error) {
       console.error('Error updating score:', error);
@@ -279,12 +260,12 @@ export class GameInstance {
   public bounceOffPaddles(): void {
     const hitRightPaddle =
       this.ball.x >= GAME_WIDTH - (DIST_WALL_TO_PADDLE + PADDLE_WIDTH) &&
-      this.ball.y >= this.paddle2Position &&
-      this.ball.y <= this.paddle2Position + PADDLE_HEIGHT;
+      this.ball.y > this.paddle2Position &&
+      this.ball.y < this.paddle2Position + PADDLE_HEIGHT;
     const hitLeftPaddle =
       this.ball.x <= DIST_WALL_TO_PADDLE + PADDLE_WIDTH &&
-      this.ball.y >= this.paddle1Position &&
-      this.ball.y <= this.paddle1Position + PADDLE_HEIGHT;
+      this.ball.y > this.paddle1Position &&
+      this.ball.y < this.paddle1Position + PADDLE_HEIGHT;
     if (
       (hitLeftPaddle && this.ball.speedX < 0) ||
       (hitRightPaddle && this.ball.speedX > 0)
@@ -295,11 +276,38 @@ export class GameInstance {
 
   // check game end
   public checkGameEnd(): boolean {
-    if (this.player1Score === 5) {
+    const endingValue = 5;
+    if (this.player1Score === endingValue) {
       this.winnerID = this.player1.id;
+      this.loserID = this.player2.id;
+      this.player1.socket.emit('gameEnded', {
+        winner: this.player1.nickName,
+        loser: this.player2.nickName,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
+      });
+      this.player2.socket.emit('gameEnded', {
+        winner: this.player1.nickName,
+        loser: this.player2.nickName,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
+      });
       return true;
-    } else if (this.player2Score === 5) {
+    } else if (this.player2Score === endingValue) {
       this.winnerID = this.player2.id;
+      this.loserID = this.player1.id;
+      this.player1.socket.emit('gameEnded', {
+        winner: this.player2.nickName,
+        loser: this.player1.nickName,
+        player1Score: this.player1Score,
+        player2Score: this.player2Score,
+      });
+      this.player2.socket.emit('gameEnded', {
+        winner: this.player2.nickName,
+        loser: this.player1.nickName,
+        player1Score: this.player2Score,
+        player2Score: this.player1Score,
+      });
       return true;
     } else return false;
   }

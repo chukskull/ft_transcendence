@@ -28,7 +28,6 @@ const InviteSection = ({ chandId, onAction }: any) => {
         }
       )
       .then((res) => {
-        console.log(res.data);
         onAction(false);
       })
       .catch((err) => console.log(err));
@@ -140,10 +139,10 @@ const ChannelMenu = ({ channel, currentUser, onAction }: any) => {
   const [channelData, setChannelData] = useState<any>(null);
 
   const isModOrOwner = () => {
-    if (currentUser.id === channel.owner.id) return true;
+    if (currentUser?.id === channel.owner.id) return true;
     if (channel.Moderators) {
       for (let i = 0; i < channel.Moderators.length; i++) {
-        if (currentUser.id === channel.Moderators[i].id) return true;
+        if (currentUser?.id === channel.Moderators[i].id) return true;
       }
     }
     return false;

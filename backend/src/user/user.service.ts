@@ -1,28 +1,35 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import { Conversation, Chat } from '../conversations/conversation.entity';
-import { NotFoundException } from '@nestjs/common';
 import { Channel } from '../channel/channel.entity';
 import { ChannelService } from '../channel/channel.service';
 import { authenticator } from 'otplib';
 import { ConversationService } from 'src/conversations/conversation.service';
+import { AuthService } from 'src/auth/auth.service';
+import { Inject } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Conversation)
-    private conversationRepository: Repository<Conversation>,
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
-
     private channelService: ChannelService,
-    private readonly conversationService: ConversationService,
+    private conversationService: ConversationService,
   ) {}
 
-  async createNewUser(intraLogin: string, avatarUrl: string, email: string) {
+  async createNewUser(
+    intraLogin: string,
+    avatarUrl: string,
+    email: string,
+    fN: string,
+    lN: string,
+  ): Promise<User> {
     let alreadyExists;
     try {
       if (!intraLogin) {
@@ -44,18 +51,11 @@ export class UserService {
     if (alreadyExists) {
       return null;
     }
-    const user = this.userRepository.create({ intraLogin, avatarUrl, email });
-    user.nickName = '';
-    user.firstName = '';
-    user.lastName = '';
-    user.twoFactorAuthEnabled = false;
-    user.twoFactorSecret = '';
-    user.winsInARow = 0;
-    user.friends = [];
-    user.blockedUsers = [];
-    user.matchHistory = [];
+    const user = this.userRepository.create({ intraLogin, email, avatarUrl });
+    user.nickName = intraLogin ? intraLogin : email.split('@')[0];
+    user.firstName = fN;
+    user.lastName = lN;
     user.firstTimeLogiIn = true;
-    user.conversations = [];
 
     // check if the global channel exists
     const savedUser = await this.userRepository.save(user);
@@ -74,7 +74,6 @@ export class UserService {
         },
         savedUser.id,
       );
-      console.log('global channel created', globalChannel);
     } else {
       this.channelService.joinChannel(globalChannel.id, '', savedUser.id);
     }
@@ -135,7 +134,8 @@ export class UserService {
             ],
           });
 
-    if (!user) throw new NotFoundException('User not found.');
+    if (!user) throw new NotFoundException('User not found');
+
     return user;
   }
 
@@ -148,19 +148,20 @@ export class UserService {
     const nickNameEx = await this.userRepository.findOne({
       where: { nickName },
     });
-    if (nickNameEx) return { message: 'NickName already exists' };
+    if (nickNameEx) throw new NotAcceptableException('NickName already exists');
     const user = await this.userRepository.findOne({
       where: { id },
     });
-    if (user.firstName.length > 2) return { message: 'data already filled' };
-    const useeer = this.userRepository.update(id, {
+    if (user.filledInfo) return { message: 'User already filled info' };
+    const updatedUser = this.userRepository.update(id, {
       nickName,
       firstName,
       lastName,
-      avatarUrl: base64Image,
+      avatarUrl: base64Image || user.avatarUrl,
+      filledInfo: true,
     });
 
-    return useeer;
+    return updatedUser;
   }
 
   async getFriends(userId: number): Promise<User> {
@@ -200,9 +201,9 @@ export class UserService {
   async updateUserInfo(data, userId): Promise<any> {
     const { nickName, avatarUrl, twoFa } = data;
     let updateData = {};
-    if (avatarUrl !== 'noChange') {
+    if (avatarUrl !== 'noChange')
       updateData = { ...updateData, avatarUrl: avatarUrl };
-    }
+
     updateData = { ...updateData, twoFactorAuthEnabled: twoFa };
 
     if (nickName) {
@@ -215,7 +216,13 @@ export class UserService {
         updateData = { ...updateData, nickName };
       }
     }
-    console.log('updateData here', updateData);
+    if (!twoFa) {
+      updateData = {
+        ...updateData,
+        twoFactorAuthEnabled: twoFa,
+        twoFactorSecret: null,
+      };
+    }
     return this.userRepository.update(userId, updateData);
   }
 
@@ -287,7 +294,6 @@ export class UserService {
         'conversations.members',
       ],
     });
-    console.log('client', client);
 
     const friend = await this.userRepository.findOne({
       where: { id: friendID },
@@ -329,7 +335,6 @@ export class UserService {
       );
 
       if (conversation) {
-        console.log('conversation found');
         client.friends.push(friend);
         friend.friends.push(client);
       } else {
@@ -382,8 +387,6 @@ export class UserService {
 
   async handleBlock(blockedID: number, handlerId: number, action: number) {
     if (blockedID == handlerId) return { message: 'Cannot block yourself' };
-    console.log('blockedID', blockedID);
-    console.log('handlerId', handlerId);
 
     const client = await this.userRepository.findOne({
       where: { id: handlerId },
@@ -481,6 +484,15 @@ export class UserService {
     return this.userRepository.save(client);
   }
 
+  async ValidPin(clientID: number, status: boolean): Promise<any> {
+    const client = await this.userRepository.findOne({
+      where: { id: clientID },
+    });
+    if (!client) throw new NotFoundException('User not found.');
+    client.PinValid = status;
+    return this.userRepository.save(client);
+  }
+
   async disableTwoFactor(clientID: number): Promise<any> {
     const client = await this.userRepository.findOne({
       where: { id: clientID },
@@ -521,25 +533,54 @@ export class UserService {
     return client.friends.find((user) => user.id === friendID);
   }
 
-  async updateExperience(clientID: number, xp: number): Promise<any> {
+  async getMyMatchHistory(clientID: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id: clientID },
+      relations: [
+        'matchHistory',
+        'matchHistory.player1',
+        'matchHistory.player2',
+      ],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user.matchHistory;
+  }
+  async updateExperienceAndLevel(clientID: number, xp: number): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
     });
-    if (!user) throw new NotFoundException('User not found.');
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
 
     user.experience += xp;
-    console.log('user experience:', user.experience);
+    const level =
+      user.level +
+      Math.floor(
+        user.experience / (1098 * (user.level + 1) + user.level * 100),
+      );
+    if (level > user.level) user.level = level;
+    if (user.level >= 9) {
+      user.rank = 'Gold';
+    } else if (user.level >= 6) {
+      user.rank = 'Silver';
+    } else if (user.level >= 3) {
+      user.rank = 'Bronze';
+    }
     return this.userRepository.save(user);
   }
 
-  async updateLevel(xp: number, clientID: number): Promise<any> {
+  async isInGame(clientID: number): Promise<boolean> {
     const user = await this.userRepository.findOne({
       where: { id: clientID },
     });
-    if (!user) throw new NotFoundException('User not found.');
-
-    const level = Math.floor(xp / (1098 + user.level * 100));
-    user.level = level;
-    return this.userRepository.save(user);
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+    if (user.status == 'inGame') return true;
+    else return false;
   }
 }

@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  Injectable,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
@@ -15,17 +20,20 @@ export class JwtGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: any = context.switchToHttp().getRequest();
+    const res: any = context.switchToHttp().getResponse();
+
     if (!req.cookies.token) {
-      throw new UnauthorizedException('Please log in to continue');
+      throw new UnauthorizedException('wrong code');
     }
     try {
       const decode = await this.authService.verifyToken(req.cookies.token);
       const user = await this.userService.findOne(decode.email);
-      if (!user) throw new UnauthorizedException('Please log in to continue');
+      if (!user) throw new UnauthorizedException('user not found');
       req.user = user;
     } catch {
-      throw new UnauthorizedException('Invalid Token');
+      throw new UnauthorizedException('wrong code');
     }
-    return true;
+    if (!req.user.twoFactorAuthEnabled) return true;
+    return req.user.PinValid;
   }
 }

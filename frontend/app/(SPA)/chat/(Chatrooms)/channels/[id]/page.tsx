@@ -1,6 +1,6 @@
 "use client";
 import ChatRooms from "@/components/SPA/chat/ChatRooms";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import React from "react";
 
 export default function ChannelsPage() {

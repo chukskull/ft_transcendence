@@ -40,7 +40,7 @@ class fillDto {
   base64Image: string;
 }
 
-class updateDto {
+class SettingsDto {
   @IsString()
   @IsOptional()
   nickName: string;
@@ -56,10 +56,7 @@ class updateDto {
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly usersService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly usersService: UserService) {}
 
   @Get()
   @UseGuards(JwtGuard)
@@ -68,8 +65,7 @@ export class UserController {
   }
   @Post('/update')
   @UseGuards(JwtGuard)
-  async update(@Body() data: updateDto, @Req() req: any) {
-    console.log('this sssss is le dataaa88888888888888', data);
+  async update(@Body() data: SettingsDto, @Req() req: any) {
     return this.usersService.updateUserInfo(data, req.user.id);
   }
 

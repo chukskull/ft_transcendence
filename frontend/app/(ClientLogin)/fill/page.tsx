@@ -4,7 +4,7 @@ import "@/styles/globals.scss";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
 
@@ -59,23 +59,19 @@ export default function Fill() {
         };
         reader.readAsDataURL(selectedFile);
       } else {
-        //alert("File too big!");
+        alert("File too big!");
       }
     });
     fileInput.click();
   };
 
   const addNewUser = async (user: any) => {
-    console.log("filldata",user);
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/fill`, user, {
         withCredentials: true,
       })
-      .then((res) => {
-        if (res.status === 201) {
-          router.push("/home");
-        }
-        console.log(res);
+      .then(() => {
+        router.push("/home");
       })
       .catch((err) => {
         console.log(err);
@@ -92,7 +88,7 @@ export default function Fill() {
       firstName: "",
       lastName: "",
       nickName: "",
-      base64Image: "",
+      base64Image: null,
     },
   });
 
@@ -107,7 +103,7 @@ export default function Fill() {
                   src={
                     file
                       ? URL.createObjectURL(file)
-                      : "https://i.pravatar.cc/300?img=1"
+                      : "https://shorturl.at/djENR"
                   }
                   size={120}
                   className="relative"
@@ -138,8 +134,8 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-                // value={name}
-                // onChange={(e) => setName(e.target.value)}
+              // value={name}
+              // onChange={(e) => setName(e.target.value)}
               />
 
               <Input
@@ -160,14 +156,14 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-                // value={lastName}
-                // onChange={(e) => setLastName(e.target.value)}
+              // value={lastName}
+              // onChange={(e) => setLastName(e.target.value)}
               />
 
               <Input
                 {...register("nickName", {
                   required: "This field is required",
-                  maxLength: 15,
+                  maxLength: 8,
                   minLength: 3,
                   validate: {
                     noSpaces: (value) =>
@@ -182,8 +178,8 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-                // value={nickName}
-                // onChange={(e) => setNickName(e.target.value)}
+              // value={nickName}
+              // onChange={(e) => setNickName(e.target.value)}
               />
 
               <Button

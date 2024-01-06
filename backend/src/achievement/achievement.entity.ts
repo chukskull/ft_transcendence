@@ -11,7 +11,7 @@ export class Achievement {
 
   @Column({
     type: 'enum',
-    enum: ['3 in a row', '5 in a row', '10 in a row'],
+    enum: ['3 wins', '5 wins', '10 wins'],
     nullable: true,
   })
   name: string;

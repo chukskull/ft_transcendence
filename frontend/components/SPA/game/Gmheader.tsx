@@ -2,10 +2,9 @@ import style from "@/styles/SPA/game/game.module.scss";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { GiSwordsEmblem } from "react-icons/gi";
-
 export default function GHeader({ isONline, enemy }: any) {
-  const [enemyProfile, setEnemyProfile] = useState<any>({});
   const [myProfile, setMyProfile] = useState<any>({});
+
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`, {

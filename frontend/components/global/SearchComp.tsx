@@ -4,7 +4,6 @@ import { BiSearchAlt } from "react-icons/bi";
 import ProfileComp from "../SPA/Profile/molecules/ProfileComp";
 import axios from "axios";
 import debounce from "lodash/debounce";
-import { useQuery } from "react-query";
 
 const SearchComp = () => {
   const getChannelStatus = (channel: any) => {
@@ -20,7 +19,7 @@ const SearchComp = () => {
   const [res, setRes] = useState<(any | any)[]>([]);
   const [Mount, setMount] = useState(false);
 
-  useEffect(() => {
+  const fetchData = async () => {
     const fetchChannels = async () => {
       try {
         const channelsRes: { data: any } = await axios.get(
@@ -62,6 +61,10 @@ const SearchComp = () => {
     };
 
     fetchChannels();
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const debouncedSearch = debounce((search) => {
@@ -88,15 +91,15 @@ const SearchComp = () => {
     });
 
     setActiveSearch(filteredUsers.slice(0, 8));
-  }, 300); // Debounce for 300 milliseconds
+  }, 100); // Debounce for 300 milliseconds
 
   const handleSearch = (e: any) => {
-    if (e.target.value === "") {
+    if (e.target.value.length === 0) {
       setActiveSearch([]);
       return false;
+    } else {
+      debouncedSearch(e.target.value);
     }
-
-    debouncedSearch(e.target.value);
   };
 
   return (

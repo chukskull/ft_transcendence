@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Channel } from './channel.entity';
 import { ChannelController } from './channel.controller';
 import { ChannelService } from './channel.service';
-import { Conversation } from '../conversations/conversation.entity';
+import { Conversation, Chat } from '../conversations/conversation.entity';
 import { ConversationService } from '../conversations/conversation.service';
 import { ConversationModule } from 'src/conversations/conversation.module';
 import { User } from '../user/user.entity';
@@ -16,7 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 @Module({
   imports: [
     ConversationModule,
-    TypeOrmModule.forFeature([Channel, Conversation, User]),
+    TypeOrmModule.forFeature([Channel, Conversation, User, Chat]),
   ],
   controllers: [ChannelController],
   providers: [

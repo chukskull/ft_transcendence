@@ -28,17 +28,23 @@ export class User {
   @Column({ nullable: true })
   intraLogin: string;
 
-  @Column()
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
+
+  @Column({ default: false })
+  filledInfo: boolean;
 
   @Column()
   avatarUrl: string;
 
-  @Column()
+  @Column({default: false})
   twoFactorAuthEnabled: boolean;
+
+  @Column({default: false})
+  PinValid: boolean;
 
   @Column({ nullable: true })
   twoFactorSecret: string;
@@ -70,9 +76,6 @@ export class User {
 
   @Column({ default: 0 })
   wins: number;
-
-  @Column({ nullable: true })
-  winsInARow: number;
 
   @Column({ default: 0 })
   totalGames: number;

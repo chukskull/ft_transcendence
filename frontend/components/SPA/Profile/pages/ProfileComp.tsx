@@ -8,12 +8,13 @@ import Achievement from "@/components/SPA/Profile/organisms/Achievement";
 import React, { useState, useEffect } from "react";
 import { FaUser, FaUserAltSlash } from "react-icons/fa";
 import { useQuery } from "react-query";
-import { getUserProfile } from "@/utils/getUserProfile";
+import { useUserProfile } from "@/utils/getUserProfile";
 import Leadrboard from "../organisms/Leadrboard";
 import axios from "axios";
 import { AddFriend } from "../atoms/AddFriend";
 import Error from "next/error";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 function friendStatus(
   theirpendingFrReq: any,
@@ -40,14 +41,13 @@ function friendStatus(
 }
 
 const truncateText = (text: string, maxLength: number) => {
-  if (text.length > maxLength) {
+  if (text?.length > maxLength) {
     return text.substring(0, maxLength) + "...";
   }
   return text;
 };
 
 export default function Profile({ id }: any) {
-  console.log("this is the id", id);
   const [myData, setMyData] = useState<any>(null);
   const names = ["Friends", "Match History", "Channels"];
   const [active, setActive] = useState(0);
@@ -67,33 +67,38 @@ export default function Profile({ id }: any) {
   function handleBlock(blockUnblock: number) {
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data.id}/${blockUnblock}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleBlock/${data?.id}/${blockUnblock}`,
         {
           withCredentials: true,
         }
       )
       .then((res) => {
-        window.location.reload();
+        router.refresh();
       })
       .catch((err) => console.log(err));
   }
-  const friends = useQuery("userFriends", async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
-      {
-        withCredentials: true,
-      }
-    );
-    return response;
-  });
+  const friends = useQuery(
+    "userFriends",
+    async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response;
+    },
+    {
+      refetchInterval: 1000,
+    }
+  );
   useEffect(() => {
     if (friends.data) {
-      setMyData(friends.data.data);
+      setMyData(friends.data?.data);
     }
   }, [friends.data]);
-  const { isLoading, error, data } = useQuery("userList", async () => {
-    return getUserProfile(id);
-  });
+  const { data, isLoading, error } = useUserProfile(id);
+  const router = useRouter();
   if (error) {
     console.log("ihave an error for sure");
     return <Error statusCode={404} />;
@@ -105,8 +110,8 @@ export default function Profile({ id }: any) {
         <h1 className="font-custom text-fontlight text-2xl font-ClashGrotesk-Regular truncate">
           <span style={{ display: "flex", alignItems: "center" }}>
             <FaUser style={{ marginRight: "0.5rem" }} /> Welcome,{" "}
-            {data.firstName && data.lastName
-              ? `${data.firstName} ${data.lastName}`
+            {data?.firstName && data?.lastName
+              ? `${data?.firstName} ${data?.lastName}`
               : ``}
           </span>
         </h1>
@@ -136,8 +141,8 @@ export default function Profile({ id }: any) {
         <div className="">
           <h1 className="text-fontlight xl:font-ClashGrotesk-Semibold xl:text-2xl font-ClashGrotesk-Medium text-xl text-center md:text-start md:mt-10">
             {truncateText(
-              data.firstName && data.lastName
-                ? `${data.firstName} ${data.lastName}`
+              data?.firstName && data?.lastName
+                ? `${data?.firstName} ${data?.lastName}`
                 : `No One`,
               15
             )}
@@ -158,20 +163,22 @@ export default function Profile({ id }: any) {
           />
         </div>
 
-        <ProgressBar lvl={data?.level} exp={data?.expersience} maxExp={1098} />
+        <ProgressBar
+          lvl={data?.level}
+          exp={data?.experience}
+          maxExp={1098 * (data?.level + 1) + data?.level * 100}
+        />
         <Stats
           perc={
-            data?.totaxlames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
+            data?.totalGames === 0 ? 0 : (data?.wins / data?.totalGames) * 100
           }
           matches={data?.totalGames}
+          rank={data?.rank}
         />
       </div>
 
       <div className={`${id === "me" ? "item-2-me" : "item-2"}`}>
-        <div
-          className="C-1"
-          style={{ overflow: "auto", paddingInline: "40px" }}
-        >
+        <div className="C-1" style={{ paddingInline: "40px" }}>
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight  p-2 text-center">
             Leaderboard
           </h1>
@@ -179,7 +186,7 @@ export default function Profile({ id }: any) {
           <Leadrboard MonStyle="Profile" />
         </div>
 
-        <div className="C-2 " style={{ overflow: "auto" }}>
+        <div className="C-2 overflow-y-auto">
           <div className="flex item-center justify-evenly">
             {names.map((name, index) => (
               <InFosPlayer
@@ -196,11 +203,23 @@ export default function Profile({ id }: any) {
         </div>
         <div className="C-3 overflow-y-auto w-[100%] ">
           <h1 className="opacity-90 font-ClashGrotesk-Medium text-xl text-fontlight text-center p-2 ">
-            Archivements
+            Achievements
           </h1>
-          <Achievement data={data.Achievement} />
+
+          <Achievement data={data?.achievements} />
         </div>
       </div>
     </div>
   );
 }
+
+// name: string;
+// @IsString()
+// @IsNotEmpty()
+// description: string;
+// @IsString()
+// @IsNotEmpty()
+// icon: string;
+// @IsNumber()
+// @IsNotEmpty()
+// addedXp: number;

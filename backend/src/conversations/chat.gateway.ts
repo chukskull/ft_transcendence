@@ -7,35 +7,26 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ConversationService } from './conversation.service';
-import { Chat } from './conversation.entity';
-import { User } from '../user/user.entity';
+import { IsString, Length, validateOrReject } from 'class-validator';
 const jwt = require('jsonwebtoken');
+import { plainToClass } from 'class-transformer';
 
-function getUserProfile(token: string) {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  return decoded;
+export class MessageDto {
+  @IsString()
+  @Length(1, 200)
+  message: string;
 }
-
 @Injectable()
 @WebSocketGateway({ namespace: 'chatSocket', cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(
-    private conversationService: ConversationService,
-    @InjectRepository(User)
-    private UserRepository: Repository<User>,
-    @InjectRepository(Chat)
-    private ChatRepository: Repository<Chat>,
-  ) {}
+  constructor(private conversationService: ConversationService) {}
   handleDisconnect(client: Socket) {}
 
   @WebSocketServer() server: Server;
   handleConnection(client: Socket) {
-    console.log('client connected');
     const conversationId: any = client.handshake.query.conversationId;
     const roomName = `conversation_${conversationId}_chatRoom`;
     client.join(roomName);
@@ -52,31 +43,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const { conversationId, message, token } = data;
-    if (message.length > 200) {
-      return;
-    }
-    const userId = getUserProfile(token)?.sub;
-    if (!userId) return;
 
-    const chatMessage = this.ChatRepository.create();
-    chatMessage.message = message;
-    chatMessage.time = new Date();
-    chatMessage.sender = await this.UserRepository.findOne({
-      where: { id: userId },
-    });
+    let userId;
+    try {
+      userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+    } catch (err) {
+      client.disconnect();
+      throw new NotFoundException('token not valid');
+    }
 
     try {
-      await this.ChatRepository.save(chatMessage);
-      await this.conversationService.addMessageToConversation(
-        conversationId,
-        chatMessage,
-        userId,
-      );
-
+      const messageDto = plainToClass(MessageDto, { message });
+      await validateOrReject(messageDto);
+      const chatMessage =
+        await this.conversationService.addMessageToConversation(
+          conversationId,
+          message,
+          userId,
+        );
       const roomName = `conversation_${conversationId}_chatRoom`;
       this.server.to(roomName).emit('messageReceived', chatMessage);
     } catch (error) {
-      this.server.emit('connect_error', error.message || 'Unknown error');
       console.error('Error saving and broadcasting the message:', error);
     }
   }

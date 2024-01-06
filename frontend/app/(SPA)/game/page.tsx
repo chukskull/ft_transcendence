@@ -7,6 +7,7 @@ import io from "socket.io-client";
 import { Button } from "@nextui-org/react";
 import OnlineGame from "@/components/SPA/game/OnlineGame";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Game: React.FC = () => {
   const [map, setMap] = useState<string>("game");
@@ -15,15 +16,13 @@ const Game: React.FC = () => {
   const [socket, setSocket] = useState<any>(null);
   const [gameStarted, setGameStarted] = useState<string>("initial");
   const [enemy, setEnemy] = useState<string>("");
-
+  const router = useRouter();
   useEffect(() => {
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`);
     newSocket.connect();
     setSocket(newSocket);
-
     newSocket.on("changeState", (data: any) => {
       const { state } = data;
-      console.log("state B", state);
       switch (state) {
         case "inQueue":
           setGameStarted("inQueue");
@@ -36,7 +35,6 @@ const Game: React.FC = () => {
           console.log("waitingForResponse");
           break;
         case "gameEnded":
-          console.log("93 mnx");
           setGameStarted("gameEnded");
           console.log("gameEnded", data);
 
@@ -45,17 +43,23 @@ const Game: React.FC = () => {
           break;
       }
     });
-    const userId = window.location.search.split("=")[1];
-    if (userId && newSocket) {
+    const notifId = window.location.search.split("=")[1];
+    const accept = window.location.search.split("?")[1];
+    if (notifId && accept == "accept" && newSocket) {
+      newSocket.emit("acceptPVP", {
+        token: document.cookie.split("=")[1],
+        notifId: notifId,
+      });
+      // clear query params
+    } else if (notifId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
-        friendId: userId,
+        friendId: Number(notifId),
       });
     }
 
     newSocket.on("gameStarted", (data: any) => {
       setGameStarted("gameStarted");
-      console.log("gameStarted event hhhhh received front", data);
 
       axios
         .get(
@@ -67,7 +71,7 @@ const Game: React.FC = () => {
         .then((res) => {
           setEnemy(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => router.push("/login"));
       setOnlineMode(true);
     });
     return () => {
@@ -83,7 +87,6 @@ const Game: React.FC = () => {
   function handleJoinQueue() {
     if (socket) {
       socket?.emit("joinQueue", { token: document.cookie.split("=")[1] });
-      console.log("token: ", document.cookie.split("=")[1]);
     }
   }
 

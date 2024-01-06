@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { NotFoundException } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
+
 @Injectable()
 export class ConversationService {
   constructor(
@@ -12,6 +12,8 @@ export class ConversationService {
     private conversationRepository: Repository<Conversation>,
     @InjectRepository(User)
     private UserRepository: Repository<User>,
+    @InjectRepository(Chat)
+    private ChatRepository: Repository<Chat>,
   ) {}
 
   async getMyDms(MyUser: number) {
@@ -49,7 +51,7 @@ export class ConversationService {
 
   async addMessageToConversation(
     convId: number,
-    message: Chat,
+    message: string,
     senderId: number,
   ) {
     const conv = await this.conversationRepository.findOne({
@@ -57,16 +59,22 @@ export class ConversationService {
       relations: ['members', 'chats', 'MutedUsers'],
     });
     if (!conv) throw new NotFoundException('Conversation not found');
-    const user = conv.members.map((member) => member.id == senderId);
+    const user = conv.members.find((member) => member.id == senderId);
     if (!user)
       throw new NotFoundException('User not found in this conversation');
     const isMuted = conv.MutedUsers.find((member) => member.id == senderId);
-    if (isMuted)
-      throw new NotFoundException('User is muted in this conversation');
-
+    if (isMuted) return null;
     try {
-      conv.chats.push(message);
+      const chatMessage = this.ChatRepository.create();
+      chatMessage.message = message;
+      chatMessage.time = new Date();
+      chatMessage.sender = await this.UserRepository.findOne({
+        where: { id: senderId },
+      });
+      await this.ChatRepository.save(chatMessage);
+      conv.chats.push(chatMessage);
       await this.conversationRepository.save(conv);
+      return chatMessage;
     } catch (e) {
       console.log(e);
     }
@@ -138,6 +146,5 @@ export class ConversationService {
     });
     if (!conv) throw new NotFoundException('Conversation not found');
     await this.conversationRepository.remove(conv);
-    return conv;
   }
 }
