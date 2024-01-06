@@ -15,9 +15,11 @@ require('dotenv').config();
     TypeOrmModule.forFeature([User]),
     UserModule,
     PassportModule.register({ defaultStrategy: '42' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'f439843--213+@y4t34u',
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET,
+        signOptions: { expiresIn: '1d' },
+      }),
     }),
   ],
   providers: [AuthService, FortyTwoStrategy, GoogleStrategy],
