@@ -15,31 +15,31 @@ services:
 
     restart: always
 
-  backend-app:
-    build: ./backend
-    container_name: nestjs
-    depends_on:
-      - postgres-db
-    env_file:
-      - .env
-    ports:
-      - "1337:1337"
-    networks:
-      - web
-    restart: always
+  # backend-app:
+  #   build: ./backend
+  #   container_name: nestjs
+  #   depends_on:
+  #     - postgres-db
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "1337:1337"
+  #   networks:
+  #     - web
+  #   restart: always
 
-  frontend-app:
-    build: ./frontend
-    container_name: nextjs
-    depends_on:
-      - backend-app
-    env_file:
-      - .env
-    ports:
-      - "3000:3000"
-    networks:
-      - web
-    restart: always
+  # frontend-app:
+  #   build: ./frontend
+  #   container_name: nextjs
+  #   depends_on:
+  #     - backend-app
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - web
+  #   restart: always
 
 networks:
   web:

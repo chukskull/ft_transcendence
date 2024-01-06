@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
-export const PADDLESPEED = 11;
+export const PADDLESPEED = 33.33;
 
 type Score = {
   player1: number;
@@ -51,6 +51,9 @@ export default function OnlineGame({
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyboardEvent);
+    socket.emit("positionUpdate", {
+      player1PaddleY: player1PaddleY,
+    });
     return () => {
       window.removeEventListener("keydown", handleKeyboardEvent);
     };
@@ -59,6 +62,7 @@ export default function OnlineGame({
   useEffect(() => {
     socket.on("enemyPositionUpdate", (data: any) => {
       setEnemyPaddleY(data.enemyY);
+      setPlayer1PaddleY(data.myposition);
     });
 
     socket.on("changeState", (data: any) => {});
@@ -85,8 +89,8 @@ export default function OnlineGame({
       <div className={style.gameBody} tabIndex={0}>
         <p>{score.player1}</p>
         <div className={style[`${map}`]} tabIndex={0}>
-          <div className={style.player} style={{ top: player1PaddleY }}></div>;
-          <div className={style.ai} style={{ top: EnemyPaddleY }}></div>;
+          <div className={style.player} style={{ top: player1PaddleY }}></div>
+          <div className={style.ai} style={{ top: EnemyPaddleY }}></div>
           <Ball socket={socket} />
         </div>
         <p>{score.player2}</p>

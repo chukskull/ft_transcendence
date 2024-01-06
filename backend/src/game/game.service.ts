@@ -12,12 +12,11 @@ import { NotifGateway } from 'src/notifications.gateway';
 import { pvpInvite } from './pvp.entity';
 const jwt = require('jsonwebtoken');
 
-export const GAME_WIDTH = 845;
+export const GAME_WIDTH = 840;
 export const GAME_HEIGHT = 500;
 export const BALL_RADIUS = 16;
 export const PADDLE_WIDTH = 13;
-export const PADDLE_HEIGHT = 110;
-export const PADDLE_SPEED = 11;
+export const PADDLE_HEIGHT = 125;
 export const INIT_BALL_SPEED = 10;
 export const PADDLE1_POSITION = GAME_HEIGHT / 2;
 export const PADDLE2_POSITION = GAME_HEIGHT / 2;
