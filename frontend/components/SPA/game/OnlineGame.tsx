@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import style from "@/styles/SPA/game/game.module.scss";
 import Rectangle from "./Rectangle";
 
-export const PADDLESPEED = 33.33;
+export const PADDLESPEED = 20;
 
 type Score = {
   player1: number;
@@ -37,9 +37,9 @@ export default function OnlineGame({
   const handleKeyboardEvent = useCallback(
     (e: KeyboardEvent) => {
       if (!socket) return;
-      if (e.key == "ArrowDown" && player1PaddleY + 110 + PADDLESPEED < 500)
+      if (e.key == "ArrowDown" && player1PaddleY + 100 + PADDLESPEED <= 500)
         setPlayer1PaddleY((prev) => prev + PADDLESPEED);
-      else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED > 0)
+      else if (e.key == "ArrowUp" && player1PaddleY - PADDLESPEED >= 0)
         setPlayer1PaddleY((prev) => prev - PADDLESPEED);
 
       socket.emit("positionUpdate", {

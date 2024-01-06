@@ -7,10 +7,10 @@ type Score = {
 };
 
 const DIST_WALL_TO_PADDLE = 20;
-const PADDLE_HEIGHT = 125;
+const PADDLE_HEIGHT = 100;
 const PADDLE_WIDTH = 13;
 const BALL_RADIUS = 16;
-const PLAYER_PADDLE_SPEED = 33.33;
+const PLAYER_PADDLE_SPEED = 12;
 const BALL_SPEED = 6;
 
 const useKeyHandler = () => {
