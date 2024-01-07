@@ -57,7 +57,6 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
 
   // 2fs on off
   const handle2Fa = (checked: boolean) => {
-    console.log("2fa is ", !checked);
     if (!checked) {
       axios
         .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/generate`, {
@@ -90,14 +89,13 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/2fa/turn-on`,
         {
           pin,
-          settings: true,
         },
         {
           withCredentials: true,
         }
       )
       .then((res) => {
-        console.log(res.data);
+        window.location.reload();
       })
       .catch((err) => {
         console.log(err);

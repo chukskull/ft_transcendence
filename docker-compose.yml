@@ -12,7 +12,6 @@ services:
       - web
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
-
     restart: always
 
   # backend-app:

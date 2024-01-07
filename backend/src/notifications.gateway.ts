@@ -9,14 +9,14 @@ import {
 } from '@nestjs/websockets';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { User } from './user/user.entity';
 import { Achievement } from './achievement/achievement.entity';
 const jwt = require('jsonwebtoken');
+import { UserService } from './user/user.service';
 
 @Injectable()
 @WebSocketGateway({ namespace: 'notifications', cors: true })
 export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor() {}
+  constructor(private userService: UserService) {}
 
   @WebSocketServer() server: Server;
   handleConnection(client: Socket) {}

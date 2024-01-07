@@ -22,7 +22,7 @@ export const Result = ({
   const color = result === "You Won" ? "text-emerald-500" : "text-red-700";
   const router = useRouter();
   useEffect(() => {
-    if (value === 100) {
+    if (value == 100) {
       router.push("/home");
     }
   }, [value, router]);

@@ -50,7 +50,6 @@ export class AuthService {
         token: twoFactorAuthCode,
         secret: user.twoFactorSecret,
       });
-      console.log(isValid);
       return isValid;
     } catch (err) {
       return false;

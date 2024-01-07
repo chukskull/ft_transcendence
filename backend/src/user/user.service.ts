@@ -509,10 +509,7 @@ export class UserService {
     const client = await this.userRepository.findOne({
       where: { id: clientID },
     });
-    if (!client) {
-      throw new NotFoundException('User not found.');
-    }
-    client.twoFactorAuthEnabled = true;
+    if (!client) throw new NotFoundException('User not found.');
 
     client.twoFactorSecret = secret;
     return this.userRepository.save(client);

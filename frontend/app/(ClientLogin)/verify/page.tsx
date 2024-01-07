@@ -1,5 +1,4 @@
 "use client";
-
 import style from "@/styles/components/TwoFa.module.scss";
 import React, { useEffect, useRef, useReducer, Key } from "react";
 import { Button } from "@nextui-org/react";

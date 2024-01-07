@@ -8,7 +8,6 @@ import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './google.strategy';
 import { User } from 'src/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-require('dotenv').config();
 
 @Module({
   imports: [
@@ -18,7 +17,7 @@ require('dotenv').config();
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '4h' },
+        signOptions: { expiresIn: '30d' },
       }),
     }),
   ],

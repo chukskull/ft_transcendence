@@ -1,11 +1,10 @@
 "use client";
 
 import "@/styles/globals.scss";
-import Image from "next/image";
-import { Button, NextUIProvider } from "@nextui-org/react";
 import LogButton from "@/components/Login/atoms/LogButton";
 
 export default function Login() {
+
   return (
     <div className="h-screen w-screen flex items-center justify-center">
       <div className="rectangle flex flex-col items-center justify-center gap-14">
