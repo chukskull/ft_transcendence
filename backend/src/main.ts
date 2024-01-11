@@ -14,7 +14,7 @@ async function motherFunction() {
   app.use(passport.initialize());
   app.use(bodyParser.json({ limit: '2mb' }));
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: 'http://10.11.4.14:3000',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });

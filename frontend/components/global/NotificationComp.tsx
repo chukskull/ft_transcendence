@@ -19,7 +19,7 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import { reverse, set } from "lodash";
 
-export const NotificationComp = ({ }) => {
+export const NotificationComp = ({}) => {
   const [notifCount, setNotifCount] = useState<number>(0);
   const [socket, setSocket] = useState<any>(null);
   const [PVPrequest, setReceivedDatarequest] = useState<any>(null);
@@ -78,10 +78,14 @@ export const NotificationComp = ({ }) => {
 
   useEffect(() => {
     if (PVPrequest) {
+      console.log(
+        "this is the data recieved from the from the socket",
+        PVPrequest
+      );
       setReceivedData((prev: any[]) => [...prev, PVPrequest]);
       setNotifCount((prev: any) => prev + 1);
     }
-  }, [PVPrequest, setReceivedData]);
+  }, [PVPrequest]);
 
   useEffect(() => {
     const newSocket = io(
@@ -94,6 +98,7 @@ export const NotificationComp = ({ }) => {
     setSocket(newSocket);
 
     return () => {
+      newSocket.off("newPVPRequest");
       newSocket.disconnect();
     };
   }, []);
@@ -107,7 +112,7 @@ export const NotificationComp = ({ }) => {
 
     return () => {
       socket.off("newPVPRequest");
-      socket.off("notAuth");
+      socket.off("newAchievement");
     };
   }, [socket]);
 
@@ -163,16 +168,12 @@ export const NotificationComp = ({ }) => {
       prev.filter((notif: any) => notif.id !== PvPnotifId)
     );
     if (type == 1 && PvPnotifId && userProfile.status != "inGame") {
-      if (window.location.pathname == "/game") {
-        window.location.href = `/game?accept?notifId=${PvPnotifId}`;
-      } else {
-        router.push(`/game?accept?notifId=${PvPnotifId}`);
-      }
+      window.location.href = `/game?accept?notifId=${PvPnotifId}`;
     } else if (type == 0) {
       const newSocket = io(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/gameSockets`
       );
-      newSocket.connect();
+      // newSocket.connect();
       newSocket.emit("declinePVP", {
         token: document.cookie.split("=")[1],
         notifId: PvPnotifId,
@@ -322,100 +323,3 @@ export const NotificationComp = ({ }) => {
     </>
   );
 };
-
-// {
-//   Achiv?.map((notif: any) => (
-//     <DropdownItem key={index}>
-//       <div className="flex flex-col  gap-1 p-1">
-//         <div className="flex flex-row gap-4 items-center ">
-//           <Avatar src={notif?.icon} size={"large"} />
-//           <h6 className="text-base font-ClashGrotesk-Regular text-fontlight py-1">
-//             {`Congratulations ! ${notif?.description}`}
-//           </h6>
-//         </div>
-//       </div>
-//     </DropdownItem>
-//   ));
-// }
-// {
-//   Pvp?.map(
-//     (notif: any) =>
-//       notif.accepted == false &&
-//       notif.declined == false && (
-//         <DropdownItem key={notif?.id}>
-//           <div className="flex flex-col gap-1 p-1">
-//             <div className="flex gap-2" key={notif?.id}>
-//               <ProfileComp
-//                 key={notif?.id}
-//                 id={notif?.id}
-//                 img={notif?.inviter.avatarUrl}
-//                 firstName={notif?.inviter.firstName}
-//                 lastName={notif?.inviter.lastName}
-//                 invite={"sent you a game request"}
-//                 status={notif?.inviter.status}
-//               />
-//             </div>
-//             <div className="flex flex-row gap-1 justify-end" key={notif?.id}>
-//               <Button
-//                 size="sm"
-//                 color="success"
-//                 onPress={() => {
-//                   handlePVPRequest(notif?.id, 1);
-//                 }}
-//               >
-//                 Accept
-//               </Button>
-//               <Button
-//                 size="sm"
-//                 color="danger"
-//                 onPress={() => {
-//                   handlePVPRequest(notif?.id, 0);
-//                 }}
-//               >
-//                 Decline
-//               </Button>
-//             </div>
-//           </div>
-//         </DropdownItem>
-//       )
-//   );
-// }
-// {
-//   Pending?.map((notif: any) => (
-//     <DropdownItem key={notif?.id}>
-//       <div className="flex flex-col gap-1 p-1">
-//         <div className="flex gap-2" key={notif?.id}>
-//           <ProfileComp
-//             key={notif?.id}
-//             id={notif?.id}
-//             img={notif?.avatarUrl}
-//             firstName={notif?.firstName}
-//             lastName={notif?.lastName}
-//             invite={"sent you a friend request"}
-//             status={notif?.status}
-//           />
-//         </div>
-//         <div className="flex flex-row gap-1 justify-end" key={notif?.id}>
-//           <Button
-//             size="sm"
-//             color="success"
-//             onPress={() => {
-//               handleAcceptReq(notif?.id, 1);
-//             }}
-//           >
-//             Accept
-//           </Button>
-//           <Button
-//             size="sm"
-//             color="danger"
-//             onPress={() => {
-//               handleDeclineReq(notif?.id, 1);
-//             }}
-//           >
-//             Decline
-//           </Button>
-//         </div>
-//       </div>
-//     </DropdownItem>
-//   ));
-// }

@@ -56,9 +56,10 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
   useEffect(() => {
     if (!conv) return;
 
+    console.log("this is the conv", conv);
     const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatSocket`, {
       query: {
-        conversationId: conv.id,
+        conversationId: conv.id.toString(),
       },
     });
     newSocket.connect();
@@ -67,10 +68,11 @@ export default function ChatRooms({ id, isGroup }: ChatRoomsProps) {
     return () => {
       newSocket.disconnect();
     };
-  }, [conv]);
+  }, [conv,receivedData]);
 
   useEffect(() => {
     if (receivedData) {
+      console.log("this is the recieved msg from the back", receivedData);
       setMsgs((prevMsgs) => [...prevMsgs, receivedData]);
     }
   }, [receivedData]);

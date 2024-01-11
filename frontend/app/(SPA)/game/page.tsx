@@ -50,7 +50,6 @@ const Game: React.FC = () => {
         token: document.cookie.split("=")[1],
         notifId: notifId,
       });
-      // clear query params
     } else if (notifId && newSocket) {
       newSocket.emit("inviteFriend", {
         token: document.cookie.split("=")[1],
@@ -75,7 +74,6 @@ const Game: React.FC = () => {
       setOnlineMode(true);
     });
     return () => {
-      console.log("disconnecting socket", newSocket);
       newSocket.off("changeState");
       newSocket.off("gameStarted");
       newSocket.off("gameEnded");

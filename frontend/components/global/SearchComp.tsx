@@ -110,6 +110,7 @@ const SearchComp = () => {
           type="text"
           placeholder="Search for players, channels..."
           onChange={(e) => handleSearch(e)}
+          onClick={fetchData}
         />
       </div>
       {activeSearch.length > 0 && (

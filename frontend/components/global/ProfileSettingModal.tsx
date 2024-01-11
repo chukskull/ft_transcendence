@@ -67,7 +67,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           console.log(res.data);
         })
         .catch((err) => {
-          console.log(err);
+          alert(err.response.data.message);
         });
     } else {
       axios
@@ -158,16 +158,17 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
             </h1>
             <Input
               {...register("nickName", {
-                maxLength: 8,
+                maxLength: 10,
                 validate: {
-                  noSpace: (value) => !/\s/.test(value),
+                  alphanumeric: (value) =>
+                    /^[a-zA-Z0-9]+$/.test(value) ||
+                    "Only alphabets and numbers are allowed",
                 },
               })}
               className="bg-inherit text-fontlight"
               type="text"
               size="sm"
               isInvalid={errors.nickName ? true : false}
-              // variant="bordered"
               placeholder="new username"
             />
           </div>

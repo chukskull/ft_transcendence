@@ -32,6 +32,8 @@ export class NotifGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const token = data?.token;
       if (token) {
         const userId = jwt.verify(token, process.env.JWT_SECRET)?.sub;
+        if (!userId) throw new NotFoundException('token not valid');
+        await this.userService.setStatus(userId, 'online');
         client.join(`userNotif-${userId}`);
       }
     } catch (err) {

@@ -27,8 +27,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() server: Server;
   handleConnection(client: Socket) {
-    const conversationId: any = client.handshake.query.conversationId;
+    const conversationId: string | any = client.handshake.query.conversationId;
+    if (!conversationId) {
+      client.disconnect();
+      return;
+    }
     const roomName = `conversation_${conversationId}_chatRoom`;
+    console.log('client joined room', roomName);
     client.join(roomName);
   }
 

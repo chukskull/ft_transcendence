@@ -100,7 +100,6 @@ export default function Profile({ id }: any) {
   const { data, isLoading, error } = useUserProfile(id);
   const router = useRouter();
   if (error) {
-    console.log("ihave an error for sure");
     return <Error statusCode={404} />;
   }
   if (isLoading) return "Loading...";

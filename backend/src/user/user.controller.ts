@@ -24,7 +24,7 @@ import { AuthService } from 'src/auth/auth.service';
 class fillDto {
   @IsString()
   @IsNotEmpty()
-  @Length(3, 15)
+  @Length(3, 10)
   nickName: string;
   @IsString()
   @IsNotEmpty()

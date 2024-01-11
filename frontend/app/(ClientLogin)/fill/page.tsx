@@ -134,8 +134,6 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-              // value={name}
-              // onChange={(e) => setName(e.target.value)}
               />
 
               <Input
@@ -156,18 +154,17 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-              // value={lastName}
-              // onChange={(e) => setLastName(e.target.value)}
               />
 
               <Input
                 {...register("nickName", {
                   required: "This field is required",
-                  maxLength: 8,
+                  maxLength: 10,
                   minLength: 3,
                   validate: {
-                    noSpaces: (value) =>
-                      !/\s/.test(value) || "No spaces are allowed",
+                    alphanumeric: (value) =>
+                      /^[a-zA-Z0-9]+$/.test(value) ||
+                      "Only alphabets and numbers are allowed",
                   },
                 })}
                 type="nickname"
@@ -178,8 +175,6 @@ export default function Fill() {
                 classNames={{
                   ...styles,
                 }}
-              // value={nickName}
-              // onChange={(e) => setNickName(e.target.value)}
               />
 
               <Button

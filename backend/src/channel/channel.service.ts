@@ -271,13 +271,13 @@ export class ChannelService {
       ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
-    if (channel.name === 'Welcome/Global channel')
+    if (channel.name == 'Welcome/Global channel')
       throw new NotFoundException("You can't kick someone from this channel");
 
-    if (channel.owner.id === userId)
+    if (channel.owner.id == userId)
       throw new NotFoundException('User is owner');
-    const isMod = channel.Moderators.some((member) => member.id === mod);
-    const isOwner = channel.owner.id === mod;
+    const isMod = channel.Moderators.some((member) => member.id == mod);
+    const isOwner = channel.owner.id == mod;
     if (!isMod && !isOwner)
       throw new NotFoundException('User not mod from channel');
 
@@ -292,7 +292,7 @@ export class ChannelService {
       (member) => member.id != userId,
     );
     user.channels = user.channels.filter(
-      (channelius) => channelius.name !== channel.name,
+      (channelius) => channelius.name != channel.name,
     );
     channel.conversation.members = channel.conversation.members.filter(
       (member) => member.id != userId,

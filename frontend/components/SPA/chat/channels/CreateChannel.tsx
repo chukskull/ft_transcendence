@@ -61,7 +61,12 @@ const CreateChannelModal = ({ onCreate }: CreateChannelModalProps) => {
             placeholder="NewChannel"
             value={name}
             maxLength={18}
-            onChange={(e) => setname(e.target.value)}
+            onInput={(e: any) => {
+              const inputValue = e.target.value;
+              if (/^[a-zA-Z0-9]+$/.test(inputValue) || inputValue === "") {
+                setname(inputValue);
+              }
+            }}
           />
         </div>
         <div>

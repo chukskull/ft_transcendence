@@ -54,9 +54,7 @@ const ChannelSettings = ({ banned, muted, id, chPrivate, onAction }: any) => {
           withCredentials: true,
         }
       ) //0 to unmute 1 to mute
-      .then((res) => {
-        console.log(res.data);
-      })
+      .then((res) => {})
       .catch((err) => console.log(err));
   };
   const deleteChannel = (channelId: number) => {

@@ -54,24 +54,25 @@ export class AuthController {
   ): Promise<any> {
     const token = await this.authService.generateNewToken(req.user);
     res.cookie('token', token);
-    if (req.user.firstTimeLogiIn || !req.user.filledInfo) {
-      res.redirect(process.env.frontendUrl + 'fill');
+    try {
+      if (req.user.firstTimeLogiIn || !req.user.filledInfo) {
+        res.redirect(process.env.frontendUrl + 'fill');
+        await this.userRepository.update(req.user.id, {
+          firstTimeLogiIn: false,
+          PinValid: false,
+        });
+      }
       await this.userRepository.update(req.user.id, {
-        firstTimeLogiIn: false,
+        authenticated: true,
         PinValid: false,
       });
-      console.log('first time login');
-    }
-    await this.userRepository.update(req.user.id, {
-      authenticated: true,
-      PinValid: false,
-    });
-    if (req.user.twoFactorAuthEnabled) {
-      res.redirect(process.env.frontendUrl + 'verify');
-      console.log('redirect to verify');
-    } else if (req.user.filledInfo) {
-      res.redirect(process.env.frontendUrl + 'home');
-      console.log('redirect to home');
+      if (req.user.twoFactorAuthEnabled) {
+        res.redirect(process.env.frontendUrl + 'verify');
+      } else if (req.user.filledInfo) {
+        res.redirect(process.env.frontendUrl + 'home');
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -104,8 +105,7 @@ export class AuthController {
       res.redirect(process.env.frontendUrl + 'verify');
     } else if (req.user.filledInfo) {
       res.redirect(process.env.frontendUrl + 'home');
-    } 
-    
+    }
     await this.userRepository.update(req.user.id, {
       authenticated: true,
       PinValid: false,
@@ -139,7 +139,7 @@ export class AuthController {
     );
     if (!validCode) throw new UnauthorizedException('Wrong Code');
     await this.userService.ValidPin(req.user.id, true);
-    res.redirect(process.env.frontendUrl + '/home');
+    res.sendStatus(HttpStatus.OK);
   }
 
   @Post('/2fa/turn-on')

@@ -256,9 +256,7 @@ const UserMenu = ({
                       console.log(res);
                       onAction(false);
                     })
-                    .catch((err) => {
-                      console.log(err.response.data);
-                    });
+                    .catch((err) => {});
                 }}
               >
                 <FaUserShield />
