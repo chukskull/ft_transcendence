@@ -77,21 +77,15 @@ export default function Profile({ id }: any) {
       })
       .catch((err) => console.log(err));
   }
-  const friends = useQuery(
-    "userFriends",
-    async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response;
-    },
-    {
-      refetchInterval: 1000,
-    }
-  );
+  const friends = useQuery("userFriends", async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response;
+  });
   useEffect(() => {
     if (friends.data) {
       setMyData(friends.data?.data);

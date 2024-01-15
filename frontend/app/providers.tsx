@@ -10,7 +10,15 @@ export function NextProviders({ children }: { children: React.ReactNode }) {
 }
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        staleTime: 0,
+        retry: 0,
+      },
+    },
+  });
   return (
     <QueryClientProvider client={queryClient}>
       {children}

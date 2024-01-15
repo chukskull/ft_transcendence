@@ -7,15 +7,10 @@ import { useQuery } from "react-query";
 
 export const SocialFeed = () => {
   const [Friends, setFriends] = React.useState<any>([]);
-  const { isLoading, error, data } = useQuery(
-    "friends",
-    () =>
-      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
-        withCredentials: true,
-      }),
-    {
-      refetchOnWindowFocus: false,
-    }
+  const { isLoading, error, data } = useQuery("friends", () =>
+    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`, {
+      withCredentials: true,
+    })
   );
 
   useEffect(() => {

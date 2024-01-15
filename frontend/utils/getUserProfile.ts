@@ -12,7 +12,6 @@ export function useUserProfile(id: string) {
     return response.data;
 },
 {
-    refetchInterval: 1000,
     onError: (error: Error) => {
       console.error("Error getting user profile:", error);
     }

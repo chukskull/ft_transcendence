@@ -45,21 +45,15 @@ const UserMenu = ({
     data: infos,
     isLoading,
     isError,
-  } = useQuery(
-    "userFriends",
-    async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data;
-    },
-    {
-      refetchInterval: 1000, // Refetch every 1 second
-    }
-  );
+  } = useQuery("userFriends", async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/friends`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  });
 
   useEffect(() => {
     if (infos) setUserInfos(infos);

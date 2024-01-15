@@ -159,21 +159,15 @@ const ChannelMenu = ({ channel, currentUser, onAction }: any) => {
     isLoading,
     isError,
     refetch,
-  } = useQuery(
-    ["channel", channel.id],
-    async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data;
-    },
-    {
-      refetchInterval: 1000, // Refetch every 1 second
-    }
-  );
+  } = useQuery(["channel", channel.id], async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${channel.id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  });
   useEffect(() => {
     if (channelDatas) setChannelData(channelDatas);
   }, [channelDatas]);

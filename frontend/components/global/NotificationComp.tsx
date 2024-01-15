@@ -30,20 +30,14 @@ export const NotificationComp = ({}) => {
     setNotifCount(0);
   };
 
-  const newAchivQuery = useQuery(
-    "newAchiv",
-    async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`,
-        { withCredentials: true }
-      );
-      setUserProfile(response.data);
-      return response.data.achievements;
-    },
-    {
-      refetchInterval: 500,
-    }
-  );
+  const newAchivQuery = useQuery("newAchiv", async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/profile/me`,
+      { withCredentials: true }
+    );
+    setUserProfile(response.data);
+    return response.data.achievements;
+  });
   useEffect(() => {
     if (newAchivQuery.data) {
       setReceivedData((prev: any) => [...prev, ...newAchivQuery.data]);
@@ -58,9 +52,6 @@ export const NotificationComp = ({}) => {
         { withCredentials: true }
       );
       return response.data.pendingFriendRequests;
-    },
-    {
-      refetchInterval: 500,
     }
   );
 

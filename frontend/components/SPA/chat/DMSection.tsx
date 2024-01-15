@@ -86,9 +86,6 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
         }
       );
       return response.data;
-    },
-    {
-      refetchInterval: 1000, // Refetch every 1 second
     }
   );
 
