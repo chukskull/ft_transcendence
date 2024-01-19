@@ -3,13 +3,16 @@ FROM node:18.18.2
 WORKDIR /trans-front
 
 COPY package*.json ./
+COPY .npmrc ./
 
-RUN npm install
+RUN npm install -g pnpm
+
+RUN pnpm install
 
 COPY . .
 
-# RUN npm run build
+RUN pnpm build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "run", "start"]

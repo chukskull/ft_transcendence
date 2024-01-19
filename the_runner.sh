@@ -16,7 +16,7 @@ build() {
     # mkdir -p ~/Desktop/TranscendenceDB
 
     (cd ./frontend && npm cache clean --force --silent;) && (cd ./backend &&  npm cache clean --force --silent;)
-    docker compose up --build
+    docker-compose up --build
 }
 
 case "$1" in
