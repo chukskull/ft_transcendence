@@ -13,12 +13,12 @@ const DMbox = ({ dm, className, badge }: DMSectionProps) => {
       <AvatarBubble
         badge={badge}
         avatar={dm.members[0].avatarUrl}
-        online={dm?.online}
+        online={dm.members[0].status === "online" ? true : false}
         key={dm?.id}
       />
       <div className={style["dm-info"]}>
         <div className={style["dm-name"]}>{dm.members[0].nickName}</div>
-        <div className={style["dm-last-msg"]}>{dm.lastMsg}</div>
+        <div className={style["dm-last-msg"]}>{`#${dm.members[0].status}`}</div>
       </div>
       <div className={style["dm-time"]}>{dm.lastMsgTime}</div>
     </div>

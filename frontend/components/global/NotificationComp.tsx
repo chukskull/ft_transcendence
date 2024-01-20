@@ -175,7 +175,7 @@ export const NotificationComp = ({}) => {
     <>
       <Dropdown
         classNames={{
-          content: "bg-black",
+          content: "bg-modalBackground",
         }}
         onClose={() => setReceivedData([])}
       >
