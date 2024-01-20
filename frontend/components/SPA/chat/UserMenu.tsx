@@ -16,6 +16,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { Avatar } from "@nextui-org/react";
 
 interface UserMenuProps {
   id?: number;
@@ -69,262 +70,266 @@ const UserMenu = ({
 
   return (
     <>
-      <div className={style["user-info"]}>
-        <AvatarBubble avatar={avatarUrl} online={online} />
-        <h2>{nickName}</h2>
-      </div>
-      <div className={style["menu"]}>
-        <div
-          className={style["menu-item"]}
-          onClick={() => {
-            router.push(`/profile/${nickName}`);
-          }}
-        >
-          <FaUser />
-          View Profile
+      <div className={style["user-menu"]}>
+        <div className={style["user-menu-modal"]}>
+          <div className={style["user-info"]}>
+            <Avatar src={avatarUrl} size="lg" />
+            <h2>{nickName}</h2>
+          </div>
+          <div className={style["menu"]}>
+            <div
+              className={style["menu-item"]}
+              onClick={() => {
+                router.push(`/profile/${nickName}`);
+              }}
+            >
+              <FaUser />
+              View Profile
+            </div>
+            {!isUserBlocked() ? (
+              <div
+                className={style["menu-item"]}
+                onClick={() => {
+                  router.push(`/game?inviteToGame=${id}`);
+                }}
+              >
+                <BsController />
+                Invite To A Game
+              </div>
+            ) : (
+              <></>
+            )}
+
+            {!isUserBlocked() && (
+              <>
+                {isFriend() ? (
+                  <div
+                    className={style["menu-item"]}
+                    onClick={() => {
+                      axios
+                        .get(
+                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
+                          {
+                            withCredentials: true,
+                          }
+                        )
+                        .then((res) => {
+                          onAction(false);
+                          console.log(res);
+                        })
+                        .catch((err) => {
+                          //alert(err.response.data.message);
+                          console.log(err);
+                        });
+                      onAction(false);
+                    }}
+                  >
+                    <FaUserSlash />
+                    Remove Friend
+                  </div>
+                ) : (
+                  <div
+                    className={style["menu-item"]}
+                    onClick={() => {
+                      axios
+                        .get(
+                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addFriend/${id}`,
+                          {
+                            withCredentials: true,
+                          }
+                        )
+                        .then((res) => {
+                          onAction(false);
+                          console.log(res);
+                        })
+                        .catch((err) => {
+                          //alert(err.response.data.message);
+                          console.log(err);
+                        });
+                    }}
+                  >
+                    <FaUserPlus />
+                    Add Friend
+                  </div>
+                )}
+              </>
+            )}
+
+            {!isUserBlocked() && (
+              <div
+                className={style["menu-item"]}
+                onClick={() => {
+                  onAction(false);
+                  router.push(`/chat/users/${nickName}`);
+                }}
+              >
+                <BsChatLeftText />
+                Message
+              </div>
+            )}
+            {isUserBlocked() ? (
+              <div
+                className={style["menu-item"]}
+                onClick={() => {
+                  axios
+                    .get(
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/0`,
+                      {
+                        withCredentials: true,
+                      }
+                    )
+                    .then(() => {
+                      onAction(false);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }}
+              >
+                <FaCompressAlt />
+                Unblock
+              </div>
+            ) : (
+              <div
+                className={style["menu-item"]}
+                onClick={() => {
+                  axios
+                    .get(
+                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`,
+                      {
+                        withCredentials: true,
+                      }
+                    )
+                    .then(() => {
+                      onAction(false);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }}
+              >
+                <FaCommentSlash />
+                Block
+              </div>
+            )}
+            {channel && (
+              <>
+                {!isMod ? (
+                  <div
+                    className={style["menu-item"]}
+                    onClick={() => {
+                      axios
+                        .get(
+                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/mod`,
+                          {
+                            withCredentials: true,
+                          }
+                        )
+                        .then((res) => {
+                          console.log(res);
+                          onAction(false);
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                        });
+                    }}
+                  >
+                    <FaUserShield />
+                    Make A Moderator
+                  </div>
+                ) : (
+                  <div
+                    className={style["menu-item"]}
+                    onClick={() => {
+                      axios
+                        .get(
+                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/unmod`,
+                          {
+                            withCredentials: true,
+                          }
+                        )
+                        .then((res) => {
+                          console.log(res);
+                          onAction(false);
+                        })
+                        .catch((err) => {});
+                    }}
+                  >
+                    <FaUserShield />
+                    Remove Moderator
+                  </div>
+                )}
+
+                <div
+                  className={style["menu-item"]}
+                  onClick={() => {
+                    axios
+                      .get(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/muting/${id}/1`,
+                        {
+                          withCredentials: true,
+                        }
+                      )
+                      .then((res) => {
+                        onAction(false);
+                        console.log(res);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }}
+                >
+                  <FaVolumeMute />
+                  Mute From Channel
+                </div>
+                <div
+                  className={style["menu-item"]}
+                  onClick={() => {
+                    axios
+                      .get(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/banning/${id}/1`,
+                        {
+                          withCredentials: true,
+                        }
+                      )
+                      .then((res) => {
+                        console.log(res);
+                        onAction(false);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }}
+                >
+                  <FaBan />
+                  Ban From Channel
+                </div>
+                <div
+                  className={style["menu-item"]}
+                  onClick={() => {
+                    axios
+                      .get(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/kickUser/${id}`,
+                        {
+                          withCredentials: true,
+                        }
+                      )
+                      .then((res) => {
+                        console.log(res);
+                        onAction(false);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }}
+                >
+                  <FaWalking />
+                  Kick From Channel
+                </div>
+              </>
+            )}
+          </div>
         </div>
-        {!isUserBlocked() ? (
-          <div
-            className={style["menu-item"]}
-            onClick={() => {
-              router.push(`/game?inviteToGame=${id}`);
-            }}
-          >
-            <BsController />
-            Invite To A Game
-          </div>
-        ) : (
-          <></>
-        )}
-
-        {!isUserBlocked() && (
-          <>
-            {isFriend() ? (
-              <div
-                className={style["menu-item"]}
-                onClick={() => {
-                  axios
-                    .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/removeFriend/${id}`,
-                      {
-                        withCredentials: true,
-                      }
-                    )
-                    .then((res) => {
-                      onAction(false);
-                      console.log(res);
-                    })
-                    .catch((err) => {
-                      //alert(err.response.data.message);
-                      console.log(err);
-                    });
-                  onAction(false);
-                }}
-              >
-                <FaUserSlash />
-                Remove Friend
-              </div>
-            ) : (
-              <div
-                className={style["menu-item"]}
-                onClick={() => {
-                  axios
-                    .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/addFriend/${id}`,
-                      {
-                        withCredentials: true,
-                      }
-                    )
-                    .then((res) => {
-                      onAction(false);
-                      console.log(res);
-                    })
-                    .catch((err) => {
-                      //alert(err.response.data.message);
-                      console.log(err);
-                    });
-                }}
-              >
-                <FaUserPlus />
-                Add Friend
-              </div>
-            )}
-          </>
-        )}
-
-        {!isUserBlocked() && (
-          <div
-            className={style["menu-item"]}
-            onClick={() => {
-              onAction(false);
-              router.push(`/chat/users/${nickName}`);
-            }}
-          >
-            <BsChatLeftText />
-            Message
-          </div>
-        )}
-        {isUserBlocked() ? (
-          <div
-            className={style["menu-item"]}
-            onClick={() => {
-              axios
-                .get(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/0`,
-                  {
-                    withCredentials: true,
-                  }
-                )
-                .then(() => {
-                  onAction(false);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }}
-          >
-            <FaCompressAlt />
-            Unblock
-          </div>
-        ) : (
-          <div
-            className={style["menu-item"]}
-            onClick={() => {
-              axios
-                .get(
-                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/handleblock/${id}/1`,
-                  {
-                    withCredentials: true,
-                  }
-                )
-                .then(() => {
-                  onAction(false);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }}
-          >
-            <FaCommentSlash />
-            Block
-          </div>
-        )}
-        {channel && (
-          <>
-            {!isMod ? (
-              <div
-                className={style["menu-item"]}
-                onClick={() => {
-                  axios
-                    .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/mod`,
-                      {
-                        withCredentials: true,
-                      }
-                    )
-                    .then((res) => {
-                      console.log(res);
-                      onAction(false);
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
-                }}
-              >
-                <FaUserShield />
-                Make A Moderator
-              </div>
-            ) : (
-              <div
-                className={style["menu-item"]}
-                onClick={() => {
-                  axios
-                    .get(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/modding/${id}/unmod`,
-                      {
-                        withCredentials: true,
-                      }
-                    )
-                    .then((res) => {
-                      console.log(res);
-                      onAction(false);
-                    })
-                    .catch((err) => {});
-                }}
-              >
-                <FaUserShield />
-                Remove Moderator
-              </div>
-            )}
-
-            <div
-              className={style["menu-item"]}
-              onClick={() => {
-                axios
-                  .get(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/muting/${id}/1`,
-                    {
-                      withCredentials: true,
-                    }
-                  )
-                  .then((res) => {
-                    onAction(false);
-                    console.log(res);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }}
-            >
-              <FaVolumeMute />
-              Mute From Channel
-            </div>
-            <div
-              className={style["menu-item"]}
-              onClick={() => {
-                axios
-                  .get(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/banning/${id}/1`,
-                    {
-                      withCredentials: true,
-                    }
-                  )
-                  .then((res) => {
-                    console.log(res);
-                    onAction(false);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }}
-            >
-              <FaBan />
-              Ban From Channel
-            </div>
-            <div
-              className={style["menu-item"]}
-              onClick={() => {
-                axios
-                  .get(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/channels/${chann}/kickUser/${id}`,
-                    {
-                      withCredentials: true,
-                    }
-                  )
-                  .then((res) => {
-                    console.log(res);
-                    onAction(false);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }}
-            >
-              <FaWalking />
-              Kick From Channel
-            </div>
-          </>
-        )}
       </div>
     </>
   );

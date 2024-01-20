@@ -80,7 +80,7 @@ const Game: React.FC = () => {
       newSocket.disconnect();
       newSocket.close();
     };
-  }, []);
+  }, [router]);
 
   function handleJoinQueue() {
     if (socket) {

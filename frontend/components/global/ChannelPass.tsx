@@ -61,7 +61,7 @@ export const ProtectedModal = ({
 
         <Button
           type="submit"
-          className="font-ClashGrotesk-Medium text-fontlight bg-live"
+          className="font-ClashGrotesk-Medium text-fontlight bg-buttonbg"
         >
           Join
         </Button>

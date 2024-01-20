@@ -232,7 +232,7 @@ export const ProfileSettingModal: React.FC<ProfileSettingModalProps> = ({
           <Button
             type="submit"
             onClick={handleSubmit(updateUser)}
-            className="bg-live text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
+            className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-auti min-h-auto rounded-2xl text-center"
           >
             Save
           </Button>
