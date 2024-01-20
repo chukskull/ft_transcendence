@@ -24,7 +24,7 @@ export const MiniProf = ({ image, name, id }: MiniProfProps) => {
           {name}
         </h1>
         <Button
-          className="bg-live max-w-6xl h-5 text-fontlight font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
+          className="bg-buttonbg max-w-6xl h-5 text-fontlight font-medium text-sm rounded-md transition duration-500 ease-in-out hover:scale-105 hover:bg-opacity-80"
           onClick={() => inviteToGame(id)}
         >
           Invite
