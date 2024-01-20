@@ -7,5 +7,4 @@ export default function Chat() {
   useEffect(() => {
     router.push("/chat/channels/1");
   });
-  return <></>;
 }

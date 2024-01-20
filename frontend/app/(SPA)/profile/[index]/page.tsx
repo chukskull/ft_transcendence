@@ -3,7 +3,7 @@ import ProfileComp from "@/components/SPA/Profile/pages/ProfileComp";
 import axios from "axios";
 import { useParams } from "next/navigation";
 
-import React, { use } from "react";
+import React from "react";
 import { useQuery } from "react-query";
 
 const Profile = () => {

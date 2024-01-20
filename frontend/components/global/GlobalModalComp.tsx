@@ -27,7 +27,7 @@ function GlobalModalComp({ onClose, action, object }: GlobalModalCompProps) {
           Cancel
         </Button>
         <Button
-          className="bg-buttonbg text-fontlight font-ClashGrotesk-Medium text-base min-w-[149px] min-h-[46px] rounded-2xl text-center"
+          className="bg-live text-fontlight font-ClashGrotesk-Medium text-base min-w-[149px] min-h-[46px] rounded-2xl text-center"
           onPress={onClose}
         >
           {action}

@@ -48,21 +48,15 @@ const ChannelsSection = ({
     data: channelListData,
     isLoading,
     isError,
-  } = useQuery(
-    "myChannels",
-    async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/mychannels`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data;
-    },
-    {
-      refetchInterval: 1000,
-    }
-  );
+  } = useQuery("myChannels", async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/mychannels`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  });
 
   useEffect(() => {
     if (channelListData) {

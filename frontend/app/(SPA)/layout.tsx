@@ -20,7 +20,7 @@ export default function RootLayout({
       .catch(() => {
         router.push("/login");
       });
-  }, []);
+  }, [router]);
   return (
     <main className="">
       <TopLeftNav />

@@ -14,8 +14,7 @@ import { BsController, BsChatLeftText } from "react-icons/bs";
 import AvatarBubble from "@/components/SPA/chat/AvatarBubble";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
-import { on } from "events";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
 interface UserMenuProps {

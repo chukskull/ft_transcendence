@@ -3,14 +3,12 @@ import React from "react";
 import { Avatar } from "@nextui-org/react";
 import { AiFillGithub, AiFillLinkedin } from "react-icons/ai";
 export interface CardComponentProps {
-  id?: number;
   image: string;
   name: string;
   title: string;
   text: string;
 }
 export const CardComponent = ({
-  id,
   image,
   name,
   title,
