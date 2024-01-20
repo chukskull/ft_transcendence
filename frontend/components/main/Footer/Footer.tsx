@@ -14,7 +14,6 @@ export const Footer = () => {
         {StudentsInfos.map((student, index) => (
           <CardComponent
             key={index}
-            id={index}
             image={student.img}
             name={student.name}
             title={student.title}

@@ -2,12 +2,7 @@ import Image from "next/image";
 import ButtonNav from "@/components/main/atoms/ButtonNav";
 import { useEffect, useRef } from "react";
 
-// import CustomButton from "./CustomButton";
-
-interface NavBarProps {
-  boolBut?: boolean;
-}
-const NavBar = ({ boolBut }: NavBarProps) => {
+const NavBar = () => {
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,7 +45,7 @@ const NavBar = ({ boolBut }: NavBarProps) => {
         <ul className="Navigation z-10 bg-none">
           {nav.map((nv) => (
             <li className="bg-none" key={nv.name}>
-              <a href={`#${nv.href}`}>{nv.name}</a>
+              <a href={`#${nv.name}`}>{nv.name}</a>
             </li>
           ))}
         </ul>
@@ -62,15 +57,12 @@ const NavBar = ({ boolBut }: NavBarProps) => {
 const nav = [
   {
     name: "Home",
-    href: "Home",
   },
   {
     name: "About",
-    href: "About",
   },
   {
     name: "Team",
-    href: "Team",
   },
 ];
 export default NavBar;

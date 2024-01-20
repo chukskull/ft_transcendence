@@ -10,7 +10,7 @@ import About from "@/components/main/About/About";
 export default function Page() {
   return (
     <main className="Home">
-      <NavBar boolBut={true} />
+      <NavBar />
       <section id="Home">
         <Hero />
       </section>

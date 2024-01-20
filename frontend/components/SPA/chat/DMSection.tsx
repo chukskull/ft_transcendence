@@ -90,10 +90,13 @@ const DmSection = ({ getType, sendDmOrChannel, CompType }: DmSectionProps) => {
   );
 
   useEffect(() => {
+    if (dmsList) {
+      setDmsList([]);
+    }
     if (dmsListData) {
       setDmsList(dmsListData);
     }
-  }, [dmsListData]);
+  }, [dmsListData, dmsList]);
   return (
     <>
       <Modal

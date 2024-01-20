@@ -1,7 +1,7 @@
 @import url("../../fonts.css");
 
-$background-color: -webkit-linear-gradient(-90deg, #160040, rgba(0, 0, 139, 0.5)),
-linear-gradient(-90deg, #160040, rgba(0, 0, 139, 0.5));
+$background-color: #001233;
+
 .avatar-bubble {
     width: 46px;
     height: 46px;
@@ -201,11 +201,12 @@ linear-gradient(-90deg, #160040, rgba(0, 0, 139, 0.5));
 }
 
 .chat-container {
-    overflow: hidden;
+    overflow-y: auto;
     padding-top: 60px;
     padding-left: 60px;
     display: flex;
     color: white;
+    height: 100vh;
     
 
     .menu-sections {

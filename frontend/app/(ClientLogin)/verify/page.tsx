@@ -5,13 +5,6 @@ import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-
-
-interface PayloadType {
-  index: number;
-  value: any;
-}
-
 function clampIndex(index: number, min: number = 0, max: number = 10): number {
   return Math.max(Math.min(index, max), min);
 }

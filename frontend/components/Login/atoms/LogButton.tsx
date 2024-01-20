@@ -12,13 +12,7 @@ interface LogButtonProps {
   url: string;
 }
 
-export const LogButton = ({
-  isGoogle,
-  image,
-  text,
-  altr,
-  url,
-}: LogButtonProps) => {
+export const LogButton = ({ image, text, altr, url }: LogButtonProps) => {
   const router = useRouter();
 
   return (

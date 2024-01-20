@@ -47,7 +47,7 @@ const config: Config = {
         customPink: "#F417C4",
         customPurple: "#270245",
         purpleProfile : "#15011EB3",
-        modalBackground: '#000000E6',
+        modalBackground: '#001233',
         buttonbg: "#3E0756",
         bghover: "#fefcfc33",
         stats: "#851487",

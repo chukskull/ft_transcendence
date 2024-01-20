@@ -4,7 +4,7 @@ import "@/styles/globals.scss";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar } from "antd";
 import { BsFillCameraFill } from "react-icons/bs";
 
