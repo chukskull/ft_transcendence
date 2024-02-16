@@ -8,7 +8,7 @@ interface rankMap {
 
 const rankMap: rankMap = {
   Silver: "https://i.imgur.com/OazydMA.png",
-  Gold: "https://imgur.com/I8ctvsh.png",
+  Gold: "https://i.imgur.com/jNc4zkq.png",
   Iron: "https://i.imgur.com/GMh5g0V.png",
   Bronze: "https://i.imgur.com/JTbrxcF.png",
 };

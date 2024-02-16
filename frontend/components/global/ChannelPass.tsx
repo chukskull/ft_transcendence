@@ -37,7 +37,7 @@ export const ProtectedModal = ({
   };
 
   return (
-    <div className="p-12 flex flex-col gap-5 w-[90%]">
+    <div className="p-12 flex flex-col gap-5 w-[120%] bg-modalBackground rounded-2xl">
       <h1 className="text-xl font-ClashGrotesk-Semibold text-fontlight w-[90%] text-center">
         {" "}
         Please enter the password to join
